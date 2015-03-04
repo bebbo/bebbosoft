@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+    <extension point="org.eclipse.wst.server.core.runtimeTypes">
+        <runtimeType id="de.bb.bejy.eclipse.runtimeType" name="%bejyName" description="%bejyDescription" vendor="%providerName" version="1.6" class="org.eclipse.jst.server.generic.core.internal.GenericServerRuntime" >
+            <moduleType types="jst.web" versions="2.2, 2.3, 2.4, 2.5"/>
+            <moduleType types="jst.ejb" versions="1.1, 2.0, 2.1"/>
+            <moduleType types="jst.ear" versions="1.2, 1.3, 1.4"/>
+            <moduleType types="jst.connector" versions="1.0, 1.5"/>
+            <moduleType types="jst.utility" versions="1.0"/>
+            <moduleType types="grails.app" versions="1.0"/>
+        </runtimeType>
+    </extension>
+    <extension point="org.eclipse.wst.server.core.serverTypes">
+        <serverType behaviourClass="org.eclipse.jst.server.generic.core.internal.GenericServerBehaviour" class="org.eclipse.jst.server.generic.core.internal.GenericServer" description="%bejyDescription" hasConfiguration="false" id="de.bb.bejy.eclipse.serverType" initialState="stopped" launchConfigId="org.eclipse.jst.server.generic.core.launchConfigurationType" launchModes="run,debug,profile" name="%bejyName" runtime="true" runtimeTypeId="de.bb.bejy.eclipse.runtimeType" startBeforePublish="true" startTimeout="50000" stopTimeout="15000" supportsRemoteHosts="false"/>
+    </extension>
+    <!-- UI Components-->
+    <extension point="org.eclipse.wst.server.ui.wizardFragments">
+        <fragment id="org.eclipse.jst.server.generic.runtime" typeIds="de.bb.bejy.eclipse.runtimeType" class="org.eclipse.jst.server.generic.ui.internal.GenericServerRuntimeWizardFragment"/>
+        <fragment id="org.eclipse.jst.server.generic.server" typeIds="de.bb.bejy.eclipse.serverType" class="org.eclipse.jst.server.generic.ui.internal.GenericServerWizardFragment"/>
+    </extension>
+    <extension point="org.eclipse.wst.server.ui.serverImages">
+        <image id="org.eclipse.jst.server.generic.image" icon="icons/obj16/bejy.gif" typeIds="de.bb.bejy.eclipse.runtimeType"/>
+        <image id="org.eclipse.jst.server.generic.image" icon="icons/obj16/bejy.gif" typeIds="de.bb.bejy.eclipse.serverType"/>
+    </extension>
+    <!-- Define Classpath provider for all generics -->
+    <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
+        <runtimeClasspathProvider id="org.eclipse.jst.server.generic.runtimeTarget" runtimeTypeIds="de.bb.bejy.eclipse.runtimeType" class="org.eclipse.jst.server.generic.core.internal.GenericServerRuntimeTargetHandler"/>
+    </extension>
+    <!-- Server type definitions -->
+    <extension point="org.eclipse.jst.server.generic.core.serverdefinition">
+        <serverdefinition id="de.bb.bejy.eclipse.runtimeType" definitionfile="/servers/bejy.serverdef"/>
+    </extension>
+    <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+        <runtime-component-type id="de.bb.bejy.eclipse.runtime"/>
+        <runtime-component-version type="de.bb.bejy.eclipse.runtime" version="1.6"/>
+        <adapter>
+            <runtime-component id="de.bb.bejy.eclipse.runtime"/>
+            <factory class="org.eclipse.jst.server.core.internal.RuntimeClasspathProvider$Factory"/>
+            <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+        </adapter>
+        <supported>
+            <runtime-component id="de.bb.bejy.eclipse.runtime" version="1.6"/>
+            <facet id="jst.web" version="2.2,2.3,2.4,2.5"/>
+            <facet id="jst.ejb" version="1.1,2.0,2.1"/>
+            <facet id="jst.ear" version="1.2,1.3,1.4"/>
+            <facet id="jst.connector" version="1.0,1.5"/>
+            <facet id="jst.appclient" version="1.2,1.3,1.4"/>
+            <facet id="jst.utility" version="1.0"/>
+            <facet id="grails.app" versions="1.0"/>
+        </supported>
+    </extension>
+    <extension point="org.eclipse.wst.common.project.facet.core.defaultFacets">
+        <default-facets>
+            <runtime-component id="de.bb.bejy.eclipse.runtime"/>
+            <facet id="wst.jsdt.web" version="1.0"/>
+        </default-facets>
+    </extension>
+    <extension point="org.eclipse.wst.common.project.facet.ui.images">
+        <image runtime-component-type="de.bb.bejy.eclipse.runtime" path="icons/obj16/bejy.gif"/>
+    </extension>
+    <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+        <adapter>
+            <runtime-component id="de.bb.bejy.eclipse.runtime"/>
+            <factory class="org.eclipse.jst.server.ui.internal.RuntimeLabelProvider$Factory"/>
+            <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider"/>
+        </adapter>
+    </extension>
+    <extension point="org.eclipse.jst.server.core.runtimeFacetMappings">
+        <runtimeFacetMapping runtimeTypeId="de.bb.bejy.eclipse.runtime" runtime-component="de.bb.bejy.eclipse.runtime" version="1.6"/>
+    </extension>
+</plugin>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:ServerRuntime  xmlns:tns="http://eclipse.org/jst/server/generic/ServerTypeDefinition" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://eclipse.org/jst/server/generic/ServerTypeDefinition ServerTypeDefinitionSchema.xsd " name="BEJY 1.6" version="1.6">
+    <property id="bejyRoot" label="%bejyRoot" type="directory" context="runtime" default="/bejy_tiger/" />
+    <property id="serverAddress" label="%serverAddress" type="string" context="server" default="127.0.0.1" />
+    <property id="port" label="%serverPort" type="string" context="server" default="8008" />
+    <port>
+        <no>${port}</no>
+        <name>Http</name>
+        <protocol>http</protocol>
+    </port>
+    <module>
+        <type>jst.web</type>
+        <publishDir>${bejyRoot}/webapps</publishDir>
+        <publisherReference>org.eclipse.jst.server.generic.antpublisher</publisherReference>
+    </module>
+    <module>
+        <type>grails.app</type>
+        <publishDir>${bejyRoot}/webapps</publishDir>
+        <publisherReference>org.eclipse.jst.server.generic.antpublisher</publisherReference>
+    </module>
+    <module>
+        <type>jst.ejb</type>
+        <publishDir>${bejyRoot}/entapps</publishDir>
+        <publisherReference>org.eclipse.jst.server.generic.antpublisher</publisherReference>
+    </module>
+    <module>
+        <type>jst.ear</type>
+        <publishDir>${bejyRoot}/entapps</publishDir>
+        <publisherReference>org.eclipse.jst.server.generic.antpublisher</publisherReference>
+    </module>
+    <classpath id="bejy">
+        <archive path="${bejyRoot}/lib/bejy.jar" />
+        <archive path="${bejyRoot}/lib/jsp-api-2.0.jar" />
+        <archive path="${bejyRoot}/lib/servlet-api-2.5.jar" />
+    </classpath>
+    <classpath id="bejy.project">
+        <archive path="${bejyRoot}/lib/jsp-api-2.0.jar" />
+        <archive path="${bejyRoot}/lib/servlet-api-2.5.jar" />
+    </classpath>
+    <project>
+        <classpathReference>bejy.project</classpathReference>
+    </project>
+    <start>
+        <mainClass>de.bb.bejy.Tiger</mainClass>
+        <workingDirectory>${bejyRoot}</workingDirectory>
+        <programArguments>-p ${port}</programArguments>
+        <vmParameters>-XX:MaxPermSize=384m -Xmx1024m -Dinstall.root="${bejyRoot}" -Dbejy.base="${bejyRoot}" </vmParameters>
+        <classpathReference>bejy</classpathReference>
+    </start>
+    <stop>
+        <mainClass>de.bb.bejy.Tiger</mainClass>
+        <workingDirectory>${bejyRoot}</workingDirectory>
+        <programArguments>-shutdown</programArguments>
+        <vmParameters>-Dinstall.root="${bejyRoot}" -Dbejy.base="${bejyRoot}"</vmParameters>
+        <classpathReference>bejy</classpathReference>
+    </stop>
+    <publisher id="org.eclipse.jst.server.generic.antpublisher">
+        <publisherdata>
+            <dataname>build.file</dataname>
+            <datavalue>/buildfiles/bejy.xml</datavalue>
+        </publisherdata>
+        <publisherdata>
+            <dataname>target.publish.jst.web</dataname>
+            <datavalue>deploy.j2ee.web</datavalue>
+        </publisherdata>
+        <publisherdata>
+            <dataname>target.publish.jst.ejb</dataname>
+            <datavalue>deploy.j2ee.ejb</datavalue>
+        </publisherdata>
+        <publisherdata>
+            <dataname>target.unpublish.jst.web</dataname>
+            <datavalue>undeploy.j2ee.web</datavalue>
+        </publisherdata>
+        <publisherdata>
+            <dataname>target.unpublish.jst.ejb</dataname>
+            <datavalue>undeploy.j2ee.ejb</datavalue>
+        </publisherdata>
+        <publisherdata>
+            <dataname>target.publish.jst.ear</dataname>
+            <datavalue>deploy.j2ee.ear</datavalue>
+        </publisherdata>
+        <publisherdata>
+            <dataname>target.unpublish.jst.ear</dataname>
+            <datavalue>undeploy.j2ee.ear</datavalue>
+        </publisherdata>
+    </publisher>
+    <!--<jndiConnection><providerUrl>iiop://${serverAddress}:1112</providerUrl>
+    <initialContextFactory>de.bb.rmi.ICF</initialContextFactory>
+    <jndiProperty><name></name><value></value></jndiProperty></jndiConnection>-->
+</tns:ServerRuntime>

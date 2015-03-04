@@ -1,0 +1,31 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.bb.bejy</groupId>
+    <artifactId>bejy</artifactId>
+    <version>1.6.0</version>
+  </parent>
+  <groupId>de.bb.bejy</groupId>
+  <artifactId>eclipse</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <build>
+      <resources>
+      <resource>
+        <directory>.</directory>
+        <includes>
+          <include>buildfiles/*</include>
+          <include>servers/*</include>
+          <include>icons/**</include>
+          <include>plugin.properties</include>
+          <include>plugin.xml</include>
+          <include>META-INF/MANIFEST.MF</include>
+          <include>COPYING</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/java</directory>
+        <targetPath>src</targetPath>
+      </resource>
+    </resources></build>
+</project>
