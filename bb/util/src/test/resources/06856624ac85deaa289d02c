@@ -1,0 +1,22 @@
+Received: from [1.2.3.4] (x.y.z [1.2.3.4])
+	by b.cd (BEJY V1.5.1.67  SMTP 1.4.1.78  (c) 2000-2013 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved)
+	with SMTP id 13e806856624ac85deaa289d02c
+	from a@b.cd
+	for b@b.cd;
+	Tue, 07 May 2013 21:12:01 +0200
+Content-Type: text/html; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: BlackBerry Email (10.1.0.1627)
+Message-ID: <20130507190921.5157003.68650.4@a@b.cd>
+Date: Tue, 07 May 2013 21:09:21 +0200
+Subject: Test
+From: a@b.cd
+In-Reply-To: <20130507181129.5157003.32862.3@a@b.cd>
+To: B <b@b.cd>
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Dutf-8"><style> body {  font-family: "Calibri","Slate Pro","sans-serif"; =
+color:#262626 }</style> </head> <body data-blackberry-caret-color=3D"#00a8d=
+f"><div><br></div><div><br></div><div id=3D"_signaturePlaceholder">Gesendet=
+ von meinem BlackBerry 10-Smartphone.</div></body></html>

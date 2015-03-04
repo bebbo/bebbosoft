@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns2:subscribeResponse xmlns:ns2="http://ws.taxor.ikor.de/">
+      <formFieldDTOs>
+        <calculatedValue>Übernahme der Vorjahreswerte</calculatedValue>
+        <decimals>0</decimals>
+        <fieldType>3</fieldType>
+        <formContainerFieldId>0</formContainerFieldId>
+        <hasFormula>true</hasFormula>
+        <name>NAME__S</name>
+        <official>true</official>
+      </formFieldDTOs>
+      <resultCode>0</resultCode>
+    </ns2:subscribeResponse>
+  </S:Body>
+</S:Envelope>
