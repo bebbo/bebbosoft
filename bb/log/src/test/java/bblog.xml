@@ -1,0 +1,13 @@
+<log timeout="50">
+	<formatter name="f1" class="de.bb.log.Formatter" dateFormat="yyyy-MM-dd HH:mm:ss.SSS"
+		format="%d %p [%t] %C - %m" escape="false" />
+	<appender name="a1" formatter="f1" class="de.bb.log.FileAppender"
+		append="false" bufferSize="8192" baseName="logs/a1" dateFormat="_yyyyMMdd" 
+		appendDateAfterClose="true"/>
+	<formatter name="xml" class="de.bb.log.Formatter" dateFormat="yyyy-MM-dd HH:mm:ss.SSS"
+		format='&lt;%p time="%d" thread="%t" logger="%C"&gt;%m&lt;/%p&gt;' escape="true" />
+	<appender name="x1" formatter="xml" class="de.bb.log.FileAppender"
+		append="false" bufferSize="8192" baseName="logs/x1" dateFormat="_yyyyMMdd" 
+		appendDateAfterClose="true" />
+	<logger name="" level="ERROR" appender="x1,a1" />
+</log>
