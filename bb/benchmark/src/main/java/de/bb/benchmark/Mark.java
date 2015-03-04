@@ -16,6 +16,14 @@
  *****************************************************************************/
 package de.bb.benchmark;
 
+/**
+ * Base class for benchmakr implementations.
+ * 
+ * Implement the method <code>action</code>.
+ * 
+ * @author bebbo
+ */
+
 public abstract class Mark {
     private String name;
 

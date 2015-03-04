@@ -18,6 +18,14 @@ package de.bb.benchmark;
 
 import java.util.ArrayList;
 
+/**
+ * A simple implementation to run benchmarks.
+ * 
+ * The provided <code>Marks</code> are run until sigma is below 5%.
+ * 
+ * @author bebbo
+ *
+ */
 public class Bench {
 
     public static int INTERVALL = 1000;
@@ -39,9 +47,9 @@ public class Bench {
         int n = 2;
 
         for (;;) {
-            double m = sum / n;
-            double s = Math.sqrt(sum * sum - sum2) / n / n;
-            if (s * 20 < m) {
+            final double m = sum / n;
+            final double sigma = Math.sqrt(sum * sum - sum2) / n / n;
+            if (sigma * 20 < m) {
                 Result r = new Result(sum, sum2, n);
                 results.add(r);
                 System.out.println(r);
@@ -60,8 +68,8 @@ public class Bench {
     }
 
     public static double one(Mark mark) {
-        mark.action(0);
-        mark.action(1);
+        mark.action(-1);
+        mark.action(-2);
 
         long start = System.currentTimeMillis();
         long end = start + INTERVALL; // run 5 seconds
@@ -96,7 +104,6 @@ public class Bench {
     }
 
     static class Result {
-
         private double sum;
         private double sum2;
         private int n;
@@ -108,8 +115,8 @@ public class Bench {
         }
 
         public String toString() {
-            double s = Math.sqrt(sum * sum - sum2) / n / n;
-            return "mean: " + (long) (sum / n) + " (+-" + (long) s
+            final double s = Math.sqrt(sum * sum - sum2) / n / n;
+            return "result: " + (long) (sum / n) + " (+-" + (long) s
                     + ") passes per ms\r\n";
         }
     }
