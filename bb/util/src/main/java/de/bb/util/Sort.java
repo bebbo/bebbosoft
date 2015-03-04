@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/bb_util/src/main/java/de/bb/util/Sort.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/03/15 18:01:05 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Home of sort implementarions (maybe obsolete...). 
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

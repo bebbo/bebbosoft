@@ -1,16 +1,9 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/MimeFile.java,v $
- * $Revision: 1.3 $
- * $Date: 2012/07/18 06:42:45 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * A class to parse mime files.
  * - retreive the individual sections.
  * - get the header information.
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2011.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,24 +261,4 @@ public class MimeFile {
         return mf.v;
     }
 
-    /**
-     * @param args
-     *            / public static void main(String args[]) { try { //String fn = args[0]; //String fn =
-     *            "540cac391322e33f25f7ced";
-     * 
-     *            File[] files = new File("tst").listFiles();
-     * 
-     *            // File[] files = new File[] { new File("tst/540cac391322e33f25f7ced")}; // File[] files = new File[]
-     *            { new File("tst/10eba16a938f0104b33461e")}; // File[] files = new File[] { new
-     *            File("tst/1bfc8919258d57306e64bed") }; // File[] files = new File[] { new
-     *            File("tst/0174f2abd5f7f86082fb075") };
-     * 
-     *            for (int j = 0; j < files.length; ++j) { File fn = files[j]; System.out.println(fn); FileInputStream
-     *            fis = new FileInputStream(fn); ArrayList vv = parseMime(fis);
-     * 
-     *            long sz = fn.length(); for (int i = 0; i < vv.size(); ++i) { Info info = (Info) vv.get(i);
-     *            System.out.println(info); if (info.end > sz) throw new Exception(fn + ": out of bounds: " + info); if
-     *            (i + 1 == vv.size() && info.end != sz) throw new Exception(fn + ": end mismatch: " + info); } } }
-     *            catch (Exception e) { e.printStackTrace(); } } /
-     **/
 }

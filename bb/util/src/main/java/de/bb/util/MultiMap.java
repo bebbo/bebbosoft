@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/MultiMap.java,v $
- * $Revision: 1.12 $
- * $Date: 2014/06/23 20:08:01 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Map implementation which allows duplicate keys. 
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -236,43 +229,3 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 		return null;
 	}
 }
-
-/******************************************************************************
- * $Log: MultiMap.java,v $
- * Revision 1.12  2014/06/23 20:08:01  bebbo
- * @R changes caused by JDK 1.8
- * Revision 1.11 2011/04/27 11:08:12 bebbo
- * 
- * @R the SingleMap and MultiMap are using template types now Revision 1.10
- *    2011/01/01 11:39:47 bebbo
- * 
- * @O improved speed Revision 1.9 2008/03/15 18:01:05 bebbo
- * 
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.8 2005/02/13 15:16:32 bebbo
- * @I nothing important: beautified imports, added SerialUID
- * 
- *    Revision 1.7 2002/09/09 09:40:36 bebbo
- * @B fixed findNext in MultiMap
- * 
- *    Revision 1.6 2002/03/30 15:40:13 franke
- * @B fix in find() method. If key was not an element of the map, sometimes a
- *    wrong value was returned instead of null
- * 
- *    Revision 1.5 2001/12/10 16:22:50 bebbo
- * @C completed comments!
- * 
- *    Revision 1.4 2001/11/04 18:36:52 franke
- * @B value is now compared using equals()
- * 
- *    Revision 1.3 2001/09/15 08:57:52 bebbo
- * @R complete new design, based on MapBase
- * 
- *    Revision 1.2 2000/12/29 17:47:24 bebbo
- * @? dunno
- * 
- *    Revision 1.1 2000/11/09 15:06:17 bebbo
- * @R repackaged
- * 
- *****************************************************************************/

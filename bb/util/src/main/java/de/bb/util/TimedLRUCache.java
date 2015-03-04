@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/TimedLRUCache.java,v $
- * $Revision: 1.6 $
- * $Date: 2011/01/06 11:56:45 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * An LRU cache implementation adding a life time to the items.  
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

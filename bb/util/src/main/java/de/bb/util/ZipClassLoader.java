@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/ZipClassLoader.java,v $
- * $Revision: 1.35 $
- * $Date: 2013/11/28 12:41:50 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * A class loader implementation with some usefull features. 
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -633,25 +626,3 @@ public class ZipClassLoader extends ClassLoader {
         return getClass().getName() + ": " + urls;
     }
 }
-
-/******************************************************************************
- * Log: $Log: ZipClassLoader.java,v $
- * Log: Revision 1.35  2013/11/28 12:41:50  bebbo
- * Log: @R resource loading is also deferred to the parent class loader
- * Log: Log: Revision 1.34 2012/07/18 06:41:16 bebbo Log: @R typified Log: Log: Revision
- * 1.33 2011/04/27 11:08:57 bebbo Log: @R ZipClassLoader is now typed Log: Log: Revision 1.32 2008/10/27 10:03:04 bebbo
- * Log: @I catching all Throwable from parent classloader to allow class patches Log: Log: Revision 1.31 2008/03/15
- * 18:22:16 bebbo Log: @C added comments. Log: Log: Revision 1.30 2008/03/15 18:01:05 bebbo Log: @R Changed the license:
- * From now on GPL 3 applies. Log: Log: Revision 1.29 2008/03/13 20:53:58 bebbo Log: @B fixed the URL for file: Log:
- * Log: Revision 1.28 2007/01/18 22:00:25 bebbo Log: @I simplyfied the JAR caching Log: Log: Revision 1.27 2006/05/09
- * 08:55:52 bebbo Log: @N new method: loadClass(InputStream is) Log: Log: Revision 1.26 2006/02/02 07:48:42 bebbo Log: @I
- * cleanup Log: Log: Revision 1.25 2005/02/13 15:16:32 bebbo Log: @I nothing important: beautified imports, added
- * SerialUID Log: Log: Revision 1.24 2004/12/01 12:40:19 bebbo Log: @B fixed a possible dead lock condition Log: Log:
- * Revision 1.23 2004/11/18 14:52:57 bebbo Log: @R reformatted source Log: @I using a SessionManager to release JAR
- * files after a 5 seconds. Log: Log: Revision 1.22 2004/07/16 09:39:17 bebbo Log: @B various bug fixes related to JAR
- * URL handling Log: Log: Revision 1.21 2004/05/18 12:00:21 bebbo Log: @R added old code to replace the UrlClassLoader
- * Log: Log: Revision 1.20 2004/04/14 13:57:51 bebbo Log: @B fixed JavaDoc issues Log: Log: Revision 1.19 2004/04/14
- * 13:35:53 bebbo Log: @R added default constructor Log: Log: Revision 1.18 2004/04/07 16:46:02 bebbo Log: @R now using
- * UrlClassLoader, maybe I change this again Log: Log: Revision 1.17 2004/03/23 11:03:12 bebbo Log: @R new
- * implementation which extends URLClassLoader Log:
- ******************************************************************************/

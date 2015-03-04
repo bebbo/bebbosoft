@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/Pool.java,v $
- * $Revision: 1.20 $
- * $Date: 2012/07/18 06:42:08 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * A pool implementation to manage a distinct count of resources. 
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -483,68 +476,3 @@ public class Pool {
         }
     }
 }
-
-/******************************************************************************
- * $Log: Pool.java,v $
- * Revision 1.20  2012/07/18 06:42:08  bebbo
- * @F formatted
- * Revision 1.19 2008/03/15 18:01:05 bebbo
- * 
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.18 2008/03/13 20:52:23 bebbo
- * @I improved support of timeout
- * 
- *    Revision 1.17 2007/01/18 22:04:18 bebbo
- * @C fixed comments
- * 
- *    Revision 1.16 2006/05/09 08:55:28 bebbo
- * @B outdated objects are now properly detroyed
- * 
- *    Revision 1.15 2006/02/02 07:48:10 bebbo
- * @N new methods retrieve() and lockCount()
- * 
- *    Revision 1.14 2004/12/16 16:17:32 bebbo
- * @C enhanced documentation
- * 
- *    Revision 1.13 2004/07/21 09:31:42 bebbo
- * @B if an used connection gets invalid, it was not removed in obtain(), which resulted in an endless loop.
- * 
- *    Revision 1.12 2004/04/14 13:57:51 bebbo
- * @B fixed JavaDoc issues
- * 
- *    Revision 1.11 2004/04/14 13:34:50 bebbo
- * @B fixed keepAlive for unused objects
- * 
- *    Revision 1.10 2004/03/14 18:06:24 bebbo
- * @R added a timeout for unused to get destroyed after
- * 
- *    Revision 1.9 2003/04/02 12:15:36 bebbo
- * @C resolved API Doc errors
- * 
- *    Revision 1.8 2003/02/17 14:23:26 bebbo
- * @I changed access rights to remove synthetic accessor methods
- * 
- *    Revision 1.7 2003/01/25 15:10:43 bebbo
- * @D debug off!
- * 
- *    Revision 1.6 2003/01/20 08:12:25 bebbo
- * @D with debug enabled, searchin for a bug
- * 
- *    Revision 1.5 2003/01/07 18:32:08 bebbo
- * @W removed some deprecated warnings
- * 
- *    Revision 1.4 2002/06/03 08:09:56 bebbo
- * @B obtain/release now automatically do lock/unlock
- * 
- *    Revision 1.3 2002/05/21 15:39:54 bebbo
- * @C formatted
- * 
- *    Revision 1.2 2002/05/17 15:54:44 franke
- * @R extended the Factory interface
- * @C enhanced docs
- * 
- *    Revision 1.1 2002/05/16 15:25:09 franke
- * @N new
- * 
- *****************************************************************************/

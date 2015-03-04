@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/MapBase.java,v $
- * $Revision: 1.20 $
- * $Date: 2014/09/22 09:13:24 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Base class for map implementations.  
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1122,71 +1115,3 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
         }
     }
 }
-
-/******************************************************************************
- * $Log: MapBase.java,v $
- * Revision 1.20  2014/09/22 09:13:24  bebbo
- * @R toString() now prints all items (removed limit of 128)
- *
- * Revision 1.19  2014/06/23 20:08:01  bebbo
- * @R changes caused by JDK 1.8
- *
- * Revision 1.18  2012/07/18 06:42:46  bebbo
- * @I cleanup
- * Revision 1.17 2011/04/27 11:08:13 bebbo
- * 
- * @R the SingleMap and MultiMap are using template types now Revision 1.16 2011/01/01 11:39:45 bebbo
- * 
- * @O improved speed Revision 1.15 2009/01/27 18:55:14 bebbo
- * 
- * @B fixed SubMap.lastKey()
- * 
- *    Revision 1.14 2008/03/15 18:01:05 bebbo
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.13 2008/03/13 20:51:39 bebbo
- * @B fixed the lastKey() method
- * 
- *    Revision 1.12 2006/05/09 08:56:06 bebbo
- * @B fixed Iterator NPE
- * 
- *    Revision 1.11 2006/03/17 11:38:38 bebbo
- * @B fixed Subset and iterators for Subsets
- * 
- *    Revision 1.10 2006/02/02 07:50:07 bebbo
- * @I cleanup
- * 
- *    Revision 1.9 2005/02/13 15:16:32 bebbo
- * @I nothing important: beautified imports, added SerialUID
- * 
- *    Revision 1.8 2004/12/07 15:22:20 bebbo
- * @N added debug friendly toString()
- * 
- *    Revision 1.7 2003/09/30 13:17:19 bebbo
- * @B fixed api doc
- * 
- *    Revision 1.6 2003/07/30 10:12:31 bebbo
- * @R now Serializable
- * 
- *    Revision 1.5 2003/06/17 14:14:44 bebbo
- * @B bug fix in MapBase.Iter.remove()
- * 
- *    Revision 1.4 2002/09/09 09:40:36 bebbo
- * @B fixed findNext in MultiMap
- * 
- *    Revision 1.3 2002/08/20 15:17:07 bebbo
- * @I comments and formatting
- * 
- *    Revision 1.2 2001/11/04 18:36:12 franke
- * @I explicit type naming: MapBase.Leaf instead of Leaf
- * 
- *    Revision 1.1 2001/09/15 08:57:37 bebbo
- * @N new
- * 
- *    Revision 1.2 2000/12/29 17:47:24 bebbo
- * @? dunno
- * 
- *    Revision 1.1 2000/11/09 15:06:17 bebbo
- * @R repackaged
- * 
- *****************************************************************************/

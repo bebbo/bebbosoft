@@ -1,16 +1,9 @@
 /******************************************************************************
- * $Source: /export/CVS/java/bb_util/src/main/java/de/bb/util/CharRef.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/03/15 18:01:05 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * A String like class for direct char manipulation.
  * Since java.nio this might look outdated, but there are still devices
  * where java.nio does not exist
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -789,13 +782,3 @@ public class CharRef implements Cloneable
     return r;
   }
 }
-
-/******************************************************************************
- * $Log: CharRef.java,v $
- * Revision 1.2  2008/03/15 18:01:05  bebbo
- * @R Changed the license: From now on GPL 3 applies.
- *
- * Revision 1.1  2006/02/02 07:51:44  bebbo
- * @N same as ByteRef for unicode chars
- *
- *****************************************************************************/

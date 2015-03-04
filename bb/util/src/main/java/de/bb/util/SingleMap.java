@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/SingleMap.java,v $
- * $Revision: 1.6 $
- * $Date: 2014/06/23 20:08:01 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * A sorted map based in the MapBase which allows now duplicate keys. 
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,30 +146,3 @@ public class SingleMap<K, V> extends MapBase<K, V> {
         return unlink(p) != null;
     }
 }
-
-/******************************************************************************
- * $Log: SingleMap.java,v $
- * Revision 1.6  2014/06/23 20:08:01  bebbo
- * @R changes caused by JDK 1.8
- *
- * Revision 1.5  2011/04/27 11:08:15  bebbo
- * @R the SingleMap and MultiMap are using template types now
- * Revision 1.4 2011/01/01 11:39:48 bebbo
- * 
- * @O improved speed Revision 1.3 2008/03/15 18:01:05 bebbo
- * 
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.2 2005/02/13 15:16:32 bebbo
- * @I nothing important: beautified imports, added SerialUID
- * 
- *    Revision 1.1 2001/09/15 08:57:37 bebbo
- * @N new
- * 
- *    Revision 1.2 2000/12/29 17:47:24 bebbo
- * @? dunno
- * 
- *    Revision 1.1 2000/11/09 15:06:17 bebbo
- * @R repackaged
- * 
- *****************************************************************************/

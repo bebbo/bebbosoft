@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/bb_util/src/main/java/de/bb/util/IniFile.java,v $
- * $Revision: 1.12 $
- * $Date: 2008/03/15 18:01:05 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Handles Windows like ini file which provides more functionality than property files.
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -439,46 +432,3 @@ public class IniFile
     ht.put(key, v);
   }
 }
-
-/******************************************************************************
- * $Log: IniFile.java,v $
- * Revision 1.12  2008/03/15 18:01:05  bebbo
- * @R Changed the license: From now on GPL 3 applies.
- *
- * Revision 1.11  2007/01/18 22:03:01  bebbo
- * @I fixed possible but caught NPEs
- *
- * Revision 1.10  2006/02/02 07:49:40  bebbo
- * @R complete rewrite()
- * @N support for windows unicode INI files
- *
- * Revision 1.9  2004/03/14 18:01:52  bebbo
- * @B fixed possible locked files
- * @O optimized for speed
- *
- * Revision 1.8  2002/01/16 09:59:01  franke
- * @C fixed comments
- *
- * Revision 1.7  2001/12/10 16:22:50  bebbo
- * @C completed comments!
- *
- * Revision 1.6  2001/09/15 08:56:20  bebbo
- * @I now using SingleMap instead of internal class HashReplace
- *
- * Revision 1.5  2001/04/16 13:37:10  bebbo
- * @R now implements ConfigFile
- *
- * Revision 1.4  2001/04/06 05:52:06  bebbo
- * @I changed ini.getSections())
- *
- * Revision 1.3  2000/12/29 17:47:24  bebbo
- * @? dunno
- *
- * Revision 1.2  2000/11/10 18:11:58  bebbo
- * @R new function public Vector getSections (String path)
- * @R remove throws Exception from all public functions
- *
- * Revision 1.1  2000/11/09 15:06:17  bebbo
- * @R repackaged
- *
- *****************************************************************************/

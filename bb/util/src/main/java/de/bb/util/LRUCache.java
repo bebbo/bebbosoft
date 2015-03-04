@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/LRUCache.java,v $
- * $Revision: 1.19 $
- * $Date: 2014/06/23 19:10:08 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * An efficient LRU cache implementation  
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

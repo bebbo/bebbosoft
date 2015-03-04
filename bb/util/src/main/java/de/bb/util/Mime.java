@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/Mime.java,v $
- * $Revision: 1.6 $
- * $Date: 2014/06/23 19:10:36 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Helper class for MIME encoding and decoding.  
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -347,36 +340,4 @@ public class Mime {
         encodeTable[63] = (byte) '/';
         encodeTable[64] = (byte) '=';
     }
-    /**
-     * public static void main(String args[]) { try { BufferedReader fr = new BufferedReader(new
-     * FileReader("c:/temp/taxor.ldif")); FileWriter fw = new FileWriter("c:/temp/t.ldif"); for (String line =
-     * fr.readLine();line != null; line = fr.readLine()) { int space = line.indexOf(' '); if (space > 0) { if
-     * (line.substring(0, space).endsWith("::")) { String val = line.substring(space).trim(); line = line.substring(0,
-     * space - 1) + " " + new String(decode(val.getBytes(), 0, val.length())); } } fw.write(line + "\r\n"); }
-     * fw.close(); fr.close(); // String encoded = "e1NTSEF9eS9KcWFFdDZUd0kxcU5PTml2TnFUMVhsOGVKNVJkRjNlR3phbXc9PQ==";
-     * // byte data[] = decode(encoded.getBytes(), 0, encoded.length()); // Misc.dump(System.out, data); } catch
-     * (Exception ex) { } }
-     */
 }
-
-/******************************************************************************
- * $Log: Mime.java,v $
- * Revision 1.6  2014/06/23 19:10:36  bebbo
- * @N added convenience method to decode a mime byte array
- *
- * Revision 1.5  2013/05/17 10:57:04  bebbo
- * @ reformat
- * Revision 1.4 2008/03/15 18:01:05 bebbo
- * 
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.3 2001/12/10 16:22:50 bebbo
- * @C completed comments!
- * 
- *    Revision 1.2 2001/09/15 08:56:34 bebbo
- * @C added comments
- * 
- *    Revision 1.1 2001/01/01 16:53:20 bebbo
- * @N new
- * 
- *****************************************************************************/

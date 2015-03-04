@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/SessionManager.java,v $
- * $Revision: 1.26 $
- * $Date: 2014/10/19 13:12:58 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Hold entries with a timeout and support refresh, validation and discarding of entries.  
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -628,87 +621,3 @@ public class SessionManager<K, V> {
     }
 
 }
-
-/******************************************************************************
- * $Log: SessionManager.java,v $
- * Revision 1.26  2014/10/19 13:12:58  bebbo
- * @C fixed typos in comments
- *
- * Revision 1.25  2014/06/23 19:11:38  bebbo
- * @B clearing the context class loader
- * @R more typed methods
- *
- * Revision 1.24  2012/07/18 06:10:51  bebbo
- * @R typified
- * Revision 1.23 2011/07/06 13:12:55 bebbo
- * 
- * @F reformatted Revision 1.22 2008/03/15 18:01:05 bebbo
- * 
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.21 2007/04/20 08:06:57 bebbo
- * @R if the limit of elements is reached now the oldest elements are dropped.
- * 
- *    Revision 1.20 2004/12/01 12:39:31 bebbo
- * @I replaced Hashtable with HashMap
- * 
- *    Revision 1.19 2004/04/14 13:35:26 bebbo
- * @B added old CT and put methode with int, but marked as deprecated
- * 
- *    Revision 1.18 2004/03/14 18:02:29 bebbo
- * @R changed timeout to long value
- * 
- *    Revision 1.17 2003/02/17 14:23:08 bebbo
- * @I changed access rights to remove synthetic accessor methods
- * 
- *    Revision 1.16 2002/12/10 13:06:57 bebbo
- * @B fixed shorting of killer thread wait time - was never done
- * 
- *    Revision 1.15 2002/11/27 14:04:43 bebbo
- * @I reformat
- * 
- *    Revision 1.14 2002/11/13 16:32:55 bebbo
- * @B get(null) now returns only null (no more Exception)
- * 
- *    Revision 1.13 2002/11/13 16:07:20 bebbo
- * @B fixed erraneous synchronized statements - could cause deadlocks
- * 
- *    Revision 1.12 2002/10/24 17:26:38 bebbo
- * @N added new Method getCreationMillis
- * @N added new Method getDeathMillis
- * 
- *    Revision 1.11 2002/09/03 11:50:40 bebbo
- * @B fixed usage of only one thread
- * 
- *    Revision 1.10 2002/08/21 14:49:27 bebbo
- * @I all SessionManager instances are using the same wakeup thread
- * 
- *    Revision 1.9 2002/08/20 15:17:57 bebbo
- * @I formatting
- * @N new function destroy
- * 
- *    Revision 1.8 2001/12/10 16:22:50 bebbo
- * @C completed comments!
- * 
- *    Revision 1.7 2001/11/04 18:37:28 franke
- * @I explicit type naming for inner classes
- * 
- *    Revision 1.6 2001/09/15 08:56:56 bebbo
- * @C added comments
- * 
- *    Revision 1.5 2001/08/03 13:41:29 bebbo
- * @B removed erraneous synchronized statements
- * 
- *    Revision 1.4 2001/03/29 19:57:03 bebbo
- * @B fixed Nullpointer exceptions when key is null
- * 
- *    Revision 1.3 2000/12/30 09:04:05 bebbo
- * @I now running as a daemon
- * 
- *    Revision 1.2 2000/12/29 17:47:24 bebbo
- * @? dunno
- * 
- *    Revision 1.1 2000/11/10 18:12:18 bebbo
- * @R repackaged
- * 
- *****************************************************************************/

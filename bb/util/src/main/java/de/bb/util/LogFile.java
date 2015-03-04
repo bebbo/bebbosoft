@@ -1,14 +1,8 @@
 /******************************************************************************
  * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/LogFile.java,v $
- * $Revision: 1.16 $
- * $Date: 2014/10/19 13:14:06 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * A simple log file implementation. Old and maybe outdated, but still fast and working.
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -244,55 +238,3 @@ public class LogFile implements Callback {
         }
     }
 }
-
-/******************************************************************************
- * $Log: LogFile.java,v $
- * Revision 1.16  2014/10/19 13:14:06  bebbo
- * @I reduced call frequency of sessionManager.put() for deferred flush
- *
- * Revision 1.15  2013/05/17 10:56:40  bebbo
- * @N LogFile flushes are async now
- * Revision 1.14 2008/03/15 18:01:05 bebbo
- * 
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.13 2008/01/17 17:39:22 bebbo
- * @O using enhanced output for formatted date
- * 
- *    Revision 1.12 2007/04/13 18:11:07 bebbo
- * @N added a parameter to define the date format in the log file name
- * 
- *    Revision 1.11 2006/05/09 08:54:42 bebbo
- * @N new method writeln
- * 
- *    Revision 1.10 2003/10/01 12:07:08 bebbo
- * @C enhanced comment
- * 
- *    Revision 1.9 2003/07/16 06:55:30 bebbo
- * @B write() and writeDate() work again as expected
- * 
- *    Revision 1.8 2003/05/13 15:43:20 bebbo
- * @R "*" as logFile name now uses explicit stdout
- * 
- *    Revision 1.7 2003/02/05 08:08:38 bebbo
- * @B fix in calculation of next day
- * 
- *    Revision 1.6 2002/01/16 09:59:01 franke
- * @C fixed comments
- * 
- *    Revision 1.5 2001/12/10 11:46:23 bebbo
- * @B added type casts to array initializers
- * 
- *    Revision 1.4 2001/09/15 08:56:28 bebbo
- * @C added comments
- * 
- *    Revision 1.3 2001/03/11 20:41:59 bebbo
- * @R changed date format
- * 
- *    Revision 1.2 2000/12/29 17:47:24 bebbo
- * @? dunno
- * 
- *    Revision 1.1 2000/11/10 18:12:18 bebbo
- * @R repackaged
- * 
- *****************************************************************************/

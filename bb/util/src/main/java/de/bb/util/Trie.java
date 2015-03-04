@@ -1,14 +1,9 @@
 /******************************************************************************
  * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/Trie.java,v $
- * $Revision: 1.5 $
- * $Date: 2011/01/01 11:40:59 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
  *
- * A Trie implementation, usefule if Strings are the key to store something.  
+ * A Trie implementation, useful if Strings are the key to store something.  
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -427,24 +422,3 @@ public final class Trie {
     }
 
 }
-
-/******************************************************************************
- * $Log: Trie.java,v $
- * Revision 1.5  2011/01/01 11:40:59  bebbo
- * @O improved speed
- * Revision 1.4 2008/03/15 18:22:16 bebbo
- * 
- * @C added comments.
- * 
- *    Revision 1.3 2008/03/15 18:01:05 bebbo
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.2 2004/05/18 13:20:23 bebbo *** keyword substitution change ***
- * 
- *    Revision 1.1 2004/02/21 16:36:33 bebbo
- * @N first checkin
- * 
- *    Revision 1.1 2003/10/30 07:34:23 bebbo
- * @N first checkin
- * 
- */

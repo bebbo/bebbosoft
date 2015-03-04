@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/Misc.java,v $
- * $Revision: 1.11 $
- * $Date: 2014/06/23 19:11:12 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Miscellaneous. 
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,60 +272,3 @@ public class Misc {
         dump(pw, title, b, offset, len);
     }
 }
-
-/*
- * $Log: Misc.java,v $
- * Revision 1.11  2014/06/23 19:11:12  bebbo
- * @R hex2Bytes now ignores non hex data in between hex bytes
- *
- * Revision 1.10  2013/05/17 10:55:35  bebbo
- * @N added compare for int arrays
- *
- * Revision 1.9  2008/03/15 18:22:16  bebbo
- * @C added comments.
- *
- * Revision 1.8  2008/03/15 18:01:05  bebbo
- * @R Changed the license: From now on GPL 3 applies.
- *
- * Revision 1.7  2008/01/17 19:15:02  bebbo
- * @D fixed documentation
- *
- * Revision 1.6  2007/04/20 08:08:34  bebbo
- * @N more dump methods
- *
- * Revision 1.5  2007/04/13 18:11:58  bebbo
- * @N added a further dump method
- *
- * Revision 1.4  2007/01/18 22:03:58  bebbo
- * @N replaceAll() moved to here
- * @N dump() moved to here
- *
- * Revision 1.3  2002/12/19 14:55:40  bebbo
- * @R hex2Bytes now tolerates spaces
- *
- * Revision 1.2  2001/09/15 08:56:40  bebbo
- * @C added comments
- *
- * Revision 1.1  2001/03/05 19:07:17  bebbo
- * @N moved
- *
- * Revision 1.6  2000/07/07 17:07:16  bebbo
- * @B fixed null ptr in compare
- *
- * Revision 1.5  2000/06/22 16:09:30  bebbo
- * @N added bytes2Hex()
- * @N added hex2Bytes()
- *
- * Revision 1.4  2000/05/03 08:52:55  sven
- * @I Comments fixed
- *
- * Revision 1.3  2000/04/14 15:36:53  sven
- * @N Methods added for byte manipulation and printing
- *
- * Revision 1.2  1999/09/10 14:17:08  Bebbo
- * pretty print
- *
- * Revision 1.1  1999/09/02 19:06:31  Bebbo
- * @N created
- *
- */

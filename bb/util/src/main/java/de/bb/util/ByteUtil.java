@@ -1,17 +1,10 @@
 /******************************************************************************
- * $Source: /export/CVS/java/bb_util/src/main/java/de/bb/util/ByteUtil.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/03/15 18:22:16 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * A Helper class to piped typed data into OutputStreams (and vice versa).
  *  
  * Since java.nio this might look outdated, but there are still devices
  * where java.nio does not exist
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,43 +140,4 @@ public final class ByteUtil {
     s.getBytes(0, len, b, 0);
     os.write(b);
   }
-  /*
-  public static void main(String args[])
-  {
-    try
-    {
-      writeInt(0x7fffffff, System.out);
-      System.out.println();
-      writeInt(0, System.out);
-      System.out.println();
-      writeInt(0xffffffff, System.out);
-      System.out.println();
-
-      writeLong(0x7fffffffL, System.out);
-      System.out.println();
-      writeLong(0L, System.out);
-      System.out.println();
-      writeLong(0xffffffffL, System.out);
-      System.out.println();
-      writeLong(0xffffffffffffffffL, System.out);
-      System.out.println();
-      writeLong(0x7fffffffffffffffL, System.out);
-      System.out.println();
-
-    } catch (IOException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-  */
 }
-/******************************************************************************
- * $Log: ByteUtil.java,v $
- * Revision 1.3  2008/03/15 18:22:16  bebbo
- * @C added comments.
- *
- * Revision 1.2  2008/03/15 18:01:05  bebbo
- * @R Changed the license: From now on GPL 3 applies.
- *
- *****************************************************************************/

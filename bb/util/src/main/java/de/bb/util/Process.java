@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/Process.java,v $
- * $Revision: 1.13 $
- * $Date: 2011/01/01 12:11:23 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+ * Wrapper class around process invocation.  
  *
- * Wrapper class around process invokation.  
- *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -252,46 +245,3 @@ public class Process {
         }
     }
 }
-
-/******************************************************************************
- * $Log: Process.java,v $
- * Revision 1.13  2011/01/01 12:11:23  bebbo
- * @I internal cleanup
- * Revision 1.12 2008/06/04 06:46:40 bebbo
- * 
- * @I cleanup
- * 
- *    Revision 1.11 2008/03/15 18:01:05 bebbo
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.10 2007/01/18 22:04:30 bebbo
- * @I reformatted
- * 
- *    Revision 1.9 2006/03/17 11:38:11 bebbo
- * @I catch Throwable instead of Exception
- * 
- *    Revision 1.8 2006/02/02 07:48:26 bebbo
- * @I cleanup
- * 
- *    Revision 1.7 2003/09/30 13:17:19 bebbo
- * @B fixed api doc
- * 
- *    Revision 1.6 2003/07/14 11:30:06 bebbo
- * @B fixed NPE in execute when os is null
- * 
- *    Revision 1.5 2003/06/17 10:22:12 bebbo
- * @N new execute() function to specify also execution directory
- * 
- *    Revision 1.4 2003/02/05 08:09:02 bebbo
- * @B stdin is now handled by a separate thread
- * 
- *    Revision 1.3 2002/12/19 14:55:59 bebbo
- * @N added a function with timeout
- * 
- *    Revision 1.2 2001/09/15 08:56:45 bebbo
- * @C added comments
- * 
- *    Revision 1.1 2001/04/22 20:26:47 bebbo
- * @N new
- * 
- *****************************************************************************/

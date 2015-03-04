@@ -1,14 +1,7 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/ThreadManager.java,v $
- * $Revision: 1.16 $
- * $Date: 2013/07/23 07:20:07 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- *
  * Manage (start/stop) threads for a distinct implementation.  
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2008.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -445,55 +438,3 @@ public class ThreadManager {
         }
     }
 }
-
-/******************************************************************************
- * $Log: ThreadManager.java,v $
- * Revision 1.16  2013/07/23 07:20:07  bebbo
- * @R the count of waiting threads is now reduced to the given value after a grace period of 1 Minute.
- *
- * Revision 1.15  2013/05/17 10:56:19  bebbo
- * @R removed double waitCount threshold to terminate idle threads
- * Revision 1.14 2011/01/01 12:12:14 bebbo
- * 
- * @N added e method to get the current run count. Revision 1.13 2008/03/15 18:01:05 bebbo
- * 
- * @R Changed the license: From now on GPL 3 applies.
- * 
- *    Revision 1.12 2006/02/02 07:52:09 bebbo
- * @V beeing more verbose
- * 
- *    Revision 1.11 2004/12/07 15:22:51 bebbo
- * @N added debug friendly thread names
- * 
- *    Revision 1.10 2003/02/17 14:23:26 bebbo
- * @I changed access rights to remove synthetic accessor methods
- * 
- *    Revision 1.9 2002/11/06 09:46:47 bebbo
- * @I cleanup for imports
- * 
- *    Revision 1.8 2002/01/16 09:59:01 franke
- * @C fixed comments
- * 
- *    Revision 1.7 2001/12/10 16:22:51 bebbo
- * @C completed comments!
- * 
- *    Revision 1.6 2001/09/15 08:57:02 bebbo
- * @C added comments
- * 
- *    Revision 1.5 2001/03/29 19:56:45 bebbo
- * @C comments
- * 
- *    Revision 1.4 2001/02/20 19:12:27 bebbo
- * @D disabled DEBUG
- * 
- *    Revision 1.3 2001/02/20 17:44:34 bebbo
- * @I a separate lock Object is now used for synchronized()
- * @I starting threads are marked as running
- * 
- *    Revision 1.2 2000/12/29 17:47:25 bebbo
- * @? dunno
- * 
- *    Revision 1.1 2000/11/10 18:12:18 bebbo
- * @R repackaged
- * 
- *****************************************************************************/
