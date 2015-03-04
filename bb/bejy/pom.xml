@@ -1,0 +1,20 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.bb</groupId>
+    <artifactId>bb</artifactId>
+    <version>1.0.3</version>
+  </parent>
+  <groupId>de.bb.bejy</groupId>
+  <artifactId>bejy</artifactId>
+  <version>1.6.0</version>
+  <modules>
+    <module>server</module>
+    <module>http</module>
+    <module>mail</module>
+    <module>ldap</module>
+    <module>j2ee</module>
+    <module>eclipse</module>
+  </modules>
+  <packaging>pom</packaging>
+</project>
