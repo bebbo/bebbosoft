@@ -1,0 +1,96 @@
+EXPORT {
+  class: de.bb.bejy.mail.spf.SpfParser;
+  public: SPF;
+  public: MacroString;
+}
+
+IMPORT {
+}
+
+
+RULES {
+
+/*
+    SPF-record  = version *( 1*SP ( directive / modifier ) ) *SP
+
+    version     = "v=spf" 1*DIGIT
+    
+    directive	= [ prefix ] mechanism    
+    prefix      = "+" / "-" / "?" / "~"
+    modifier    = redirect / explanation / unknown-modifier
+    redirect    = "redirect" "=" domain-spec
+    explanation = "exp" "=" domain-spec
+    unknown-modifier = name "=" macro-string
+    
+    mechanism   = ( all / include
+                   / A / MX / PTR / IP4 / IP6 / exists
+                   / extension )
+
+    all          = "all"
+    include      = "include"  ":" domain-spec
+    A            = "a"      [ ":" domain-spec ] [ dual-cidr-length ]
+    MX           = "mx"     [ ":" domain-spec ] [ dual-cidr-length ]
+    PTR          = "ptr"    [ ":" domain-spec ]
+    IP4          = "ip4"      ":" ip4-network   [ ip4-cidr-length ]
+    IP6          = "ip6"      ":" ip6-network   [ ip6-cidr-length ]
+    exists       = "exists"   ":" domain-spec
+
+    extension    = name [ ":" macro-string ]
+
+    ip4-network  = as in [RFC2373] [15], e.g. 192.0.2.0
+    ip6-network  = as in [RFC2373] [15], e.g. 12AB:0:0:CD30
+
+    domain-spec  = domain-name / macro-string
+    domain-name  = domain-part *( "." domain-part ) [ "." ]
+    domain-part  = as defined in [RFC1034]
+   
+    dual-cidr-length = [ ip4-cidr-length ] [ "/" ip6-cidr-length ]
+    ip4-cidr-length  = "/" 1*DIGIT
+    ip6-cidr-length  = "/" 1*DIGIT
+
+    macro-string = *( macro-char / VCHAR )
+    macro-char   = ( "%{" ALPHA transformer *delimiter "}" )
+                   / "%%" / "%_" / "%-"
+    transformer  = [ *DIGIT ] [ "r" | "l" ]
+
+    name        = alpha *( alpha / digit / "-" / "_" / "." )
+    delimiter   = "." / "-" / "+" / "," / "/" / "_" / "=" 
+ */
+
+VCHAR ::= [^ /];
+SP ::= [ ];
+DIGIT ::= [0-9];
+PREFIX ::= [-+?~];
+ALPHA ::= [a-zA-Z];
+ALPHADIGITEXT ::= [a-zA-Z0-9-_.];
+DELIMITER ::= [-.+,/_=];
+
+Name ::= $NAME ALPHA ALPHADIGITEXT* $NAME_END;
+Version ::= "v=spf" DIGIT;
+
+Directive ::= PREFIX $PREFIX Name Mechanism;
+Mechanism ::= ( ':' MacroString)?               
+              ('/' $MASK DIGIT+ $MASK_END)? 
+              $MECHANISM;
+/*
+Mechanism ::= ( ':' MacroString)? 
+              ('//' $MASK2 DIGIT+ $MASK2_END)? 
+              ('/' $MASK DIGIT+ $MASK_END ('//' $MASK2 DIGIT+ $MASK2_END)? )? 
+              $MECHANISM;
+*/
+Modifier ::= '=' MacroString $MODIFIER;
+
+SPF ::= Version $VERSION (SP (Directive | Name (Modifier | Mechanism)))* SP*;
+
+
+MacroString ::= $MACRO ( '%%' $PERCENT 
+                | '%_' $UNDERSCORE
+                | '%-' $MINUS
+                | '%{' ALPHA $TRANSFORM Transformer $DELIMITER (DELIMITER)* $TRANSFORM_END '}'
+                | VCHAR $VCHAR
+                | .
+                )* ;
+
+Transformer ::= DIGIT* $TRANSFORM_VAL ('r' $REVERSE)? ;
+
+}
