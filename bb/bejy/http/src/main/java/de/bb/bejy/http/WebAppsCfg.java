@@ -1,14 +1,20 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/WebAppsCfg.java,v $
- * $Revision: 1.8 $
- * $Date: 2014/10/21 20:36:11 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 2003.
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- */
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 package de.bb.bejy.http;
 
 import java.io.BufferedReader;
@@ -306,28 +312,3 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
     }
 
 }
-
-/******************************************************************************
- * $Log: WebAppsCfg.java,v $ Revision 1.8 2014/10/21 20:36:11 bebbo
- * 
- * @R add support for relativ paths in link files
- *
- *    Revision 1.7 2014/06/23 15:38:46 bebbo
- * @N implemented form authentication
- * @R reworked authentication handling to support roles Revision 1.6 2013/11/28 10:30:58 bebbo
- * 
- * @B resolving a linked *.jar file now results into a local unpacked folder Revision 1.5 2012/12/15 19:38:56 bebbo
- * 
- * @I refactoring Revision 1.4 2012/07/18 06:44:44 bebbo
- * 
- * @I typified Revision 1.3 2003/06/20 09:09:38 bebbo
- * 
- * @N onine configuration seems to be complete for bejy and http
- * 
- *    Revision 1.2 2003/06/17 12:09:56 bebbo
- * @R added a generalization for Configurables loaded by class
- * 
- *    Revision 1.1 2003/05/13 15:41:46 bebbo
- * @N added config classes for future runtime configuration support
- * 
- */

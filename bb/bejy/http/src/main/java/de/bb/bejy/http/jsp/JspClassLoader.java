@@ -1,18 +1,20 @@
-/*
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/jsp/JspClassLoader.java,v $
- * $Revision: 1.2 $
- * $Date: 2004/12/13 15:38:10 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * written by Hagen Raab / Stefan Bebbo Franke
- * (c) 1999-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
- * all rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * JspClassLoader - load and resolve a class, that files stay deleteable
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 
 package de.bb.bejy.http.jsp;
 
@@ -117,34 +119,3 @@ class JspClassLoader extends ClassLoader {
   }
 
 }
-/*
- * $Log: JspClassLoader.java,v $
- * Revision 1.2  2004/12/13 15:38:10  bebbo
- * @B fixed class loading for JDK1.4.2_05 and newer
- *
- * Revision 1.1  2004/04/16 13:46:09  bebbo
- * @R runtime moved to de.bb.jsp
- *
- * Revision 1.6  2004/03/11 18:15:16  bebbo
- * @B getResourceAsStream no also uses the hooked loader
- * @B changed the loading order in loadClass
- *
- * Revision 1.5  2003/07/14 08:13:58  bebbo
- * @B fixed class loader usage
- *
- * Revision 1.4  2003/07/10 21:28:08  bebbo
- * @R modified generation of the class file name
- *
- * Revision 1.3  2002/11/06 09:41:41  bebbo
- * @I reorganized imports
- * @I removed unused variables
- *
- * Revision 1.2  2002/03/21 14:34:45  franke
- * @N added support for JSP files as Servlet
- * @N added support for classes loaded via ClassLoader
- * @N added support for lib/*.jar in web applications
- *
- * Revision 1.1  2001/03/29 19:55:33  bebbo
- * @N moved to this location
- *
- */

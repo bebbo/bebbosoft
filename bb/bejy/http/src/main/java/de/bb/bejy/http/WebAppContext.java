@@ -1,67 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/WebAppContext.java,v $
- * $Revision: 1.38 $
- * $Date: 2014/09/22 09:21:50 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Context implementation
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- ******************************************************************************
- NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- 1. Every product and solution using this software, must be free
- of any charge. If the software is used by a client part, the
- server part must also be free and vice versa.
-
- 2. Each redistribution must retain the copyright notice, and
- this list of conditions and the following disclaimer.
-
- 3. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in
- the documentation and/or other materials provided with the
- distribution.
-
- 4. All advertising materials mentioning features or use of this
- software must display the following acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- 5. Redistributions of any form whatsoever must retain the following
- acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
- DISCLAIMER OF WARRANTY
-
- Software is provided "AS IS," without a warranty of any kind.
- You may use it on your own risk.
-
- ******************************************************************************
- LIMITATION OF LIABILITY
-
- I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
- AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
- FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
- OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
- SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
- COPYRIGHT
-
- (c) 1994-2002 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.http;
@@ -78,12 +30,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeListener;
@@ -100,7 +50,6 @@ import de.bb.bejy.http.FilterRegistration.MappingData;
 import de.bb.bejy.http.jsp.JspServlet;
 import de.bb.util.LogFile;
 import de.bb.util.MultiMap;
-import de.bb.util.Pair;
 import de.bb.util.XmlFile;
 import de.bb.util.ZipClassLoader;
 
@@ -865,140 +814,4 @@ public class WebAppContext extends HttpContext {
         return zcl;
     }
 
-    /*
-     * // open public java.net.URL getResource(java.lang.String s) // from
-     * javax.servlet.ServletContext { return null; } public java.io.InputStream
-     * getResourceAsStream(java.lang.String s) // from
-     * javax.servlet.ServletContext { return
-     * zcl.getResourceAsStream(getRealPath(s)); } public java.util.Set
-     * getResourcePaths() // from javax.servlet.ServletContext { return null; }
-     */
 }
-
-/******************************************************************************
- * $Log: WebAppContext.java,v $ Revision 1.38 2014/09/22 09:21:50 bebbo
- * 
- * @B if security constraints are provided the DEFAULT constraint is dropped
- *
- *    Revision 1.37 2014/06/23 15:38:46 bebbo
- * @N implemented form authentication
- * @R reworked authentication handling to support roles Revision 1.36 2013/11/28
- *    10:30:58 bebbo
- * 
- * @B resolving a linked *.jar file now results into a local unpacked folder
- *    Revision 1.35 2013/05/17 10:32:04 bebbo
- * 
- * @N workDir can now be set
- * @B logFile is set correctly Revision 1.34 2012/11/11 18:36:42 bebbo
- * 
- * @I import cleanup Revision 1.33 2012/11/08 12:14:16 bebbo
- * 
- * @B fixed proxy with HTTP chunked mode
- * @N added SOCKS5 proxy support
- * @N added a fallback option for XML data -> XMPP server Revision 1.32
- *    2012/07/18 06:44:45 bebbo
- * 
- * @I typified Revision 1.31 2011/03/06 18:19:42 bebbo
- * 
- * @R made a release version Revision 1.30 2010/08/29 05:08:43 bebbo
- * 
- * @B: forwarding also preserves isSecure
- * @O: using unsynchronized classes where not needed to gain speed
- * 
- *     Revision 1.29 2008/06/04 06:45:27 bebbo
- * @B fixed class loading issues on reload of web applications
- * 
- *    Revision 1.28 2008/01/17 17:33:44 bebbo
- * @B fixes for better handling if the request is wrapped
- * 
- *    Revision 1.27 2007/05/01 19:05:26 bebbo
- * @I changes due to RequestDispatcher changes
- * 
- *    Revision 1.26 2007/01/18 21:50:10 bebbo
- * @N added support for servlet 2.4 listeners
- * 
- *    Revision 1.25 2006/10/12 05:55:06 bebbo
- * @B removed erraneous import
- * 
- *    Revision 1.24 2006/05/09 12:13:26 bebbo
- * @R changes to comply to servlet2_4
- * 
- *    Revision 1.23 2006/02/06 09:16:44 bebbo
- * @I cleanup
- * 
- *    Revision 1.22 2004/12/13 15:37:36 bebbo
- * @D added log message when unpacking a WAR archives
- * 
- *    Revision 1.21 2004/04/20 13:23:40 bebbo
- * @R added support for SecurityConstraint
- * 
- *    Revision 1.20 2004/04/16 13:47:24 bebbo
- * @R changes in class scanner requires explicit naming now: Handler, Group,
- *    Cfg, Factory
- * 
- *    Revision 1.19 2004/03/23 12:29:59 bebbo
- * @B servlet loading order is applied correctly
- * @B welcome file list was still broken
- * 
- *    Revision 1.18 2004/01/09 19:36:05 bebbo
- * @B fixed reading the welcome file list
- * @B fixed specifying a work dir
- * 
- *    Revision 1.17 2003/12/18 10:41:41 bebbo
- * @B war files was not closed
- * 
- *    Revision 1.16 2003/11/26 09:56:42 bebbo
- * @B fixed NPEs
- * 
- *    Revision 1.15 2003/09/03 14:56:31 bebbo
- * @N now supports multiple welcome files
- * 
- *    Revision 1.14 2003/07/01 11:09:09 bebbo
- * @B missing web.xml is treated now as an empty web.xml
- * 
- *    Revision 1.13 2003/06/20 09:09:38 bebbo
- * @N onine configuration seems to be complete for bejy and http
- * 
- *    Revision 1.12 2003/06/17 10:18:42 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.11 2003/05/13 15:41:46 bebbo
- * @N added config classes for future runtime configuration support
- * 
- *    Revision 1.10 2003/01/05 15:48:50 bebbo
- * @B fixed displayed realm for webapps.
- * 
- *    Revision 1.9 2002/12/16 16:33:11 bebbo
- * @I HttpRequest is now a separate object
- * 
- *    Revision 1.8 2002/12/02 18:26:36 bebbo
- * @R default is now index.jsp
- * 
- *    Revision 1.7 2002/11/06 09:40:47 bebbo
- * @I reorganized imports
- * @I removed unused variables
- * 
- *    Revision 1.6 2002/07/30 10:28:26 bebbo
- * @B fix for WAR files, for implicit directories (not stored explicit)
- * 
- *    Revision 1.5 2002/07/26 18:32:51 bebbo
- * @N added alias support for war contexts
- * @B fixed Exception on shor relative paths
- * 
- *    Revision 1.4 2002/04/03 15:41:12 franke
- * @N added support for webapps
- * @B exceptions in servlet init() no longer causes to unload the complete
- *    context
- * 
- *    Revision 1.3 2002/04/02 13:02:36 franke
- * @I fixed mayn bugs and added too many features to enumerate them here
- * 
- *    Revision 1.2 2002/03/30 15:50:26 franke
- * @N use init params
- * @N use filter and filter-mappings
- * 
- *    Revision 1.1 2002/03/21 14:39:36 franke
- * @N added support for web-apps. Added to config file based configuration some
- *    config function calls. Also added the use of a special ClassLoader.
- * 
- ******************************************************************************/

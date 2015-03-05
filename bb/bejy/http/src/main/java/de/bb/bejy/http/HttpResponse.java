@@ -1,67 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/HttpResponse.java,v $
- * $Revision: 1.33 $
- * $Date: 2014/10/21 20:34:45 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * HTTP protocol
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- ******************************************************************************
- NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- 1. Every product and solution using this software, must be free
- of any charge. If the software is used by a client part, the
- server part must also be free and vice versa.
-
- 2. Each redistribution must retain the copyright notice, and
- this list of conditions and the following disclaimer.
-
- 3. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in
- the documentation and/or other materials provided with the
- distribution.
-
- 4. All advertising materials mentioning features or use of this
- software must display the following acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- 5. Redistributions of any form whatsoever must retain the following
- acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
- DISCLAIMER OF WARRANTY
-
- Software is provided "AS IS," without a warranty of any kind.
- You may use it on your own risk.
-
- ******************************************************************************
- LIMITATION OF LIABILITY
-
- I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
- AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
- FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
- OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
- SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
- COPYRIGHT
-
- (c) 1994-2002 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.http;
@@ -73,7 +25,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -859,123 +810,3 @@ class HttpResponse implements javax.servlet.http.HttpServletResponse {
     }
 
 }
-
-/******************************************************************************
- * $Log: HttpResponse.java,v $
- * Revision 1.33  2014/10/21 20:34:45  bebbo
- * @R JSESSIONID cookie is now "httponly" and if SSL is used also "secure"
- *
- * Revision 1.32  2013/11/23 10:36:19  bebbo
- * @R contentLength supports long values now
- *
- * Revision 1.31  2013/05/17 10:49:54  bebbo
- * @I smaller buffer size due to chunked support
- * Revision 1.30 2012/12/21 08:14:54 bebbo
- * 
- * @R keep connections if contentLength is 0 Revision 1.29 2012/07/18 06:44:53 bebbo
- * 
- * @I typified Revision 1.28 2011/09/16 16:19:33 bebbo
- * 
- * @D disabled DEBUG Revision 1.27 2011/06/12 17:46:42 bebbo
- * 
- * @D removed some debug stuff Revision 1.26 2010/08/29 05:08:43 bebbo
- * 
- * @B: forwarding also preserves isSecure
- * @O: using unsynchronized classes where not needed to gain speed
- * 
- *     Revision 1.25 2010/04/10 12:11:07 bebbo
- * @B no longer adds duplicate cookies - existing cookies are overridden
- * 
- *    Revision 1.24 2010/03/17 10:15:25 bebbo
- * @R duplicate cookies (with same name) are no longer allowed: last one wins.
- * 
- *    Revision 1.23 2009/11/18 08:47:41 bebbo
- * @D Debug stuff
- * 
- *    Revision 1.22 2009/06/15 08:36:26 bebbo
- * @B B-REMOTEHOST is used correctly
- * @I using BufferedStreams where convenient
- * 
- *    Revision 1.21 2008/03/13 17:24:34 bebbo
- * @R added some text message if status code <> 200
- * 
- *    Revision 1.20 2008/01/17 17:32:52 bebbo
- * @O optimizations for better performance
- * 
- *    Revision 1.19 2007/05/01 19:05:27 bebbo
- * @I changes due to RequestDispatcher changes
- * 
- *    Revision 1.18 2007/04/13 17:56:03 bebbo
- * @B fixed setCharacterEncoding() to set also the charset
- * 
- *    Revision 1.17 2007/01/18 21:48:18 bebbo
- * @I reformatted
- * 
- *    Revision 1.16 2006/05/09 12:13:25 bebbo
- * @R changes to comply to servlet2_4
- * 
- *    Revision 1.15 2006/02/06 09:15:51 bebbo
- * @I cleanup
- * 
- *    Revision 1.14 2005/11/18 14:47:10 bebbo
- * @B fixed encodeRedirectURL() if url starts with http:// or https:// it is unmodified
- * 
- *    Revision 1.13 2004/12/16 15:59:45 bebbo
- * @I changed upper/lowercas of last-modified
- * 
- *    Revision 1.12 2004/12/13 15:33:26 bebbo
- * @B fixed broken redirect URL
- * 
- *    Revision 1.11 2004/04/16 13:47:24 bebbo
- * @R changes in class scanner requires explicit naming now: Handler, Group, Cfg, Factory
- * 
- *    Revision 1.10 2004/04/07 16:30:17 bebbo
- * @B fixed character encoding
- * 
- *    Revision 1.9 2004/03/24 09:43:08 bebbo
- * @I name changes
- * 
- *    Revision 1.8 2004/03/23 11:17:06 bebbo
- * @B content-type sets also charEncoding
- * 
- *    Revision 1.7 2003/11/26 09:57:09 bebbo
- * @B also sending cookie path for JSESSIONID
- * 
- *    Revision 1.6 2003/06/17 10:18:42 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.5 2003/04/07 07:58:44 bebbo
- * @R sendError(err) with err < 400 results to 410 now
- * 
- *    Revision 1.4 2003/03/21 10:13:18 bebbo
- * @B absolute redirects are passed through unmodified
- * 
- *    Revision 1.3 2003/02/02 15:41:52 bebbo
- * @R now ommitting port, if possible
- * 
- *    Revision 1.2 2003/01/07 18:32:20 bebbo
- * @W removed some deprecated warnings
- * 
- *    Revision 1.1 2002/12/19 14:52:23 bebbo
- * @R renamed ServletResponse into HttpResponse
- * 
- *    Revision 1.6 2002/12/16 16:33:11 bebbo
- * @I HttpRequest is now a separate object
- * 
- *    Revision 1.5 2002/11/06 18:20:45 bebbo
- * @B fixed double emit of JSESSIONID cookie
- * 
- *    Revision 1.4 2002/11/06 09:40:47 bebbo
- * @I reorganized imports
- * @I removed unused variables
- * 
- *    Revision 1.3 2002/07/26 18:08:45 bebbo
- * @B fixed redirection, if port != 80 port number was ommitted.
- * 
- *    Revision 1.2 2002/05/19 18:12:45 bebbo
- * @B fixed sendRedirect together with https
- * 
- *    Revision 1.1 2002/04/02 13:02:36 franke
- * @I fixed mayn bugs and added too many features to enumerate them here
- * 
- *****************************************************************************/

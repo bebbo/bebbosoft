@@ -1,18 +1,20 @@
-/*
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/jsp/JspFactoryImpl.java,v $
- * $Revision: 1.2 $
- * $Date: 2012/08/11 16:56:39 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * written by Stefan Bebbo Franke
- * (c) 1999-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
- * all rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * a JSPFactoryImpl
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 
 package de.bb.bejy.http.jsp;
 
@@ -51,26 +53,3 @@ class JspFactoryImpl extends JspFactory {
             pageContext.release();
     }
 }
-
-/*
- * $Log: JspFactoryImpl.java,v $
- * Revision 1.2  2012/08/11 16:56:39  bebbo
- * @D added a stacktrace
- *
- * Revision 1.1  2004/04/16 13:46:09  bebbo
- * @R runtime moved to de.bb.jsp
- *
- * Revision 1.4  2004/03/24 09:41:22  bebbo
- * @B catched possible NPE in releasePageContext()
- *
- * Revision 1.3  2004/03/23 19:02:28  bebbo
- * @B added call to pageContext.release()
- *
- * Revision 1.2  2002/11/06 09:41:41  bebbo
- * @I reorganized imports
- * @I removed unused variables
- *
- * Revision 1.1  2001/03/29 19:55:33  bebbo
- * @N moved to this location
- *
- */

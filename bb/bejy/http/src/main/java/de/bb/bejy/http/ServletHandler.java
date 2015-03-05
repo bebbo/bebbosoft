@@ -1,67 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/ServletHandler.java,v $
- * $Revision: 1.28 $
- * $Date: 2014/06/23 15:38:46 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * servlet handler for bejy
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
- NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- 1. Every product and solution using this software, must be free
- of any charge. If the software is used by a client part, the
- server part must also be free and vice versa.
-
- 2. Each redistribution must retain the copyright notice, and
- this list of conditions and the following disclaimer.
-
- 3. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in
- the documentation and/or other materials provided with the
- distribution.
-
- 4. All advertising materials mentioning features or use of this
- software must display the following acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- 5. Redistributions of any form whatsoever must retain the following
- acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
- DISCLAIMER OF WARRANTY
-
- Software is provided "AS IS," without a warranty of any kind.
- You may use it on your own risk.
-
- ******************************************************************************
- LIMITATION OF LIABILITY
-
- I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
- AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
- FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
- OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
- SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
- COPYRIGHT
-
- (c) 1994-2002 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.http;
@@ -294,94 +246,3 @@ public class ServletHandler extends HttpHandler implements
     }
 
 }
-
-/******************************************************************************
- * $Log: ServletHandler.java,v $ Revision 1.28 2014/06/23 15:38:46 bebbo
- * 
- * @N implemented form authentication
- * @R reworked authentication handling to support roles Revision 1.27 2012/07/18
- *    06:44:41 bebbo
- * 
- * @I typified Revision 1.26 2010/08/29 05:08:43 bebbo
- * 
- * @B: forwarding also preserves isSecure
- * @O: using unsynchronized classes where not needed to gain speed
- * 
- *     Revision 1.25 2009/11/18 08:47:41 bebbo
- * @D Debug stuff
- * 
- *    Revision 1.24 2008/06/04 06:45:27 bebbo
- * @B fixed class loading issues on reload of web applications
- * 
- *    Revision 1.23 2008/01/17 17:33:17 bebbo
- * @R made some methods more visible
- * 
- *    Revision 1.22 2007/05/01 19:05:27 bebbo
- * @I changes due to RequestDispatcher changes
- * 
- *    Revision 1.21 2007/01/18 21:49:03 bebbo
- * @I reformatted
- * 
- *    Revision 1.20 2006/02/06 09:16:44 bebbo
- * @I cleanup
- * 
- *    Revision 1.19 2004/12/13 15:35:55 bebbo
- * @B setting thread context class loader
- * 
- *    Revision 1.18 2004/04/07 16:31:18 bebbo
- * @R unavalaible servlets are dumping its stacktrace
- * 
- *    Revision 1.17 2004/03/23 12:29:22 bebbo
- * @D provides more stack trace information
- * 
- *    Revision 1.16 2003/07/30 11:31:05 bebbo
- * @R also sets the Thread context class loader
- * 
- *    Revision 1.15 2003/07/01 10:55:43 bebbo
- * @N added class browsing for Servlets
- * 
- *    Revision 1.14 2003/06/20 09:09:38 bebbo
- * @N onine configuration seems to be complete for bejy and http
- * 
- *    Revision 1.13 2003/06/17 10:18:42 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.12 2003/05/13 15:41:46 bebbo
- * @N added config classes for future runtime configuration support
- * 
- *    Revision 1.11 2003/03/31 16:35:02 bebbo
- * @N added DNS support to verify mail sender
- * 
- *    Revision 1.10 2002/12/19 14:52:23 bebbo
- * @R renamed ServletResponse into HttpResponse
- * 
- *    Revision 1.9 2002/12/16 16:33:11 bebbo
- * @I HttpRequest is now a separate object
- * 
- *    Revision 1.8 2002/04/02 13:02:35 franke
- * @I fixed mayn bugs and added too many features to enumerate them here
- * 
- *    Revision 1.7 2002/03/30 15:49:17 franke
- * @N support for filter chains
- * 
- *    Revision 1.6 2002/03/21 14:39:35 franke
- * @N added support for web-apps. Added to config file based configuration some
- *    config function calls. Also added the use of a special ClassLoader.
- * 
- *    Revision 1.5 2002/02/27 18:14:14 bebbo
- * @B synchronized init of ServletHandler
- * 
- *    Revision 1.4 2001/09/15 08:48:01 bebbo
- * @I using XmlFile instead of ConfigFile
- * @I reflect changes of XmlFile
- * 
- *    Revision 1.3 2001/06/11 06:32:32 bebbo
- * @B fixed servlet init params
- * 
- *    Revision 1.2 2001/04/16 13:43:55 bebbo
- * @I changed IniFile to XmlFile
- * 
- *    Revision 1.1 2001/03/29 18:25:31 bebbo
- * @N new generated
- * 
- *****************************************************************************/

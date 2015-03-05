@@ -1,67 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/WelcomeHandler.java,v $
- * $Revision: 1.9 $
- * $Date: 2014/06/23 15:38:46 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * file handler for bejy
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
-    NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-    1. Every product and solution using this software, must be free
-      of any charge. If the software is used by a client part, the
-      server part must also be free and vice versa.
-
-    2. Each redistribution must retain the copyright notice, and
-      this list of conditions and the following disclaimer.
-
-    3. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-
-    4. All advertising materials mentioning features or use of this
-      software must display the following acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
-    5. Redistributions of any form whatsoever must retain the following
-      acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
-  DISCLAIMER OF WARRANTY
-
-  Software is provided "AS IS," without a warranty of any kind.
-  You may use it on your own risk.
-
- ******************************************************************************
-  LIMITATION OF LIABILITY
-
-  I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
-  AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
-  FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
-  CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
-  OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
-  SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
-  COPYRIGHT
-
-  (c) 1994-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.http;
@@ -160,38 +112,3 @@ public class WelcomeHandler extends HttpHandler {
     }
 
 }
-
-/******************************************************************************
- * $Log: WelcomeHandler.java,v $
- * Revision 1.9  2014/06/23 15:38:46  bebbo
- * @N implemented form authentication
- * @R reworked authentication handling to support roles
- *
- * Revision 1.8  2013/05/17 10:30:57  bebbo
- * @R added support for OPTIONS
- * Revision 1.7 2010/07/08 18:16:25 bebbo
- * 
- * @I splitted the HttpRequest to use it inside of redirectors proxy
- * @N redir can now handle proxy connects
- * 
- *    Revision 1.6 2010/04/11 10:16:14 bebbo
- * @N new configuration option "h404" to add a 404 handler to CGI (e.g. PHP) based applications to enable stuff like
- *    wordpress permalinks.
- * 
- *    Revision 1.5 2009/11/25 08:29:13 bebbo
- * @V bumped the version
- * @B fixed forwarding for the welcome files with CGI: query string was lost.
- * 
- *    Revision 1.4 2009/11/18 08:47:41 bebbo
- * @D Debug stuff
- * 
- *    Revision 1.3 2004/12/16 16:00:17 bebbo
- * @I changes due to getRealPath() changes (\ instead of /)
- * 
- *    Revision 1.2 2004/04/16 13:47:24 bebbo
- * @R changes in class scanner requires explicit naming now: Handler, Group, Cfg, Factory
- * 
- *    Revision 1.1 2003/09/30 12:42:27 bebbo
- * @N added welcome handler
- * 
- *****************************************************************************/

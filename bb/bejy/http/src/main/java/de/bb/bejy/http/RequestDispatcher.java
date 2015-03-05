@@ -1,67 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/RequestDispatcher.java,v $
- * $Revision: 1.24 $
- * $Date: 2014/06/23 15:38:46 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * Context implementation
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
- NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- 1. Every product and solution using this software, must be free
- of any charge. If the software is used by a client part, the
- server part must also be free and vice versa.
-
- 2. Each redistribution must retain the copyright notice, and
- this list of conditions and the following disclaimer.
-
- 3. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in
- the documentation and/or other materials provided with the
- distribution.
-
- 4. All advertising materials mentioning features or use of this
- software must display the following acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- 5. Redistributions of any form whatsoever must retain the following
- acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
- DISCLAIMER OF WARRANTY
-
- Software is provided "AS IS," without a warranty of any kind.
- You may use it on your own risk.
-
- ******************************************************************************
- LIMITATION OF LIABILITY
-
- I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
- AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
- FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
- OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
- SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
- COPYRIGHT
-
- (c) 1994-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.http;
@@ -318,83 +270,3 @@ class RequestDispatcher implements javax.servlet.RequestDispatcher {
     }
 
 }
-/******************************************************************************
- * $Log: RequestDispatcher.java,v $ Revision 1.24 2014/06/23 15:38:46 bebbo
- * 
- * @N implemented form authentication
- * @R reworked authentication handling to support roles Revision 1.23 2012/07/18
- *    06:44:55 bebbo
- * 
- * @I typified Revision 1.22 2009/11/25 08:29:13 bebbo
- * 
- * @V bumped the version
- * @B fixed forwarding for the welcome files with CGI: query string was lost.
- * 
- *    Revision 1.21 2009/11/18 08:47:41 bebbo
- * @D Debug stuff
- * 
- *    Revision 1.20 2008/01/17 17:33:02 bebbo
- * @B fixes for better handling if the request is wrapped
- * 
- *    Revision 1.19 2007/05/01 19:05:27 bebbo
- * @I changes due to RequestDispatcher changes
- * 
- *    Revision 1.18 2007/01/18 21:48:47 bebbo
- * @B fixed getServletURI in forward and redirect
- * 
- *    Revision 1.17 2004/12/13 15:34:10 bebbo
- * @N include now also handels redirects (302)
- * 
- *    Revision 1.16 2004/04/20 13:23:28 bebbo
- * @B fixed possible SIooB
- * 
- *    Revision 1.15 2004/04/16 13:47:24 bebbo
- * @R changes in class scanner requires explicit naming now: Handler, Group,
- *    Cfg, Factory
- * 
- *    Revision 1.14 2004/04/07 16:30:37 bebbo
- * @O optimizations - removed unused variables/methods
- * 
- *    Revision 1.13 2004/03/24 09:42:54 bebbo
- * @I name changes
- * 
- *    Revision 1.12 2004/03/23 19:00:57 bebbo
- * @B include and forward using dereferenced response
- * 
- *    Revision 1.11 2004/03/23 14:44:14 bebbo
- * @B the original request is now properly resovled from request wrappers
- * 
- *    Revision 1.10 2004/03/23 12:27:46 bebbo
- * @B query strings in forward/include are now applied to the request
- * @B the original request is now properly resovled from request wrappers
- * 
- *    Revision 1.9 2003/06/17 10:18:42 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.8 2003/05/13 15:41:46 bebbo
- * @N added config classes for future runtime configuration support
- * 
- *    Revision 1.7 2002/12/19 14:52:23 bebbo
- * @R renamed ServletResponse into HttpResponse
- * 
- *    Revision 1.6 2002/12/16 16:33:11 bebbo
- * @I HttpRequest is now a separate object
- * 
- *    Revision 1.5 2002/05/19 12:54:22 bebbo
- * @B fixed H401 and H302 handling
- * 
- *    Revision 1.4 2002/04/02 13:02:35 franke
- * @I fixed mayn bugs and added too many features to enumerate them here
- * 
- *    Revision 1.3 2002/03/30 15:49:05 franke
- * @N support for filter chains
- * @B fixed handling for include and forward
- * 
- *    Revision 1.2 2002/03/10 20:07:55 bebbo
- * @I changes due to redesigned buffer handling
- * 
- *    Revision 1.1 2001/12/04 17:40:42 franke
- * @N separated RequestDispatcher to ease the forward and inlude funtions.
- *    Caused some changes, since members from HttpProtocol moved.
- * 
- */

@@ -1,14 +1,20 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/VProxyCfg.java,v $
- * $Revision: 1.3 $
- * $Date: 2012/12/15 19:38:20 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 2003.
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- */
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 package de.bb.bejy.http;
 
 import de.bb.bejy.Configurable;
@@ -114,18 +120,3 @@ public class VProxyCfg extends Configurable implements Configurator {
         }
     }
 }
-
-/******************************************************************************
- * $Log: VProxyCfg.java,v $
- * Revision 1.3  2012/12/15 19:38:20  bebbo
- * @N proxy support
- * Revision 1.2 2012/11/08 12:14:12 bebbo
- * 
- * @B fixed proxy with HTTP chunked mode
- * @N added SOCKS5 proxy support
- * @N added a fallback option for XML data -> XMPP server Revision 1.1 2010/07/08 18:16:25 bebbo
- * 
- * @I splitted the HttpRequest to use it inside of redirectors proxy
- * @N redir can now handle proxy connects
- * 
- */

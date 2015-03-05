@@ -1,66 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/mail/src/main/java/de/bb/bejy/mail/Pop3.java,v $
- * $Revision: 6.2 $
- * $Date: 2014/09/22 09:22:24 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- ******************************************************************************
- NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- 1. Every product and solution using this software, must be free
- of any charge. If the software is used by a client part, the
- server part must also be free and vice versa.
-
- 2. Each redistribution must retain the copyright notice, and
- this list of conditions and the following disclaimer.
-
- 3. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in
- the documentation and/or other materials provided with the
- distribution.
-
- 4. All advertising materials mentioning features or use of this
- software must display the following acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- 5. Redistributions of any form whatsoever must retain the following
- acknowledgment:
- "This product includes software developed by BebboSoft,
- written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
- DISCLAIMER OF WARRANTY
-
- Software is provided "AS IS," without a warranty of any kind.
- You may use it on your own risk.
-
- ******************************************************************************
- LIMITATION OF LIABILITY
-
- I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
- AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
- FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
- OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
- SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
- COPYRIGHT
-
- (c) 2000-2002 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.mail;
@@ -521,149 +474,3 @@ final class Pop3 extends de.bb.bejy.Protocol {
         return ma;
     }
 }
-
-/******************************************************************************
- * $Log: Pop3.java,v $
- * Revision 6.2  2014/09/22 09:22:24  bebbo
- * @V new version
- *
- * Revision 6.1  2014/09/21 18:50:26  bebbo
- * 6.1
- *
- * Revision 1.38  2013/11/01 13:32:33  bebbo
- * @R uses new mechanism for  logins to slow down password guess attacks
- * Revision 1.37 2013/07/23 07:18:29 bebbo
- * 
- * @I exceptions are logged into own log file not to console
- * 
- *    Revision 1.36 2013/05/21 06:16:13 bebbo
- * @F formatted and typified Revision 1.35 2013/03/07 12:41:19 bebbo
- * 
- * @F formatted Revision 1.34 2006/03/17 11:36:07 bebbo
- * 
- * @B fixed unclosed streams
- * 
- *    Revision 1.33 2005/11/30 06:19:23 bebbo
- * @I code dompliance with JDK 1.5
- * 
- *    Revision 1.32 2004/12/16 16:02:30 bebbo
- * @R database connections are now shared
- * 
- *    Revision 1.31 2004/04/07 16:34:09 bebbo
- * @V new version message
- * @B deleted messages are no longer listed
- * 
- *    Revision 1.30 2004/03/24 09:54:10 bebbo
- * @V new version information
- * 
- *    Revision 1.29 2004/03/24 09:50:11 bebbo
- * @V new version information
- * 
- *    Revision 1.28 2004/03/23 12:38:52 bebbo
- * @V the protocols are now using the same version as BEJY
- * 
- *    Revision 1.27 2003/09/30 12:38:35 bebbo
- * @B adding mail delimiter CRLF. if missing to mail files (RETR X)
- * 
- *    Revision 1.26 2003/06/23 15:20:29 bebbo
- * @R moved singletons for spooler and cleanup threads to MailCfg
- * 
- *    Revision 1.25 2003/06/17 10:20:17 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.24 2003/03/31 16:35:06 bebbo
- * @N added DNS support to verify mail sender
- * 
- *    Revision 1.23 2003/03/21 10:14:53 bebbo
- * @I set buffer size to 1412
- * @B added required os.flush() statements
- * 
- *    Revision 1.22 2003/02/25 07:01:53 bebbo
- * @R protocols are usinf now BufferedOutputStreams
- * 
- *    Revision 1.21 2003/02/17 14:20:37 bebbo
- * @N added command CAPA
- * 
- *    Revision 1.20 2003/02/05 08:09:46 bebbo
- * @B better address handling
- * @N usage of VERBOSE attribute from config
- * 
- *    Revision 1.19 2003/01/27 19:30:43 bebbo
- * @I updated version information
- * 
- *    Revision 1.18 2002/12/16 19:55:42 bebbo
- * @B tracked some unclosed Statements / Connections down and fixed them
- * 
- *    Revision 1.17 2002/12/16 16:40:53 bebbo
- * @I added sync for db implementation to release resources
- * 
- *    Revision 1.16 2002/11/22 21:14:42 bebbo
- * @I added method shutdown() - closing DBI
- * 
- *    Revision 1.15 2002/02/16 13:57:54 franke
- * @V now reflecting implementions version number (not factory)
- * 
- *    Revision 1.14 2002/02/05 15:57:05 bebbo
- * @V nicer hello message with implementation version number
- * 
- *    Revision 1.13 2002/01/20 15:51:27 franke
- * @R the messages are stored without dot!
- * 
- *    Revision 1.12 2002/01/20 12:30:05 franke
- * @I create mailbox if no mailbox exists
- * 
- *    Revision 1.11 2002/01/19 15:49:47 franke
- * @R 2nd working IMAP implementation and many changes in design due to that
- * 
- *    Revision 1.10 2002/01/13 15:20:25 franke
- * @R reflected mDbi changes
- * 
- *    Revision 1.9 2001/08/24 08:24:41 bebbo
- * @I changes due to renamed functions in ByteRef - same names as in String class
- * 
- *    Revision 1.8 2001/03/28 13:28:24 bebbo
- * @D verbose on if debug is on
- * 
- *    Revision 1.7 2001/03/27 19:50:15 bebbo
- * @I now Protocl knows its Factory
- * @I now Factory is known by Protocol
- * 
- *    Revision 1.6 2001/03/20 18:34:32 bebbo
- * @I changed hostAddress into remoteAddress
- * 
- *    Revision 1.5 2001/03/09 19:47:22 bebbo
- * @B on error mail accounts where never closed -> no deletions!
- * 
- *    Revision 1.4 2001/02/25 17:08:01 bebbo
- * @R no longer public classes
- * 
- *    Revision 1.3 2001/02/20 19:14:07 bebbo
- * @D disabled DEBUG and VERBOSE
- * 
- *    Revision 1.2 2001/02/20 17:41:51 bebbo
- * @D added debug messages
- * @B socket is not longer kept alive
- * 
- *    Revision 1.1 2001/02/19 19:56:15 bebbo
- * @R new or moved from package smtp or pop3
- * 
- *    Revision 1.6 2001/01/01 01:02:23 bebbo
- * @I improved database reconnect
- * 
- *    Revision 1.5 2000/12/30 10:16:19 bebbo
- * @B fixed wrong compare
- * 
- *    Revision 1.4 2000/12/30 09:04:51 bebbo
- * @R now throws Exceptions to indicate that a thread should end
- * 
- *    Revision 1.3 2000/12/29 17:50:12 bebbo
- * @I added verbose messages
- * 
- *    Revision 1.2 2000/12/28 21:04:31 bebbo
- * @D DEBUG cleanup
- * 
- *    Revision 1.1 2000/12/28 20:54:29 bebbo
- * @I many changes
- * @I first working smtp and pop protocl
- * 
- *****************************************************************************/

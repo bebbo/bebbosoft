@@ -1,69 +1,20 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/FileHandler.java,v $
- * $Revision: 1.41 $
- * $Date: 2014/06/24 09:16:43 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * file handler for bejy
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
-    NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-    1. Every product and solution using this software, must be free
-      of any charge. If the software is used by a client part, the
-      server part must also be free and vice versa.
-
-    2. Each redistribution must retain the copyright notice, and
-      this list of conditions and the following disclaimer.
-
-    3. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-
-    4. All advertising materials mentioning features or use of this
-      software must display the following acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
-    5. Redistributions of any form whatsoever must retain the following
-      acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
-  DISCLAIMER OF WARRANTY
-
-  Software is provided "AS IS," without a warranty of any kind.
-  You may use it on your own risk.
-
- ******************************************************************************
-  LIMITATION OF LIABILITY
-
-  I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
-  AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
-  FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
-  CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
-  OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
-  SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
-  COPYRIGHT
-
-  (c) 1994-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
-
 package de.bb.bejy.http;
 
 import java.io.File;
@@ -432,136 +383,3 @@ public class FileHandler extends HttpHandler {
     }
 
 }
-
-/******************************************************************************
- * $Log: FileHandler.java,v $
- * Revision 1.41  2014/06/24 09:16:43  bebbo
- * @R FileHandler no longer sends the session id
- *
- * Revision 1.40  2013/11/23 16:41:15  bebbo
- * @B fixed class cast if FileHandler was called via include from a JSP page
- *
- * Revision 1.39  2013/11/23 10:36:19  bebbo
- * @R contentLength supports long values now
- *
- * Revision 1.38  2013/07/23 07:00:44  bebbo
- * @N added support for content ranges
- * Revision 1.37 2013/05/17 10:33:21 bebbo
- * 
- * @N compressed files are cached in work dir Revision 1.36 2012/12/23 10:27:40 bebbo
- * 
- * @N added compression support for the file handler Revision 1.35 2012/12/21 08:15:20 bebbo
- * 
- * @R set content Length to 0 to keep connections if 304 is sent Revision 1.34 2012/12/15 19:38:57 bebbo
- * 
- * @I refactoring Revision 1.33 2012/11/14 15:11:45 bebbo
- * 
- * @B h404 directly invokes the CgiHandler
- * @B CgiHandler no longer uses a ForwardRequest, CGI params are set directly
- * @B cgi handler with h404 is working for Drupal Revision 1.32 2012/11/08 12:10:58 bebbo
- * 
- * @N h404 handler is able to use URL rewriting Revision 1.31 2010/04/11 10:16:18 bebbo
- * 
- * @N new configuration option "h404" to add a 404 handler to CGI (e.g. PHP) based applications to enable stuff like
- *    wordpress permalinks.
- * 
- *    Revision 1.30 2009/11/25 08:29:13 bebbo
- * @V bumped the version
- * @B fixed forwarding for the welcome files with CGI: query string was lost.
- * 
- *    Revision 1.29 2009/11/18 08:47:41 bebbo
- * @D Debug stuff
- * 
- *    Revision 1.28 2008/01/17 17:28:59 bebbo
- * @I method has now type String --> changed accordingly
- * 
- *    Revision 1.27 2007/05/01 19:04:54 bebbo
- * @I changes due to RequestDispatcher changes
- * 
- *    Revision 1.26 2004/12/16 15:59:28 bebbo
- * @I changed upper/lowercas of last-modified
- * 
- *    Revision 1.25 2004/12/13 15:30:48 bebbo
- * @B fixed broken mime type lookup
- * @B added index.html as default page for admin.jsp
- * @B fixed real path handling
- * 
- *    Revision 1.24 2004/04/16 13:47:24 bebbo
- * @R changes in class scanner requires explicit naming now: Handler, Group, Cfg, Factory
- * 
- *    Revision 1.23 2004/03/23 14:44:14 bebbo
- * @B the original request is now properly resovled from request wrappers
- * 
- *    Revision 1.22 2004/03/23 12:26:40 bebbo
- * @I moved code to RequestDispatcher to determine the original request/response
- * 
- *    Revision 1.21 2004/03/23 11:11:55 bebbo
- * @B the original request is now properly resovled from request wrappers
- * 
- *    Revision 1.20 2003/06/18 08:36:52 bebbo
- * @R modification, dynamic loading, removing - all works now
- * 
- *    Revision 1.19 2003/06/17 10:18:43 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.18 2003/05/13 15:41:46 bebbo
- * @N added config classes for future runtime configuration support
- * 
- *    Revision 1.17 2003/01/27 14:58:31 bebbo
- * @I removed usage of some obsolete functions
- * 
- *    Revision 1.16 2002/12/19 14:52:23 bebbo
- * @R renamed ServletResponse into HttpResponse
- * 
- *    Revision 1.15 2002/12/16 16:33:11 bebbo
- * @I HttpRequest is now a separate object
- * 
- *    Revision 1.14 2002/05/19 12:57:42 bebbo
- * @B fixed H401 and H302 handling
- * 
- *    Revision 1.13 2002/04/02 13:02:34 franke
- * @I fixed mayn bugs and added too many features to enumerate them here
- * 
- *    Revision 1.12 2002/03/10 20:07:42 bebbo
- * @I changes due to redesigned buffer handling: contentLength is no longer set
- * 
- *    Revision 1.11 2001/12/04 17:40:42 franke
- * @N separated RequestDispatcher to ease the forward and inlude funtions. Caused some changes, since members from
- *    HttpProtocol moved.
- * 
- *    Revision 1.10 2001/05/07 16:18:03 bebbo
- * @B fixed behaviour for long file donwload
- * 
- *    Revision 1.9 2001/05/06 13:11:04 bebbo
- * @B now buffer is enlarged to fit file size
- * 
- *    Revision 1.8 2001/04/11 13:15:41 bebbo
- * @R if requested name matches a directory, a redirect is replied (302)
- * 
- *    Revision 1.7 2001/04/06 05:54:05 bebbo
- * @B fix for HTTP/1.0
- * @B fix for cookies
- * 
- *    Revision 1.6 2001/03/29 07:08:18 bebbo
- * @R HttpHandler now implements javax.servlet.Servlet and javax.servlet.ServletConfig
- * 
- *    Revision 1.5 2001/03/28 09:15:04 bebbo
- * @D debug off
- * 
- *    Revision 1.4 2001/03/27 19:49:39 bebbo
- * @I removed clone
- * @I all member vars are readonly now
- * 
- *    Revision 1.3 2001/03/27 09:52:53 franke
- * @I uses function setStatus
- * 
- *    Revision 1.2 2001/03/20 18:34:07 bebbo
- * @N enhanced functionality
- * @N more functions for Servlet API
- * @B fixes in filehandler
- * @N first working CGI
- * 
- *    Revision 1.1 2001/03/11 20:41:37 bebbo
- * @N first working file handling
- * 
- *****************************************************************************/

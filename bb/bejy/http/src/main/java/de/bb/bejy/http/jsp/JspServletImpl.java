@@ -1,18 +1,20 @@
-/*
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/jsp/JspServletImpl.java,v $
- * $Revision: 1.2 $
- * $Date: 2006/05/09 12:13:25 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * written by Hagen Raab / Stefan Bebbo Franke
- * (c) 1999-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
- * all rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * JSPServlet - compile and invoke JSPs
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 
 package de.bb.bejy.http.jsp;
 
@@ -61,43 +63,3 @@ public abstract class JspServletImpl extends HttpServlet implements HttpJspPage
   {}
   
 }
-/*
- * $Log: JspServletImpl.java,v $
- * Revision 1.2  2006/05/09 12:13:25  bebbo
- * @R changes to comply to servlet2_4
- *
- * Revision 1.1  2004/04/16 13:46:09  bebbo
- * @R runtime moved to de.bb.jsp
- *
- * Revision 1.11  2004/01/09 19:38:48  bebbo
- * @R always set the Thread contect class loader
- *
- * Revision 1.10  2003/11/16 09:30:29  bebbo
- * @B various changes
- *
- * Revision 1.9  2002/12/23 16:56:56  bebbo
- * @B fixed warning message
- * @B ServletImpl now public again :)
- *
- * Revision 1.8  2002/12/19 14:51:37  bebbo
- * @R no longer a public class
- *
- * Revision 1.7  2002/11/06 09:41:41  bebbo
- * @I reorganized imports
- * @I removed unused variables
- *
- * Revision 1.6  2002/03/21 14:34:45  franke
- * @N added support for JSP files as Servlet
- * @N added support for classes loaded via ClassLoader
- * @N added support for lib/*.jar in web applications
- *
- * Revision 1.5  2002/03/10 20:04:48  bebbo
- * @N support wildcard param to tag attr copy
- *
- * Revision 1.4  2001/12/28 11:52:47  franke
- * @B add call to jspInit() and jspDestroy()
- *
- * Revision 1.3  2001/11/19 13:25:25  franke
- * @B fixed handling of useBean, getParam and setParam
- *
- */

@@ -1,18 +1,20 @@
-/*
- * $Source: /export/CVS/java/de/bb/bejy/j2ee/src/main/java/de/bb/bejy/j2ee/CL.java,v $
- * $Revision: 1.1 $
- * $Date: 2012/07/18 09:06:06 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * written by Hagen Raab / Stefan Bebbo Franke
- * (c) 1999-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
- * all rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * JspClassLoader - load and resolve a class, that files stay deleteable
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 
 package de.bb.bejy.j2ee;
 
@@ -53,24 +55,4 @@ class CL extends ClassLoader {
         return c;
     }
 }
-/*
- * $Log: CL.java,v $
- * Revision 1.1  2012/07/18 09:06:06  bebbo
- * @N new
- *
- * Revision 1.5  2004/12/01 13:36:16  bebbo
- * @B now the thread context class loader is also used to load classes
- *
- * Revision 1.4  2004/11/19 16:45:07  bebbo
- * @B fixed loadClass()
- *
- * Revision 1.3  2004/11/18 17:02:22  bebbo
- * @B fixed class load behaviour
- *
- * Revision 1.2  2004/11/18 14:50:00  bebbo
- * @N new version
- *
- * Revision 1.1  2003/03/03 10:21:01  bebbo
- * @N added to repository
- *
- */
+

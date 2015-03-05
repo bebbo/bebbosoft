@@ -1,18 +1,20 @@
-/*
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/jsp/PageContextImpl.java,v $
- * $Revision: 1.7 $
- * $Date: 2014/06/23 15:38:46 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * written by Stefan Bebbo Franke
- * (c) 1999-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
- * all rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * a PageContextImpl
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 
 package de.bb.bejy.http.jsp;
 
@@ -588,70 +590,3 @@ public class PageContextImpl extends PageContext {
         return null;
     }
 }
-
-/*
- * $Log: PageContextImpl.java,v $
- * Revision 1.7  2014/06/23 15:38:46  bebbo
- * @N implemented form authentication
- * @R reworked authentication handling to support roles
- *
- * Revision 1.6  2010/08/29 05:08:43  bebbo
- * @B: forwarding also preserves isSecure
- * @O: using unsynchronized classes where not needed to gain speed
- *
- * Revision 1.5  2006/05/09 12:13:25  bebbo
- * @R changes to comply to servlet2_4
- *
- * Revision 1.4  2006/03/17 20:06:43  bebbo
- * @B fixed possible CCE
- *
- * Revision 1.3  2006/03/17 11:31:05  bebbo
- * @I cleanup imports
- *
- * Revision 1.2  2004/12/13 15:39:29  bebbo
- * @B fixed error handling
- *
- * Revision 1.1  2004/04/16 13:46:09  bebbo
- * @R runtime moved to de.bb.jsp
- *
- * Revision 1.13  2004/04/07 16:35:21  bebbo
- * @I JspWriter stuff
- *
- * Revision 1.12  2004/03/24 09:40:52  bebbo
- * @B fixed handling of char encoding
- * @B pageContext now flushes out in release()
- *
- * Revision 1.11  2004/03/23 19:03:34  bebbo
- * @B added out.flush() to release()
- *
- * Revision 1.10  2004/03/23 12:41:47  bebbo
- * @B popBody() does NOT automatically emit content
- *
- * Revision 1.9  2004/03/11 18:14:36  bebbo
- * @B popBody no longer writes the content. This must be done in the Tag
- *
- * Revision 1.8  2004/01/09 19:38:16  bebbo
- * @R Java stack trace now uses raw formatting
- *
- * Revision 1.7  2003/04/04 10:32:28  bebbo
- * @I cleanup
- *
- * Revision 1.6  2003/03/31 11:37:52  bebbo
- * @X experimental change of PageContext
- *
- * Revision 1.5  2002/10/24 11:27:27  bebbo
- * @R changed exception handling, so they are better visible now
- *
- * Revision 1.4  2002/03/10 20:05:37  bebbo
- * @N supporting BodyContent in taglibs
- *
- * Revision 1.3  2001/12/04 17:47:17  franke
- * @M merge
- *
- * Revision 1.2  2001/04/06 05:52:57  bebbo
- * @D DEBUG on
- *
- * Revision 1.1  2001/03/29 19:55:33  bebbo
- * @N moved to this location
- *
- */

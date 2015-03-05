@@ -1,18 +1,20 @@
-/*
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/jsp/StaticJspServlet.java,v $
- * $Revision: 1.3 $
- * $Date: 2012/11/08 12:10:21 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * written by Hagen Raab / Stefan Bebbo Franke
- * (c) 1999-2001 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
- * all rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * JSPServlet - compile and invoke JSPs
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 
 package de.bb.bejy.http.jsp;
 
@@ -37,24 +39,3 @@ public class StaticJspServlet extends JspServlet {
         service(request, response, jspFileName);
     }
 }
-/**
- * $Log: StaticJspServlet.java,v $
- * Revision 1.3  2012/11/08 12:10:21  bebbo
- * @I cache the realPath - less work during each check
- * Revision 1.2 2006/03/17 11:31:15 bebbo
- * 
- * @N added SUID
- * 
- *    Revision 1.1 2004/04/16 13:46:09 bebbo
- * @R runtime moved to de.bb.jsp
- * 
- *    Revision 1.2 2002/11/06 09:41:41 bebbo
- * @I reorganized imports
- * @I removed unused variables
- * 
- *    Revision 1.1 2002/03/21 14:34:45 franke
- * @N added support for JSP files as Servlet
- * @N added support for classes loaded via ClassLoader
- * @N added support for lib/*.jar in web applications
- * 
- */

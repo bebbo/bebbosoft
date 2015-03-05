@@ -1,67 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/HttpHandler.java,v $
- * $Revision: 1.40 $
- * $Date: 2013/05/17 10:33:53 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * HttpHandler base class
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
-    NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-    1. Every product and solution using this software, must be free
-      of any charge. If the software is used by a client part, the
-      server part must also be free and vice versa.
-
-    2. Each redistribution must retain the copyright notice, and
-      this list of conditions and the following disclaimer.
-
-    3. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-
-    4. All advertising materials mentioning features or use of this
-      software must display the following acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
-    5. Redistributions of any form whatsoever must retain the following
-      acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
-  DISCLAIMER OF WARRANTY
-
-  Software is provided "AS IS," without a warranty of any kind.
-  You may use it on your own risk.
-
- ******************************************************************************
-  LIMITATION OF LIABILITY
-
-  I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
-  AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
-  FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
-  CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
-  OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
-  SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
-  COPYRIGHT
-
-  (c) 1994-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.http;
@@ -445,138 +397,3 @@ public abstract class HttpHandler extends Configurable implements javax.servlet.
         sr.setStatus(200);
     }
 }
-
-/******************************************************************************
- * $Log: HttpHandler.java,v $ Revision 1.40 2013/05/17 10:33:53 bebbo
- * 
- * @R added support for OPTIONS Revision 1.39 2012/07/18 06:44:40 bebbo
- * 
- * @I typified Revision 1.38 2010/08/29 05:08:43 bebbo
- * 
- * @B: forwarding also preserves isSecure
- * @O: using unsynchronized classes where not needed to gain speed
- * 
- *     Revision 1.37 2009/11/25 08:29:13 bebbo
- * @V bumped the version
- * @B fixed forwarding for the welcome files with CGI: query string was lost.
- * 
- *    Revision 1.36 2009/11/18 08:47:41 bebbo
- * @D Debug stuff
- * 
- *    Revision 1.35 2008/01/17 17:31:51 bebbo
- * @I modified the context matching algorithm. Now a Trie is used.
- * 
- *    Revision 1.34 2007/05/01 19:05:26 bebbo
- * @I changes due to RequestDispatcher changes
- * 
- *    Revision 1.33 2007/01/18 21:46:54 bebbo
- * @N added support for OPTIONS
- * @R moved classLoader instance for threadContext classloader
- * 
- *    Revision 1.32 2004/12/13 15:32:31 bebbo
- * @B added support for multiple mappings to the same servlet
- * 
- *    Revision 1.31 2004/04/16 13:47:24 bebbo
- * @R changes in class scanner requires explicit naming now: Handler, Group, Cfg, Factory
- * 
- *    Revision 1.30 2004/03/23 11:15:08 bebbo
- * @B modified the method to select the correct servlet, might be still not perfect...
- * 
- *    Revision 1.29 2003/09/30 12:42:27 bebbo
- * @N added welcome handler
- * 
- *    Revision 1.28 2003/07/01 11:10:17 bebbo
- * @R H401 and H404 are now public available
- * 
- *    Revision 1.27 2003/06/20 09:09:38 bebbo
- * @N onine configuration seems to be complete for bejy and http
- * 
- *    Revision 1.26 2003/06/18 08:36:52 bebbo
- * @R modification, dynamic loading, removing - all works now
- * 
- *    Revision 1.25 2003/06/17 12:09:56 bebbo
- * @R added a generalization for Configurables loaded by class
- * 
- *    Revision 1.24 2003/06/17 10:18:42 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.23 2003/05/13 15:41:46 bebbo
- * @N added config classes for future runtime configuration support
- * 
- *    Revision 1.22 2003/01/27 14:58:31 bebbo
- * @I removed usage of some obsolete functions
- * 
- *    Revision 1.21 2002/12/19 14:52:23 bebbo
- * @R renamed ServletResponse into HttpResponse
- * 
- *    Revision 1.20 2002/12/16 16:33:11 bebbo
- * @I HttpRequest is now a separate object
- * 
- *    Revision 1.19 2002/11/06 09:40:47 bebbo
- * @I reorganized imports
- * @I removed unused variables
- * 
- *    Revision 1.18 2002/05/19 12:54:22 bebbo
- * @B fixed H401 and H302 handling
- * 
- *    Revision 1.17 2002/04/02 13:02:35 franke
- * @I fixed mayn bugs and added too many features to enumerate them here
- * 
- *    Revision 1.16 2002/03/21 14:39:35 franke
- * @N added support for web-apps. Added to config file based configuration some config function calls. Also added the
- *    use of a special ClassLoader.
- * 
- *    Revision 1.15 2001/12/04 17:40:42 franke
- * @N separated RequestDispatcher to ease the forward and inlude funtions. Caused some changes, since members from
- *    HttpProtocol moved.
- * 
- *    Revision 1.14 2001/11/20 17:36:42 bebbo
- * @B fixed RequestDispatcher stuff
- * 
- *    Revision 1.13 2001/09/15 08:46:54 bebbo
- * @I using XmlFile instead of ConfigFile
- * @I reflect changes of XmlFile
- * 
- *    Revision 1.12 2001/06/11 06:32:43 bebbo
- * @D more DEBUG out
- * 
- *    Revision 1.11 2001/04/16 20:03:56 bebbo
- * @B fixes in 302 redirect
- * 
- *    Revision 1.10 2001/04/16 13:43:54 bebbo
- * @I changed IniFile to XmlFile
- * 
- *    Revision 1.9 2001/04/11 13:16:08 bebbo
- * @R if requested name matches a directory, a redirect is replied (302)
- * @N added H302 Handler
- * 
- *    Revision 1.8 2001/04/06 05:54:05 bebbo
- * @B fix for HTTP/1.0
- * @B fix for cookies
- * 
- *    Revision 1.7 2001/03/30 17:28:04 bebbo
- * @N added user authentication
- * 
- *    Revision 1.6 2001/03/29 18:25:58 bebbo
- * @I completed beta stage
- * 
- *    Revision 1.5 2001/03/29 07:08:18 bebbo
- * @R HttpHandler now implements javax.servlet.Servlet and javax.servlet.ServletConfig
- * 
- *    Revision 1.4 2001/03/28 09:15:04 bebbo
- * @D debug off
- * 
- *    Revision 1.3 2001/03/27 19:48:53 bebbo
- * @I lot's of stuff changed
- * @I changed pattern matching and usage of default index
- * 
- *    Revision 1.2 2001/03/20 18:34:07 bebbo
- * @N enhanced functionality
- * @N more functions for Servlet API
- * @B fixes in filehandler
- * @N first working CGI
- * 
- *    Revision 1.1 2001/03/11 20:41:37 bebbo
- * @N first working file handling
- * 
- *****************************************************************************/

@@ -1,67 +1,19 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/FastCgiHandler.java,v $
- * $Revision: 1.2 $
- * $Date: 2013/05/17 10:33:41 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * CGI handler for bejy
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
-    NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-    1. Every product and solution using this software, must be free
-      of any charge. If the software is used by a client part, the
-      server part must also be free and vice versa.
-
-    2. Each redistribution must retain the copyright notice, and
-      this list of conditions and the following disclaimer.
-
-    3. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-
-    4. All advertising materials mentioning features or use of this
-      software must display the following acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
-    5. Redistributions of any form whatsoever must retain the following
-      acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
-  DISCLAIMER OF WARRANTY
-
-  Software is provided "AS IS," without a warranty of any kind.
-  You may use it on your own risk.
-
- ******************************************************************************
-  LIMITATION OF LIABILITY
-
-  I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
-  AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
-  FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
-  CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
-  OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
-  SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
-  COPYRIGHT
-
-  (c) 1994-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 
 package de.bb.bejy.http;
@@ -212,7 +164,7 @@ public class FastCgiHandler extends HttpHandler {
         byte buffer[] = new byte[256];
         try {
             socket.setSoTimeout(1000 * 5);
-            IOUtils.readFully(fcgiis, buffer, 8);
+            IOUtils.readFully(fcgiis, buffer, 0, 8);
 
             final int type = buffer[1];
             final int skipLen = buffer[6] & 0xff;
@@ -220,7 +172,7 @@ public class FastCgiHandler extends HttpHandler {
             if (cl > buffer.length)
                 buffer = new byte[cl];
 
-            IOUtils.readFully(fcgiis, buffer, cl);
+            IOUtils.readFully(fcgiis, buffer, 0, cl);
             int skipped = 0;
             while (skipped < skipLen) {
                 skipped += fcgiis.skip(skipLen - skipped);
@@ -472,14 +424,14 @@ public class FastCgiHandler extends HttpHandler {
             int status = -1;
             final FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
             for (;;) {
-                IOUtils.readFully(fcgiis, buffer, 8);
+                IOUtils.readFully(fcgiis, buffer, 0, 8);
                 final int type = buffer[1];
                 final int skipLen = buffer[6] & 0xff;
                 cl = ((buffer[4] & 0xff) << 8) | (buffer[5] & 0xff);
                 if (cl > buffer.length)
                     buffer = new byte[cl];
 
-                IOUtils.readFully(fcgiis, buffer, cl);
+                IOUtils.readFully(fcgiis, buffer, 0, cl);
                 int skipped = 0;
                 while (skipped < skipLen) {
                     skipped += fcgiis.skip(skipLen - skipped);
@@ -657,14 +609,3 @@ public class FastCgiHandler extends HttpHandler {
     private final static String ILLEGAL = "<>'\"+&";
 
 }
-
-/******************************************************************************
- * $Log: FastCgiHandler.java,v $
- * Revision 1.2  2013/05/17 10:33:41  bebbo
- * @R added support for OPTIONS
- * Revision 1.1 2012/12/21 08:15:45 bebbo
- * 
- * @N based on CgiHandler: support the FastCgi protocol Revision 1.1 2012/11/14 15:11:44 bebbo
- * 
- * 
- *****************************************************************************/

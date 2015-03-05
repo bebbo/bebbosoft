@@ -1,18 +1,20 @@
-/*
- * $Source: /export/CVS/java/de/bb/bejy/http/src/main/java/de/bb/bejy/http/jsp/JspWriterImpl.java,v $
- * $Revision: 1.1 $
- * $Date: 2004/04/16 13:46:09 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- * written by Stefan Bebbo Franke
- * (c) 1999-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
- * all rights reserved
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * a JSPWriterImpl
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 
 package de.bb.bejy.http.jsp;
 import java.io.CharArrayWriter;
@@ -216,33 +218,3 @@ class JspWriterImpl extends JspWriter {
   }
 }
 
-/*
- * $Log: JspWriterImpl.java,v $
- * Revision 1.1  2004/04/16 13:46:09  bebbo
- * @R runtime moved to de.bb.jsp
- *
- * Revision 1.7  2004/04/07 16:35:21  bebbo
- * @I JspWriter stuff
- *
- * Revision 1.6  2004/03/24 09:39:54  bebbo
- * @B fixed handling of char encoding
- *
- * Revision 1.5  2002/04/08 13:24:14  franke
- * @B fixed write
- *
- * Revision 1.4  2002/03/30 15:43:20  franke
- * @B now throwin more Exceptions, as specified in doc
- *
- * Revision 1.3  2002/03/21 14:34:45  franke
- * @N added support for JSP files as Servlet
- * @N added support for classes loaded via ClassLoader
- * @N added support for lib/*.jar in web applications
- *
- * Revision 1.2  2002/03/10 20:05:20  bebbo
- * @B fixed handling of primitive types
- * @B fixed handling of page buffer
- *
- * Revision 1.1  2001/03/29 19:55:33  bebbo
- * @N moved to this location
- *
- */

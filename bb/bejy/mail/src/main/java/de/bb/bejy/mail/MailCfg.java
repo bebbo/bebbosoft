@@ -1,14 +1,20 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/mail/src/main/java/de/bb/bejy/mail/MailCfg.java,v $
- * $Revision: 1.23 $
- * $Date: 2013/05/17 11:00:28 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
- * 
- * Copyright (c) by Stefan Bebbo Franke 2003.
+/*****************************************************************************
+ * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
- */
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *****************************************************************************/
 package de.bb.bejy.mail;
 
 import java.sql.Driver;
@@ -348,81 +354,3 @@ public class MailCfg extends Configurable implements Configurator {
     }
 }
 
-/******************************************************************************
- * $Log: MailCfg.java,v $
- * Revision 1.23  2013/05/17 11:00:28  bebbo
- * @N new DEBUG property
- * Revision 1.22 2013/03/15 21:45:20 bebbo
- * 
- * @N shutdown might leave emails in the spooler. Now the start resets the state of such emails. Revision 1.21
- *    2012/08/11 19:26:19 bebbo
- * 
- * @B fixed NPE Revision 1.20 2008/03/13 20:46:24 bebbo
- * 
- * @L better log output if no DB connections exists
- * 
- *    Revision 1.19 2006/05/09 08:42:08 bebbo
- * @B fixed creation of multiple cleanup instances on config reloads
- * 
- *    Revision 1.18 2006/03/17 11:34:29 bebbo
- * @R removed old options
- * @B pool is only created once - solves problems on restarts and use of old keys in new pool
- * 
- *    Revision 1.17 2005/12/31 15:45:00 bebbo
- * @I made some members package accessible
- * 
- *    Revision 1.16 2005/12/11 20:25:08 bebbo
- * @B changed return code in Factory for isIdle()
- * 
- *    Revision 1.15 2005/11/30 06:07:38 bebbo
- * @B the DBI pool is now correctly reinstantiated on reactivations or reloads
- * @N added support to start recovering by admin UI
- * @N added support to supervise background threads
- * 
- *    Revision 1.14 2004/12/16 16:02:30 bebbo
- * @R database connections are now shared
- * 
- *    Revision 1.13 2004/04/07 16:33:46 bebbo
- * @V new version message
- * 
- *    Revision 1.12 2003/10/01 14:19:42 bebbo
- * @N added recover switch
- * 
- *    Revision 1.11 2003/09/25 10:24:51 bebbo
- * @R removed PublicMailDbi
- * 
- *    Revision 1.10 2003/09/08 14:54:41 bebbo
- * @N added functions to maintain forwarder, notifications and auto responses
- * @N added sending of autoresponses
- * 
- *    Revision 1.9 2003/08/07 07:38:27 bebbo
- * @B common logFile is now also applied to Spooler and Cleanup threads
- * 
- *    Revision 1.8 2003/08/07 07:16:48 bebbo
- * @N added a logFile to MailCfg which is default for all mail protocols
- * 
- *    Revision 1.7 2003/07/09 18:29:54 bebbo
- * @N added default values.
- * 
- *    Revision 1.6 2003/07/01 12:38:06 bebbo
- * @R makeDbi() is public now
- * 
- *    Revision 1.5 2003/07/01 10:53:37 bebbo
- * @N enabled class browsing for JDBC driver and MailDBIs
- * 
- *    Revision 1.4 2003/06/24 10:11:20 bebbo
- * @R mail config is now unique
- * 
- *    Revision 1.3 2003/06/23 15:20:30 bebbo
- * @R moved singletons for spooler and cleanup threads to MailCfg
- * 
- *    Revision 1.2 2003/06/17 12:09:59 bebbo
- * @R added a generalization for Configurables loaded by class
- * 
- *    Revision 1.1 2003/06/17 10:20:18 bebbo
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.1 2003/05/13 15:41:46 bebbo
- * @N added config classes for future runtime configuration support
- * 
- */
