@@ -1,8 +1,4 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/Trie.java,v $
- *
- * A Trie implementation, useful if Strings are the key to store something.  
- *
+/*****************************************************************************
  * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify

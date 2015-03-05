@@ -1,7 +1,4 @@
-/******************************************************************************
- * $Source: /export/CVS/java/de/bb/util/src/main/java/de/bb/util/LogFile.java,v $
- * A simple log file implementation. Old and maybe outdated, but still fast and working.
- *
+/*****************************************************************************
  * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
  * This program is free software: you can redistribute it and/or modify
