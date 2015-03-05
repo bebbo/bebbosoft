@@ -36,46 +36,78 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
- * Provides the functionality to use and maintain XML files. This implementation reads the file and keeps all data in
- * memory.<br> Each tag corresponds to a section, with the complete path to a tag and the tag's name itself as section
- * name.
+ * Provides the functionality to use and maintain XML files. This implementation
+ * reads the file and keeps all data in memory.<br>
+ * Each tag corresponds to a section, with the complete path to a tag and the
+ * tag's name itself as section name.
  * 
- * <pre> &lt;foo&gt; &lt;bar attr="value" /&gt; &lt;/foo&gt; </pre>
+ * <pre>
+ * &lt;foo&gt; &lt;bar attr="value" /&gt; &lt;/foo&gt;
+ * </pre>
  * 
- * corresponds to the sections <ul> <li>/foo/</li> <li>/foo/bar/</li> </ul> and one readable value.
+ * corresponds to the sections
+ * <ul>
+ * <li>/foo/</li>
+ * <li>/foo/bar/</li>
+ * </ul>
+ * and one readable value.
  * 
- * <pre> getString(&quot;/foo/bar&quot;, &quot;attr&quot;, null); </pre>
+ * <pre>
+ * getString(&quot;/foo/bar&quot;, &quot;attr&quot;, null);
+ * </pre>
  * 
- * returns "value" <br> A speciality is the handling of duplicate tags:
+ * returns "value" <br>
+ * A speciality is the handling of duplicate tags:
  * 
- * <pre> &lt;foo&gt; &lt;bar attr="value" /&gt; &lt;bar attr="other" /&gt; &lt;/foo&gt; </pre>
+ * <pre>
+ * &lt;foo&gt; &lt;bar attr="value" /&gt; &lt;bar attr="other" /&gt; &lt;/foo&gt;
+ * </pre>
  * 
- * Since there seems no way to have access to one of the "/foo/bar" tags, an autonumbering method is used, which adds an
- * unqiue number to all duplicate tags. Better than guessing the assigned numbers, is to use the
- * <code>getSections()</code> method which returns a Vector with all valid paths:
+ * Since there seems no way to have access to one of the "/foo/bar" tags, an
+ * autonumbering method is used, which adds an unqiue number to all duplicate
+ * tags. Better than guessing the assigned numbers, is to use the
+ * <code>getSections()</code> method which returns a Vector with all valid
+ * paths:
  * 
- * <pre> getSections(&quot;/foo/bar&quot;) </pre>
+ * <pre>
+ * getSections(&quot;/foo/bar&quot;)
+ * </pre>
  * 
  * will return something like
  * 
- * <pre> /foo/bar#000000/ /foo/bar#000001/ </pre>
+ * <pre>
+ * /foo/bar#000000/ /foo/bar#000001/
+ * </pre>
  * 
- * Using that paths enables the direct access again. <br> Last feature is a mechanism called 'access by name attribute'.
+ * Using that paths enables the direct access again. <br>
+ * Last feature is a mechanism called 'access by name attribute'.
  * 
- * <pre> &lt;foo&gt; &lt;bar name="joe" attr="value" /&gt; &lt;bar name="carl" attr="other" /&gt; &lt;/foo&gt; </pre>
+ * <pre>
+ * &lt;foo&gt; &lt;bar name="joe" attr="value" /&gt; &lt;bar name="carl" attr="other" /&gt; &lt;/foo&gt;
+ * </pre>
  * 
  * To access a named tag directly just use a special encoding:
  * 
- * <pre> getString(&quot;/foo/\\bar\\carl&quot;, &quot;attr&quot;, null); </pre>
+ * <pre>
+ * getString(&quot;/foo/\\bar\\carl&quot;, &quot;attr&quot;, null);
+ * </pre>
  * 
- * returns "other".<br> The tag name is escaped within in '\\' and the name value is added. This also works for nested
- * named tags! <br> File parts with <ul> <li>"&lt;? ... &gt;"</li> <li>"&lt;! ... &gt;" and</li>
- * <li>"&lt;!-- ... --&gt;"</li> </ul> are ignored but kept for output.
+ * returns "other".<br>
+ * The tag name is escaped within in '\\' and the name value is added. This also
+ * works for nested named tags! <br>
+ * File parts with
+ * <ul>
+ * <li>"&lt;? ... &gt;"</li>
+ * <li>"&lt;! ... &gt;" and</li>
+ * <li>"&lt;!-- ... --&gt;"</li>
+ * </ul>
+ * are ignored but kept for output.
  */
 public class XmlFile {
     private final static boolean DEBUG = false;
@@ -120,9 +152,10 @@ public class XmlFile {
     }
 
     /**
-     * Every XML file consist from tags. The file itself corresponds to the root tag "/". All tags on that level are
-     * held in the root tag, where each tags again holds its own tags. Based on that recursion the complete tree is held
-     * in memory.
+     * Every XML file consist from tags. The file itself corresponds to the root
+     * tag "/". All tags on that level are held in the root tag, where each tags
+     * again holds its own tags. Based on that recursion the complete tree is
+     * held in memory.
      * 
      */
     private class Tag {
@@ -133,24 +166,24 @@ public class XmlFile {
         String name, key;
 
         // / its attributes
-        Map attributes;
+        Map<String, String> attributes;
 
         // / keep all content by order - contains tags AND ByteRef comments
-        ArrayList allByOrder = new ArrayList();
+        ArrayList<Object> allByOrder = new ArrayList<Object>();
 
         // / quick acces by name, with duplicates
-        MultiMap tagsByName = new MultiMap();
+        MultiMap<String, Tag> tagsByName = new MultiMap<String, Tag>();
 
         // / body contents
-        Vector contents = new Vector();
+        ArrayList<ByteRef> contents = new ArrayList<ByteRef>();
 
-        Tag(String n, Map attr) {
+        Tag(String n, Map<String, String> attr) {
             key = name = n;
             attributes = attr;
         }
 
         Tag(String n) {
-            this(n, new SingleMap());
+            this(n, new SingleMap<String, String>());
         }
 
         void addContent(ByteRef ct) {
@@ -164,7 +197,8 @@ public class XmlFile {
             // tagsByOrder.add(tag);
 
             /**/
-            Iterator<String> i = tagsByName.subMap(tag.name, tag.name + "#999999").keySet().iterator();
+            Iterator<String> i = tagsByName
+                    .subMap(tag.name, tag.name + "#999999").keySet().iterator();
 
             if (i.hasNext()) {
                 String key = (String) i.next();
@@ -204,8 +238,9 @@ public class XmlFile {
                 return path;
             }
 
-            for (Iterator i = parent.tagsByName.tailMap(name).entrySet().iterator(); i.hasNext();) {
-                Map.Entry e = (Map.Entry) i.next();
+            for (Iterator<Entry<String, Tag>> i = parent.tagsByName
+                    .tailMap(name).entrySet().iterator(); i.hasNext();) {
+                Entry<String, Tag> e = i.next();
                 String key = (String) e.getKey();
                 if (!key.startsWith(name))
                     break;
@@ -220,7 +255,7 @@ public class XmlFile {
         private ByteRef getContentBr() {
             ByteRef r = new ByteRef();
             // for (Enumeration e = contents.elements(); e.hasMoreElements();) {
-            for (Iterator i = allByOrder.iterator(); i.hasNext();) {
+            for (Iterator<Object> i = allByOrder.iterator(); i.hasNext();) {
                 // if (!this.preserveWhiteSpaces && r.length() > 0)
                 // r = r.append(BRCRLF);
                 // r = r.append((ByteRef) e.nextElement());
@@ -248,15 +283,16 @@ public class XmlFile {
 
         void setContent(ByteRef r) {
             if (tagsByName.size() > 0)
-                throw new IllegalStateException("cant set content, if child tags are present");
+                throw new IllegalStateException(
+                        "cant set content, if child tags are present");
             contents.clear();
             allByOrder.clear();
             addContent(r);
         }
 
         /**
-         * remove the content from the section, but do not remove child tags. Result is an empty but still existing
-         * section.
+         * remove the content from the section, but do not remove child tags.
+         * Result is an empty but still existing section.
          */
         void clearContent() {
             attributes.clear();
@@ -289,35 +325,14 @@ public class XmlFile {
                 ++i;
             }
             // removefrom tagsByName
-            for (Iterator i = tagsByName.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                XmlFile.Tag t = (XmlFile.Tag) entry.getValue();
+            for (Iterator<Entry<String, Tag>> i = tagsByName.entrySet()
+                    .iterator(); i.hasNext();) {
+                Entry<String, Tag> entry = i.next();
+                Tag t = (Tag) entry.getValue();
                 if (t == tag) {
                     tagsByName.remove(entry.getKey(), t);
                     break;
                 }
-            }
-        }
-
-        void remove(String name) {
-            // remove from allByOrder
-            for (int i = 0; i < allByOrder.size();) {
-                Object o = allByOrder.get(i);
-                if (o instanceof XmlFile.Tag) {
-                    XmlFile.Tag t = (XmlFile.Tag) o;
-                    if (name.equals(t.name)) {
-                        allByOrder.remove(i);
-                        continue;
-                    }
-                }
-                ++i;
-            }
-            // removefrom tagsByName
-            for (Iterator i = tagsByName.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                XmlFile.Tag t = (XmlFile.Tag) entry.getValue();
-                if (name.equals(t.name))
-                    tagsByName.remove(entry.getKey(), t);
             }
         }
 
@@ -333,8 +348,8 @@ public class XmlFile {
                     r.writeTo(os);
                     if (!preserveWhiteSpaces)
                         os.write(CRLF);
-                } else if (o instanceof XmlFile.Tag) {
-                    ((XmlFile.Tag) o).write(os, 0, encoding);
+                } else if (o instanceof Tag) {
+                    ((Tag) o).write(os, 0, encoding);
                 }
             }
         }
@@ -346,10 +361,11 @@ public class XmlFile {
             os.write('<');
             os.write(nb);
 
-            for (Iterator i = attributes.entrySet().iterator(); i.hasNext();) {
-                Map.Entry e = (Map.Entry) i.next();
+            for (Iterator<Entry<String, String>> i = attributes.entrySet()
+                    .iterator(); i.hasNext();) {
+                Entry<String, String> e = i.next();
                 os.write(' ');
-                os.write(((String) e.getKey()).getBytes());
+                os.write((e.getKey()).getBytes());
                 os.write('=');
                 os.write('"');
                 ByteRef r = encode((String) e.getValue(), encoding);
@@ -359,14 +375,15 @@ public class XmlFile {
 
             int sz = allByOrder.size();
             if (sz > 0) {
-                boolean lf = !preserveWhiteSpaces && (sz > 1 || !(allByOrder.get(0) instanceof ByteRef));
+                boolean lf = !preserveWhiteSpaces
+                        && (sz > 1 || !(allByOrder.get(0) instanceof ByteRef));
 
                 if (lf)
                     os.write(CLOSECRLF);
                 else
                     os.write('>');
 
-                for (Iterator e = allByOrder.iterator(); e.hasNext();) {
+                for (Iterator<Object> e = allByOrder.iterator(); e.hasNext();) {
                     Object o = e.next();
                     if (o instanceof CData) {
                         CDATA_START.writeTo(os);
@@ -383,8 +400,8 @@ public class XmlFile {
                         // indent(n + 2, os);
                         r.writeTo(os);
                         // os.write(CRLF);
-                    } else if (o instanceof XmlFile.Tag) {
-                        ((XmlFile.Tag) o).write(os, n + 2, encoding);
+                    } else if (o instanceof Tag) {
+                        ((Tag) o).write(os, n + 2, encoding);
                     }
                 }
                 if (lf)
@@ -405,21 +422,24 @@ public class XmlFile {
         }
 
         void sort(String order) {
-            HashSet drop = new HashSet();
+            HashSet<String> drop = new HashSet<String>();
             drop.addAll(tagsByName.keySet());
-            ArrayList newOrder = new ArrayList();
-            for (StringTokenizer st = new StringTokenizer(order, ", ;\r\n\t"); st.hasMoreElements();) {
+            ArrayList<Object> newOrder = new ArrayList<Object>();
+            for (StringTokenizer st = new StringTokenizer(order, ", ;\r\n\t"); st
+                    .hasMoreElements();) {
                 String token = st.nextToken();
-                for (Iterator i = tagsByName.subMap(token, token + "#\255").entrySet().iterator(); i.hasNext();) {
-                    Map.Entry e = (Map.Entry) i.next();
+                for (Iterator<Entry<String, Tag>> i = tagsByName
+                        .subMap(token, token + "#\255").entrySet().iterator(); i
+                        .hasNext();) {
+                    Entry<String, Tag> e = i.next();
                     String key = (String) e.getKey();
                     drop.remove(key);
-                    XmlFile.Tag tag = (XmlFile.Tag) e.getValue();
+                    Tag tag = (Tag) e.getValue();
                     newOrder.add(tag);
                 }
             }
 
-            for (Iterator i = drop.iterator(); i.hasNext();) {
+            for (Iterator<String> i = drop.iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 tagsByName.remove(key);
             }
@@ -443,7 +463,7 @@ public class XmlFile {
         }
     }
 
-    private XmlFile.Tag root = null;
+    private Tag root = null;
 
     // / the file - if any
     private File file;
@@ -460,7 +480,7 @@ public class XmlFile {
      * @deprecated use XmlFile() and readFile()
      */
     public XmlFile(String fileName) {
-        root = new XmlFile.Tag("/", new SingleMap());
+        root = new Tag("/", new SingleMap<String, String>());
         setFile(fileName);
         readFile(fileName);
     }
@@ -469,7 +489,7 @@ public class XmlFile {
      * construct an XmlFile object without an file.
      */
     public XmlFile() {
-        root = new XmlFile.Tag("/", new SingleMap());
+        root = new Tag("/", new SingleMap<String, String>());
         file = null;
     }
 
@@ -526,8 +546,13 @@ public class XmlFile {
     }
 
     /**
-     * extract a complete tag from given ByteRef buffer <ul> <li>the content</li> <li>or the tag.</li> </ul> The buffer
-     * is modified to hold only the rest of data (without tag). or null, if buffer did not contain a complete tag.
+     * extract a complete tag from given ByteRef buffer
+     * <ul>
+     * <li>the content</li>
+     * <li>or the tag.</li>
+     * </ul>
+     * The buffer is modified to hold only the rest of data (without tag). or
+     * null, if buffer did not contain a complete tag.
      * 
      * @param br
      *            current buffer to parse
@@ -589,13 +614,14 @@ public class XmlFile {
             }
         }
         /*
-         * int stop, seek = start; for (;;) { stop = br.indexOf('>', seek); if (stop < 0) return null;
+         * int stop, seek = start; for (;;) { stop = br.indexOf('>', seek); if
+         * (stop < 0) return null;
          * 
-         * int q1Pos = br.indexOf('\'', seek) & 0x7fffffff; int q2Pos = br.indexOf('"', seek) & 0x7fffffff; if (q1Pos ==
-         * q2Pos) break;
+         * int q1Pos = br.indexOf('\'', seek) & 0x7fffffff; int q2Pos =
+         * br.indexOf('"', seek) & 0x7fffffff; if (q1Pos == q2Pos) break;
          * 
-         * int ch; if (q1Pos < q2Pos) { seek = q1Pos; ch = '\''; } else { seek = q2Pos; ch = '"'; } if (seek > stop)
-         * break;
+         * int ch; if (q1Pos < q2Pos) { seek = q1Pos; ch = '\''; } else { seek =
+         * q2Pos; ch = '"'; } if (seek > stop) break;
          * 
          * seek = br.indexOf(ch, seek + 1); if (seek < 0) return null; ++seek; }
          */
@@ -614,9 +640,9 @@ public class XmlFile {
      *            a ByteRef containing exact one tag.
      * @return A new Map with all attributes.
      */
-    private Map getAttrs(ByteRef tag) {
+    private Map<String, String> getAttrs(ByteRef tag) {
         // System.out.println("in: " + tag);
-        Map hrp = new SingleMap();
+        Map<String, String> hrp = new SingleMap<String, String>();
         for (;;) {
             int pos = tag.indexOf('=');
             if (pos < 0)
@@ -657,11 +683,12 @@ public class XmlFile {
      * Remove all content from this instance.
      */
     public void clear() {
-        root = new XmlFile.Tag("/", new SingleMap());
+        root = new Tag("/", new SingleMap<String, String>());
     }
 
     /**
-     * Read and parse the specified intput stream. Appends data to current instance.
+     * Read and parse the specified intput stream. Appends data to current
+     * instance.
      * 
      * @param is
      *            n input stream.
@@ -671,8 +698,8 @@ public class XmlFile {
             // buffers
             ByteRef br = new ByteRef();
             ByteRef l = br.update(is);
-            XmlFile.Tag here = root;
-            Stack stack = new Stack();
+            Tag here = root;
+            Stack<Tag> stack = new Stack<Tag>();
 
             while (l != null) {
                 // find next tag
@@ -725,9 +752,10 @@ public class XmlFile {
                     tag = tag.substring(1).trim();
 
                     if (!tag.equals(here.name))
-                        System.out.println("close tag mismatch! expected: " + here.name + " found: " + tag + " near "
+                        System.out.println("close tag mismatch! expected: "
+                                + here.name + " found: " + tag + " near "
                                 + here.getPath());
-                    here = (XmlFile.Tag) stack.pop();
+                    here = (Tag) stack.pop();
 
                     continue;
                 }
@@ -744,13 +772,13 @@ public class XmlFile {
                     tagName = tagName.substring(0, sp);
                 }
 
-                XmlFile.Tag neu = new XmlFile.Tag(tagName.toString(), getAttrs(tag));
+                Tag neu = new Tag(tagName.toString(), getAttrs(tag));
                 here.add(neu);
                 stack.push(here);
                 here = neu;
 
                 if (tag.charAt(0) == '/') {
-                    here = (XmlFile.Tag) stack.pop();
+                    here = (Tag) stack.pop();
                 }
             }
 
@@ -776,7 +804,8 @@ public class XmlFile {
         if (pos == tag.length())
             return;
 
-        while (pos < tag.length() && tag.charAt(pos) != '"' && tag.charAt(pos) != '\'') {
+        while (pos < tag.length() && tag.charAt(pos) != '"'
+                && tag.charAt(pos) != '\'') {
             ++pos;
         }
         if (pos == tag.length())
@@ -808,13 +837,16 @@ public class XmlFile {
     }
 
     /*
-     * private void fix(XmlFile.Tag here) { String last = ""; int count = 0; for (Iterator i =
-     * here.tagsByName.keySet().iterator(); i.hasNext();) { String key = (String)i.next(); if (!key.equals(last)) { last
-     * = key; count = 0; } else { if (count == 0) { XmlFile.Tag o = (XmlFile.Tag)here.tagsByName.get(key);
-     * here.tagsByName.remove(key, o); // here.tagsByName.remove(key); here.tagsByName.put(key + '#' + i2s(count++), o);
-     * } XmlFile.Tag o = (XmlFile.Tag)here.tagsByName.get(key); // if (!o.name.equals(key)) // throw new
-     * RuntimeException("mismatch: " + o.name +"!=" + key); here.tagsByName.remove(key, o); key = key + '#' +
-     * i2s(count++); here.tagsByName.put(key, o); } fix((XmlFile.Tag)here.tagsByName.get(key)); } }
+     * private void fix(Tag here) { String last = ""; int count = 0; for
+     * (Iterator i = here.tagsByName.keySet().iterator(); i.hasNext();) { String
+     * key = (String)i.next(); if (!key.equals(last)) { last = key; count = 0; }
+     * else { if (count == 0) { Tag o = (Tag)here.tagsByName.get(key);
+     * here.tagsByName.remove(key, o); // here.tagsByName.remove(key);
+     * here.tagsByName.put(key + '#' + i2s(count++), o); } Tag o =
+     * (Tag)here.tagsByName.get(key); // if (!o.name.equals(key)) // throw new
+     * RuntimeException("mismatch: " + o.name +"!=" + key);
+     * here.tagsByName.remove(key, o); key = key + '#' + i2s(count++);
+     * here.tagsByName.put(key, o); } fix((Tag)here.tagsByName.get(key)); } }
      */
     /**
      * Write all internal data to the file.
@@ -850,30 +882,33 @@ public class XmlFile {
         root.writeRoot(os, encoding);
     }
 
-    private XmlFile.Tag getTag(String path) {
+    private Tag getTag(String path) {
         path = path.substring(1);
-        XmlFile.Tag here = root;
-        for (int slash = path.indexOf('/'); here != null && path.length() > 0; slash = path.indexOf('/')) {
+        Tag here = root;
+        for (int slash = path.indexOf('/'); here != null && path.length() > 0; slash = path
+                .indexOf('/')) {
             String name = slash >= 0 ? path.substring(0, slash) : path;
             path = slash >= 0 ? path.substring(slash + 1) : "";
-            Iterator i = here.tagsByName.subMap(name, name + "#999999").values().iterator();
+            Iterator<Tag> i = here.tagsByName.subMap(name, name + "#999999")
+                    .values().iterator();
             if (i.hasNext())
-                here = (XmlFile.Tag) i.next();
+                here = (Tag) i.next();
             else
                 here = null;
         }
         return here;
     }
 
-    private XmlFile.Tag createTag(String path) {
+    private Tag createTag(String path) {
         if (path.length() == 0)
             return root;
         path = path.substring(1);
-        XmlFile.Tag here = root;
-        for (int slash = path.indexOf('/'); here != null && path.length() > 0; slash = path.indexOf('/')) {
+        Tag here = root;
+        for (int slash = path.indexOf('/'); here != null && path.length() > 0; slash = path
+                .indexOf('/')) {
             String name = slash >= 0 ? path.substring(0, slash) : path;
             path = slash >= 0 ? path.substring(slash + 1) : "";
-            XmlFile.Tag neu = (XmlFile.Tag) here.tagsByName.get(name);
+            Tag neu = (Tag) here.tagsByName.get(name);
             if (neu == null) {
                 String at = null;
                 if (name.charAt(0) == '\\') {
@@ -882,7 +917,7 @@ public class XmlFile {
                     at = name.substring(bs + 1);
                     name = name.substring(0, bs);
                 }
-                neu = new XmlFile.Tag(name);
+                neu = new Tag(name);
                 if (at != null)
                     neu.attributes.put("name", at);
                 here.add(neu);
@@ -893,8 +928,9 @@ public class XmlFile {
     }
 
     /**
-     * Get all sections for the given XML file, matching the path String. So "/foo/a" would match "/foo/all" and
-     * "/foo/any" but not "/foo/be". A path ending with '/' will return all contained elements.
+     * Get all sections for the given XML file, matching the path String. So
+     * "/foo/a" would match "/foo/all" and "/foo/any" but not "/foo/be". A path
+     * ending with '/' will return all contained elements.
      * 
      * @param path
      *            the match String
@@ -909,7 +945,7 @@ public class XmlFile {
         int sl = 1 + path.lastIndexOf('/');
         String opath = path.substring(0, sl);
         path = path.substring(sl);
-        XmlFile.Tag here = getTag(opath);
+        Tag here = getTag(opath);
         if (here == null)
             return v;
 
@@ -919,21 +955,25 @@ public class XmlFile {
 
         for (Iterator<Object> e = here.allByOrder.iterator(); e.hasNext();) {
             Object o = e.next();
-            if (o instanceof XmlFile.Tag) {
-                XmlFile.Tag tag = (XmlFile.Tag) o;
+            if (o instanceof Tag) {
+                Tag tag = (Tag) o;
                 String key = tag.getKey();
                 if ((path.length() == 0 && key.charAt(0) != '\\')
-                        || (path.length() != 0 && key.startsWith(path) && (wildStar || key.length() == path.length() || key
+                        || (path.length() != 0 && key.startsWith(path) && (wildStar
+                                || key.length() == path.length() || key
                                 .charAt(path.length()) == '#'))) {
                     v.add(opath + key + '/');
                 }
             }
         }
         /*
-         * for (Iterator i = here.tagsByName.keySet().iterator(); i.hasNext();) { String key = (String) i.next(); //
-         * System.out.println("K: " + key + "[" +(((XmlFile.Tag)here.tagsByName.get(key)).name) + "] *= P: " + path); if
-         * ((path.length() == 0 && key.charAt(0) != '\\') || (path.length() != 0 && key.startsWith(path) && (wildStar ||
-         * key.length() == path.length() || key.charAt(path.length()) == '#'))) { v.add(opath + key + '/'); } }
+         * for (Iterator i = here.tagsByName.keySet().iterator(); i.hasNext();)
+         * { String key = (String) i.next(); // System.out.println("K: " + key +
+         * "[" +(((Tag)here.tagsByName.get(key)).name) + "] *= P: " + path); if
+         * ((path.length() == 0 && key.charAt(0) != '\\') || (path.length() != 0
+         * && key.startsWith(path) && (wildStar || key.length() == path.length()
+         * || key.charAt(path.length()) == '#'))) { v.add(opath + key + '/'); }
+         * }
          */
         return v;
 
@@ -947,12 +987,13 @@ public class XmlFile {
      * @return a vector of String with all attribute names (keys)
      */
     public Vector<String> getKeys(String section) {
-        XmlFile.Tag here = getTag(section);
+        Tag here = getTag(section);
         if (here == null)
             return new Vector<String>();
 
         Vector<String> v = new Vector<String>(here.attributes.size());
-        for (Iterator<String> i = here.attributes.keySet().iterator(); i.hasNext();)
+        for (Iterator<String> i = here.attributes.keySet().iterator(); i
+                .hasNext();)
             v.add(i.next());
         return v;
     }
@@ -962,10 +1003,11 @@ public class XmlFile {
      * 
      * @param section
      *            the name of the section.
-     * @return a map containing the attributes, or null if section does not exist.
+     * @return a map containing the attributes, or null if section does not
+     *         exist.
      */
     public Map<String, String> getAttributes(String section) {
-        XmlFile.Tag here = getTag(section);
+        Tag here = getTag(section);
         if (here == null)
             return null;
         return Collections.unmodifiableMap(here.attributes);
@@ -985,7 +1027,8 @@ public class XmlFile {
      */
     public String getString(String section, String attribute, String def) {
         if (DEBUG)
-            System.out.print("getString(" + section + ", " + attribute + ",...)");
+            System.out.print("getString(" + section + ", " + attribute
+                    + ",...)");
         if (!section.endsWith("/"))
             section += '/';
         int sp = attribute.lastIndexOf('/');
@@ -994,7 +1037,7 @@ public class XmlFile {
             attribute = attribute.substring(sp + 1);
         }
 
-        XmlFile.Tag here = getTag(section);
+        Tag here = getTag(section);
         if (here != null) {
             String v = (String) here.attributes.get(attribute);
             if (v != null)
@@ -1006,11 +1049,18 @@ public class XmlFile {
     }
 
     /**
-     * Set a value for an attribute in the section for the given XML file. <ul> <li>If an attribute is added to a
-     * section which not exists, the section is created.</li> <li>If the attribute not yet exists, the attribute is
-     * created, otherwise the attributes value is replaced.</li> <li>If value == null the attribute is deleted.</li>
-     * <li>If attribute == null the section is deleted. Depending on value (==null) only the section itself is removed,
-     * or (!= null) itself and all children are deleted</li> </ul> .
+     * Set a value for an attribute in the section for the given XML file.
+     * <ul>
+     * <li>If an attribute is added to a section which not exists, the section
+     * is created.</li>
+     * <li>If the attribute not yet exists, the attribute is created, otherwise
+     * the attributes value is replaced.</li>
+     * <li>If value == null the attribute is deleted.</li>
+     * <li>If attribute == null the section is deleted. Depending on value
+     * (==null) only the section itself is removed, or (!= null) itself and all
+     * children are deleted</li>
+     * </ul>
+     * .
      * 
      * @param section
      *            the name of the section
@@ -1021,7 +1071,7 @@ public class XmlFile {
      * @see #getString
      */
     public void setString(String section, String attribute, String value) {
-        XmlFile.Tag here = getTag(section);
+        Tag here = getTag(section);
         // tag deletions
         if (attribute == null) {
             if (value == null) {
@@ -1073,16 +1123,19 @@ public class XmlFile {
      * @return a byte array with the nth content or null if section is invalid.
      */
     public byte[] getContentBytes(String section) {
-        XmlFile.Tag here = getTag(section);
+        Tag here = getTag(section);
         if (here == null)
             return null;
         return (byte[]) here.getContent().clone();
     }
 
     /**
-     * Get the specified content element of the section as String. The content is the part between the tags.
+     * Get the specified content element of the section as String. The content
+     * is the part between the tags.
      * 
-     * <pre> &lt;sometag attr1="a" ...&gt;CONTENT&lt;/sometag&gt; </pre>
+     * <pre>
+     * &lt;sometag attr1="a" ...&gt;CONTENT&lt;/sometag&gt;
+     * </pre>
      * 
      * @param section
      *            the name of a section.
@@ -1090,14 +1143,15 @@ public class XmlFile {
      * @see #setContent
      */
     public String getContent(String section) {
-        XmlFile.Tag here = getTag(section);
+        Tag here = getTag(section);
         if (here == null)
             return null;
         return decode(here.getContent(), encoding);
     }
 
     /**
-     * Set the specified content element of the section as String. If the section does not exist, it is created.
+     * Set the specified content element of the section as String. If the
+     * section does not exist, it is created.
      * 
      * @param section
      *            the name of a section.
@@ -1105,15 +1159,16 @@ public class XmlFile {
      *            the new content.
      */
     public void addComment(String section, String comment) {
-        XmlFile.Tag here = createTag(section);
+        Tag here = createTag(section);
         if (here == null)
             return;
-        here.addContent(new ByteRef("<!-- " + encode(comment, encoding) + " -->"));
+        here.addContent(new ByteRef("<!-- " + encode(comment, encoding)
+                + " -->"));
     }
 
     /**
-     * add a comment to the section as String. This erases all current content! If the section does not exist, it is
-     * created.
+     * add a comment to the section as String. This erases all current content!
+     * If the section does not exist, it is created.
      * 
      * @param section
      *            the name of a section.
@@ -1122,14 +1177,14 @@ public class XmlFile {
      * @see #getContent
      */
     public void setContent(String section, String content) {
-        XmlFile.Tag here = createTag(section);
+        Tag here = createTag(section);
         if (here == null)
             return;
         here.setContent(encode(content, encoding));
     }
 
     public void addContent(String section, String content) {
-        XmlFile.Tag here = createTag(section);
+        Tag here = createTag(section);
         if (here == null)
             return;
         here.addContent(encode(content, encoding));
@@ -1179,10 +1234,13 @@ public class XmlFile {
                         x[j] = (byte) '"';
                     }
                     /*
-                     * else if (r.equals("apos")) { x[j] = (byte) '\''; } else if (r.equals("szlig")) { x[j] = (byte)
-                     * '???'; } else if (r.equals("auml")) { x[j] = (byte) '???'; } else if (r.equals("ouml")) { x[j] =
-                     * (byte) '???'; } else if (r.equals("uuml")) { x[j] = (byte) '???'; } else if (r.equals("Auml")) {
-                     * x[j] = (byte) '???'; } else if (r.equals("Ouml")) { x[j] = (byte) '???'; } else if
+                     * else if (r.equals("apos")) { x[j] = (byte) '\''; } else
+                     * if (r.equals("szlig")) { x[j] = (byte) '???'; } else if
+                     * (r.equals("auml")) { x[j] = (byte) '???'; } else if
+                     * (r.equals("ouml")) { x[j] = (byte) '???'; } else if
+                     * (r.equals("uuml")) { x[j] = (byte) '???'; } else if
+                     * (r.equals("Auml")) { x[j] = (byte) '???'; } else if
+                     * (r.equals("Ouml")) { x[j] = (byte) '???'; } else if
                      * (r.equals("Uuml")) { x[j] = (byte) '???'; }
                      */
                     else
@@ -1217,7 +1275,8 @@ public class XmlFile {
         }
         if (b == null)
             b = s.getBytes();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream((b.length * 17) / 16);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(
+                (b.length * 17) / 16);
         try {
             for (int i = 0; i < b.length; ++i) {
                 byte c = b[i];
@@ -1241,11 +1300,13 @@ public class XmlFile {
                         bos.write("&apos;".getBytes());
                         break;
                     /*
-                     * case '???': bos.write("&#xE4;".getBytes()); break; case '???':
-                     * bos.write("&#xF6;".getBytes()); break; case '???': bos.write("&#xFC;".getBytes()); break;
-                     * case '???': bos.write("&#xC4;".getBytes()); break; case '???':
-                     * bos.write("&#xD6;".getBytes()); break; case '???': bos.write("&#xDC;".getBytes()); break;
-                     * case '???': bos.write("&#xDF;".getBytes()); break;
+                     * case '???': bos.write("&#xE4;".getBytes()); break; case
+                     * '???': bos.write("&#xF6;".getBytes()); break; case '???':
+                     * bos.write("&#xFC;".getBytes()); break; case '???':
+                     * bos.write("&#xC4;".getBytes()); break; case '???':
+                     * bos.write("&#xD6;".getBytes()); break; case '???':
+                     * bos.write("&#xDC;".getBytes()); break; case '???':
+                     * bos.write("&#xDF;".getBytes()); break;
                      */
                     default:
                         bos.write('&');
@@ -1267,17 +1328,19 @@ public class XmlFile {
                 root.allByOrder.remove(0);
         }
         if (encoding != null)
-            root.allByOrder.add(0, new ByteRef("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>"));
+            root.allByOrder.add(0, new ByteRef(
+                    "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>"));
     }
 
     /**
-     * Creates always a new section and returns its unique path. E.g. if there are duplicate sections
-     * createSection("/foo/bar") might return a different path, "/foo/bar#000005/" so your created section is clearly
-     * identified.
+     * Creates always a new section and returns its unique path. E.g. if there
+     * are duplicate sections createSection("/foo/bar") might return a different
+     * path, "/foo/bar#000005/" so your created section is clearly identified.
      * 
      * @param section
      *            the section to be created
-     * @return the unique section path to this section, always ending with a "/".
+     * @return the unique section path to this section, always ending with a
+     *         "/".
      */
     public String createSection(String section) {
         if (section.endsWith("/"))
@@ -1288,7 +1351,7 @@ public class XmlFile {
 
         Tag here = createTag(path);
 
-        XmlFile.Tag nt = new XmlFile.Tag(section);
+        Tag nt = new Tag(section);
         here.add(nt);
 
         return nt.getPath();
@@ -1300,7 +1363,8 @@ public class XmlFile {
      * @param section
      *            the name of the section = a path to the xml tag.
      * @param order
-     *            the ordered child tag names which is applied to the existing children.
+     *            the ordered child tag names which is applied to the existing
+     *            children.
      */
     public void sort(String section, String order) {
         Tag here = getTag(section);
@@ -1323,8 +1387,9 @@ public class XmlFile {
     }
 
     /**
-     * Get an Iterator for the child sections. The iterator returns a String containing the full path of the child
-     * section. so /foo/bar might iterate over /foo/bar/aaaa, foo/bar/bbbb, and so on
+     * Get an Iterator for the child sections. The iterator returns a String
+     * containing the full path of the child section. so /foo/bar might iterate
+     * over /foo/bar/aaaa, foo/bar/bbbb, and so on
      * 
      * @param sectionName
      *            the section name is an XML path like "/foo/bar"
@@ -1341,7 +1406,7 @@ public class XmlFile {
     public void setPreserveWhiteSpaces(boolean preserveWhiteSpaces) {
         this.preserveWhiteSpaces = preserveWhiteSpaces;
     }
-    
+
     public static String getLastSegment(final String key) {
         int slash = key.lastIndexOf('/', key.length() - 2) + 1;
         int num = key.indexOf('#', slash);
