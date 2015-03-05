@@ -1,0 +1,19 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.bb</groupId>
+		<artifactId>bb</artifactId>
+		<version>1.0.3</version>
+	</parent>
+	<groupId>de.bb</groupId>
+	<artifactId>security</artifactId>
+	<version>1.0.6</version>
+	<packaging>jar</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>de.bb</groupId>
+			<artifactId>util</artifactId>
+			<version>1.0.15-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>

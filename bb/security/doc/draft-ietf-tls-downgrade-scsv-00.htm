@@ -1,0 +1,765 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head profile="http://dublincore.org/documents/2008/08/04/dc-html/">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="index,follow">
+    <meta name="creator" content="rfcmarkup version 1.109">
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.Relation.Replaces" content="draft-bmoeller-tls-downgrade-scsv">
+<meta name="DC.Identifier" content="urn:ietf:id:ietf-tls-downgrade-scsv">
+<meta name="DC.Date.Issued" content="2014-12-15">
+<meta name="DC.Creator" content="Moeller, Bodo">
+<meta name="DC.Creator" content="Langley, Adam">
+<meta name="DC.Description.Abstract" content="This document defines a Signaling Cipher Suite Value (SCSV) that
+prevents protocol downgrade attacks on the Transport Layer Security
+(TLS) protocol. It updates RFC 2246, RFC 4346, and RFC 5246.">
+<meta name="DC.Title" content="TLS Fallback Signaling Cipher Suite Value (SCSV) for Preventing Protocol Downgrade Attacks">
+
+    <link rel="icon" href="https://tools.ietf.org/images/id.png" type="image/png">
+    <link rel="shortcut icon" href="https://tools.ietf.org/images/id.png" type="image/png">
+    <title>draft-ietf-tls-downgrade-scsv-00 - TLS Fallback Signaling Cipher Suite Value (SCSV) for Preventing Protocol Downgrade Attacks</title>
+    
+    
+    <style type="text/css">
+	body {
+	    margin: 0px 8px;
+            font-size: 1em;
+	}
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	    font-weight: bold;
+            line-height: 0pt;
+            display: inline;
+            white-space: pre;
+            font-family: monospace;
+            font-size: 1em;
+	    font-weight: bold;
+        }
+        pre {
+            font-size: 1em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+	.pre {
+	    white-space: pre;
+	    font-family: monospace;
+	}
+	.header{
+	    font-weight: bold;
+	}
+        .newpage {
+            page-break-before: always;
+        }
+        .invisible {
+            text-decoration: none;
+            color: white;
+        }
+        a.selflink {
+          color: black;
+          text-decoration: none;
+        }
+        @media print {
+            body {
+                font-family: monospace;
+                font-size: 10.5pt;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-size: 1em;
+            }
+        
+            a:link, a:visited {
+                color: inherit;
+                text-decoration: none;
+            }
+            .noprint {
+                display: none;
+            }
+        }
+	@media screen {
+	    .grey, .grey a:link, .grey a:visited {
+		color: #777;
+	    }
+            .docinfo {
+                background-color: #EEE;
+            }
+            .top {
+                border-top: 7px solid #EEE;
+            }
+            .bgwhite  { background-color: white; }
+            .bgred    { background-color: #F44; }
+            .bggrey   { background-color: #666; }
+            .bgbrown  { background-color: #840; }            
+            .bgorange { background-color: #FA0; }
+            .bgyellow { background-color: #EE0; }
+            .bgmagenta{ background-color: #F4F; }
+            .bgblue   { background-color: #66F; }
+            .bgcyan   { background-color: #4DD; }
+            .bggreen  { background-color: #4F4; }
+
+            .legend   { font-size: 90%; }
+            .cplate   { font-size: 70%; border: solid grey 1px; }
+	}
+    </style>
+    <!--[if IE]>
+    <style>
+    body {
+       font-size: 13px;
+       margin: 10px 10px;
+    }
+    </style>
+    <![endif]-->
+
+    <script type="text/javascript"><!--
+    function addHeaderTags() {
+	var spans = document.getElementsByTagName("span");
+	for (var i=0; i < spans.length; i++) {
+	    var elem = spans[i];
+	    if (elem) {
+		var level = elem.getAttribute("class");
+                if (level == "h1" || level == "h2" || level == "h3" || level == "h4" || level == "h5" || level == "h6") {
+                    elem.innerHTML = "<"+level+">"+elem.innerHTML+"</"+level+">";		
+                }
+	    }
+	}
+    }
+    var legend_html = "Colour legend:<br />      <table>         <tr><td>Unknown:</td>                   <td><span class='cplate bgwhite'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft:</td>                     <td><span class='cplate bgred'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Informational:</td>             <td><span class='cplate bgorange'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Experimental:</td>              <td><span class='cplate bgyellow'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Best Common Practice:</td>      <td><span class='cplate bgmagenta'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Proposed Standard:</td>         <td><span class='cplate bgblue'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft Standard (old designation):</td> <td><span class='cplate bgcyan'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Internet Standard:</td>         <td><span class='cplate bggreen'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Historic:</td>                  <td><span class='cplate bggrey'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Obsolete:</td>                  <td><span class='cplate bgbrown'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>     </table>";
+    function showElem(id) {
+        var elem = document.getElementById(id);
+        elem.innerHTML = eval(id+"_html");
+        elem.style.visibility='visible';
+    }
+    function hideElem(id) {
+        var elem = document.getElementById(id);
+        elem.style.visibility='hidden';        
+        elem.innerHTML = "";
+    }
+    // -->
+    </script>
+</head>
+<body onload="addHeaderTags()">
+   <div style="height: 13px;">
+      <div onmouseover="this.style.cursor='pointer';" onclick="showElem('legend');" onmouseout="hideElem('legend')" style="height: 6px; position: absolute; cursor: pointer;" class="pre noprint docinfo bgred" title="Click for colour legend.">                                                                        </div>
+      <div id="legend" class="docinfo noprint pre legend" style="position:absolute; top: 4px; left: 4ex; visibility:hidden; background-color: white; padding: 4px 9px 5px 7px; border: solid #345 1px; " onmouseover="showElem('legend');" onmouseout="hideElem('legend');"></div>
+   </div>
+<span class="pre noprint docinfo top">[<a href="https://tools.ietf.org/html/" title="Document search and retrieval page">Docs</a>] [<a href="https://tools.ietf.org/id/draft-ietf-tls-downgrade-scsv-00.txt" title="Plaintext version of this document">txt</a>|<a href="https://tools.ietf.org/pdf/draft-ietf-tls-downgrade-scsv-00.txt" title="PDF version of this document">pdf</a>|<a href="https://tools.ietf.org/id/draft-ietf-tls-downgrade-scsv-00.xml" title="XML source for this document">xml</a>] [<a href="https://datatracker.ietf.org/doc/draft-ietf-tls-downgrade-scsv" title="IESG Datatracker information for this document">Tracker</a>] [<a href="https://tools.ietf.org/wg/tls" title="The working group handling this document">WG</a>] [<a href="mailto:draft-ietf-tls-downgrade-scsv@tools.ietf.org?subject=draft-ietf-tls-downgrade-scsv%20" title="Send email to the document authors">Email</a>] [<a href="https://tools.ietf.org/rfcdiff?difftype=--hwdiff&amp;url2=draft-ietf-tls-downgrade-scsv-00.txt" title="Inline diff (wdiff)">Diff1</a>] [<a href="https://tools.ietf.org/rfcdiff?url2=draft-ietf-tls-downgrade-scsv-00.txt" title="Side-by-side diff">Diff2</a>] [<a href="https://tools.ietf.org/idnits?url=https://tools.ietf.org/id/draft-ietf-tls-downgrade-scsv-00.txt" title="Run an idnits check of this document">Nits</a>]      </span><br>
+<span class="pre noprint docinfo">                                                                        </span><br>
+<span class="pre noprint docinfo">Versions: (<a href="https://tools.ietf.org/html/draft-bmoeller-tls-downgrade-scsv" title="Precursor">draft-bmoeller-tls-downgrade-scsv</a>)                           
+          <a href="https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-00">00</a> <a href="https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-01">01</a> <a href="https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-02">02</a> <a href="https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-03">03</a>                                                   </span><br>
+<span class="pre noprint docinfo">                                                                        </span><br>
+<pre>Network Working Group                                         B. Moeller
+Internet-Draft                                                A. Langley
+Updates: <a href="https://tools.ietf.org/html/rfc2246">2246</a>, <a href="https://tools.ietf.org/html/rfc4346">4346</a>, <a href="https://tools.ietf.org/html/rfc5246">5246</a>                                         Google
+(if approved)                                               July 4, 2014
+Intended status: Standards Track
+Expires: January 5, 2015
+
+
+TLS Fallback Signaling Cipher Suite Value (SCSV) for Preventing Protocol
+                           Downgrade Attacks
+                    <a href="https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-00">draft-ietf-tls-downgrade-scsv-00</a>
+
+Abstract
+
+   This document defines a Signaling Cipher Suite Value (SCSV) that
+   prevents protocol downgrade attacks on the Transport Layer Security
+   (TLS) protocol.  It updates <a href="https://tools.ietf.org/html/rfc2246">RFC 2246</a>, <a href="https://tools.ietf.org/html/rfc4346">RFC 4346</a>, and <a href="https://tools.ietf.org/html/rfc5246">RFC 5246</a>.
+
+Status of this Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of <a href="https://tools.ietf.org/html/bcp78">BCP 78</a> and <a href="https://tools.ietf.org/html/bcp79">BCP 79</a>.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at <a href="http://datatracker.ietf.org/drafts/current/">http://datatracker.ietf.org/drafts/current/</a>.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on January 5, 2015.
+
+Copyright Notice
+
+   Copyright (c) 2014 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to <a href="https://tools.ietf.org/html/bcp78">BCP 78</a> and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (<a href="http://trustee.ietf.org/license-info">http://trustee.ietf.org/license-info</a>) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in <a href="#section-4">Section 4</a>.e of
+   the Trust Legal Provisions and are provided without warranty as
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 1]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-2" id="page-2" href="#page-2" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+   described in the Simplified BSD License.
+
+
+Table of Contents
+
+   <a href="#section-1">1</a>.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-3">3</a>
+   <a href="#section-2">2</a>.  Protocol values  . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-4">4</a>
+   <a href="#section-3">3</a>.  Server behavior  . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-5">5</a>
+   <a href="#section-4">4</a>.  Client behavior  . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-6">6</a>
+   <a href="#section-5">5</a>.  Security Considerations  . . . . . . . . . . . . . . . . . . .  <a href="#page-7">7</a>
+   <a href="#section-6">6</a>.  IANA Considerations  . . . . . . . . . . . . . . . . . . . . .  <a href="#page-8">8</a>
+   <a href="#section-7">7</a>.  References . . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-9">9</a>
+     <a href="#section-7.1">7.1</a>.  Normative References . . . . . . . . . . . . . . . . . . .  <a href="#page-9">9</a>
+     <a href="#section-7.2">7.2</a>.  Informal References  . . . . . . . . . . . . . . . . . . .  <a href="#page-9">9</a>
+   <a href="#appendix-A">Appendix A</a>.  Acknowledgements  . . . . . . . . . . . . . . . . . . <a href="#page-10">10</a>
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-11">11</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 2]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-3" id="page-3" href="#page-3" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-1" href="#section-1">1</a>.  Introduction</h2></span>
+
+   To work around interoperability problems with legacy servers, many
+   TLS client implementations do not rely on the TLS protocol version
+   negotiation mechanism alone, but will intentionally reconnect using a
+   downgraded protocol if initial handshake attempts fail.  Such clients
+   may fall back to connections in which they announce a version as low
+   as TLS 1.0 (or even its predecessor, SSL 3.0) as the highest
+   supported version.
+
+   While such protocol downgrades can be a useful last resort for
+   connections to actual legacy servers, there's a risk that active
+   attackers could exploit the downgrade strategy to weaken the
+   cryptographic security of connections.  Also, handshake errors due to
+   network glitches could similarly be misinterpreted as interaction
+   with a legacy server and result in a protocol downgrade.
+
+   All unnecessary protocol downgrades are undesirable (e.g., from TLS
+   1.2 to TLS 1.1 if both the client and the server actually do support
+   TLS 1.2); they can be particularly critical if they mean losing the
+   TLS extension feature (when downgrading to SSL 3.0).  This document
+   defines a Signaling Cipher Suite Value (SCSV) that can be employed to
+   prevent unintended protocol downgrades between clients and servers
+   that comply to this document, by having the client indicate that the
+   current connection attempt is merely a fallback.
+
+   This specification applies to implementations of TLS 1.0 [<a href="https://tools.ietf.org/html/rfc2246" title="&quot;The TLS Protocol Version 1.0&quot;">RFC2246</a>],
+   TLS 1.1 [<a href="https://tools.ietf.org/html/rfc4346" title="&quot;The Transport Layer Security (TLS) Protocol Version 1.1&quot;">RFC4346</a>], and TLS 1.2 [<a href="https://tools.ietf.org/html/rfc5246" title="&quot;The Transport Layer Security (TLS) Protocol Version 1.2&quot;">RFC5246</a>].  (It is particularly
+   relevant if such implementations also include support for predecessor
+   protocol SSL 3.0 [<a href="https://tools.ietf.org/html/rfc6101" title="&quot;The Secure Sockets Layer (SSL) Protocol Version 3.0&quot;">RFC6101</a>].)  It can be applied similarly to later
+   protocol versions.
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [<a href="https://tools.ietf.org/html/rfc2119" title="&quot;Key words for use in RFCs to Indicate Requirement Levels&quot;">RFC2119</a>].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 3]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-4" id="page-4" href="#page-4" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-2" href="#section-2">2</a>.  Protocol values</h2></span>
+
+   This document defines a new TLS cipher suite value:
+
+        TLS_FALLBACK_SCSV          {0x56, 0x00}
+
+   This is a signaling cipher suite value (SCSV), i.e., it does not
+   actually correspond to a suite of cryptosystems, and it can never be
+   selected by the server in the handshake; rather, its presence in the
+   client hello message serves as a backwards-compatible signal from the
+   client to the server.
+
+   This document also allocates a new alert value in the TLS Alert
+   Registry [<a href="https://tools.ietf.org/html/rfc5246" title="&quot;The Transport Layer Security (TLS) Protocol Version 1.2&quot;">RFC5246</a>]:
+
+        enum {
+          /* ... */
+          inappropriate_fallback(86),
+          /* ... */
+          (255)
+        } AlertDescription;
+
+   This alert is only generated by servers, as described in <a href="#section-3">Section 3</a>.
+   It is always fatal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 4]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-5" id="page-5" href="#page-5" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-3" href="#section-3">3</a>.  Server behavior</h2></span>
+
+   This section specifies server behavior when receiving the
+   TLS_FALLBACK_SCSV cipher suite from a client in
+   ClientHello.cipher_suites.
+
+   o  If TLS_FALLBACK_SCSV appears in ClientHello.cipher_suites and the
+      highest protocol version supported by the server is higher than
+      the version indicated in ClientHello.client_version, the server
+      MUST respond with an inappropriate_fallback alert.
+
+   Otherwise (either TLS_FALLBACK_SCSV does not appear, or it appears
+   and the client's protocol version is at least the highest protocol
+   version supported by the server), the server proceeds with the
+   handshake as usual.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 5]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-6" id="page-6" href="#page-6" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-4" href="#section-4">4</a>.  Client behavior</h2></span>
+
+   The TLS_FALLBACK_SCSV cipher suite value is meant for use by clients
+   that repeat a connection attempt with a downgraded protocol in order
+   to avoid interoperability problems with legacy servers.  This section
+   specifies when to send it.
+
+   o  If a client sends a ClientHello.client_version containing a lower
+      value than the latest (highest-valued) version supported by the
+      client, it SHOULD include the TLS_FALLBACK_SCSV cipher suite value
+      in ClientHello.cipher_suites.  (Since the cipher suite list in the
+      ClientHello is ordered by preference, with the client's favorite
+      choice first, signaling cipher suite values will generally appear
+      after all cipher suites that the client actually intends to
+      negotiate.)
+
+      However, as an exception to the above, when the client intends to
+      perform an abbreviated handshake to resume a previously negotiated
+      session and sets ClientHello.client_version to the protocol
+      version negotiated for that session, the client MUST NOT include
+      TLS_FALLBACK_SCSV in ClientHello.cipher_suites.
+
+   Note that in the above, a protocol version is not considered
+   supported by the client if it has been disabled by any applicable
+   system or user settings: it is about the highest protocol version
+   that the client would attempt using in a handshake, not about the
+   highest protocol version implemented if its use is not actually
+   enabled.  (For example, if the implementation supports TLS 1.2 but
+   the user has disabled this protocol version, a TLS 1.1 handshake is
+   expected and does not warrant sending TLS_FALLBACK_SCSV.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 6]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-7" id="page-7" href="#page-7" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-5" href="#section-5">5</a>.  Security Considerations</h2></span>
+
+   <a href="#section-4">Section 4</a> does not require client implementations to send
+   TLS_FALLBACK_SCSV in any particular case, it merely recommends it;
+   behavior can be adapted according to the client's security needs.
+   For example, during the initial deployment of a new protocol version
+   (when some interoperability problems may have to be expected),
+   smoothly falling back to the previous protocol version in case of
+   problems may be preferrable to potentially not being able to connect
+   at all: so TLS_FALLBACK_SCSV could be omitted for this particular
+   protocol downgrade step.
+
+   However, it is strongly recommended to send TLS_FALLBACK_SCSV when
+   downgrading to SSL 3.0 as the CBC cipher suites in SSL 3.0 have
+   weaknesses that cannot be addressed by implementation workarounds
+   like the remaining weaknesses in later (TLS) protocol versions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 7]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-8" id="page-8" href="#page-8" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-6" href="#section-6">6</a>.  IANA Considerations</h2></span>
+
+   [[ NOTE IN DRAFT: The requested registry allocation requires
+   Standards Action, i.e., will only be official with the IESG's
+   Standards Track RFC approval.  Since this document is currently an
+   Internet-Draft, IANA so far has in fact not added the cipher suite
+   number to the registry. ]]
+
+   IANA has added TLS cipher suite number 0x56,0x00 with name
+   TLS_FALLBACK_SCSV to the TLS Cipher Suite registry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 8]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-9" id="page-9" href="#page-9" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-7" href="#section-7">7</a>.  References</h2></span>
+
+<span class="h3"><h3><a class="selflink" name="section-7.1" href="#section-7.1">7.1</a>.  Normative References</h3></span>
+
+   [<a name="ref-RFC2119" id="ref-RFC2119">RFC2119</a>]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", <a href="https://tools.ietf.org/html/bcp14">BCP 14</a>, <a href="https://tools.ietf.org/html/rfc2119">RFC 2119</a>, March 1997.
+
+   [<a name="ref-RFC2246" id="ref-RFC2246">RFC2246</a>]  Dierks, T. and C. Allen, "The TLS Protocol Version 1.0",
+              <a href="https://tools.ietf.org/html/rfc2246">RFC 2246</a>, January 1999.
+
+   [<a name="ref-RFC4346" id="ref-RFC4346">RFC4346</a>]  Dierks, T. and E. Rescorla, "The Transport Layer Security
+              (TLS) Protocol Version 1.1", <a href="https://tools.ietf.org/html/rfc4346">RFC 4346</a>, April 2006.
+
+   [<a name="ref-RFC5246" id="ref-RFC5246">RFC5246</a>]  Dierks, T. and E. Rescorla, "The Transport Layer Security
+              (TLS) Protocol Version 1.2", <a href="https://tools.ietf.org/html/rfc5246">RFC 5246</a>, August 2008.
+
+<span class="h3"><h3><a class="selflink" name="section-7.2" href="#section-7.2">7.2</a>.  Informal References</h3></span>
+
+   [<a name="ref-RFC6101" id="ref-RFC6101">RFC6101</a>]  Freier, A., Karlton, P., and P. Kocher, "The Secure
+              Sockets Layer (SSL) Protocol Version 3.0", <a href="https://tools.ietf.org/html/rfc6101">RFC 6101</a>,
+              August 2011.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015                [Page 9]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-10" id="page-10" href="#page-10" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+<span class="h2"><h2><a class="selflink" name="appendix-A" href="#appendix-A">Appendix A</a>.  Acknowledgements</h2></span>
+
+   This specification was inspired by an earlier proposal by Eric
+   Rescorla.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Moeller &amp; Langley        Expires January 5, 2015               [Page 10]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-11" id="page-11" href="#page-11" class="invisible"> </a>
+<span class="grey">Internet-Draft              TLS Fallback SCSV                  July 2014</span>
+
+
+Authors' Addresses
+
+   Bodo Moeller
+   Google Switzerland GmbH
+   Brandschenkestrasse 110
+   Zurich  8002
+   Switzerland
+
+   Email: bmoeller@acm.org
+
+
+   Adam Langley
+   Google Inc.
+   345 Spear St
+   San Francisco, CA  94105
+   USA
+
+   Email: agl@google.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Moeller &amp; Langley        Expires January 5, 2015               [Page 11]
+
+</pre><br>
+<span class="noprint"><small><small>Html markup produced by rfcmarkup 1.109, available from
+<a href="https://tools.ietf.org/tools/rfcmarkup/">https://tools.ietf.org/tools/rfcmarkup/</a>
+</small></small></span>
+
+</body></html>

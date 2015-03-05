@@ -1,0 +1,6399 @@
+%PDF-1.2
+%«Ïè¢
+5 0 obj
+<</Length 6 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0141176 Tc
+/R9 30 Tf
+1 0 0 1 89.97 664.53 Tm
+(PKCS #6: Extended-)Tj
+ET
+Q
+1 g
+737.75 5787.75 3622 6 re
+f*
+0 g
+737.75 5795.75 3622 4 re
+f*
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0184615 Tc
+/R9 30 Tf
+1 0 0 1 89.97 628.05 Tm
+(Certificate Syntax Standard)Tj
+0.030625 Tc
+/R9 13.92 Tf
+45.6 TL
+(An RSA Laboratories Technical Note)'
+0.00642187 Tc
+18 TL
+(Version 1.5)'
+0.00699049 Tc
+(Revised November 1, 1993)'
+-0.114844 Tc
+/R11 10.08 Tf
+178.08 3.12 Td
+(*)Tj
+0.00435268 Tc
+/R13 13.92 Tf
+-178.08 -53.76 Td
+(1. Scope)Tj
+0.0602344 Tc
+/R15 12 Tf
+32.64 TL
+(This )'
+0.0316406 Tc
+31.92 0 Td
+(standard )Tj
+0.0402083 Tc
+56.4 0 Td
+(describes )Tj
+0.12 Tc
+58.32 0 Td
+(a )Tj
+0.0121875 Tc
+14.88 0 Td
+(syntax )Tj
+0.0642188 Tc
+43.92 0 Td
+(for )Tj
+0.0407227 Tc
+24.48 0 Td
+(extended )Tj
+0.0260337 Tc
+58.32 0 Td
+(certificates. )Tj
+0.0602344 Tc
+69.12 0 Td
+(An )Tj
+0.0293973 Tc
+25.44 0 Td
+(extended)Tj
+0.0242045 Tc
+-382.8 -14.4 Td
+(certificate )Tj
+-0.0162891 Tc
+58.32 0 Td
+(consists )Tj
+0.0663281 Tc
+47.76 0 Td
+(of )Tj
+0.0480469 Tc
+17.04 0 Td
+(an )Tj
+0.0312187 Tc
+19.44 0 Td
+(X.509 )Tj
+0.0518906 Tc
+35.52 0 Td
+(public-key )Tj
+0.0242045 Tc
+63.36 0 Td
+(certificate )Tj
+0.068125 Tc
+58.32 0 Td
+(and )Tj
+0.12 Tc
+27.12 0 Td
+(a )Tj
+0.00421875 Tc
+12.72 0 Td
+(set )Tj
+0.0663281 Tc
+21.36 0 Td
+(of )Tj
+0.008625 Tc
+17.28 0 Td
+(attributes,)Tj
+0.0272266 Tc
+-378.24 -14.4 Td
+(collectively )Tj
+0.0542188 Tc
+66 0 Td
+(signed )Tj
+0.126328 Tc
+41.28 0 Td
+(by )Tj
+0.0121875 Tc
+19.2 0 Td
+(the )Tj
+0.0282031 Tc
+22.32 0 Td
+(issuer )Tj
+0.0663281 Tc
+37.2 0 Td
+(of )Tj
+0.0121875 Tc
+16.32 0 Td
+(the )Tj
+0.0312187 Tc
+22.32 0 Td
+(X.509 )Tj
+0.0518906 Tc
+34.8 0 Td
+(public-key )Tj
+0.0321875 Tc
+62.64 0 Td
+(certificate. )Tj
+0.0242578 Tc
+60.72 0 Td
+(Thus )Tj
+-0.0417188 Tc
+32.64 0 Td
+(the)Tj
+0.008625 Tc
+-415.44 -14.4 Td
+(attributes )Tj
+0.068125 Tc
+55.68 0 Td
+(and )Tj
+0.0121875 Tc
+25.44 0 Td
+(the )Tj
+0.0212109 Tc
+21.6 0 Td
+(enclosed )Tj
+0.0312187 Tc
+51.6 0 Td
+(X.509 )Tj
+0.0518906 Tc
+34.32 0 Td
+(public-key )Tj
+0.0242045 Tc
+62.16 0 Td
+(certificate )Tj
+0.0160937 Tc
+57.12 0 Td
+(can )Tj
+0.108281 Tc
+23.52 0 Td
+(be )Tj
+0.0691992 Tc
+17.76 0 Td
+(verified )Tj
+0.0512109 Tc
+47.04 0 Td
+(with )Tj
+0 Tc
+29.76 0 Td
+(a)Tj
+0.0542188 Tc
+-426 -14.4 Td
+(single )Tj
+0.0518906 Tc
+35.28 0 Td
+(public-key )Tj
+0.0169687 Tc
+60.48 0 Td
+(operation, )Tj
+0.068125 Tc
+57.84 0 Td
+(and )Tj
+0.0480469 Tc
+24 0 Td
+(an )Tj
+0.0511523 Tc
+16.56 0 Td
+(ordinary )Tj
+0.0312187 Tc
+50.4 0 Td
+(X.509 )Tj
+0.0242045 Tc
+32.88 0 Td
+(certificate )Tj
+0.0160937 Tc
+55.68 0 Td
+(can )Tj
+0.108281 Tc
+22.08 0 Td
+(be )Tj
+0.0188542 Tc
+16.32 0 Td
+(extracted )Tj
+0.192656 Tc
+52.8 0 Td
+(if)Tj
+0.0470937 Tc
+-424.32 -14.4 Td
+(needed, e.g., for Privacy-Enhanced Mail \(PEM\).)Tj
+0.0642188 Tc
+26.4 TL
+(The )'
+0.006875 Tc
+23.52 0 Td
+(intention )Tj
+0.0663281 Tc
+51.36 0 Td
+(of )Tj
+0.0522396 Tc
+13.92 0 Td
+(including )Tj
+0.12 Tc
+54.72 0 Td
+(a )Tj
+0.00421875 Tc
+9.6 0 Td
+(set )Tj
+0.0663281 Tc
+18.24 0 Td
+(of )Tj
+0.008625 Tc
+14.16 0 Td
+(attributes )Tj
+0.0902344 Tc
+54.24 0 Td
+(is )Tj
+-0.0117188 Tc
+12.24 0 Td
+(to )Tj
+0.0342188 Tc
+13.92 0 Td
+(extend )Tj
+0.0121875 Tc
+39.6 0 Td
+(the )Tj
+0.0205168 Tc
+20.16 0 Td
+(certification )Tj
+-0.0257812 Tc
+66.72 0 Td
+(process)Tj
+0.04625 Tc
+-392.4 -14.4 Td
+(beyond )Tj
+0.00925781 Tc
+43.44 0 Td
+(just )Tj
+0.0121875 Tc
+22.32 0 Td
+(the )Tj
+0.0542969 Tc
+19.92 0 Td
+(public )Tj
+0.07625 Tc
+36.96 0 Td
+(key )Tj
+-0.0117188 Tc
+22.56 0 Td
+(to )Tj
+0.0447991 Tc
+13.68 0 Td
+(certify )Tj
+0.00496875 Tc
+37.44 0 Td
+(other )Tj
+0.0165767 Tc
+31.2 0 Td
+(information )Tj
+0.0050625 Tc
+66.72 0 Td
+(about )Tj
+0.12 Tc
+33.6 0 Td
+(a )Tj
+0.0409687 Tc
+9.36 0 Td
+(given )Tj
+0.0344866 Tc
+33.12 0 Td
+(entity, )Tj
+-0.0517188 Tc
+37.2 0 Td
+(such)Tj
+0.0360937 Tc
+-407.52 -14.4 Td
+(as )Tj
+0.0282187 Tc
+15.36 0 Td
+(electronic-mail )Tj
+0.0541406 Tc
+83.52 0 Td
+(address. )Tj
+0.144375 Tc
+48.96 0 Td
+(A )Tj
+0.00190848 Tc
+13.92 0 Td
+(non-exhaustive )Tj
+0.0542578 Tc
+86.16 0 Td
+(list )Tj
+0.0663281 Tc
+20.64 0 Td
+(of )Tj
+0.008625 Tc
+15.12 0 Td
+(attributes )Tj
+0.0902344 Tc
+55.2 0 Td
+(is )Tj
+0.0409687 Tc
+13.2 0 Td
+(given )Tj
+0.102187 Tc
+34.32 0 Td
+(in )Tj
+-0.0957812 Tc
+15.12 0 Td
+(PKCS)Tj
+0.06 Tc
+-401.52 -14.4 Td
+(#9.)Tj
+0.0642188 Tc
+(The )'
+0.0503693 Tc
+30.24 0 Td
+(preliminary )Tj
+0.0437109 Tc
+73.68 0 Td
+(intended )Tj
+0.01875 Tc
+57.84 0 Td
+(application )Tj
+0.0663281 Tc
+69.84 0 Td
+(of )Tj
+0.0212109 Tc
+20.64 0 Td
+(this )Tj
+0.0316406 Tc
+29.52 0 Td
+(standard )Tj
+0.0902344 Tc
+57.6 0 Td
+(is )Tj
+0.102187 Tc
+18.96 0 Td
+(in )Tj
+-0.0418359 Tc
+20.88 0 Td
+(PKCS )Tj
+0 Tc
+40.8 0 Td
+(#7)Tj
+0.0121875 Tc
+-420 -14.4 Td
+(cryptographic )Tj
+0.0148437 Tc
+82.32 0 Td
+(messages, )Tj
+0.0323437 Tc
+60.48 0 Td
+(but )Tj
+0.0782812 Tc
+25.44 0 Td
+(it )Tj
+0.0902344 Tc
+15.12 0 Td
+(is )Tj
+0.0227344 Tc
+16.32 0 Td
+(expected )Tj
+-0.0118359 Tc
+54.96 0 Td
+(that )Tj
+0.00496875 Tc
+28.32 0 Td
+(other )Tj
+0.0132031 Tc
+35.52 0 Td
+(applications )Tj
+0.129258 Tc
+72.48 0 Td
+(will )Tj
+0.0965625 Tc
+28.56 0 Td
+(be)Tj
+0.0375521 Tc
+-419.52 -14.4 Td
+(developed.)Tj
+0.04125 Tc
+/R13 13.92 Tf
+46.8 TL
+(2. References)'
+-0.00734375 Tc
+/R15 10.08 Tf
+31.2 TL
+(PKCS #1)'
+0.0576563 Tc
+72 0 Td
+(RSA )Tj
+0.0412861 Tc
+24.24 0 Td
+(Laboratories. )Tj
+0.0276562 Tc
+/R17 10.08 Tf
+63.36 0 Td
+(PKCS )Tj
+0.08 Tc
+29.52 0 Td
+(#1: )Tj
+-0.015 Tc
+17.04 0 Td
+(RSA )Tj
+0.0095625 Tc
+23.76 0 Td
+(Encryption )Tj
+0.00544922 Tc
+50.64 0 Td
+(Standard.)Tj
+0.12 Tc
+/R15 10.08 Tf
+40.08 0 Td
+( )Tj
+0.00234375 Tc
+4.56 0 Td
+(Version )Tj
+0.09 Tc
+39.12 0 Td
+(1.5, )Tj
+0.0104464 Tc
+19.92 0 Td
+(November)Tj
+0.03 Tc
+-312.24 -12.24 Td
+(1993,)Tj
+0.126316 Tc
+/R15 12 Tf
+-72 -44.4 Td
+(                    )Tj
+ET
+Q
+5 w
+749.75 1127.75 m
+1269.75 1127.75 l
+S
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.126316 Tc
+/R15 12 Tf
+1 0 0 1 152.37 131.73 Tm
+(                    )Tj
+ET
+Q
+1269.75 1127.75 m
+1789.75 1127.75 l
+S
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.14 Tc
+/R15 12 Tf
+1 0 0 1 214.77 131.73 Tm
+(       )Tj
+ET
+Q
+1789.75 1127.75 m
+1971.75 1127.75 l
+S
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.039375 Tc
+/R15 7.92 Tf
+1 0 0 1 89.97 111.09 Tm
+(*)Tj
+-0.00604687 Tc
+/R15 9.12 Tf
+3.12 -3.12 Td
+(Supersedes )Tj
+0.0371484 Tc
+50.4 0 Td
+(June )Tj
+0.12 Tc
+23.04 0 Td
+(3, )Tj
+0.03 Tc
+11.76 0 Td
+(1991 )Tj
+0.00873047 Tc
+23.04 0 Td
+(version, )Tj
+0.0312187 Tc
+36.96 0 Td
+(which )Tj
+0.0557812 Tc
+29.76 0 Td
+(was )Tj
+0.0351563 Tc
+20.88 0 Td
+(also )Tj
+-0.000572917 Tc
+21.12 0 Td
+(published )Tj
+0.0466406 Tc
+45.36 0 Td
+(as )Tj
+0.0368555 Tc
+13.44 0 Td
+(NIST/OSI )Tj
+0.0188582 Tc
+46.8 0 Td
+(Implementors' )Tj
+0.0105134 Tc
+63.84 0 Td
+(Workshop)Tj
+0.0182432 Tc
+-389.52 -11.04 Td
+(document SEC-SIG-91-21. PKCS documents are available by electronic mail to )Tj
+0.0519952 Tc
+/R19 9.12 Tf
+318 0 Td
+(<pkcs@rsa.com>)Tj
+0.12 Tc
+/R15 9.12 Tf
+77.28 0 Td
+(.)Tj
+-0.00260417 Tc
+/R15 10.08 Tf
+-395.28 -24.72 Td
+(Copyright )Tj
+ET
+Q
+q
+149.75 6533.75 m
+1219.75 6533.75 l
+1219.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.043125 Tc
+/R20 10.08 Tf
+1 0 0 1 138.45 72.21 Tm
+(”)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.03 Tc
+/R15 10.08 Tf
+1 0 0 1 146.37 72.21 Tm
+( 1991)Tj
+0 Tc
+22.8 0 Td
+(ñ)Tj
+ET
+Q
+q
+1451.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+1451.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0313375 Tc
+/R15 10.08 Tf
+1 0 0 1 174.21 72.21 Tm
+(1993 RSA Laboratories, a division of RSA Data Security, Inc. License to copy)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0213206 Tc
+/R15 10.08 Tf
+1 0 0 1 89.97 59.73 Tm
+(this document is granted provided that it is identified as "RSA Data Security, Inc. Public-Key)Tj
+0.00732013 Tc
+12.24 TL
+(Cryptography Standards \(PKCS\)" in all material mentioning or referencing this document.)'
+0.0505804 Tc
+/R19 7.92 Tf
+9.36 TL
+(003-903021-150-000-000)'
+ET
+Q
+Q
+endstream
+endobj
+6 0 obj
+7605
+endobj
+24 0 obj
+<</Length 25 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0331641 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(Page )Tj
+0 Tc
+28.8 0 Td
+(2)Tj
+0.0201042 Tc
+127.2 0 Td
+(PKCS #6: E)Tj
+-0.009375 Tc
+/R15 9.6 Tf
+59.28 0 Td
+(XTENDED)Tj
+-0.0234375 Tc
+/R15 12 Tf
+46.8 0 Td
+(-C)Tj
+-0.0314531 Tc
+/R15 9.6 Tf
+12.48 0 Td
+(ERTIFICATE )Tj
+-0.06 Tc
+/R15 12 Tf
+58.08 0 Td
+(S)Tj
+0.0366562 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(YNTAX )Tj
+-0.06 Tc
+/R15 12 Tf
+36.72 0 Td
+(S)Tj
+0.0146875 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(TANDARD)Tj
+-0.00734375 Tc
+/R15 10.08 Tf
+-381.84 -34.56 Td
+(PKCS #7)Tj
+0.0576563 Tc
+72 0 Td
+(RSA )Tj
+0.0412861 Tc
+23.28 0 Td
+(Laboratories. )Tj
+0.0276562 Tc
+/R17 10.08 Tf
+62.4 0 Td
+(PKCS )Tj
+0.08 Tc
+28.56 0 Td
+(#7: )Tj
+0.0140986 Tc
+16.08 0 Td
+(Cryptographic )Tj
+-0.00495536 Tc
+62.4 0 Td
+(Message )Tj
+0.00664063 Tc
+37.92 0 Td
+(Syntax )Tj
+0.00544922 Tc
+32.4 0 Td
+(Standard.)Tj
+0.12 Tc
+/R15 10.08 Tf
+40.08 0 Td
+( )Tj
+0.00234375 Tc
+3.36 0 Td
+(Version )Tj
+0.08 Tc
+38.16 0 Td
+(1.5,)Tj
+0.0240865 Tc
+-344.64 -12.24 Td
+(November 1993.)Tj
+-0.00734375 Tc
+-72 -24.48 Td
+(PKCS #9)Tj
+0.0576563 Tc
+72 0 Td
+(RSA )Tj
+0.0412861 Tc
+25.2 0 Td
+(Laboratories. )Tj
+0.0276562 Tc
+/R17 10.08 Tf
+64.32 0 Td
+(PKCS )Tj
+0.08 Tc
+30.48 0 Td
+(#9: )Tj
+-0.0185742 Tc
+18 0 Td
+(Selected )Tj
+-0.0246354 Tc
+37.68 0 Td
+(Attribute )Tj
+0.007875 Tc
+43.44 0 Td
+(Types.)Tj
+0.12 Tc
+/R15 10.08 Tf
+26.64 0 Td
+( )Tj
+0.00234375 Tc
+5.52 0 Td
+(Version )Tj
+0.09 Tc
+40.08 0 Td
+(1.1, )Tj
+0.0104464 Tc
+20.88 0 Td
+(November)Tj
+0.03 Tc
+-312.24 -12.24 Td
+(1993.)Tj
+0.0108482 Tc
+-72 -24.48 Td
+(RFC 1422)Tj
+0.114141 Tc
+72 0 Td
+(S. )Tj
+0.012375 Tc
+13.68 0 Td
+(Kent. )Tj
+0.0096875 Tc
+/R17 10.08 Tf
+29.52 0 Td
+(RFC )Tj
+0.048 Tc
+24.72 0 Td
+(1422: )Tj
+0.0372321 Tc
+28.56 0 Td
+(Privacy )Tj
+-0.00634943 Tc
+37.44 0 Td
+(Enhancement )Tj
+0.0671875 Tc
+61.2 0 Td
+(for )Tj
+-0.0350977 Tc
+17.04 0 Td
+(Internet )Tj
+0.0154219 Tc
+38.64 0 Td
+(Electronic )Tj
+0.113063 Tc
+47.28 0 Td
+(Mail: )Tj
+0.0522656 Tc
+28.56 0 Td
+(Part )Tj
+0.06375 Tc
+24 0 Td
+(II:)Tj
+0.0107959 Tc
+-350.64 -12.48 Td
+(Certificate-Based Key Management.)Tj
+0.0163058 Tc
+/R15 10.08 Tf
+146.4 0 Td
+( February 1993.)Tj
+0.0291797 Tc
+-218.4 -24.48 Td
+(X.208)Tj
+0.0721875 Tc
+72 0 Td
+(CCITT. )Tj
+0.0182143 Tc
+/R17 10.08 Tf
+39.36 0 Td
+(Recommendation )Tj
+0.0471094 Tc
+76.8 0 Td
+(X.208: )Tj
+0.0238341 Tc
+34.08 0 Td
+(Specification )Tj
+0.141328 Tc
+58.56 0 Td
+(of )Tj
+-0.0195703 Tc
+13.92 0 Td
+(Abstract )Tj
+0.00664063 Tc
+41.28 0 Td
+(Syntax )Tj
+0.0566602 Tc
+35.52 0 Td
+(Notation )Tj
+-0.0438281 Tc
+43.2 0 Td
+(One)Tj
+0.0233705 Tc
+-342.72 -12.48 Td
+(\(ASN.1\).)Tj
+0.048 Tc
+/R15 10.08 Tf
+37.68 0 Td
+( 1988.)Tj
+0.0291797 Tc
+-109.68 -24.48 Td
+(X.209)Tj
+0.0721875 Tc
+72 0 Td
+(CCITT. )Tj
+0.0182143 Tc
+/R17 10.08 Tf
+37.2 0 Td
+(Recommendation )Tj
+0.0471094 Tc
+74.64 0 Td
+(X.209: )Tj
+0.0238341 Tc
+31.92 0 Td
+(Specification )Tj
+0.141328 Tc
+56.64 0 Td
+(of )Tj
+0.052125 Tc
+12 0 Td
+(Basic )Tj
+0.0216211 Tc
+26.16 0 Td
+(Encoding )Tj
+-0.0104063 Tc
+43.44 0 Td
+(Rules )Tj
+0.0671875 Tc
+27.36 0 Td
+(for )Tj
+-0.0395089 Tc
+15.84 0 Td
+(Abstract)Tj
+0.0255208 Tc
+-325.2 -12.48 Td
+(Syntax Notation One \(ASN.1\).)Tj
+0.048 Tc
+/R15 10.08 Tf
+128.64 0 Td
+( 1988.)Tj
+0.0291797 Tc
+-200.64 -24.48 Td
+(X.500)Tj
+0.0721875 Tc
+72 0 Td
+(CCITT. )Tj
+0.0182143 Tc
+/R17 10.08 Tf
+36.96 0 Td
+(Recommendation )Tj
+0.0471094 Tc
+74.4 0 Td
+(X.500: )Tj
+0.0401562 Tc
+31.68 0 Td
+(The )Tj
+-0.00269531 Tc
+19.2 0 Td
+(Directory)Tj
+0 Tc
+39.36 0 Td
+(ó)Tj
+ET
+Q
+q
+3113.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+3113.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.005625 Tc
+/R17 10.08 Tf
+1 0 0 1 373.65 526.05 Tm
+(Overview )Tj
+0.141328 Tc
+43.68 0 Td
+(of )Tj
+0.00625 Tc
+11.52 0 Td
+(Concepts, )Tj
+0.0342188 Tc
+43.92 0 Td
+(Models )Tj
+0.000234375 Tc
+34.08 0 Td
+(and)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0291797 Tc
+/R17 10.08 Tf
+1 0 0 1 161.97 513.57 Tm
+(Services.)Tj
+0.048 Tc
+/R15 10.08 Tf
+35.52 0 Td
+( 1988.)Tj
+0.0291797 Tc
+-107.52 -24.48 Td
+(X.501)Tj
+0.0721875 Tc
+72 0 Td
+(CCITT. )Tj
+0.0187224 Tc
+/R17 10.08 Tf
+35.52 0 Td
+(Recommendation X.501: The Directory)Tj
+0 Tc
+160.32 0 Td
+(ó)Tj
+ET
+Q
+q
+3065.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+3065.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0342188 Tc
+/R17 10.08 Tf
+1 0 0 1 367.89 489.09 Tm
+(Models.)Tj
+0.048 Tc
+/R15 10.08 Tf
+32.4 0 Td
+( 1988.)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0291797 Tc
+/R15 10.08 Tf
+1 0 0 1 89.97 464.61 Tm
+(X.509)Tj
+0.0721875 Tc
+72 0 Td
+(CCITT. )Tj
+0.0187224 Tc
+/R17 10.08 Tf
+35.52 0 Td
+(Recommendation X.509: The Directory)Tj
+0 Tc
+160.32 0 Td
+(ó)Tj
+ET
+Q
+q
+3065.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+3065.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.00291016 Tc
+/R17 10.08 Tf
+1 0 0 1 367.89 464.61 Tm
+(Authentication Framework.)Tj
+0.048 Tc
+/R15 10.08 Tf
+112.8 0 Td
+( 1988.)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0183894 Tc
+/R13 13.92 Tf
+1 0 0 1 89.97 418.29 Tm
+(3. Definitions)Tj
+0.0292756 Tc
+/R15 12 Tf
+32.64 TL
+(For the purposes of this standard, the following definitions apply.)'
+0 Tc
+/R19 12 Tf
+26.4 TL
+(AlgorithmIdentifier)'
+0.24 Tc
+/R15 12 Tf
+136.8 0 Td
+(: )Tj
+0.144375 Tc
+12.48 0 Td
+(A )Tj
+0.0242578 Tc
+18.72 0 Td
+(type )Tj
+-0.0118359 Tc
+32.88 0 Td
+(that )Tj
+0.0518437 Tc
+30 0 Td
+(identifies )Tj
+0.0480469 Tc
+59.04 0 Td
+(an )Tj
+0.026875 Tc
+22.32 0 Td
+(algorithm )Tj
+0.112344 Tc
+61.92 0 Td
+(\(by )Tj
+-0.0045 Tc
+26.88 0 Td
+(object)Tj
+0.0381576 Tc
+-401.04 -14.4 Td
+(identifier\) and any associated parameters. This type is defined in X.509.)Tj
+0 Tc
+/R19 12 Tf
+(Attribute)'
+0.025958 Tc
+/R15 12 Tf
+64.8 0 Td
+(: A type that contains an attribute type \(specified by object )Tj
+0.0590625 Tc
+313.68 0 Td
+(identifier\))Tj
+0.0348214 Tc
+-378.48 -14.4 Td
+(and one or more attribute values. This type is defined in X.501.)Tj
+0.0914062 Tc
+/R13 12 Tf
+26.88 TL
+(ASN.1:)'
+0.0275063 Tc
+/R15 12 Tf
+39.12 0 Td
+( Abstract Syntax Notation One, as defined in X.208.)Tj
+0.0401562 Tc
+/R13 12 Tf
+-39.12 -26.88 Td
+(BER:)Tj
+0.0435826 Tc
+/R15 12 Tf
+27.12 0 Td
+( Basic Encoding Rules, as defined in X.209.)Tj
+0 Tc
+/R19 12 Tf
+-27.12 -26.4 Td
+(Certificate)Tj
+0.24 Tc
+/R15 12 Tf
+79.2 0 Td
+(: )Tj
+0.144375 Tc
+6.72 0 Td
+(A )Tj
+0.0242578 Tc
+12.96 0 Td
+(type )Tj
+-0.0118359 Tc
+27.12 0 Td
+(that )Tj
+0.0698437 Tc
+24.24 0 Td
+(binds )Tj
+0.0480469 Tc
+33.36 0 Td
+(an )Tj
+-0.00275391 Tc
+16.56 0 Td
+(entity's )Tj
+0.036238 Tc
+41.76 0 Td
+(distinguished )Tj
+0.0181641 Tc
+76.8 0 Td
+(name )Tj
+-0.0117188 Tc
+32.88 0 Td
+(to )Tj
+0.12 Tc
+13.92 0 Td
+(a )Tj
+0.0542969 Tc
+9.84 0 Td
+(public )Tj
+0.054375 Tc
+37.44 0 Td
+(key)Tj
+0.0457687 Tc
+-412.8 -14.4 Td
+(with a digital signature. )Tj
+0.0602344 Tc
+131.04 0 Td
+(This )Tj
+0.0242578 Tc
+26.4 0 Td
+(type )Tj
+0.0902344 Tc
+26.88 0 Td
+(is )Tj
+0.0756696 Tc
+12 0 Td
+(defined )Tj
+0.102187 Tc
+44.4 0 Td
+(in )Tj
+0.0460156 Tc
+13.92 0 Td
+(X.509. )Tj
+0.0602344 Tc
+35.52 0 Td
+(This )Tj
+0.0242578 Tc
+26.4 0 Td
+(type )Tj
+0.0271875 Tc
+26.88 0 Td
+(also )Tj
+-0.00732422 Tc
+24.48 0 Td
+(contains )Tj
+-0.0417188 Tc
+47.52 0 Td
+(the)Tj
+0.036238 Tc
+-415.44 -14.4 Td
+(distinguished )Tj
+0.0181641 Tc
+77.28 0 Td
+(name )Tj
+0.0663281 Tc
+33.36 0 Td
+(of )Tj
+0.0121875 Tc
+14.64 0 Td
+(the )Tj
+0.0242045 Tc
+20.64 0 Td
+(certificate )Tj
+0.0282031 Tc
+55.92 0 Td
+(issuer )Tj
+0.0302344 Tc
+35.52 0 Td
+(\(the )Tj
+0.0601758 Tc
+24.72 0 Td
+(signer\), )Tj
+0.0480469 Tc
+44.16 0 Td
+(an )Tj
+0.0274375 Tc
+17.28 0 Td
+(issuer-specific )Tj
+0.0481875 Tc
+79.68 0 Td
+(serial)Tj
+0.043058 Tc
+-403.2 -14.4 Td
+(number, )Tj
+0.0121875 Tc
+52.8 0 Td
+(the )Tj
+0.00322266 Tc
+24.24 0 Td
+(issuer's )Tj
+0.0188542 Tc
+46.56 0 Td
+(signature )Tj
+0.026875 Tc
+57.6 0 Td
+(algorithm )Tj
+0.0678409 Tc
+60.24 0 Td
+(identifier, )Tj
+0.068125 Tc
+60.48 0 Td
+(and )Tj
+0.12 Tc
+28.32 0 Td
+(a )Tj
+0.0587109 Tc
+13.92 0 Td
+(validity )Tj
+0.0542188 Tc
+49.44 0 Td
+(period.)Tj
+0.0292898 Tc
+-393.6 -14.4 Td
+(Appendix A gives more information.)Tj
+0.09625 Tc
+/R13 12 Tf
+(DER:)'
+0.0391117 Tc
+/R15 12 Tf
+29.28 0 Td
+( Distinguished Encoding Rules for ASN.1, as defined in X.509, Section 8.7.)Tj
+0 Tc
+/R19 12 Tf
+-29.28 -26.4 Td
+(Name)Tj
+0.24 Tc
+/R15 12 Tf
+28.8 0 Td
+(: )Tj
+0.144375 Tc
+9.84 0 Td
+(A )Tj
+0.0242578 Tc
+16.32 0 Td
+(type )Tj
+-0.0118359 Tc
+30.48 0 Td
+(that )Tj
+0.0377344 Tc
+27.6 0 Td
+(uniquely )Tj
+0.0518437 Tc
+54.72 0 Td
+(identifies )Tj
+0.0541406 Tc
+56.64 0 Td
+(or )Tj
+0.0354375 Tc
+18.24 0 Td
+("distinguishes" )Tj
+0.00709821 Tc
+86.88 0 Td
+(objects )Tj
+0.102187 Tc
+42.96 0 Td
+(in )Tj
+0.12 Tc
+17.52 0 Td
+(a )Tj
+0.00902344 Tc
+12.96 0 Td
+(X.500)Tj
+0.0457812 Tc
+-402.96 -14.4 Td
+(directory. This )Tj
+0.0242578 Tc
+81.36 0 Td
+(type )Tj
+0.0902344 Tc
+26.88 0 Td
+(is )Tj
+0.0756696 Tc
+12 0 Td
+(defined )Tj
+0.102187 Tc
+44.4 0 Td
+(in )Tj
+0.0460156 Tc
+13.92 0 Td
+(X.501. )Tj
+0.0660938 Tc
+35.52 0 Td
+(In )Tj
+0.0480469 Tc
+14.4 0 Td
+(an )Tj
+0.0312187 Tc
+16.32 0 Td
+(X.509 )Tj
+0.0321875 Tc
+32.4 0 Td
+(certificate, )Tj
+0.0121875 Tc
+58.32 0 Td
+(the )Tj
+0.0242578 Tc
+19.92 0 Td
+(type )Tj
+0.0442708 Tc
+26.88 0 Td
+(identifies)Tj
+0.0317071 Tc
+-382.32 -14.4 Td
+(the certificate issuer and the entity whose public key is certified.)Tj
+ET
+Q
+Q
+endstream
+endobj
+25 0 obj
+8844
+endobj
+29 0 obj
+<</Length 30 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.06 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(4. S)Tj
+-0.0361345 Tc
+/R15 9.6 Tf
+18.48 0 Td
+(YMBOLS AND ABBREVIATIONS)Tj
+0.0331641 Tc
+/R15 12 Tf
+378.72 0 Td
+(Page )Tj
+0 Tc
+28.8 0 Td
+(3)Tj
+0.114141 Tc
+/R13 12 Tf
+-426 -36.48 Td
+(PEM: )Tj
+0.00615234 Tc
+/R15 12 Tf
+36.72 0 Td
+(Internet )Tj
+0.0234082 Tc
+48.72 0 Td
+(Privacy-Enhanced )Tj
+0.0769688 Tc
+103.92 0 Td
+(Mail, )Tj
+0.0360937 Tc
+34.32 0 Td
+(as )Tj
+0.0756696 Tc
+17.76 0 Td
+(defined )Tj
+0.102187 Tc
+47.76 0 Td
+(in )Tj
+-0.0117188 Tc
+17.28 0 Td
+(RFC )Tj
+0.03 Tc
+30 0 Td
+(1422 )Tj
+0.068125 Tc
+30.96 0 Td
+(and )Tj
+0.0382031 Tc
+27.36 0 Td
+(related)Tj
+-0.0104167 Tc
+-394.8 -14.4 Td
+(documents.)Tj
+-0.0170833 Tc
+/R13 13.92 Tf
+46.8 TL
+(4. Symbols and abbreviations)'
+0.0355246 Tc
+/R15 12 Tf
+32.64 TL
+(No symbols or abbreviations are defined in this standard.)'
+-0.000625 Tc
+/R13 13.92 Tf
+46.8 TL
+(5. General overview)'
+0.0642188 Tc
+/R15 12 Tf
+32.64 TL
+(The )'
+0.0212109 Tc
+24.24 0 Td
+(next )Tj
+-0.00321429 Tc
+27.12 0 Td
+(section )Tj
+0.0322396 Tc
+41.28 0 Td
+(specifies )Tj
+0.0278203 Tc
+49.68 0 Td
+(extended-certificate )Tj
+0.0275893 Tc
+109.44 0 Td
+(syntax. )Tj
+0.0602344 Tc
+42.24 0 Td
+(An )Tj
+0.0437109 Tc
+20.64 0 Td
+(appendix )Tj
+0.0395759 Tc
+54.72 0 Td
+(reviews )Tj
+-0.0417188 Tc
+46.08 0 Td
+(the)Tj
+0.024569 Tc
+-415.44 -14.4 Td
+(meaning of X.509 certificates.)Tj
+0.0253276 Tc
+26.4 TL
+(This standard exports one type, )'
+0 Tc
+/R19 12 Tf
+171.36 0 Td
+(ExtendedCertificate)Tj
+0.12 Tc
+/R15 12 Tf
+136.8 0 Td
+(.)Tj
+-0.0123976 Tc
+/R13 13.92 Tf
+-308.16 -46.8 Td
+(6. Extended-certificate syntax)Tj
+0.0226534 Tc
+/R15 12 Tf
+32.64 TL
+(This section gives the syntax for extended certificates.)'
+0.0234657 Tc
+26.4 TL
+(An extended certificate consists of three parts: "extended-certificate information,")'
+0.12 Tc
+14.4 TL
+(a )'
+0.0188542 Tc
+13.44 0 Td
+(signature )Tj
+0.026875 Tc
+57.6 0 Td
+(algorithm )Tj
+0.0678409 Tc
+60.24 0 Td
+(identifier, )Tj
+0.068125 Tc
+60.24 0 Td
+(and )Tj
+0.12 Tc
+28.08 0 Td
+(a )Tj
+0.0756696 Tc
+13.68 0 Td
+(digital )Tj
+0.0188542 Tc
+42.48 0 Td
+(signature )Tj
+0.0121875 Tc
+57.6 0 Td
+[(on )-378.953(the )]TJ
+0.0362695 Tc
+45.36 0 Td
+(extended-)Tj
+0.0242045 Tc
+-378.72 -14.4 Td
+(certificate )Tj
+0.0251953 Tc
+55.68 0 Td
+(information. )Tj
+0.0642188 Tc
+70.32 0 Td
+(The )Tj
+0.0278203 Tc
+24 0 Td
+(extended-certificate )Tj
+0.0165767 Tc
+108.96 0 Td
+(information )Tj
+-0.0162891 Tc
+67.2 0 Td
+(consists )Tj
+0.0663281 Tc
+45.12 0 Td
+(of )Tj
+0.0480469 Tc
+14.64 0 Td
+(an )Tj
+0.00902344 Tc
+17.04 0 Td
+(X.509)Tj
+0.0242045 Tc
+-402.96 -14.4 Td
+(certificate )Tj
+0.0676758 Tc
+56.4 0 Td
+(\(already )Tj
+0.0542188 Tc
+48.96 0 Td
+(signed )Tj
+0.126328 Tc
+40.08 0 Td
+(by )Tj
+0.0480469 Tc
+18 0 Td
+(an )Tj
+0.0362277 Tc
+17.52 0 Td
+(issuer\) )Tj
+0.068125 Tc
+40.08 0 Td
+(and )Tj
+0.12 Tc
+24.96 0 Td
+(a )Tj
+0.00421875 Tc
+10.56 0 Td
+(set )Tj
+0.0663281 Tc
+19.2 0 Td
+(of )Tj
+0.008625 Tc
+15.12 0 Td
+(attributes )Tj
+0.0428646 Tc
+55.2 0 Td
+(providing )Tj
+-0.0237891 Tc
+58.08 0 Td
+(other)Tj
+0.0122151 Tc
+-404.16 -14.4 Td
+(information about )Tj
+0.0121875 Tc
+100.08 0 Td
+(the )Tj
+0.0202344 Tc
+19.92 0 Td
+(entity )Tj
+0.0121875 Tc
+34.08 0 Td
+(whose )Tj
+0.0542969 Tc
+37.68 0 Td
+(public )Tj
+0.07625 Tc
+36.96 0 Td
+(key )Tj
+0.0902344 Tc
+22.56 0 Td
+(is )Tj
+0.0548958 Tc
+12 0 Td
+(certified )Tj
+0.102187 Tc
+47.52 0 Td
+(in )Tj
+0.0121875 Tc
+13.92 0 Td
+(the )Tj
+0.0312187 Tc
+19.92 0 Td
+(X.509 )Tj
+0.0242045 Tc
+32.4 0 Td
+(certificate.)Tj
+0.0642188 Tc
+-377.04 -14.4 Td
+(The )Tj
+0.0282031 Tc
+23.52 0 Td
+(issuer )Tj
+-0.0118359 Tc
+34.8 0 Td
+(that )Tj
+0.0314062 Tc
+24 0 Td
+(signs )Tj
+0.0121875 Tc
+30.72 0 Td
+(the )Tj
+0.0407227 Tc
+19.92 0 Td
+(extended )Tj
+0.0242045 Tc
+52.56 0 Td
+(certificate )Tj
+0.0902344 Tc
+55.2 0 Td
+(is )Tj
+0.0121875 Tc
+12 0 Td
+[(the )-18.938(same )]TJ
+0.0360937 Tc
+50.64 0 Td
+(as )Tj
+0.0121875 Tc
+14.4 0 Td
+[(the )-18.938(one )]TJ
+-0.0118359 Tc
+42.48 0 Td
+(that )Tj
+0.0314062 Tc
+24.24 0 Td
+(signs )Tj
+-0.0417188 Tc
+30.96 0 Td
+(the)Tj
+0.0248438 Tc
+-415.44 -14.4 Td
+(X.509 certificate.)Tj
+0.0642188 Tc
+26.4 TL
+(The )'
+-0.00495536 Tc
+28.08 0 Td
+(process )Tj
+0.126328 Tc
+47.52 0 Td
+(by )Tj
+0.0409687 Tc
+21.36 0 Td
+(which )Tj
+0.0480469 Tc
+40.8 0 Td
+(an )Tj
+0.0407227 Tc
+20.88 0 Td
+(extended )Tj
+0.0242045 Tc
+57.12 0 Td
+(certificate )Tj
+0.0902344 Tc
+59.76 0 Td
+(is )Tj
+-0.010696 Tc
+16.8 0 Td
+(constructed )Tj
+0.0106641 Tc
+70.08 0 Td
+(involves )Tj
+-0.0417188 Tc
+53.04 0 Td
+(the)Tj
+0.0290313 Tc
+-415.44 -14.4 Td
+(following steps:)Tj
+0.12 Tc
+36 -26.4 Td
+(1.)Tj
+0.0602344 Tc
+36 0 Td
+(An )Tj
+0 Tc
+/R19 12 Tf
+26.4 0 Td
+(ExtendedCertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+165.6 0 Td
+( )Tj
+0.0289687 Tc
+10.08 0 Td
+(value )Tj
+0.0121875 Tc
+39.36 0 Td
+(containing )Tj
+0.0480469 Tc
+66.48 0 Td
+(an )Tj
+0.00902344 Tc
+23.04 0 Td
+(X.509)Tj
+0.0242045 Tc
+-330.96 -14.4 Td
+(certificate )Tj
+0.068125 Tc
+58.08 0 Td
+(and )Tj
+0.12 Tc
+26.64 0 Td
+(a )Tj
+0.00421875 Tc
+12.24 0 Td
+(set )Tj
+0.0663281 Tc
+21.12 0 Td
+(of )Tj
+0.008625 Tc
+17.04 0 Td
+(attributes )Tj
+0.0902344 Tc
+57.12 0 Td
+(is )Tj
+-0.010696 Tc
+15.12 0 Td
+(constructed )Tj
+0.126328 Tc
+68.4 0 Td
+(by )Tj
+0.12 Tc
+19.92 0 Td
+(a )Tj
+0.014625 Tc
+12.48 0 Td
+(certificate)Tj
+0.0282031 Tc
+-308.16 -14.4 Td
+(issuer.)Tj
+0.12 Tc
+-36 -26.4 Td
+(2.)Tj
+0.0642188 Tc
+36 0 Td
+(The )Tj
+0 Tc
+/R19 12 Tf
+30 0 Td
+(ExtendedCertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+165.6 0 Td
+( )Tj
+0.0289687 Tc
+9.84 0 Td
+(value )Tj
+0.0902344 Tc
+39.12 0 Td
+(is )Tj
+0.0542188 Tc
+18.72 0 Td
+(signed )Tj
+0.0512109 Tc
+45.6 0 Td
+(with )Tj
+-0.0417188 Tc
+34.56 0 Td
+(the)Tj
+0.0211816 Tc
+-343.44 -14.4 Td
+(certificate issuer's private key.)Tj
+0.12 Tc
+-36 -26.4 Td
+(3.)Tj
+0.0642188 Tc
+36 0 Td
+(The )Tj
+0 Tc
+/R19 12 Tf
+26.64 0 Td
+(ExtendedCertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+165.6 0 Td
+( )Tj
+0.0441406 Tc
+6.72 0 Td
+(value, )Tj
+0.12 Tc
+39.12 0 Td
+(a )Tj
+0.0188542 Tc
+12.72 0 Td
+(signature )Tj
+0.0152344 Tc
+56.64 0 Td
+(algorithm)Tj
+0.0678409 Tc
+-307.44 -14.4 Td
+(identifier, )Tj
+0.068125 Tc
+61.92 0 Td
+(and )Tj
+0.0121875 Tc
+29.76 0 Td
+(the )Tj
+0.0242045 Tc
+25.92 0 Td
+(certificate )Tj
+0.00322266 Tc
+61.2 0 Td
+(issuer's )Tj
+0.0188542 Tc
+48.48 0 Td
+(signature )Tj
+0.0640625 Tc
+59.52 0 Td
+(are )Tj
+0.0137695 Tc
+26.16 0 Td
+(collected)Tj
+0.0106641 Tc
+-312.96 -14.4 Td
+(together into an )Tj
+0 Tc
+/R19 12 Tf
+87.36 0 Td
+(ExtendedCertificate)Tj
+0.0590402 Tc
+/R15 12 Tf
+136.8 0 Td
+( value, defined below.)Tj
+ET
+Q
+Q
+endstream
+endobj
+30 0 obj
+6245
+endobj
+34 0 obj
+<</Length 35 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0331641 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(Page )Tj
+0 Tc
+28.8 0 Td
+(4)Tj
+0.0201042 Tc
+127.2 0 Td
+(PKCS #6: E)Tj
+-0.009375 Tc
+/R15 9.6 Tf
+59.28 0 Td
+(XTENDED)Tj
+-0.0234375 Tc
+/R15 12 Tf
+46.8 0 Td
+(-C)Tj
+-0.0314531 Tc
+/R15 9.6 Tf
+12.48 0 Td
+(ERTIFICATE )Tj
+-0.06 Tc
+/R15 12 Tf
+58.08 0 Td
+(S)Tj
+0.0366562 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(YNTAX )Tj
+-0.06 Tc
+/R15 12 Tf
+36.72 0 Td
+(S)Tj
+0.0146875 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(TANDARD)Tj
+0.0602344 Tc
+/R15 12 Tf
+-381.84 -36 Td
+(This )Tj
+-0.00321429 Tc
+28.56 0 Td
+(section )Tj
+0.0902344 Tc
+42.48 0 Td
+(is )Tj
+0.0876563 Tc
+14.16 0 Td
+(divided )Tj
+0.0152344 Tc
+47.52 0 Td
+(into )Tj
+0.01625 Tc
+26.4 0 Td
+(two )Tj
+0.028125 Tc
+25.92 0 Td
+(parts. )Tj
+0.0642188 Tc
+35.52 0 Td
+(The )Tj
+0.050625 Tc
+25.92 0 Td
+(first )Tj
+0.0241406 Tc
+27.12 0 Td
+(part )Tj
+0.0402083 Tc
+27.6 0 Td
+(describes )Tj
+0.0121875 Tc
+55.2 0 Td
+(the )Tj
+0.0362695 Tc
+22.32 0 Td
+(extended-)Tj
+0.0179552 Tc
+-378.72 -14.4 Td
+(certificate-information )Tj
+0.0242578 Tc
+123.36 0 Td
+(type )Tj
+0 Tc
+/R19 12 Tf
+27.6 0 Td
+(ExtendedCertificateInfo)Tj
+0.24 Tc
+/R15 12 Tf
+165.6 0 Td
+(, )Tj
+0.068125 Tc
+7.2 0 Td
+(and )Tj
+0.0121875 Tc
+24.48 0 Td
+(the )Tj
+0.00820312 Tc
+20.64 0 Td
+(second )Tj
+-0.0078125 Tc
+41.28 0 Td
+(part)Tj
+0.0259152 Tc
+-410.16 -14.4 Td
+(describes the top-level type )Tj
+0 Tc
+/R19 12 Tf
+149.04 0 Td
+(ExtendedCertificate)Tj
+0.12 Tc
+/R15 12 Tf
+136.8 0 Td
+(.)Tj
+0.0578438 Tc
+/R13 12 Tf
+-285.84 -38.88 Td
+(Notes.)Tj
+0.12 Tc
+/R15 12 Tf
+36 -26.4 Td
+(1.)Tj
+0.0660938 Tc
+36 0 Td
+(In )Tj
+0.0132031 Tc
+14.4 0 Td
+(applications )Tj
+0.0505312 Tc
+68.16 0 Td
+(where )Tj
+0.0480469 Tc
+36.72 0 Td
+(an )Tj
+0.0407227 Tc
+16.56 0 Td
+(extended )Tj
+0.0242045 Tc
+52.8 0 Td
+(certificate )Tj
+0.0541406 Tc
+55.44 0 Td
+(or )Tj
+0.0480469 Tc
+14.88 0 Td
+(an )Tj
+0.0312187 Tc
+16.56 0 Td
+(X.509 )Tj
+0.014625 Tc
+32.64 0 Td
+(certificate)Tj
+0.0160937 Tc
+-308.16 -14.4 Td
+(can )Tj
+0.108281 Tc
+23.28 0 Td
+(be )Tj
+0.0205781 Tc
+17.52 0 Td
+(processed, )Tj
+0.0121875 Tc
+60.96 0 Td
+(the )Tj
+0.0535938 Tc
+21.6 0 Td
+(following )Tj
+0.0121875 Tc
+56.64 0 Td
+(syntax )Tj
+0.0902344 Tc
+39.84 0 Td
+(is )Tj
+0.019858 Tc
+13.68 0 Td
+(recommended )Tj
+0.0453516 Tc
+82.08 0 Td
+(\(but )Tj
+-0.0836719 Tc
+27.12 0 Td
+(not)Tj
+0.0588542 Tc
+-342.72 -14.4 Td
+(required\):)Tj
+0 Tc
+/R19 12 Tf
+-72 -24.72 Td
+(ExtendedCertificateOrCertificate ::= CHOICE {)Tj
+12.72 TL
+(  certificate Certificate, -- X.509)'
+(  extendedCertificate [0] IMPLICIT ExtendedCertificate)'
+(})'
+0.0642188 Tc
+/R15 12 Tf
+72 -26.4 Td
+(The )Tj
+0 Tc
+/R19 12 Tf
+25.2 0 Td
+(certificate)Tj
+0.12 Tc
+/R15 12 Tf
+79.2 0 Td
+( )Tj
+0.0175994 Tc
+5.04 0 Td
+(alternative )Tj
+0.0160937 Tc
+61.92 0 Td
+(has )Tj
+0.0121875 Tc
+23.04 0 Td
+[(the )-158.938(same )]TJ
+0.0803125 Tc
+54 0 Td
+(BER )Tj
+0.0287109 Tc
+27.84 0 Td
+(encoding )Tj
+0.0360937 Tc
+54.48 0 Td
+(as )Tj
+-0.0239062 Tc
+16.32 0 Td
+(an)Tj
+0.0511523 Tc
+-347.04 -14.4 Td
+(ordinary )Tj
+0.0312187 Tc
+52.08 0 Td
+(X.509 )Tj
+0.0321875 Tc
+34.32 0 Td
+(certificate, )Tj
+0.068125 Tc
+60.24 0 Td
+(and )Tj
+0.0121875 Tc
+25.68 0 Td
+(the )Tj
+0.0161719 Tc
+21.84 0 Td
+(values )Tj
+0.0308854 Tc
+39.6 0 Td
+(resulting )Tj
+0.0392578 Tc
+52.8 0 Td
+(from )Tj
+0.0121875 Tc
+31.2 0 Td
+(the )Tj
+-0.035625 Tc
+21.84 0 Td
+(two)Tj
+0.0216118 Tc
+-339.6 -14.4 Td
+(alternatives can be )Tj
+0.036238 Tc
+102.24 0 Td
+(distinguished )Tj
+0.0139286 Tc
+76.56 0 Td
+(because )Tj
+0.0663281 Tc
+45.12 0 Td
+(of )Tj
+0.0121875 Tc
+13.92 0 Td
+(the )Tj
+0.00849609 Tc
+19.92 0 Td
+(context-specific )Tj
+-0.0117188 Tc
+85.68 0 Td
+(tag)Tj
+0.0226172 Tc
+-343.44 -14.4 Td
+(0 on the )Tj
+0 Tc
+/R19 12 Tf
+45.36 0 Td
+(extendedCertificate)Tj
+0.0261328 Tc
+/R15 12 Tf
+136.8 0 Td
+( alternative.)Tj
+0.12 Tc
+-218.16 -26.4 Td
+(2.)Tj
+0.0241607 Tc
+36 0 Td
+(There are at least four reasons that extended certificates are built on)Tj
+0.023054 Tc
+14.4 TL
+(top of X.509 certificates, rather than in place of them:)'
+ET
+Q
+q
+149.75 6533.75 m
+1687.75 6533.75 l
+1687.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 197.97 386.37 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0259375 Tc
+/R15 12 Tf
+1 0 0 1 233.97 386.37 Tm
+(changes to X.509 certificate syntax are easily followed)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1687.75 6533.75 l
+1687.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 197.97 359.97 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0480469 Tc
+/R15 12 Tf
+1 0 0 1 233.97 359.97 Tm
+(an )Tj
+0.0312187 Tc
+16.8 0 Td
+(X.509 )Tj
+0.0242045 Tc
+32.88 0 Td
+(certificate )Tj
+0.0160937 Tc
+55.92 0 Td
+(can )Tj
+0.108281 Tc
+22.32 0 Td
+(be )Tj
+0.0188542 Tc
+16.56 0 Td
+(extracted )Tj
+0.0642188 Tc
+53.04 0 Td
+(for )Tj
+0.0212891 Tc
+19.44 0 Td
+(compatibility)Tj
+0.0512109 Tc
+-216.96 -14.4 Td
+(with )Tj
+0.00496875 Tc
+27.84 0 Td
+(other )Tj
+0.0228125 Tc
+31.2 0 Td
+(standards )Tj
+0.104141 Tc
+56.16 0 Td
+(\(e.g., )Tj
+0.0234082 Tc
+29.52 0 Td
+(Privacy-Enhanced )Tj
+0.0769688 Tc
+100.8 0 Td
+(Mail, )Tj
+-0.0117188 Tc
+31.2 0 Td
+(or)Tj
+0.0361719 Tc
+-276.72 -14.4 Td
+(X.509 itself\))Tj
+ET
+Q
+q
+149.75 6533.75 m
+1687.75 6533.75 l
+1687.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 197.97 304.77 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.00925781 Tc
+/R15 12 Tf
+1 0 0 1 233.97 304.77 Tm
+(both )Tj
+0.0121875 Tc
+28.08 0 Td
+(the )Tj
+0.0312187 Tc
+20.64 0 Td
+(X.509 )Tj
+0.0242045 Tc
+33.12 0 Td
+(certificate )Tj
+0.068125 Tc
+55.92 0 Td
+(and )Tj
+0.0121875 Tc
+24.48 0 Td
+(the )Tj
+0.0407227 Tc
+20.64 0 Td
+(extended )Tj
+0.014625 Tc
+53.28 0 Td
+(certificate)Tj
+0.0160937 Tc
+-236.16 -14.4 Td
+(can )Tj
+0.108281 Tc
+24.24 0 Td
+(be )Tj
+0.0691992 Tc
+18.48 0 Td
+(verified )Tj
+0.0512109 Tc
+47.76 0 Td
+(with )Tj
+0.12 Tc
+30.48 0 Td
+(a )Tj
+0.0542188 Tc
+12 0 Td
+(single )Tj
+0.0518906 Tc
+37.68 0 Td
+(public-key )Tj
+0.00552083 Tc
+63.12 0 Td
+(operation,)Tj
+0.0241875 Tc
+-233.76 -14.4 Td
+(since )Tj
+0.0212109 Tc
+30.72 0 Td
+(they )Tj
+0.0640625 Tc
+27.36 0 Td
+(are )Tj
+0.0542188 Tc
+20.64 0 Td
+(signed )Tj
+0.00169922 Tc
+39.6 0 Td
+(together )Tj
+0.126328 Tc
+48.24 0 Td
+(by )Tj
+0.0121875 Tc
+17.52 0 Td
+[(the )-78.938(same )]TJ
+0.014625 Tc
+52.08 0 Td
+(certificate)Tj
+0.00984375 Tc
+-236.16 -14.4 Td
+(issuer)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1687.75 6533.75 l
+1687.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 197.97 235.17 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.02175 Tc
+/R15 12 Tf
+1 0 0 1 233.97 235.17 Tm
+(there )Tj
+0.0902344 Tc
+37.44 0 Td
+(is )Tj
+0.0522656 Tc
+18.96 0 Td
+(little )Tj
+0.0228646 Tc
+34.8 0 Td
+(redundancy)Tj
+0 Tc
+64.56 0 Td
+(ó)Tj
+ET
+Q
+q
+3347.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+3347.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.028125 Tc
+/R15 12 Tf
+1 0 0 1 401.73 235.17 Tm
+(having )Tj
+0.0480469 Tc
+47.52 0 Td
+(an )Tj
+0.0293973 Tc
+23.52 0 Td
+(extended)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0242045 Tc
+/R15 12 Tf
+1 0 0 1 233.97 220.77 Tm
+(certificate )Tj
+0.102187 Tc
+60 0 Td
+(in )Tj
+0.0361875 Tc
+18.96 0 Td
+(place )Tj
+0.0663281 Tc
+36.24 0 Td
+(of )Tj
+0.0480469 Tc
+18.96 0 Td
+(an )Tj
+0.0312187 Tc
+21.36 0 Td
+(X.509 )Tj
+0.0242045 Tc
+37.44 0 Td
+(certificate )Tj
+0.0453516 Tc
+60.24 0 Td
+(would)Tj
+0.0481473 Tc
+-253.2 -14.4 Td
+(require )Tj
+-0.0118359 Tc
+42.96 0 Td
+(that )Tj
+0.0121875 Tc
+24.96 0 Td
+(the )Tj
+0.0407227 Tc
+21.12 0 Td
+(extended )Tj
+0.0242045 Tc
+53.76 0 Td
+(certificate )Tj
+-0.00154018 Tc
+56.4 0 Td
+(contain )Tj
+-0.00574219 Tc
+43.68 0 Td
+(much )Tj
+0.0126563 Tc
+34.56 0 Td
+(of)Tj
+0.0121875 Tc
+-277.44 -14.4 Td
+(the )Tj
+0.0165767 Tc
+20.4 0 Td
+(information )Tj
+0.0652902 Tc
+67.2 0 Td
+(already )Tj
+0.102187 Tc
+44.16 0 Td
+(in )Tj
+0.0121875 Tc
+14.4 0 Td
+(the )Tj
+0.0312187 Tc
+20.4 0 Td
+(X.509 )Tj
+0.0260337 Tc
+32.88 0 Td
+(certificates, )Tj
+-0.0517188 Tc
+64.08 0 Td
+(such)Tj
+0.0167849 Tc
+-263.52 -14.4 Td
+(as issuer and subject names)Tj
+0.0287921 Tc
+/R13 12 Tf
+-144 -38.88 Td
+(6.1 ExtendedCertificateInfo)Tj
+0.032625 Tc
+/R15 12 Tf
+26.4 TL
+(Extended-certificate )'
+0.0165767 Tc
+137.28 0 Td
+(information )Tj
+0.0529688 Tc
+93.84 0 Td
+(shall )Tj
+0.0120703 Tc
+55.68 0 Td
+(have )Tj
+0.0625312 Tc
+56.16 0 Td
+(ASN.1 )Tj
+-0.00765625 Tc
+65.52 0 Td
+(type)Tj
+0 Tc
+/R19 12 Tf
+-408.48 -14.4 Td
+(ExtendedCertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+165.6 0 Td
+(:)Tj
+ET
+Q
+Q
+endstream
+endobj
+35 0 obj
+8170
+endobj
+39 0 obj
+<</Length 40 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.116094 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(6. E)Tj
+-0.009375 Tc
+/R15 9.6 Tf
+19.68 0 Td
+(XTENDED)Tj
+0.084375 Tc
+/R15 12 Tf
+46.8 0 Td
+(-)Tj
+-0.0127941 Tc
+/R15 9.6 Tf
+4.08 0 Td
+(CERTIFICATE SYNTAX)Tj
+0.0331641 Tc
+/R15 12 Tf
+326.64 0 Td
+(Page )Tj
+0 Tc
+28.8 0 Td
+(5)Tj
+/R19 12 Tf
+-426 -34.32 Td
+(ExtendedCertificateInfo ::= SEQUENCE {)Tj
+12.72 TL
+(  version Version,)'
+(  certificate Certificate,)'
+(  attributes Attributes })'
+24.72 TL
+(Version ::= INTEGER)'
+(Attributes ::= SET OF Attribute)'
+0.0508854 Tc
+/R15 12 Tf
+26.4 TL
+(The fields of type )'
+0 Tc
+/R19 12 Tf
+96.24 0 Td
+(ExtendedCertificateInfo)Tj
+0.0301674 Tc
+/R15 12 Tf
+165.6 0 Td
+( have the following meanings:)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 570.21 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 570.21 Tm
+(version)Tj
+0.12 Tc
+/R15 12 Tf
+50.4 0 Td
+( )Tj
+0.0902344 Tc
+6.96 0 Td
+(is )Tj
+0.0121875 Tc
+15.6 0 Td
+(the )Tj
+0.0138616 Tc
+23.52 0 Td
+(version )Tj
+0.043058 Tc
+46.32 0 Td
+(number, )Tj
+0.0642188 Tc
+52.08 0 Td
+(for )Tj
+0.0288822 Tc
+22.32 0 Td
+(compatibility )Tj
+0.0512109 Tc
+78.24 0 Td
+(with )Tj
+0.00271875 Tc
+31.68 0 Td
+(future)Tj
+0.0175 Tc
+-327.12 -14.4 Td
+(revisions )Tj
+0.0663281 Tc
+54.48 0 Td
+(of )Tj
+0.0212109 Tc
+17.04 0 Td
+(this )Tj
+0.0414583 Tc
+25.92 0 Td
+(standard. )Tj
+0.0421875 Tc
+57.12 0 Td
+(It )Tj
+0.0529688 Tc
+14.4 0 Td
+(shall )Tj
+0.108281 Tc
+31.68 0 Td
+(be )Tj
+0.12 Tc
+18.96 0 Td
+(0 )Tj
+0.0642188 Tc
+12.48 0 Td
+(for )Tj
+0.0212109 Tc
+21.84 0 Td
+(this )Tj
+0.0138616 Tc
+26.16 0 Td
+(version )Tj
+0.0663281 Tc
+46.08 0 Td
+(of )Tj
+-0.0417188 Tc
+17.28 0 Td
+(the)Tj
+0.0316406 Tc
+-343.44 -14.4 Td
+(standard.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 515.01 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 515.01 Tm
+(certificate)Tj
+0.0341211 Tc
+/R15 12 Tf
+79.2 0 Td
+( is an X.509 certificate.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 488.61 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 488.61 Tm
+(attributes)Tj
+0.12 Tc
+/R15 12 Tf
+72 0 Td
+( )Tj
+0.0902344 Tc
+4.56 0 Td
+(is )Tj
+0.12 Tc
+13.2 0 Td
+(a )Tj
+0.00421875 Tc
+10.56 0 Td
+(set )Tj
+0.0663281 Tc
+19.2 0 Td
+(of )Tj
+0.01875 Tc
+15.12 0 Td
+(attributes. )Tj
+0.0314062 Tc
+58.32 0 Td
+(These )Tj
+0.008625 Tc
+35.52 0 Td
+(attributes )Tj
+0.0640625 Tc
+55.2 0 Td
+(are )Tj
+0.0415625 Tc
+21.36 0 Td
+(additional)Tj
+0.0165767 Tc
+-305.04 -14.4 Td
+(information )Tj
+0.0050625 Tc
+70.32 0 Td
+(about )Tj
+0.0121875 Tc
+37.2 0 Td
+(the )Tj
+0.0122545 Tc
+23.52 0 Td
+(subject )Tj
+0.0663281 Tc
+43.68 0 Td
+(of )Tj
+0.0121875 Tc
+17.52 0 Td
+(the )Tj
+0.0321875 Tc
+23.76 0 Td
+(certificate. )Tj
+-0.00878906 Tc
+62.16 0 Td
+(Some )Tj
+0.00175781 Tc
+36.24 0 Td
+(attribute)Tj
+0.0301649 Tc
+-314.4 -14.4 Td
+(types that might be useful here are defined in PKCS #9.)Tj
+0.0367116 Tc
+/R13 12 Tf
+-72 -38.88 Td
+(6.2 ExtendedCertificate)Tj
+0.0318958 Tc
+/R15 12 Tf
+26.4 TL
+(An extended certificate shall have ASN.1 type )'
+0 Tc
+/R19 12 Tf
+248.16 0 Td
+(ExtendedCertificate)Tj
+0.12 Tc
+/R15 12 Tf
+136.8 0 Td
+(:)Tj
+0 Tc
+/R19 12 Tf
+-384.96 -24.72 Td
+(ExtendedCertificate ::= SEQUENCE {)Tj
+12.72 TL
+(  extendedCertificateInfo ExtendedCertificateInfo,)'
+(  signatureAlgorithm SignatureAlgorithmIdentifier,)'
+(  signature Signature })'
+24.72 TL
+(SignatureAlgorithmIdentifier ::= AlgorithmIdentifier)'
+(Signature ::= BIT STRING)'
+0.0508854 Tc
+/R15 12 Tf
+26.4 TL
+(The fields of type )'
+0 Tc
+/R19 12 Tf
+96.24 0 Td
+(ExtendedCertificate)Tj
+0.0301674 Tc
+/R15 12 Tf
+136.8 0 Td
+( have the following meanings:)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 229.41 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 229.41 Tm
+(extendedCertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+165.6 0 Td
+( )Tj
+0.0902344 Tc
+19.68 0 Td
+(is )Tj
+0.0121875 Tc
+28.56 0 Td
+(the )Tj
+0.0272344 Tc
+36.48 0 Td
+("extended-certificate)Tj
+0.0364621 Tc
+-250.32 -14.4 Td
+(information." It is the value being signed.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 188.61 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 188.61 Tm
+(signatureAlgorithm)Tj
+0.12 Tc
+/R15 12 Tf
+129.6 0 Td
+( )Tj
+0.0518437 Tc
+7.44 0 Td
+(identifies )Tj
+0.0121875 Tc
+57.12 0 Td
+(the )Tj
+0.0188542 Tc
+24 0 Td
+(signature )Tj
+0.026875 Tc
+57.36 0 Td
+(algorithm )Tj
+0.05625 Tc
+60 0 Td
+(\(and)Tj
+0.048125 Tc
+-335.52 -14.4 Td
+(any )Tj
+0.0061875 Tc
+25.44 0 Td
+(associated )Tj
+0.0165341 Tc
+60.24 0 Td
+(parameters\) )Tj
+0.0481875 Tc
+69.6 0 Td
+(under )Tj
+0.0409687 Tc
+38.16 0 Td
+(which )Tj
+0.0121875 Tc
+38.88 0 Td
+(the )Tj
+0.0229688 Tc
+22.56 0 Td
+(extended-certificate)Tj
+0.0165767 Tc
+-254.88 -14.4 Td
+(information )Tj
+0.0902344 Tc
+81.12 0 Td
+(is )Tj
+0.0636161 Tc
+26.64 0 Td
+(signed. )Tj
+0.0377344 Tc
+56.64 0 Td
+(Examples )Tj
+0.0499554 Tc
+69.84 0 Td
+(include )Tj
+-0.0418359 Tc
+57.84 0 Td
+(PKCS )Tj
+-0.0478125 Tc
+48.48 0 Td
+(#1's)Tj
+0 Tc
+/R19 12 Tf
+-340.56 -14.4 Td
+(md2WithRSAEncryption)Tj
+0.0810938 Tc
+/R15 12 Tf
+144 0 Td
+( and )Tj
+0 Tc
+/R19 12 Tf
+26.64 0 Td
+(md5WithRSAEncryption)Tj
+0.12 Tc
+/R15 12 Tf
+144 0 Td
+(.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 119.01 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 119.01 Tm
+(signature)Tj
+0.12 Tc
+/R15 12 Tf
+64.8 0 Td
+( )Tj
+0.0902344 Tc
+9.6 0 Td
+(is )Tj
+0.0121875 Tc
+18.24 0 Td
+(the )Tj
+0.0242188 Tc
+26.16 0 Td
+(result )Tj
+0.0663281 Tc
+39.84 0 Td
+(of )Tj
+0.0482143 Tc
+20.4 0 Td
+(signing )Tj
+0.0121875 Tc
+49.44 0 Td
+(the )Tj
+0.0229688 Tc
+26.4 0 Td
+(extended-certificate)Tj
+0.0207842 Tc
+-254.88 -14.4 Td
+(information with the certificate issuer's private key.)Tj
+0.00771802 Tc
+-72 -26.4 Td
+(The signature process consists of two steps:)Tj
+ET
+Q
+Q
+endstream
+endobj
+40 0 obj
+6280
+endobj
+44 0 obj
+<</Length 45 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0331641 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(Page )Tj
+0 Tc
+28.8 0 Td
+(6)Tj
+0.0201042 Tc
+127.2 0 Td
+(PKCS #6: E)Tj
+-0.009375 Tc
+/R15 9.6 Tf
+59.28 0 Td
+(XTENDED)Tj
+-0.0234375 Tc
+/R15 12 Tf
+46.8 0 Td
+(-C)Tj
+-0.0314531 Tc
+/R15 9.6 Tf
+12.48 0 Td
+(ERTIFICATE )Tj
+-0.06 Tc
+/R15 12 Tf
+58.08 0 Td
+(S)Tj
+0.0366562 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(YNTAX )Tj
+-0.06 Tc
+/R15 12 Tf
+36.72 0 Td
+(S)Tj
+0.0146875 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(TANDARD)Tj
+0.12 Tc
+/R15 12 Tf
+-345.84 -36 Td
+(1.)Tj
+0.0642188 Tc
+36 0 Td
+(The )Tj
+0.0289687 Tc
+28.56 0 Td
+(value )Tj
+0.0663281 Tc
+37.68 0 Td
+(of )Tj
+0.0121875 Tc
+19.2 0 Td
+(the )Tj
+0 Tc
+/R19 12 Tf
+25.2 0 Td
+(extendedCertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+165.6 0 Td
+( )Tj
+0.108281 Tc
+8.64 0 Td
+(field )Tj
+0.0902344 Tc
+33.12 0 Td
+(is )Tj
+0.0424219 Tc
+17.28 0 Td
+(DER)Tj
+0.0343608 Tc
+-335.28 -14.4 Td
+(encoded, yielding an octet string.)Tj
+0.12 Tc
+-36 -26.4 Td
+(2.)Tj
+0.0314706 Tc
+36 0 Td
+(The result of step 1 is signed with the certificate )Tj
+0.00322266 Tc
+257.28 0 Td
+(issuer's )Tj
+0.022433 Tc
+42.24 0 Td
+(private )Tj
+0.054375 Tc
+41.28 0 Td
+(key)Tj
+0.0481875 Tc
+-340.8 -14.4 Td
+(under )Tj
+0.0121875 Tc
+36.72 0 Td
+(the )Tj
+0.0495833 Tc
+21.12 0 Td
+(specified )Tj
+0.0188542 Tc
+52.56 0 Td
+(signature )Tj
+0.0361875 Tc
+54.72 0 Td
+(algorithm, )Tj
+0.0797461 Tc
+60.48 0 Td
+(yielding )Tj
+0.12 Tc
+49.2 0 Td
+(a )Tj
+0.0803125 Tc
+10.8 0 Td
+(bit )Tj
+0.0447321 Tc
+18.96 0 Td
+(string, )Tj
+-0.0417188 Tc
+38.88 0 Td
+(the)Tj
+0.0188542 Tc
+-343.44 -14.4 Td
+(signature.)Tj
+0.0914062 Tc
+/R13 12 Tf
+-72 -26.88 Td
+(Note. )Tj
+0.0642188 Tc
+/R15 12 Tf
+35.76 0 Td
+(The )Tj
+0.0121875 Tc
+25.92 0 Td
+(syntax )Tj
+0.0642188 Tc
+40.56 0 Td
+(for )Tj
+0 Tc
+/R19 12 Tf
+21.12 0 Td
+(ExtendedCertificate)Tj
+0.12 Tc
+/R15 12 Tf
+136.8 0 Td
+( )Tj
+0.0362813 Tc
+6 0 Td
+(could )Tj
+0.0271875 Tc
+36 0 Td
+(equivalently )Tj
+0.108281 Tc
+72.48 0 Td
+(be )Tj
+0.0142188 Tc
+18.48 0 Td
+(written)Tj
+0.0283929 Tc
+-393.12 -14.4 Td
+(with the X.509 )Tj
+0 Tc
+/R19 12 Tf
+79.44 0 Td
+(SIGNED)Tj
+0.0241406 Tc
+/R15 12 Tf
+43.2 0 Td
+( macro:)Tj
+0 Tc
+/R19 12 Tf
+-122.64 -24.72 Td
+(ExtendedCertificate ::= SIGNED ExtendedCertificateInfo)Tj
+ET
+Q
+Q
+endstream
+endobj
+45 0 obj
+2158
+endobj
+49 0 obj
+<</Length 50 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.024375 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(A)Tj
+-0.0381027 Tc
+/R15 9.6 Tf
+9.36 0 Td
+(PPENDIX )Tj
+0.0525586 Tc
+/R15 12 Tf
+44.64 0 Td
+(A. X.509 )Tj
+-0.0957187 Tc
+/R15 9.6 Tf
+47.76 0 Td
+(PUBLIC)Tj
+0.084375 Tc
+/R15 12 Tf
+34.56 0 Td
+(-)Tj
+-0.02925 Tc
+/R15 9.6 Tf
+4.08 0 Td
+(KEY CERTIFICATES)Tj
+0.0331641 Tc
+/R15 12 Tf
+256.8 0 Td
+(Page )Tj
+0 Tc
+28.8 0 Td
+(7)Tj
+-0.00783984 Tc
+/R13 13.92 Tf
+-426 -38.4 Td
+(Appendix A. X.509 public-key certificates)Tj
+0.0482812 Tc
+/R15 12 Tf
+32.64 TL
+(Public-key )'
+0.0182031 Tc
+60.96 0 Td
+(certificates )Tj
+-0.00878906 Tc
+60.96 0 Td
+(such )Tj
+0.0360937 Tc
+28.56 0 Td
+(as )Tj
+0.0312187 Tc
+15.12 0 Td
+(X.509 )Tj
+0.0182031 Tc
+33.12 0 Td
+(certificates )Tj
+0.0335417 Tc
+61.2 0 Td
+(determine )Tj
+0.0121875 Tc
+58.8 0 Td
+(the )Tj
+0.0362109 Tc
+20.88 0 Td
+(skeletal )Tj
+-0.0222656 Tc
+44.64 0 Td
+(structure)Tj
+0.0663281 Tc
+-384.24 -14.4 Td
+(of )Tj
+-0.009375 Tc
+14.4 0 Td
+(trust )Tj
+0.0482031 Tc
+28.56 0 Td
+(within )Tj
+0.12 Tc
+39.12 0 Td
+(a )Tj
+0.043892 Tc
+10.08 0 Td
+(distributed )Tj
+0.0518906 Tc
+63.36 0 Td
+(public-key )Tj
+0.000216346 Tc
+60.96 0 Td
+(cryptosystem. )Tj
+0.138281 Tc
+78.48 0 Td
+(By )Tj
+0.0482143 Tc
+18.24 0 Td
+(signing )Tj
+0.12 Tc
+43.68 0 Td
+(a )Tj
+0.0321875 Tc
+10.08 0 Td
+(certificate, )Tj
+0 Tc
+59.04 0 Td
+(a)Tj
+0.0242045 Tc
+-426 -14.4 Td
+(certificate )Tj
+0.0282031 Tc
+55.2 0 Td
+(issuer )Tj
+0.0698437 Tc
+34.8 0 Td
+(binds )Tj
+0.00169922 Tc
+33.12 0 Td
+(together )Tj
+0.0480469 Tc
+47.52 0 Td
+(an )Tj
+-0.00275391 Tc
+16.32 0 Td
+(entity's )Tj
+0.0542969 Tc
+41.76 0 Td
+(public )Tj
+0.07625 Tc
+37.2 0 Td
+(key )Tj
+0.0512109 Tc
+22.8 0 Td
+(with )Tj
+0.0121875 Tc
+28.08 0 Td
+(the )Tj
+-0.00275391 Tc
+20.16 0 Td
+(entity's )Tj
+0.0181641 Tc
+41.76 0 Td
+(name )Tj
+0.0421875 Tc
+32.88 0 Td
+(and)Tj
+0.00496875 Tc
+-411.6 -14.4 Td
+(other )Tj
+0.0251953 Tc
+32.88 0 Td
+(information. )Tj
+0.138281 Tc
+71.76 0 Td
+(By )Tj
+0.0561979 Tc
+19.44 0 Td
+(verifying )Tj
+0.0121875 Tc
+54.24 0 Td
+(the )Tj
+0.0188542 Tc
+21.84 0 Td
+(signature )Tj
+0.0121875 Tc
+55.2 0 Td
+[(on )-178.953(the )]TJ
+0.0321875 Tc
+40.56 0 Td
+(certificate, )Tj
+-0.0152009 Tc
+60.24 0 Td
+(someone )Tj
+-0.0117188 Tc
+52.32 0 Td
+(who)Tj
+0.0185093 Tc
+-408.48 -14.4 Td
+(trusts the certificate issuer can develop trust in the entity's public key.)Tj
+0.0173438 Tc
+26.4 TL
+(Because )'
+0.0182031 Tc
+47.04 0 Td
+(certificates )Tj
+0.0640625 Tc
+61.44 0 Td
+(are )Tj
+0.0121875 Tc
+21.12 0 Td
+(the )Tj
+-0.0267188 Tc
+21.12 0 Td
+(most )Tj
+0.000208333 Tc
+30.48 0 Td
+(important )Tj
+0.0241406 Tc
+58.08 0 Td
+(part )Tj
+0.0663281 Tc
+26.64 0 Td
+(of )Tj
+0.0480469 Tc
+15.36 0 Td
+(an )Tj
+0.030649 Tc
+17.76 0 Td
+(interoperable )Tj
+0.0443229 Tc
+76.08 0 Td
+(public-key)Tj
+0.0414583 Tc
+-375.12 -14.4 Td
+(standard, )Tj
+-0.0418359 Tc
+58.8 0 Td
+(PKCS )Tj
+0.0160937 Tc
+38.64 0 Td
+(has )Tj
+0.0276562 Tc
+26.16 0 Td
+(adopted )Tj
+0.0121875 Tc
+52.32 0 Td
+(the )Tj
+0.01625 Tc
+24.72 0 Td
+(use )Tj
+0.0663281 Tc
+26.16 0 Td
+(of )Tj
+0.0312187 Tc
+18.72 0 Td
+(X.509 )Tj
+0.0260337 Tc
+37.2 0 Td
+(certificates. )Tj
+0.0602344 Tc
+68.16 0 Td
+(This )Tj
+-0.0152679 Tc
+31.2 0 Td
+(approach)Tj
+0.0148437 Tc
+-382.08 -14.4 Td
+(maintains )Tj
+0.0288822 Tc
+58.32 0 Td
+(compatibility )Tj
+0.0512109 Tc
+76.8 0 Td
+(with )Tj
+0.00496875 Tc
+30.24 0 Td
+(other )Tj
+0.0121875 Tc
+33.6 0 Td
+(users )Tj
+0.0663281 Tc
+33.6 0 Td
+(of )Tj
+0.0121875 Tc
+16.32 0 Td
+(the )Tj
+0.0312187 Tc
+22.56 0 Td
+(X.509 )Tj
+0.0190179 Tc
+35.04 0 Td
+(standard)Tj
+0 Tc
+47.52 0 Td
+(ñ)Tj
+ET
+Q
+q
+3749.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+3749.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.102187 Tc
+/R15 12 Tf
+1 0 0 1 449.97 561.09 Tm
+(in )Tj
+0.0289687 Tc
+16.56 0 Td
+(particular,)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0255268 Tc
+/R15 12 Tf
+1 0 0 1 89.97 546.69 Tm
+(with Internet Privacy-Enhanced Mail.)Tj
+0.0602344 Tc
+26.4 TL
+(This )'
+0.0437109 Tc
+27.12 0 Td
+(appendix )Tj
+0.0402083 Tc
+54.48 0 Td
+(describes )Tj
+0.0121875 Tc
+53.52 0 Td
+[(the )-78.938(syntax )]TJ
+0.0663281 Tc
+59.52 0 Td
+(of )Tj
+0.0312187 Tc
+14.88 0 Td
+(X.509 )Tj
+0.0260337 Tc
+33.36 0 Td
+(certificates, )Tj
+0.0642188 Tc
+64.32 0 Td
+(for )Tj
+0.0334896 Tc
+19.68 0 Td
+(reference )Tj
+-0.00427734 Tc
+53.28 0 Td
+(purposes.)Tj
+0.0663281 Tc
+-380.16 -14.4 Td
+(To )Tj
+0.108281 Tc
+18.96 0 Td
+(be )Tj
+0.0406641 Tc
+17.52 0 Td
+(precise, )Tj
+0.0782812 Tc
+45.6 0 Td
+(it )Tj
+0.0402083 Tc
+12.48 0 Td
+(describes )Tj
+0.0121875 Tc
+54.48 0 Td
+(the )Tj
+0.067793 Tc
+21.6 0 Td
+(modified )Tj
+0.0121875 Tc
+54 0 Td
+(syntax )Tj
+0.0409687 Tc
+39.84 0 Td
+(given )Tj
+0.102187 Tc
+34.8 0 Td
+(in )Tj
+-0.0117188 Tc
+15.84 0 Td
+(RFC )Tj
+0.048 Tc
+28.32 0 Td
+(1422, )Tj
+0.0409687 Tc
+32.4 0 Td
+(which )Tj
+-0.0358594 Tc
+38.16 0 Td
+(has)Tj
+0.0314266 Tc
+-414 -14.4 Td
+(worked its way back to the 1988 X.509 standard.)Tj
+0.0602344 Tc
+(An )'
+0.0312187 Tc
+20.4 0 Td
+(X.509 )Tj
+0.0242045 Tc
+33.12 0 Td
+(certificate )Tj
+-0.0162891 Tc
+55.92 0 Td
+(consists )Tj
+0.0663281 Tc
+45.6 0 Td
+(of )Tj
+0.02175 Tc
+14.88 0 Td
+(three )Tj
+0.028125 Tc
+31.44 0 Td
+(parts: )Tj
+0.0312109 Tc
+34.32 0 Td
+("certificate )Tj
+0.0315865 Tc
+60.72 0 Td
+(information," )Tj
+0.12 Tc
+75.36 0 Td
+(a )Tj
+0.00621094 Tc
+10.32 0 Td
+(signature)Tj
+0.026875 Tc
+-382.08 -14.4 Td
+(algorithm )Tj
+0.0678409 Tc
+57.12 0 Td
+(identifier, )Tj
+0.068125 Tc
+57.12 0 Td
+(and )Tj
+0.12 Tc
+24.96 0 Td
+(a )Tj
+0.0756696 Tc
+10.8 0 Td
+(digital )Tj
+0.0188542 Tc
+39.6 0 Td
+(signature )Tj
+0.0121875 Tc
+54.72 0 Td
+[(on )-138.953(the )]TJ
+0.0242045 Tc
+39.6 0 Td
+(certificate )Tj
+0.0251953 Tc
+56.64 0 Td
+(information. )Tj
+0.0363281 Tc
+71.28 0 Td
+(The)Tj
+0.0242045 Tc
+-411.84 -14.4 Td
+(certificate )Tj
+0.0165767 Tc
+57.6 0 Td
+(information )Tj
+-0.0162891 Tc
+69.12 0 Td
+(consists )Tj
+0.0663281 Tc
+47.28 0 Td
+(of )Tj
+0.0480469 Tc
+16.56 0 Td
+(an )Tj
+-0.00275391 Tc
+18.96 0 Td
+(entity's )Tj
+0.036238 Tc
+44.16 0 Td
+(distinguished )Tj
+0.0385312 Tc
+79.2 0 Td
+(name, )Tj
+0.0121875 Tc
+38.4 0 Td
+(the )Tj
+-0.0202902 Tc
+22.56 0 Td
+(entity's)Tj
+0.0542969 Tc
+-393.84 -14.4 Td
+(public )Tj
+0.0871875 Tc
+39.12 0 Td
+(key, )Tj
+0.0121875 Tc
+27.84 0 Td
+(the )Tj
+0.036238 Tc
+22.08 0 Td
+(distinguished )Tj
+0.0181641 Tc
+78.72 0 Td
+(name )Tj
+0.0663281 Tc
+34.8 0 Td
+(of )Tj
+0.0121875 Tc
+16.08 0 Td
+(the )Tj
+0.0242045 Tc
+22.08 0 Td
+(certificate )Tj
+0.041317 Tc
+57.36 0 Td
+(issuer, )Tj
+0.0480469 Tc
+40.08 0 Td
+(an )Tj
+0.0208259 Tc
+18.48 0 Td
+(issuer-specific)Tj
+0.0437076 Tc
+-356.64 -14.4 Td
+(serial number, a signature algorithm identifier, and a validity period.)Tj
+0.0192305 Tc
+(The process by which the certificate is constructed involves the following steps:)'
+0.12 Tc
+36 -26.4 Td
+(1.)Tj
+0.144375 Tc
+36 0 Td
+(A )Tj
+0 Tc
+/R19 12 Tf
+14.88 0 Td
+(CertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+108 0 Td
+( )Tj
+0.0289687 Tc
+5.52 0 Td
+(value )Tj
+0.0121875 Tc
+34.8 0 Td
+(containing )Tj
+0.0242045 Tc
+61.92 0 Td
+(certificate )Tj
+0.0165767 Tc
+57.36 0 Td
+(information )Tj
+0.0604687 Tc
+68.88 0 Td
+(is)Tj
+0.0164062 Tc
+-351.36 -14.4 Td
+(constructed by the certificate issuer.)Tj
+0.12 Tc
+-36 -26.4 Td
+(2.)Tj
+0.0642188 Tc
+36 0 Td
+(The )Tj
+0 Tc
+/R19 12 Tf
+23.28 0 Td
+(CertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+108 0 Td
+( )Tj
+0.0289687 Tc
+3.36 0 Td
+(value )Tj
+0.0902344 Tc
+32.64 0 Td
+(is )Tj
+0.0542188 Tc
+12 0 Td
+(signed )Tj
+0.0512109 Tc
+38.88 0 Td
+(with )Tj
+0.0121875 Tc
+27.84 0 Td
+(the )Tj
+0.0242045 Tc
+19.92 0 Td
+(certificate )Tj
+-0.0134598 Tc
+55.2 0 Td
+(issuer's)Tj
+0.035071 Tc
+-321.12 -14.4 Td
+(private key.)Tj
+0.12 Tc
+-36 -26.4 Td
+(3.)Tj
+0.0642188 Tc
+36 0 Td
+(The )Tj
+0 Tc
+/R19 12 Tf
+26.4 0 Td
+(CertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+108 0 Td
+( )Tj
+0.0441406 Tc
+6.24 0 Td
+(value, )Tj
+0.12 Tc
+38.88 0 Td
+(a )Tj
+0.0188542 Tc
+12.48 0 Td
+(signature )Tj
+0.026875 Tc
+56.4 0 Td
+(algorithm )Tj
+0.062625 Tc
+59.04 0 Td
+(identifier,)Tj
+0.068125 Tc
+-307.44 -14.4 Td
+(and )Tj
+0.0121875 Tc
+25.68 0 Td
+(the )Tj
+0.0242045 Tc
+21.84 0 Td
+(certificate )Tj
+0.00322266 Tc
+57.12 0 Td
+(issuer's )Tj
+0.0188542 Tc
+44.16 0 Td
+(signature )Tj
+0.0640625 Tc
+55.2 0 Td
+(are )Tj
+0.0255729 Tc
+21.84 0 Td
+(collected )Tj
+0.00169922 Tc
+52.32 0 Td
+(together )Tj
+0.0152344 Tc
+49.44 0 Td
+(into )Tj
+0 Tc
+26.4 0 Td
+(a)Tj
+/R19 12 Tf
+-354 -14.4 Td
+(Certificate)Tj
+0.0590402 Tc
+/R15 12 Tf
+79.2 0 Td
+( value, defined below.)Tj
+0.0642188 Tc
+-151.2 -26.4 Td
+(The )Tj
+0.0535938 Tc
+24.48 0 Td
+(following )Tj
+0.0122344 Tc
+55.92 0 Td
+(discussion )Tj
+0.0902344 Tc
+60 0 Td
+(is )Tj
+0.0876563 Tc
+12.96 0 Td
+(divided )Tj
+0.0152344 Tc
+46.32 0 Td
+(into )Tj
+0.01625 Tc
+25.2 0 Td
+(two )Tj
+0.028125 Tc
+24.96 0 Td
+(parts. )Tj
+0.0642188 Tc
+34.56 0 Td
+(The )Tj
+0.050625 Tc
+24.72 0 Td
+(first )Tj
+0.0241406 Tc
+25.92 0 Td
+(part )Tj
+0.0402083 Tc
+26.4 0 Td
+(describes )Tj
+-0.0417188 Tc
+54 0 Td
+(the)Tj
+0.0179552 Tc
+-415.44 -14.4 Td
+(certificate-information )Tj
+0.0242578 Tc
+123.84 0 Td
+(type )Tj
+0 Tc
+/R19 12 Tf
+28.08 0 Td
+(CertificateInfo)Tj
+0.24 Tc
+/R15 12 Tf
+108 0 Td
+(, )Tj
+0.068125 Tc
+7.68 0 Td
+(and )Tj
+0.0121875 Tc
+25.2 0 Td
+(the )Tj
+0.00820312 Tc
+21.36 0 Td
+(second )Tj
+0.0241406 Tc
+41.76 0 Td
+(part )Tj
+0.0302344 Tc
+26.64 0 Td
+(describes)Tj
+0.0202083 Tc
+-382.56 -14.4 Td
+(the top-level type )Tj
+0 Tc
+/R19 12 Tf
+96.48 0 Td
+(Certificate)Tj
+0.12 Tc
+/R15 12 Tf
+79.2 0 Td
+(.)Tj
+0.0141927 Tc
+/R13 12 Tf
+-175.68 -38.88 Td
+(A.1 CertificateInfo)Tj
+0.022278 Tc
+/R15 12 Tf
+(Certificate information has ASN.1 type )'
+0 Tc
+/R19 12 Tf
+210.24 0 Td
+(CertificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+108 0 Td
+(:)Tj
+0 Tc
+/R19 12 Tf
+-318.24 -24.72 Td
+(CertificateInfo ::= SEQUENCE {)Tj
+12.72 TL
+(  version [0] Version DEFAULT v1988,)'
+ET
+Q
+Q
+endstream
+endobj
+50 0 obj
+9293
+endobj
+54 0 obj
+<</Length 55 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0331641 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(Page )Tj
+0 Tc
+28.8 0 Td
+(8)Tj
+0.0201042 Tc
+127.2 0 Td
+(PKCS #6: E)Tj
+-0.009375 Tc
+/R15 9.6 Tf
+59.28 0 Td
+(XTENDED)Tj
+-0.0234375 Tc
+/R15 12 Tf
+46.8 0 Td
+(-C)Tj
+-0.0314531 Tc
+/R15 9.6 Tf
+12.48 0 Td
+(ERTIFICATE )Tj
+-0.06 Tc
+/R15 12 Tf
+58.08 0 Td
+(S)Tj
+0.0366562 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(YNTAX )Tj
+-0.06 Tc
+/R15 12 Tf
+36.72 0 Td
+(S)Tj
+0.0146875 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(TANDARD)Tj
+0 Tc
+/R19 12 Tf
+-381.84 -34.32 Td
+(  serialNumber CertificateSerialNumber,)Tj
+12.72 TL
+(  signature AlgorithmIdentifier,)'
+(  issuer Name,)'
+(  validity Validity,)'
+(  subject Name,)'
+(  subjectPublicKeyInfo SubjectPublicKeyInfo })'
+24.72 TL
+(Version ::= INTEGER { v1988\(0\) })'
+(CertificateSerialNumber ::= INTEGER)'
+(Validity ::= SEQUENCE {)'
+12.72 TL
+(  notBefore UTCTime,)'
+(  notAfter UTCTime })'
+24.72 TL
+(SubjectPublicKeyInfo ::= SEQUENCE {)'
+12.72 TL
+(  algorithm AlgorithmIdentifier,)'
+(  subjectPublicKey BIT STRING })'
+24.72 TL
+(AlgorithmIdentifier ::= SEQUENCE {)'
+12.72 TL
+(  algorithm OBJECT IDENTIFIER,)'
+(  parameters ANY DEFINED BY ALGORITHM OPTIONAL })'
+0.0508854 Tc
+/R15 12 Tf
+26.4 TL
+(The fields of type )'
+0 Tc
+/R19 12 Tf
+96.24 0 Td
+(CertificateInfo)Tj
+0.0301674 Tc
+/R15 12 Tf
+108 0 Td
+( have the following meanings:)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 394.29 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 394.29 Tm
+(version)Tj
+0.12 Tc
+/R15 12 Tf
+50.4 0 Td
+( )Tj
+0.0902344 Tc
+6.96 0 Td
+(is )Tj
+0.0121875 Tc
+15.6 0 Td
+(the )Tj
+0.0138616 Tc
+23.52 0 Td
+(version )Tj
+0.043058 Tc
+46.32 0 Td
+(number, )Tj
+0.0642188 Tc
+52.08 0 Td
+(for )Tj
+0.0288822 Tc
+22.32 0 Td
+(compatibility )Tj
+0.0512109 Tc
+78.24 0 Td
+(with )Tj
+0.00271875 Tc
+31.68 0 Td
+(future)Tj
+0.0175 Tc
+-327.12 -14.4 Td
+(revisions )Tj
+0.0663281 Tc
+56.16 0 Td
+(of )Tj
+0.0460156 Tc
+18.72 0 Td
+(X.509. )Tj
+0.0121875 Tc
+40.32 0 Td
+(Its )Tj
+0.0465402 Tc
+21.12 0 Td
+(default )Tj
+0.0289687 Tc
+46.08 0 Td
+(value )Tj
+0.0902344 Tc
+37.44 0 Td
+(is )Tj
+0 Tc
+/R19 12 Tf
+16.8 0 Td
+(v1988)Tj
+0.24 Tc
+/R15 12 Tf
+36 0 Td
+(, )Tj
+-0.0117188 Tc
+11.28 0 Td
+(to )Tj
+0.0409687 Tc
+18.48 0 Td
+(which )Tj
+-0.0417188 Tc
+41.04 0 Td
+(the)Tj
+0 Tc
+/R19 12 Tf
+-343.44 -14.4 Td
+(Version)Tj
+0.0331494 Tc
+/R15 12 Tf
+50.4 0 Td
+( type assigns the integer 0. The )Tj
+0 Tc
+/R19 12 Tf
+167.04 0 Td
+([0])Tj
+0.0344196 Tc
+/R15 12 Tf
+21.6 0 Td
+( tag on )Tj
+0 Tc
+/R19 12 Tf
+39.36 0 Td
+(version)Tj
+0.105117 Tc
+/R15 12 Tf
+50.4 0 Td
+(  is )Tj
+-0.0239062 Tc
+18.24 0 Td
+(an)Tj
+0.0467578 Tc
+-347.04 -14.4 Td
+(explicit )Tj
+0.0541406 Tc
+43.68 0 Td
+(tag. )Tj
+0.0602344 Tc
+24.24 0 Td
+(This )Tj
+0.0902344 Tc
+27.6 0 Td
+(is )Tj
+0.0121875 Tc
+13.2 0 Td
+(the )Tj
+0.0465402 Tc
+21.12 0 Td
+(default )Tj
+0.0642188 Tc
+42.48 0 Td
+(for )Tj
+0.0121875 Tc
+19.92 0 Td
+(tags )Tj
+-0.0157812 Tc
+26.16 0 Td
+(not )Tj
+0.0521875 Tc
+21.84 0 Td
+(marked )Tj
+0 Tc
+/R19 12 Tf
+46.08 0 Td
+(EXPLICIT)Tj
+0.12 Tc
+/R15 12 Tf
+57.6 0 Td
+( )Tj
+-0.0117188 Tc
+4.8 0 Td
+(or)Tj
+0 Tc
+/R19 12 Tf
+-348.72 -14.4 Td
+(IMPLICIT)Tj
+0.12 Tc
+/R15 12 Tf
+57.6 0 Td
+( )Tj
+0.102187 Tc
+5.52 0 Td
+(in )Tj
+0.0121875 Tc
+16.08 0 Td
+(the )Tj
+0.0625312 Tc
+22.08 0 Td
+(ASN.1 )Tj
+0.0342969 Tc
+40.32 0 Td
+(module )Tj
+-0.0118359 Tc
+46.56 0 Td
+(that )Tj
+0.0533705 Tc
+26.16 0 Td
+(defines )Tj
+0.0121875 Tc
+44.16 0 Td
+(the )Tj
+0 Tc
+/R19 12 Tf
+22.32 0 Td
+(Certificate)Tj
+0.0242578 Tc
+/R15 12 Tf
+-280.8 -14.4 Td
+(type.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 295.89 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 295.89 Tm
+(serialNumber)Tj
+0.12 Tc
+/R15 12 Tf
+86.4 0 Td
+( )Tj
+0.0902344 Tc
+10.56 0 Td
+(is )Tj
+0.0121875 Tc
+19.2 0 Td
+(the )Tj
+0.0274375 Tc
+27.36 0 Td
+(issuer-specific )Tj
+0.0601562 Tc
+86.16 0 Td
+(serial )Tj
+0.0302344 Tc
+39.6 0 Td
+(number )Tj
+0.0663281 Tc
+52.8 0 Td
+(of )Tj
+-0.0417188 Tc
+21.36 0 Td
+(the)Tj
+0.0321875 Tc
+-343.44 -14.4 Td
+(certificate. )Tj
+0.05775 Tc
+61.44 0 Td
+(Every )Tj
+0.0242045 Tc
+37.92 0 Td
+(certificate )Tj
+0.0642188 Tc
+58.32 0 Td
+(for )Tj
+0.12 Tc
+21.84 0 Td
+(a )Tj
+0.0289687 Tc
+12.48 0 Td
+(particular )Tj
+0.0282031 Tc
+58.8 0 Td
+(issuer )Tj
+-0.0176953 Tc
+37.92 0 Td
+(must )Tj
+0.0120703 Tc
+33.12 0 Td
+(have )Tj
+0 Tc
+32.16 0 Td
+(a)Tj
+0.0450611 Tc
+-354 -14.4 Td
+(different serial number.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 240.69 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 240.69 Tm
+(signature)Tj
+0.12 Tc
+/R15 12 Tf
+64.8 0 Td
+( )Tj
+0.0518437 Tc
+6 0 Td
+(identifies )Tj
+0.0121875 Tc
+55.92 0 Td
+(the )Tj
+0.00322266 Tc
+22.8 0 Td
+(issuer's )Tj
+0.0188542 Tc
+45.12 0 Td
+(signature )Tj
+0.026875 Tc
+56.16 0 Td
+(algorithm )Tj
+0.0721875 Tc
+58.8 0 Td
+(\(and )Tj
+0.0121875 Tc
+30.72 0 Td
+(any)Tj
+0.0110795 Tc
+-340.32 -14.4 Td
+(associated parameters\).)Tj
+0.120469 Tc
+/R15 7.92 Tf
+124.56 3.12 Td
+(1)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 199.89 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 199.89 Tm
+(issuer)Tj
+0.0285667 Tc
+/R15 12 Tf
+43.2 0 Td
+( is the distinguished name of the certificate issuer.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 173.49 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 173.49 Tm
+(validity)Tj
+0.12 Tc
+/R15 12 Tf
+57.6 0 Td
+( )Tj
+0.0902344 Tc
+5.76 0 Td
+(is )Tj
+0.0121875 Tc
+14.4 0 Td
+(the )Tj
+0.0587109 Tc
+22.32 0 Td
+(validity )Tj
+0.0542188 Tc
+47.28 0 Td
+(period )Tj
+0.0642188 Tc
+41.04 0 Td
+(for )Tj
+0.0121875 Tc
+21.12 0 Td
+(the )Tj
+0.0321875 Tc
+22.32 0 Td
+(certificate. )Tj
+0.0642188 Tc
+60.72 0 Td
+(The )Tj
+0.0499554 Tc
+25.92 0 Td
+(validity)Tj
+0.0542188 Tc
+-318.48 -14.4 Td
+(period )Tj
+0.0322396 Tc
+39.12 0 Td
+(specifies )Tj
+0.0121875 Tc
+49.44 0 Td
+(the )Tj
+0.000234375 Tc
+20.64 0 Td
+(points )Tj
+0.102187 Tc
+37.2 0 Td
+(in )Tj
+0.0332812 Tc
+14.64 0 Td
+(time )Tj
+0.0310714 Tc
+27.84 0 Td
+(between )Tj
+0.0409687 Tc
+48.96 0 Td
+(which )Tj
+0.0121875 Tc
+36.96 0 Td
+(the )Tj
+0.0242045 Tc
+20.64 0 Td
+(certificate )Tj
+0.0604687 Tc
+55.92 0 Td
+(is)Tj
+0.0451758 Tc
+-351.36 -14.4 Td
+(considered valid.)Tj
+0.126316 Tc
+-72 -23.28 Td
+(                    )Tj
+ET
+Q
+5 w
+749.75 1041.75 m
+1269.75 1041.75 l
+S
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.126316 Tc
+/R15 12 Tf
+1 0 0 1 152.37 121.41 Tm
+(                    )Tj
+ET
+Q
+1269.75 1041.75 m
+1789.75 1041.75 l
+S
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.14 Tc
+/R15 12 Tf
+1 0 0 1 214.77 121.41 Tm
+(       )Tj
+ET
+Q
+1789.75 1041.75 m
+1971.75 1041.75 l
+S
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.120469 Tc
+/R15 7.92 Tf
+1 0 0 1 89.97 100.77 Tm
+(1)Tj
+-0.00875 Tc
+/R15 9.12 Tf
+4.08 -3.12 Td
+(The )Tj
+0.0151875 Tc
+19.2 0 Td
+(field )Tj
+0.0378516 Tc
+22.32 0 Td
+(name )Tj
+0.0543164 Tc
+/R19 9.12 Tf
+26.4 0 Td
+(signature)Tj
+0.12 Tc
+/R15 9.12 Tf
+49.68 0 Td
+( )Tj
+0.0154688 Tc
+4.08 0 Td
+(seems )Tj
+0.0208594 Tc
+28.56 0 Td
+(somewhat )Tj
+0.132188 Tc
+45.84 0 Td
+(of )Tj
+0.12 Tc
+12.24 0 Td
+(a )Tj
+0.0441146 Tc
+8.64 0 Td
+(misnomer, )Tj
+0.0134375 Tc
+47.52 0 Td
+(and )Tj
+0.0511213 Tc
+/R19 9.12 Tf
+19.68 0 Td
+(signatureAlgorithm)Tj
+0.12 Tc
+/R15 9.12 Tf
+99.36 0 Td
+( )Tj
+0.0420938 Tc
+4.32 0 Td
+(would )Tj
+-0.0515625 Tc
+30.72 0 Td
+(be)Tj
+0.0180239 Tc
+-422.64 -11.04 Td
+(more appropriate, but this is the way X.509 does it.)Tj
+ET
+Q
+Q
+endstream
+endobj
+55 0 obj
+7633
+endobj
+59 0 obj
+<</Length 60 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.024375 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(A)Tj
+-0.0381027 Tc
+/R15 9.6 Tf
+9.36 0 Td
+(PPENDIX )Tj
+0.0525586 Tc
+/R15 12 Tf
+44.64 0 Td
+(A. X.509 )Tj
+-0.0957187 Tc
+/R15 9.6 Tf
+47.76 0 Td
+(PUBLIC)Tj
+0.084375 Tc
+/R15 12 Tf
+34.56 0 Td
+(-)Tj
+-0.02925 Tc
+/R15 9.6 Tf
+4.08 0 Td
+(KEY CERTIFICATES)Tj
+0.0331641 Tc
+/R15 12 Tf
+256.8 0 Td
+(Page )Tj
+0 Tc
+28.8 0 Td
+(9)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 708.93 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 708.93 Tm
+(subject)Tj
+0.12 Tc
+/R15 12 Tf
+50.4 0 Td
+( )Tj
+0.0902344 Tc
+5.04 0 Td
+(is )Tj
+0.0121875 Tc
+13.68 0 Td
+(the )Tj
+0.036238 Tc
+21.6 0 Td
+(distinguished )Tj
+0.0181641 Tc
+78.24 0 Td
+(name )Tj
+0.0663281 Tc
+34.32 0 Td
+(of )Tj
+0.0121875 Tc
+15.6 0 Td
+(the )Tj
+0.0242045 Tc
+21.6 0 Td
+(certificate )Tj
+0.0122545 Tc
+56.88 0 Td
+(subject )Tj
+0.0003125 Tc
+42 0 Td
+(\(the)Tj
+0.0404265 Tc
+-339.36 -14.4 Td
+(entity whose public key is certified\).)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 668.13 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 668.13 Tm
+(subjectPublicKeyInfo)Tj
+0.12 Tc
+/R15 12 Tf
+144 0 Td
+( )Tj
+-0.00732422 Tc
+5.52 0 Td
+(contains )Tj
+0.0165767 Tc
+49.68 0 Td
+(information )Tj
+0.0050625 Tc
+68.88 0 Td
+(about )Tj
+0.0121875 Tc
+36 0 Td
+(the )Tj
+0.0411563 Tc
+22.32 0 Td
+(public)Tj
+0.07625 Tc
+-326.4 -14.4 Td
+(key )Tj
+0.0698437 Tc
+23.76 0 Td
+(being )Tj
+0.0614063 Tc
+34.56 0 Td
+(certified. )Tj
+0.0642188 Tc
+52.08 0 Td
+(The )Tj
+0.0165767 Tc
+24.96 0 Td
+(information )Tj
+0.0518437 Tc
+68.16 0 Td
+(identifies )Tj
+0.0121875 Tc
+54.48 0 Td
+(the )Tj
+-0.00275391 Tc
+21.36 0 Td
+(entity's )Tj
+0.0483594 Tc
+42.96 0 Td
+(public-)Tj
+0.07625 Tc
+-322.32 -14.4 Td
+(key )Tj
+0.026875 Tc
+27.84 0 Td
+(algorithm )Tj
+0.0721875 Tc
+61.44 0 Td
+(\(and )Tj
+0.048125 Tc
+33.36 0 Td
+(any )Tj
+0.0061875 Tc
+28.56 0 Td
+(associated )Tj
+0.0251563 Tc
+63.36 0 Td
+(parameters\); )Tj
+0.0257227 Tc
+75.84 0 Td
+(examples )Tj
+0.0126563 Tc
+59.04 0 Td
+(of)Tj
+0.0518906 Tc
+-349.44 -14.4 Td
+(public-key )Tj
+0.0194062 Tc
+67.92 0 Td
+(algorithms )Tj
+0.0499554 Tc
+68.64 0 Td
+(include )Tj
+0.00180804 Tc
+50.88 0 Td
+(X.509's )Tj
+0 Tc
+/R19 12 Tf
+47.52 0 Td
+(rsa)Tj
+0.12 Tc
+/R15 12 Tf
+21.6 0 Td
+( )Tj
+0.068125 Tc
+11.04 0 Td
+(and )Tj
+-0.0418359 Tc
+31.44 0 Td
+(PKCS )Tj
+-0.0478125 Tc
+41.52 0 Td
+(#1's)Tj
+0 Tc
+/R19 12 Tf
+-340.56 -14.4 Td
+(rsaEncryption)Tj
+0.24 Tc
+/R15 12 Tf
+93.6 0 Td
+(. )Tj
+0.0642188 Tc
+12.72 0 Td
+(The )Tj
+0.0165767 Tc
+29.76 0 Td
+(information )Tj
+0.0271875 Tc
+73.2 0 Td
+(also )Tj
+0.0377344 Tc
+30.96 0 Td
+(includes )Tj
+0.12 Tc
+54.72 0 Td
+(a )Tj
+0.0309375 Tc
+15.84 0 Td
+(bit-string)Tj
+0.00445312 Tc
+-310.8 -14.4 Td
+(representation )Tj
+0.0663281 Tc
+84.48 0 Td
+(of )Tj
+0.0121875 Tc
+18.48 0 Td
+(the )Tj
+-0.00275391 Tc
+24.48 0 Td
+(entity's )Tj
+0.0542969 Tc
+46.08 0 Td
+(public )Tj
+0.0871875 Tc
+41.52 0 Td
+(key. )Tj
+0.0521875 Tc
+30.24 0 Td
+(For )Tj
+0.00925781 Tc
+25.92 0 Td
+(both )Tj
+0.0443229 Tc
+31.92 0 Td
+(public-key)Tj
+0.0172917 Tc
+-303.12 -14.4 Td
+(algorithms just mentioned, the bit string contains the )Tj
+0.0803125 Tc
+284.64 0 Td
+(BER )Tj
+0.0156696 Tc
+26.16 0 Td
+(encoding)Tj
+0.0170068 Tc
+-310.8 -14.4 Td
+(of a value of X.509/PKCS #1 type )Tj
+0 Tc
+/R19 12 Tf
+180.48 0 Td
+(RSAPublicKey)Tj
+0.12 Tc
+/R15 12 Tf
+86.4 0 Td
+(.)Tj
+0.0224665 Tc
+/R13 12 Tf
+-338.88 -38.88 Td
+(A.2 Certificate)Tj
+0.0285938 Tc
+/R15 12 Tf
+26.4 TL
+(An X.509 certificate has ASN.1 type )'
+0 Tc
+/R19 12 Tf
+192.24 0 Td
+(Certificate)Tj
+0.12 Tc
+/R15 12 Tf
+79.2 0 Td
+(:)Tj
+0 Tc
+/R19 12 Tf
+-271.44 -24.72 Td
+(Certificate ::= SEQUENCE {)Tj
+12.72 TL
+(  certificateInfo CertificateInfo,)'
+(  signatureAlgorithm AlgorithmIdentifier,)'
+(  signature BIT STRING })'
+0.0508854 Tc
+/R15 12 Tf
+26.4 TL
+(The fields of type )'
+0 Tc
+/R19 12 Tf
+96.24 0 Td
+(Certificate)Tj
+0.0301674 Tc
+/R15 12 Tf
+79.2 0 Td
+( have the following meanings:)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 386.37 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 386.37 Tm
+(certificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+108 0 Td
+( )Tj
+0.0902344 Tc
+4.56 0 Td
+(is )Tj
+0.0121875 Tc
+13.2 0 Td
+(the )Tj
+0.0312109 Tc
+21.12 0 Td
+("certificate )Tj
+0.0315865 Tc
+60.96 0 Td
+(information." )Tj
+0.0421875 Tc
+75.6 0 Td
+(It )Tj
+0.0902344 Tc
+12.48 0 Td
+(is )Tj
+0.0121875 Tc
+13.44 0 Td
+(the )Tj
+0.00621094 Tc
+21.36 0 Td
+(value)Tj
+0.0562109 Tc
+-330.72 -14.4 Td
+(being signed.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 345.57 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 345.57 Tm
+(signatureAlgorithm)Tj
+0.12 Tc
+/R15 12 Tf
+129.6 0 Td
+( )Tj
+0.0518437 Tc
+7.44 0 Td
+(identifies )Tj
+0.0121875 Tc
+57.12 0 Td
+(the )Tj
+0.0188542 Tc
+24 0 Td
+(signature )Tj
+0.026875 Tc
+57.36 0 Td
+(algorithm )Tj
+0.05625 Tc
+60 0 Td
+(\(and)Tj
+0.048125 Tc
+-335.52 -14.4 Td
+(any )Tj
+0.0061875 Tc
+23.28 0 Td
+(associated )Tj
+0.0165341 Tc
+58.08 0 Td
+(parameters\) )Tj
+0.0481875 Tc
+67.44 0 Td
+(under )Tj
+0.0409687 Tc
+35.76 0 Td
+(which )Tj
+0.0121875 Tc
+36.48 0 Td
+(the )Tj
+0.0242045 Tc
+20.16 0 Td
+(certificate )Tj
+0.00623438 Tc
+55.44 0 Td
+(information)Tj
+0.0902344 Tc
+-296.64 -14.4 Td
+(is )Tj
+0.0636161 Tc
+12.48 0 Td
+(signed. )Tj
+0.0377344 Tc
+42.48 0 Td
+(Examples )Tj
+0.0499554 Tc
+55.68 0 Td
+(include )Tj
+-0.0418359 Tc
+43.68 0 Td
+(PKCS )Tj
+-0.00585938 Tc
+34.32 0 Td
+(#1's )Tj
+0.12 Tc
+23.28 0 Td
+( )Tj
+0 Tc
+/R19 12 Tf
+4.08 0 Td
+(md2WithRSAEncryption)Tj
+0.068125 Tc
+/R15 12 Tf
+-216 -14.4 Td
+(and )Tj
+0 Tc
+/R19 12 Tf
+23.52 0 Td
+(md5ithRSAEncryption)Tj
+0.24 Tc
+/R15 12 Tf
+136.8 0 Td
+(. )Tj
+0.0642188 Tc
+6.48 0 Td
+(The )Tj
+0.0289687 Tc
+23.52 0 Td
+(value )Tj
+0.0663281 Tc
+32.64 0 Td
+(of )Tj
+0.0212109 Tc
+13.92 0 Td
+(this )Tj
+0.108281 Tc
+22.8 0 Td
+(field )Tj
+0.02625 Tc
+27.84 0 Td
+(should )Tj
+0.108281 Tc
+40.08 0 Td
+(be )Tj
+-0.0417188 Tc
+15.84 0 Td
+(the)Tj
+0.0121875 Tc
+-343.44 -14.4 Td
+(same )Tj
+0.0360937 Tc
+35.28 0 Td
+(as )Tj
+0.0121875 Tc
+18.96 0 Td
+(the )Tj
+0.0289687 Tc
+24.48 0 Td
+(value )Tj
+0.0663281 Tc
+37.2 0 Td
+(of )Tj
+0.0121875 Tc
+18.48 0 Td
+(the )Tj
+0 Tc
+/R19 12 Tf
+24.72 0 Td
+(signature)Tj
+0.12 Tc
+/R15 12 Tf
+64.8 0 Td
+( )Tj
+0.108281 Tc
+8.16 0 Td
+(field )Tj
+0.0663281 Tc
+32.64 0 Td
+(of )Tj
+0.0121875 Tc
+18.72 0 Td
+(the )Tj
+0.014625 Tc
+24.72 0 Td
+(certificate)Tj
+0.0165767 Tc
+-308.16 -14.4 Td
+(information.)Tj
+ET
+Q
+q
+149.75 6533.75 m
+1087.75 6533.75 l
+1087.75 71.75 l
+149.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.0764062 Tc
+/R20 10.08 Tf
+1 0 0 1 125.97 247.17 Tm
+(∑)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+/R19 12 Tf
+1 0 0 1 161.97 247.17 Tm
+(signature)Tj
+0.12 Tc
+/R15 12 Tf
+64.8 0 Td
+( )Tj
+0.0902344 Tc
+3.6 0 Td
+(is )Tj
+0.0121875 Tc
+12.24 0 Td
+(the )Tj
+0.0242188 Tc
+20.16 0 Td
+(result )Tj
+0.0663281 Tc
+33.84 0 Td
+(of )Tj
+0.0482143 Tc
+14.16 0 Td
+(signing )Tj
+0.0121875 Tc
+43.44 0 Td
+(the )Tj
+0.0242045 Tc
+20.4 0 Td
+(certificate )Tj
+0.0165767 Tc
+55.68 0 Td
+(information )Tj
+0.0282812 Tc
+67.2 0 Td
+(with)Tj
+0.0225507 Tc
+-335.52 -14.4 Td
+(the  certificate issuer's private key.)Tj
+0.0150605 Tc
+-72 -26.4 Td
+(The signature process consists of two steps, as in Section 6.2:)Tj
+0.12 Tc
+36 -26.4 Td
+(1.)Tj
+0.0642188 Tc
+36 0 Td
+(The )Tj
+0.0289687 Tc
+28.8 0 Td
+(value )Tj
+0.0663281 Tc
+37.92 0 Td
+(of )Tj
+0.0121875 Tc
+19.2 0 Td
+(the )Tj
+0 Tc
+/R19 12 Tf
+25.2 0 Td
+(certificateInfo)Tj
+0.12 Tc
+/R15 12 Tf
+108 0 Td
+( )Tj
+0.108281 Tc
+8.64 0 Td
+(field )Tj
+0.0902344 Tc
+33.12 0 Td
+(is )Tj
+0.0682813 Tc
+17.28 0 Td
+(DER )Tj
+0.0310714 Tc
+33.6 0 Td
+(encoded,)Tj
+0.0331836 Tc
+-311.76 -14.4 Td
+(yielding an octet string.)Tj
+0.12 Tc
+-36 -26.4 Td
+(2.)Tj
+0.0314706 Tc
+36 0 Td
+(The result of step 1 is signed with the certificate )Tj
+0.00322266 Tc
+257.28 0 Td
+(issuer's )Tj
+0.022433 Tc
+42.24 0 Td
+(private )Tj
+0.054375 Tc
+41.28 0 Td
+(key)Tj
+0.0481875 Tc
+-340.8 -14.4 Td
+(under )Tj
+0.0121875 Tc
+36.72 0 Td
+(the )Tj
+0.0495833 Tc
+21.12 0 Td
+(specified )Tj
+0.0188542 Tc
+52.56 0 Td
+(signature )Tj
+0.0361875 Tc
+54.72 0 Td
+(algorithm, )Tj
+0.0797461 Tc
+60.48 0 Td
+(yielding )Tj
+0.12 Tc
+49.2 0 Td
+(a )Tj
+0.0803125 Tc
+10.8 0 Td
+(bit )Tj
+0.0447321 Tc
+18.96 0 Td
+(string, )Tj
+-0.0417188 Tc
+38.88 0 Td
+(the)Tj
+0.0188542 Tc
+-343.44 -14.4 Td
+(signature.)Tj
+ET
+Q
+Q
+endstream
+endobj
+60 0 obj
+8446
+endobj
+64 0 obj
+<</Length 65 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0331641 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(Page )Tj
+0 Tc
+28.8 0 Td
+(10)Tj
+0.0201042 Tc
+127.2 0 Td
+(PKCS #6: E)Tj
+-0.009375 Tc
+/R15 9.6 Tf
+59.28 0 Td
+(XTENDED)Tj
+-0.0234375 Tc
+/R15 12 Tf
+46.8 0 Td
+(-C)Tj
+-0.0314531 Tc
+/R15 9.6 Tf
+12.48 0 Td
+(ERTIFICATE )Tj
+-0.06 Tc
+/R15 12 Tf
+58.08 0 Td
+(S)Tj
+0.0366562 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(YNTAX )Tj
+-0.06 Tc
+/R15 12 Tf
+36.72 0 Td
+(S)Tj
+0.0146875 Tc
+/R15 9.6 Tf
+6.24 0 Td
+(TANDARD)Tj
+0.0842578 Tc
+/R13 12 Tf
+-381.84 -36.48 Td
+(Note.)Tj
+0.12 Tc
+/R15 12 Tf
+30 0 Td
+( )Tj
+0.0642188 Tc
+4.56 0 Td
+(The )Tj
+0.0121875 Tc
+24.72 0 Td
+(syntax )Tj
+0.0642188 Tc
+39.6 0 Td
+(for )Tj
+0 Tc
+/R19 12 Tf
+20.16 0 Td
+(Certificate)Tj
+0.12 Tc
+/R15 12 Tf
+79.2 0 Td
+( )Tj
+0.0902344 Tc
+4.8 0 Td
+(is )Tj
+0.0379688 Tc
+13.44 0 Td
+(usually )Tj
+0.0293304 Tc
+44.16 0 Td
+(written )Tj
+0.0512109 Tc
+43.68 0 Td
+(with )Tj
+0.0121875 Tc
+29.28 0 Td
+(the )Tj
+0.0312187 Tc
+21.36 0 Td
+(X.509 )Tj
+0 Tc
+/R19 12 Tf
+33.84 0 Td
+(SIGNED)Tj
+0.00496875 Tc
+/R15 12 Tf
+-388.8 -14.4 Td
+(macro.)Tj
+0 Tc
+/R19 12 Tf
+24.72 TL
+(Certificate ::= SIGNED SEQUENCE {)'
+12.72 TL
+(  version [0] Version DEFAULT v1988,)'
+(  serialNumber CertificateSerialNumber,)'
+(  signature AlgorithmIdentifier,)'
+(  issuer Name,)'
+(  validity Validity,)'
+(  subject Name,)'
+(  subjectPublicKeyInfo SubjectPublicKeyInfo })'
+0.0642188 Tc
+/R15 12 Tf
+26.4 TL
+(The )'
+0 Tc
+/R19 12 Tf
+23.28 0 Td
+(SIGNED)Tj
+0.0303879 Tc
+/R15 12 Tf
+43.2 0 Td
+( macro has been expanded in this discussion for simplicity.)Tj
+ET
+Q
+Q
+endstream
+endobj
+65 0 obj
+1541
+endobj
+69 0 obj
+<</Length 70 0 R>>
+stream
+q 0.12 0 0 0.12 0 0 cm
+/R8 gs
+0 G
+0 g
+q
+8.33333 0 0 8.33333 0 0 cm BT
+-0.095625 Tc
+/R15 12 Tf
+1 0 0 1 89.97 744.93 Tm
+(R)Tj
+-0.0354576 Tc
+/R15 9.6 Tf
+7.92 0 Td
+(EVISION HISTORY)Tj
+0.0331641 Tc
+/R15 12 Tf
+383.28 0 Td
+(Page )Tj
+0 Tc
+28.8 0 Td
+(11)Tj
+-0.0247812 Tc
+/R13 13.92 Tf
+-420 -38.4 Td
+(Revision history)Tj
+0.0274432 Tc
+/R13 12 Tf
+45.12 TL
+(Versions 1.0)'
+0 Tc
+66.96 0 Td
+(ñ)Tj
+ET
+Q
+q
+1357.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+1357.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.06 Tc
+/R13 12 Tf
+1 0 0 1 162.93 661.41 Tm
+(1.3)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0106641 Tc
+/R15 12 Tf
+1 0 0 1 89.97 635.01 Tm
+(Versions )Tj
+0.06 Tc
+51.84 0 Td
+(1.0)Tj
+0 Tc
+15.12 0 Td
+(ñ)Tj
+ET
+Q
+q
+1357.75 6533.75 m
+4937.75 6533.75 l
+4937.75 71.75 l
+1357.75 71.75 l
+h
+W n
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.08 Tc
+/R15 12 Tf
+1 0 0 1 162.93 635.01 Tm
+(1.3 )Tj
+0.0691406 Tc
+20.88 0 Td
+(were )Tj
+0.043892 Tc
+32.16 0 Td
+(distributed )Tj
+-0.0117188 Tc
+65.04 0 Td
+(to )Tj
+0.00917969 Tc
+16.08 0 Td
+(participants )Tj
+0.102187 Tc
+69.12 0 Td
+(in )Tj
+-0.00375 Tc
+16.32 0 Td
+(RSA )Tj
+0.0301172 Tc
+29.28 0 Td
+(Data )Tj
+0.0281771 Tc
+30.96 0 Td
+(Security, )Tj
+-0.0118125 Tc
+52.32 0 Td
+(Inc.'s)Tj
+ET
+Q
+Q
+q
+8.33333 0 0 8.33333 0 0 cm BT
+0.0250272 Tc
+/R15 12 Tf
+1 0 0 1 89.97 620.61 Tm
+(Public-Key Cryptography Standards meetings in February and March 1991.)Tj
+0.0349687 Tc
+/R13 12 Tf
+38.88 TL
+(Version 1.4)'
+0.0190179 Tc
+/R15 12 Tf
+26.4 TL
+(Version )'
+0.08 Tc
+45.12 0 Td
+(1.4 )Tj
+0.0902344 Tc
+18.96 0 Td
+(is )Tj
+0.0241406 Tc
+12.48 0 Td
+(part )Tj
+0.0663281 Tc
+25.68 0 Td
+(of )Tj
+0.0121875 Tc
+14.4 0 Td
+(the )Tj
+0.0392578 Tc
+20.4 0 Td
+(June )Tj
+0.12 Tc
+27.84 0 Td
+(3, )Tj
+0.03 Tc
+12.96 0 Td
+(1991 )Tj
+0.0653571 Tc
+27.84 0 Td
+(initial )Tj
+0.0542969 Tc
+35.04 0 Td
+(public )Tj
+0.0395759 Tc
+37.68 0 Td
+(release )Tj
+0.0663281 Tc
+40.8 0 Td
+(of )Tj
+-0.00946875 Tc
+14.64 0 Td
+(PKCS. )Tj
+0.0190179 Tc
+37.68 0 Td
+(Version )Tj
+0.06 Tc
+45.36 0 Td
+(1.4)Tj
+0.013026 Tc
+-416.88 -14.4 Td
+(was published as NIST/OSI Implementors' Workshop document SEC-SIG-91-21.)Tj
+0.0349687 Tc
+/R13 12 Tf
+38.88 TL
+(Version 1.5)'
+0.0190179 Tc
+/R15 12 Tf
+26.4 TL
+(Version )'
+0.08 Tc
+47.76 0 Td
+(1.5 )Tj
+0.00117188 Tc
+21.6 0 Td
+(incorporates )Tj
+0.0292634 Tc
+72.96 0 Td
+(several )Tj
+0.0535417 Tc
+44.4 0 Td
+(editorial )Tj
+0.0196289 Tc
+51.84 0 Td
+(changes, )Tj
+0.0522396 Tc
+52.56 0 Td
+(including )Tj
+0.0105134 Tc
+58.08 0 Td
+(updates )Tj
+-0.0117188 Tc
+49.2 0 Td
+(to )Tj
+-0.0417188 Tc
+17.04 0 Td
+(the)Tj
+0.0297895 Tc
+-415.44 -14.4 Td
+(references and the addition of a revision history.)Tj
+-0.0075625 Tc
+/R13 13.92 Tf
+46.8 TL
+(Author's address)'
+0.0105938 Tc
+/R15 12 Tf
+32.64 TL
+(RSA Laboratories)'
+0.0287019 Tc
+216 0 Td
+(\(415\) 595-7703)Tj
+0.0297518 Tc
+-216 -14.4 Td
+(100 Marine Parkway)Tj
+0.0418174 Tc
+216 0 Td
+(\(415\) 595-4126 \(fax\))Tj
+0.0290451 Tc
+-216 -14.4 Td
+(Redwood City, CA  94065  USA)Tj
+0 Tc
+/R19 12 Tf
+216 0 Td
+(pkcs-editor@rsa.com)Tj
+ET
+Q
+Q
+endstream
+endobj
+70 0 obj
+2904
+endobj
+4 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 21 0 R
+/Font 22 0 R
+>>
+/Contents 5 0 R
+>>
+endobj
+23 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 26 0 R
+/Font 27 0 R
+>>
+/Contents 24 0 R
+>>
+endobj
+28 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 31 0 R
+/Font 32 0 R
+>>
+/Contents 29 0 R
+>>
+endobj
+33 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 36 0 R
+/Font 37 0 R
+>>
+/Contents 34 0 R
+>>
+endobj
+38 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 41 0 R
+/Font 42 0 R
+>>
+/Contents 39 0 R
+>>
+endobj
+43 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 46 0 R
+/Font 47 0 R
+>>
+/Contents 44 0 R
+>>
+endobj
+48 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 51 0 R
+/Font 52 0 R
+>>
+/Contents 49 0 R
+>>
+endobj
+53 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 56 0 R
+/Font 57 0 R
+>>
+/Contents 54 0 R
+>>
+endobj
+58 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 61 0 R
+/Font 62 0 R
+>>
+/Contents 59 0 R
+>>
+endobj
+63 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 66 0 R
+/Font 67 0 R
+>>
+/Contents 64 0 R
+>>
+endobj
+68 0 obj
+<</Type/Page/MediaBox [0 0 595 842]
+/Rotate 0/Parent 3 0 R
+/Resources<</ProcSet[/PDF /Text]
+/ExtGState 71 0 R
+/Font 72 0 R
+>>
+/Contents 69 0 R
+>>
+endobj
+3 0 obj
+<< /Type /Pages /Kids [
+4 0 R
+23 0 R
+28 0 R
+33 0 R
+38 0 R
+43 0 R
+48 0 R
+53 0 R
+58 0 R
+63 0 R
+68 0 R
+] /Count 11
+>>
+endobj
+1 0 obj
+<</Type /Catalog /Pages 3 0 R
+>>
+endobj
+8 0 obj
+<</Type/ExtGState
+/TR 7 0 R>>endobj
+21 0 obj
+<</R8
+8 0 R>>
+endobj
+22 0 obj
+<</R19
+19 0 R/R11
+11 0 R/R20
+20 0 R/R13
+13 0 R/R15
+15 0 R/R9
+9 0 R/R17
+17 0 R>>
+endobj
+7 0 obj
+<</Filter/LZWDecode
+/FunctionType 0
+/Domain[0
+1]
+/Range[0
+1]
+/BitsPerSample 8
+/Size[256]/Length 274>>stream
+Ä    †`0ÇA@†X0ÉÅÒ∞Ä@#	Çr0†P+'ÇÚ∞¿`2áC‚êL(ä≈¢Òà»h6ác—˘ÜD#	D¬q@§T+E¬ÒÄƒd3F√q¿‰t;G≥·Ù¸~?†($ÖC!êËÑJ)ãF#Q»‰zE$ìJ%RÈÑ i8ùO'‘
+%ëJ¶T*UJµbπ^∞Y,÷´e∫Âtº^Øòä«d2ôl÷s=¢“i¥⁄çV≥]Æÿl∂õm∂„uºﬂo∏.'ç»Âs9›áK©÷Ïv;]Œ˜É¡‚ÚyΩèW≥›¯|æüOø'ë˘ÁÛø}^ß˜∑⁄ˇ¯|  
+endstream
+endobj
+26 0 obj
+<</R8
+8 0 R>>
+endobj
+27 0 obj
+<</R19
+19 0 R/R13
+13 0 R/R15
+15 0 R/R17
+17 0 R>>
+endobj
+31 0 obj
+<</R8
+8 0 R>>
+endobj
+32 0 obj
+<</R19
+19 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+36 0 obj
+<</R8
+8 0 R>>
+endobj
+37 0 obj
+<</R19
+19 0 R/R20
+20 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+41 0 obj
+<</R8
+8 0 R>>
+endobj
+42 0 obj
+<</R19
+19 0 R/R20
+20 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+46 0 obj
+<</R8
+8 0 R>>
+endobj
+47 0 obj
+<</R19
+19 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+51 0 obj
+<</R8
+8 0 R>>
+endobj
+52 0 obj
+<</R19
+19 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+56 0 obj
+<</R8
+8 0 R>>
+endobj
+57 0 obj
+<</R19
+19 0 R/R20
+20 0 R/R15
+15 0 R>>
+endobj
+61 0 obj
+<</R8
+8 0 R>>
+endobj
+62 0 obj
+<</R19
+19 0 R/R20
+20 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+66 0 obj
+<</R8
+8 0 R>>
+endobj
+67 0 obj
+<</R19
+19 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+71 0 obj
+<</R8
+8 0 R>>
+endobj
+72 0 obj
+<</R19
+19 0 R/R13
+13 0 R/R15
+15 0 R>>
+endobj
+19 0 obj
+<</BaseFont/Courier/Type/Font
+/Subtype/Type1>>
+endobj
+11 0 obj
+<</BaseFont/KPIYHD+AvantGarde-Demi/FontDescriptor 12 0 R/Type/Font
+/FirstChar 42/LastChar 42/Widths[ 440]
+/Encoding/WinAnsiEncoding/Subtype/Type1>>
+endobj
+20 0 obj
+<</BaseFont/Symbol/Type/Font
+/Encoding 78 0 R/Subtype/Type1>>
+endobj
+78 0 obj
+<</Type/Encoding/BaseEncoding/WinAnsiEncoding/Differences[
+183/bullet
+211/copyrightserif]>>
+endobj
+13 0 obj
+<</BaseFont/TJIBRF+Palatino-Bold/FontDescriptor 14 0 R/Type/Font
+/FirstChar 32/LastChar 150/Widths[
+250 0 0 0 0 0 0 227 0 0 0 0 0 333 250 0
+500 500 500 500 500 500 500 0 0 500 250 0 0 0 0 0
+0 778 667 722 833 611 0 833 0 389 0 0 0 1000 833 0
+611 0 722 611 0 0 778 0 667 0 0 0 0 0 0 0
+0 500 611 444 611 500 389 0 611 333 0 611 333 889 611 556
+611 0 389 444 333 611 556 833 500 556 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 500]
+/Encoding/WinAnsiEncoding/Subtype/Type1>>
+endobj
+15 0 obj
+<</BaseFont/HQLRAS+Palatino-Roman/FontDescriptor 16 0 R/Type/Font
+/FirstChar 32/LastChar 151/Widths[
+250 0 371 500 0 0 0 208 333 333 389 0 250 333 250 606
+500 500 500 500 500 500 500 500 500 500 250 250 0 0 0 0
+0 778 611 709 774 611 556 763 832 337 333 726 611 946 831 786
+604 0 668 525 613 778 722 1000 667 667 0 0 0 0 0 0
+0 500 553 444 611 479 333 556 582 291 234 556 291 883 582 546
+601 560 395 424 326 603 565 834 516 556 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 500 1000]
+/Encoding/WinAnsiEncoding/Subtype/Type1>>
+endobj
+9 0 obj
+<</BaseFont/MYMJQC+AvantGarde-Book/FontDescriptor 10 0 R/Type/Font
+/FirstChar 32/LastChar 121/Widths[
+277 0 0 554 0 0 0 0 0 0 0 0 277 332 277 0
+0 554 0 554 0 554 554 0 0 554 277 0 0 0 0 0
+0 740 0 813 0 536 0 0 0 0 0 591 462 0 740 0
+592 0 607 498 426 0 702 0 0 0 0 0 0 0 0 0
+0 683 682 647 685 650 314 0 610 200 0 0 200 938 610 655
+0 0 301 388 339 0 554 0 480 536]
+/Encoding/WinAnsiEncoding/Subtype/Type1>>
+endobj
+17 0 obj
+<</BaseFont/IPELTR+Palatino-Italic/FontDescriptor 18 0 R/Type/Font
+/FirstChar 32/LastChar 151/Widths[
+250 0 0 500 0 0 0 0 333 333 0 0 250 333 250 0
+500 500 500 0 500 500 0 500 500 500 250 0 0 0 0 0
+0 722 611 667 778 611 556 0 0 333 0 667 0 944 778 778
+611 0 667 556 611 0 0 0 722 0 0 0 0 0 0 0
+0 444 463 407 500 389 278 500 500 278 0 444 278 778 556 444
+500 0 389 389 333 556 500 722 500 500 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 1000]
+/Encoding/WinAnsiEncoding/Subtype/Type1>>
+endobj
+12 0 obj
+<</Type/FontDescriptor/FontName/KPIYHD+AvantGarde-Demi/FontBBox[0 0 371 739]/Flags 65568
+/Ascent 739
+/CapHeight 739
+/Descent 0
+/ItalicAngle 0
+/StemV 55
+/MissingWidth 280
+/CharSet(/asterisk)/FontFile3 73 0 R>>
+endobj
+73 0 obj
+<</Filter/LZWDecode
+/Subtype/Type1C/Length 300>>stream
+Ä @ @ N∆q–éa9¢“!î⁄iÉAƒèÄÿ>†4Z-|ù¿°–1.§©Í–ì‹Ó{ùÔsà@ Éû)Rº‡y9LÊÉ†ÄPU)≈"±X≤ãG§“È£Õt@b<”™*†Ç*s•Ñk1îÏe6Qç¶XhÏ@C§MÜ√Iå@g6NÉòÄ¬dâ+ˆ±Ñÿe5à◊£I¿‡o;Sàbë »`0ãs√ïå@G7ù—2€”j5Z¬`lmÅ` 1{´œÇc‹˘+XQB@
+DªREqì,ÿ∂qÆÜlEâY∂ÏCZ`qRÇﬁ(+À£B˚Ñ
+;ßﬂ‰˚‹rü=¡‡ß∏h˝†`˛ë‡`€  
+endstream
+endobj
+14 0 obj
+<</Type/FontDescriptor/FontName/TJIBRF+Palatino-Bold/FontBBox[0 -266 968 720]/Flags 34
+/Ascent 720
+/CapHeight 695
+/Descent -266
+/ItalicAngle 0
+/StemV 156
+/MissingWidth 250
+/XHeight 471
+/CharSet(/A/B/C/D/E/G/I/M/N/P/R/S/V/X/a/b/c/colon/d/e/endash/f/five/four/h/hyphen/i/k/l/m/n/nine/o/one/p/period/quotesingle/r/s/six/space/t/three/two/u/v/w/x/y/zero)/FontFile3 74 0 R>>
+endobj
+74 0 obj
+<</Filter/LZWDecode
+/Subtype/Type1C/Length 6986>>stream
+Ä @ @ &√	–“n7ãHFÛaí>`¿p¯Ä—o¥ÛË∏˘2C†bu¨Pá( ì‡{™AÔs®@ Éûiíº‡y9LÊÉ†ÄPU)≈"±X≤ãG§“È£Õt@b<”™*†Äàe9“ç¬5ò v2õ(∆”)∏Ë;Èìa∞“cÕáìÅ†Ê 0ôÜS%~¬VÖôMb5“p8Œ‘‚§@2"› ¿ecBØ∏ìIº@LD‚∫çT0…≠◊Ä7C"	∏±!úÑSëÃét:íN«s	‚¿c&ô	∆S1@–R4îÕf¬±¥r:ãR¬Ì»f4çÑ° û Ä`Ä H (Ä†0 ¶ 
+Ä P 
+† ¨ @ Æ   Ñ   Ü @ à ¿ ä ‡ å ‡ b 	  f 	@ hñ h Äp   ÿ 4  p 7Ä x Ä ê 	Ä † 
+Ä ∞ †—2
+Å ÄD Ü`	h ^Å D‡(ê@)ﬁ@1ûâ†9V Aöç@IÆ
+ Q‘àÄ`Ähxñ pÄ@xÓ@Å‡âõ`ê÷	Ü¿ôL	õ`ô˛
+¿†n
+
+ °Ç
+Ö†©‡±6Ö`Ω^O‰p|÷ÉÜ|˙84û„*\`1@ë§	AÉ$X¯A+ ¿Ãû·EëdπK[ÑYÓëËñ 8ÊG‰x˙K≈@2}íÁ¡‚àÄ0ﬁ £!8êƒÊ$üÇPÙ2C¿ÍDÉ#i⁄Â)Qdô‰a<Eíò·çî‰UÃíÑQ@EîƒPtã$pÙF‰…NY§ëJëƒôj{ÄÄ¡ÓÊP*yüdê
+}å 0|Á¿*pÄ'QÓ‚>¶îhÌÜDDIAbÖÊ7Ä‰X™Cca46∂Àq∂ŸOëeŸg9“4£aCdYÇû„hWÖanfî„@ve(b§·M®w	≈r‹˜H’æÔ¸{â€)∞A#âN8î√4-ci9ê£ÿ¸â†¡¨ê§àF÷ê¢°÷·yVü±Z î'»L
+í6HDf:ÛπL≈ÊXä≈(∫tüa–0}ãgŸ2BCÈ?ë@»Ÿáÿ HLî§·RH6…ÓY)$É¨G¡%DXØaã§9‡Í#√¯ò‚à°>¡ò˜„‹pË(8í|GëN#Ä(≠`è∞r>ƒ8,‡ˆ	á±>Öƒ ºDåÓ/¯˜b	3ÒÓG∏C‡†}Å1Ó
+Ä∏iÉ@|É¿*ƒPFAÏEá—ÑX]ÄF∂·`"¿á¬EÉ02?£e">¡√»Äià÷$)ƒXölúQà°~"ôJ€ Lzph=¿Â‡T`qn ‚ê4â@v$¯©dU
+â>°"ºXÅ°ÃEºMr h}é**@4å‡ ^ÖJ¬‡]!@∆\«¿œ ÇåG	¶4"Â8‹·® É@æÅ0≠(| Ù.»Ëª "Ã{Å¡Óg(‚Ã|∞+ò3ÉÏŸ	dpÂ√‹pXF˚ |?Ö∞*4≈hD`ú}Ä‡ﬁ¬8C√P{ÇAÓEH¡ }[Ü`Ù3¿„`[ƒ>B@‚°¸KÑ†“¡ÇPã^a}ÄàåG∏@£‘{É!¨/¿Y |HP
+,Ä0ñÄÇxJ
+%Ä¿0·LKI†>ƒà˚CÓZ°ˆ∏.`Ä{à±Œ1Ñ»¥¥q¶°û=∆Â #Ω©èpﬁ=¿îÍ¥
+ÑPÍDz`Bï§C8qØ6ƒ?selÌ•µ∂’Æ∑$õr,FÆ ,Á@ÕÙFf:Ë¡xÅÙMàÅFÒƒXÆ£<`â$DÄê„4^äÒ≤"«(†¯m0»Ñ o x'†
+7ah ÇÑV
+¡8-&Äÿ!<Ç0ºBabpXá
+8>F®àC‡kŒ!Ó"8¯tògâ+Á+rcbu¡°H"Ü0äg¿-q j5Ü®–¬∏r±Ï"«Pp!d^ä≈˚l\}ÉƒPàa˘pè∞R#ô◊åÒ¶5∆ÿﬂDXj¡Ó;S`j>%¥ÃlMq ë6√òºb‡/ä é"¡@ã¡»Ö∞∂B–D£Ïà∞‰"√»åB<4±Óƒ¯á√‹Rã—Ó"ÜEh Ü(áÅÓ'G Gb8Và¡Ñ‡ÑX∂B0@	0Äx#‹Q$ÑpxÅíôGb"Ç†äB$7≈ÒX`ÉÏ–ä£Djçë∫8G(È£ƒz ‡L\·‹∑†xÅf"Öã‚,U¡ãä8êbZûÄP»É†-b+fó‚√¿ÅÅ∏CÖ06ÑXdÅcOq>≈;ïÇÜh–,DXõ88â≤ò[Ç {Ä¬∏&0ÍdaåP§"]∞Ü4»$Ä`’DXw”Õ-¬·ÓA«ÉW·¶æW‡÷ C»à	ã2ƒÿ∂∫◊€c≤M°µ6∆›fä‹≥kl{Åª@∫C ç¸Hà±Ü·–N$Y
+A:√òô¬åJâ	& Dx~±xÈP√(b·l†“¬Ñﬂú YÓdÑÍ·√h
+â6¶‡l!Zôa†ÑA8I·Ñhá†>8C∞πp=ip28m
+ap5	°`¿ÜAˆF w`S*8ÄÚaòX>¡»ùÇP=πÅTEò≠ÉYãpƒp°D´q™ïÿÏ§bÍ'èä»©8ú‚¢wÅD"√àã—€h÷FÄ8¿"‘Dâ¶¿Wò ·`<°
+*∏5`Ièp§=¬ Îë†‹_∞ÇJAF*(©(GT ú™ `†Ü R™·(´Aˆ^`ÿ`‡¨!ˆaÓ!‡·4ﬁ·ÓÊ a·`l∫·¬Aº !¬‚A∞‡*a<·!ãé˛Å6ê0AÍ ·&Öä†
+¶ Å(†˙†0`Ä˛˚Å
+·(@Ï û ‡í 
+†ah·. ‡d  ATÅ$¡(ÃºJ‰jÍFÆ#°∂°ºnE¿(Å·F>êfTs«@p!  !"Ø¿‘„	Æ8±K‰ƒ√†@¿@¨
+@Ï¡÷¡Ó1†ÎÎ„`2„±*±≈Ê‡¡Ç
+a÷Ja4P‘Õi‘°`*a»ÅP<Õ‡Ö†¯‡“qûBFçÄ`∆ ËŒAÅ`dç‡Xl†dAÅ≈´Í.nAZ∂\@¥f ÌÅK:áàõ° À·i‡ap°H·L‡(·h(!*Å8«ˆb ‡V∞al Ã†2†!!˛°Eö·°
+Äú`V°¿Ù»2 0!HÈ\*a"ô¡hå≤.[ÅˆØéƒà∏—´$H!8!0A:tΩ!@ J˛ZÄ*@Ã¿2¡FËûÁŒ‡0ÄÅP·2Å°XAD·.·Ó 0·X°1.a[(¿ÔéÔÆ˙[Äo)‡˙Å8A.aÂö·ZAÏ® ˛_¿‡@∫qD 0 Åˆ
+‡‹	Åaa%
+·
+¡‡†À‡0QÓÅ 0a(¿<A ≤é$n\[àºãÄC1¡X&∫°`·a$≤ún$·ùa¿ö\!(fF-ƒ[≈ºaÊÚs†®·°@2 AVI µ·LÅVÅbda≥f:@Äû L ƒ Ë¿<
+¿÷ †å ·RÅB°HB d¡`Œ¿rhÚ`$ º—Äl tÄ¿·BÅa*¡–Ω‡* ‚¿v@`adÅ@·§¿>.ˆ°ƒGêº‡∏‡Ãù‡¨`Ó`Ú⁄F!Ã ·P,a.Åñ`0·ˆ°≤Õnp!PÅ`Å·<àI¸ÿ‡A^°"!a/∆`T
+·¿{‡Ú@Ó`2 ˆ¡`Œ ë [aXa:°JÏ∫≠™ﬁÆ äÍÆÍÚ‡Œ Ωa"`Í¡!
+
+!o¢C7≈î±‡Tl•®	·
+
+¡BoÙarAj·l¶ATe&8aF!T·Dß
+l `Ä@B∏Îíπkö †Æ∫k™∫Î≤ªk∫ªÎ¬ºk ≠ÅÄ$Åµ·N r≥ñ`1)aãÄG1¡\˙≥$a4ßA¯ Ë
+`Ë
+@–1û/í¡,ÅJ ÚÅL·D∆(!¢aÑ!|‡‡∂ «/·LA8!°!"∆ﬁœéƒ@ÿÄ†˘≈œ$ß>-2Üa3!¿Lví·Óå%l¿3Åc®–ô’bÎ!§·‹@~ aAÓ†*!ñà·	/¿∫`Ï‡Œ` `ﬁÄÊ†ÆÄ0T4!ÄÉ¥ë‡F°`ÅH@<rA* ˙°å 2 úAÓaÃ°xap`ÓÅ·$	Ôj@¯1¸‡¡Hé§‡Ùv°¯ë≈ëÕí[ ë›ÂÅ—Òë!a!q4¥ ‡D¯· wﬁ[ñ&d`‹“kB¡ˆ	a¯«œPÅºÓ¸@/îÄ€Q‡¯Ÿm.bÌ@≈çG a†ΩÂ™ZË[Ü6nÅrAw>kB— º·ƒ j[ ÙÄÊ@¯¿Ê†æ-f¡s.°`ıbi†VlØ«!!Wï}XÖXïçYÅYUò‰* ‡Ó`ﬁ¿‡,Æ ÷ã·4 ÜÄ0
+@  §`ks`F†ax¡Dt{G·Ê´<`Å<”–[ÜF·¡\¥Q caA`sÊ˝«°∞T¿∏¿®ÄºÍ\¡§¡^‡¿ê‘Ωﬂy ﬁ…‘·Ú@*¿l ‘Ä§”ÿ‘L\ó…ÇX)Ç∆›É1Éò=Ñ”ÑXIÑ—Ù$∞A¯ú¿`>†¸A!ÜM»QÁ7À|˜“î]2ê ◊›b(€π^≈®‹aˆÖ™@  Ï`Ú`ñ¥VÊ¨ÃAÖ·≈vvÙùû¿Ää ‚Äˆ <Äﬁ	+é	·ÖÊa∑l@RÅa.¡ñ¡B`˛@∏ ⁄@∆¶@Æ`¥‡‰¿ˆ·
+k°t¶¿. ¡àap!Ü76·R°ﬂ°Åa\af°•·Fac 4∏jå‚Aeab¡:SÜA:f(d·6°R!6U ‡ÙX·Å8≤Å2@Çw ∂a!Ä  Ú· @ˆ Ê ·¥éÜ 
+ÅÄÃ ƒ≤≈∞ÀÙs+0Æ^¥AßÄıl·,!d•ºjlÜ~ ·,°`î ‰M±aÓ·¶!Ó ÄÏ‘à·Ó	™*ä!∞·ñÓ»¡·AGÑ°fJl°÷ü`ÌX‡ò¥`¿˛ ¡ˆ !	¡}‡Ïƒ†Yú∞‘9≈ÇΩzômW≤[Å\◊Ö¬‡5{†∏¿∫¡˜À ˆ’a±(a:¡Laº†º@v`Æ„q§ ‚Ò§ƒQ∑‡0À∆új§jÜ¨…‘¢PµÄ!˚¿™∞±X„Ò\Ä–‰k(‰À.n‰nÜÏoÙ Ê˘êÁDpáqqÄ–G!±G(r«0fE∏s|oê«CÁHt«PuGXu«`vGhv«pg¡∞Í·Ú¡Úk‹Õv|–ñÙ¶ö°ÜAFAJîAT!`ajÿ	{∞A mñ <!!∑ƒ†TÕ?º¯ñ7…qÀΩ∑±{Q€Í/{±ÎÒÛø«Ó!=hÈ†Å|Ät
+¿‰¿ƒ`>@¯A·ÆÊ|Åˆ· ¡}$°`ŒQdﬁjÅ¬õ®û )√«
+‚†Í‚‡Ê‡¬¿2ƒAAe\R±∏úlÜÃ‰ã*‰¸d[úhn˘y««q ‡ñ·
+†¿@÷ ¬Ä“°h°ZÅhAZJÿ‡Ù ∏fÄ* a¶ız`ÄÙ*
+A®Aé¡¨ö™‡H HÄÆ P†>X°R!<uæ¿2Ña¥p Ã < r °hﬁAòw.‡0	F
+·*	*Æ@Pj∏°~	Å“01ÜALÅ`2 ñ
+Äj‡î!tÄ<Å«J  y .*Ê‚@’ƒ8çXuãXÎâuñXÓC≈ú\‰ª$ÂfnΩ¡∆¸s…ßFA* ·Í`@ÙÄä@pÄÄ÷`Ï†ˆ†Ú·ˆÓ 0a&)D¡,@2!qM¡9(uº!ˆ¿®ÄÊ ‰
+~§Aÿ‰‚@€ÌÉÌXìÌ∏ôÓ≈Ω≥≈˛Î€¶ÁÔm>û˜ë\∏—˚·– 0•“!—Ö§!—ÃHã“êùZ·hH4!Ba¯ÒaÆ ¡*°¡ · _Ê°.Ür·( s#·L*”	Ö5Vé, ‚B-Åä¢œ(≥z1å9"Œ(¿AòπD(ë)î,¯ñ Máb≥ÏD˚zÜc¿\ÓæE#ëiŸrQ.îL»Åœ†k‡*· ∫û‡Á∏Ó£S®Ä‘oÄ‡Uq'D£•e ÀÏﬁEïP»3b$–âI"èp≠¢E≠ëLÑJÙ#à¶¥j&ã`Ü^Ê–:±hÆY±TÊQËyˆ=≥PË3Z&◊oºÓäDZé(ã{"/ó‡9°lF°∞∏|N/è»‰ﬂj@;°ΩE$ëkDHf j÷Îˆ8ÇpÓ3ÆÑ£™¸z…ßF!çFFEÜMhæôË˝ÿ5ÄËTàå“oBïês·˜@8ûÎ¯T˜‚yÓ	Äg†Ù
+ô§qNH‰˘ÓòÊÒÓëg∏à‚Äuaˆëˆ`qå#Öa>IÑ¯<eD(ûCé –èXŒ-£ê‹=ã£¯‡Eê§Y F§i<É∏Ñ| ©êVäp8¢Äò2òßQºVóÜ(>©√˘Ó·tÃ û‡ëÓ£Ã3#	^4Ö©`WñÖ†ÃXå`˘Óe ìåÁ:ŒÛÃ˜>œÛÓ;û‡·•πÓé®¿2WçEp–4ç#@Œâë$aÁŸ™G	Ó+û‡^ûÊ(*C$I
+?ç DD0¯Iêra29,WìeyJÉõÍ2¿ËÅ¶Ò¯D <«6M”ÑÂ:N”ƒı>O‘¢=ß¡™^ %aÓU◊ê{ì«»P
+ÜdX†5å¢@“(°ÈÿÊeg∏M3'∏
+{í∞˛g≈<5òÇôR!`@Ï,Ç•CF<ìcI>0'ÿ+ÉX@D5¬x⁄9ì•hˆÂ¥ BÄ‘(EÒ>XE1BL˘¢{å∏1{
+'¡ê
+ë§aEëÑY&E§!6Å‡û≥√¿ˆ2ë"œf‡N‰IPdæ—ëea‘ìYrEÑPà	§p Fè—T±Am¶Q&{ÄÉ˝ügÿ2	£È9„¡*8ÅàÓOü˘È5ô:àR ©Ó ¿)n„—D¥ú6ó$a0Fîƒ9 úDÀG∏~fôÖÅ®Eô`…‡gÿ (√–¿)√…ˆñA:gíeIpRÓ˘öZã‚8Ä2·ËzüaŸˆ*≥ËÜ˜£IW‘⁄1«∏„‹p&:
+f¢P/‡Ê&ÿµ"∞Bã∆@=¡ò˜É‹ p40∞¥bòá!6Ñà^  	è∞,≈p∏ hnÉÒåÇ†c·®(Å‡ÿ>¡p¿O`*∆C B»4@ñÉG·†ÄÇ$Ñ0ü"xFäøF∏ΩA ÖÄ®îò!ƒáA@E ué°kë∫öƒÿ˜ OprÌD@U ¬,.áp‚ÑHKmƒê^à¡r#ÿãmŸΩ8“‚ƒCÜ ·ùƒà‡hÖ»#êm r~aë£\F¡ =¡8Ñ‰‡ˆGÿ?ÉÏ
+"hFà∂¢DKà—%¯ñ¢XPâ(Ï @qúW	ÒX%Êòù¢iÑª F(˜√»{Äÿö«±˛^¿§|
+ˆ\Ö!t¢,]à°¿^ÀËë¬*MâñKÑ¯ç"@PòBpD(0°ÿFD ÉF—@»%,¡ÿE1Ä∞Sä·.¸ @‹·TÉÄ≤ÅF»lÄ>C»û¬D9	÷qÿ™¢‚¬0&ƒG∏!Å`¸hè∞hÉ!I1@f-ïhe†XBAÓß†¯‰
+Ç·√»J ú°ˆ X0 `‰OÉÒVExXaƒiB*8«X˜C‹ÑÒ®Äd°8-ÅÒ&;ƒ»øB‰Yåqö+FòãÌtEâA&ÑŸ8	#ÏeQä,Çp0Å¨,0ûFX‚§Ze#Äs™ ÙOÖ>Ö·ˇ‡,^	0º¿xüÄ4  
+endstream
+endobj
+16 0 obj
+<</Type/FontDescriptor/FontName/HQLRAS+Palatino-Roman/FontBBox[-40 -283 1000 728]/Flags 34
+/Ascent 728
+/CapHeight 709
+/Descent -283
+/ItalicAngle 0
+/StemV 116
+/MissingWidth 250
+/XHeight 469
+/CharSet(/A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/R/S/T/U/V/W/X/Y/a/asterisk/b/c/colon/comma/d/e/eight/emdash/endash/f/five/four/g/h/hyphen/i/j/k/l/m/n/nine/numbersign/o/one/p/parenleft/parenright/period/q/quotedbl/quotesingle/r/s/semicolon/seven/six/slash/space/t/three/two/u/v/w/x/y/zero)/FontFile3 75 0 R>>
+endobj
+75 0 obj
+<</Filter/LZWDecode
+/Subtype/Type1C/Length 9939>>stream
+Ä @ @ î&√	–“n7ãJFÛiÑ›Éâü∞‡8|@f7⁄ΩÙ||õ °–1:’ßCÇ@¯IXΩÿ`˜π‹  ¡œƒ—ﬁp<úç&sA–@(*îä‚ëX¨YF§R©î·àÊº 1iıùT@D2úÈf· öŒe;Mîsiî‹tàtìI∞ÿi1àÊ√…¿–sLÜC)í¡b+BÃ¶±˙i8ÁjyR nÑ`2≤!WÏQ§ﬁ &"qSvßW2k∂ ·(Çn,çÂí¿àq"úà«29–êu$ùâGs	,b&Ld”!8 O3)Ö#IL‘T5ïMÖci\r#ƒ‚ÅH®X-KÖ˙4∏»f°∞@áy	‡ r ` † @ H 
+  J 
+@ L 
+` N 
+Ä P 
+† R 
+¿ T 
+‡ V   Ñ Ä ≤ ` Z @ à ¿ ä ‡ å   é   ê 	  f 	@ h 	` jñÄ∞ &Ä∏ ' ¿  ` 6 Ä –    `  ¿ ﬁ ‡~Ä ê DÄ ò 
+  ®   ∫   2†K* ÄÄ%X6ÄEò dhÄÜH
++Ä¬0_ „¿{®tÅ&'ÅE@ÅdÖ`.Å¶–'Å∆ê7ÅÊ B ¯"WÇA»$GP¿ô
+
+‡°º
+î ∞`±‚è πÏ@¡éâÄ–>¿ÿ|ï Ÿº ‡r ·r†Ó¢8:0£à:`¿®<ƒÄ?çë· T°0A	 ò'π$ÒÓ<ñg¿^O£°aÚ(£X2Ç±ˆüb1¯è„pÓ<é§H23 (⁄ùqEìdY1©ëg∏ D†`FTÄ„14√Ò%™:±2[ÈNgπh'ÿN$x¸Eê[I =êÉë. ∆û{Å˙ñ®Eì⁄∆µÆk€ “G$y N‡2~«∏:
+û‡ôÓ_‡ëˆ_ †qm!N;ô ë∆oû‰æÇcÅ ©êGÑY8Eì:¡°»k‡8ƒG$iHëfX2{ä†9ÓäÜ!ˆ√±<é¿~$ÄßA‡(&X∞Æ>äƒ(7ñ 9fGêÇH>}é†9@Ñ"$/8Vû3ƒh¶Ç†E¿¡L"ÜxâkØ$/<«úŸ∆S” ‹ãÅö/@Œ·dÊX«»' |Å¡LChé8?âÄ–0@»˚É‹Vw:†¡‚\M–2-p òè∞ö>≈˚É‹6Ab‡x∞‰áE¿àb$W°Xòa§}Öˆ$ƒ@ÜB,DàÄ2RÉ¯Ä¢ 8¿`-‹Pìr	©ãgê=¡à˜¬TM	Q2)s”	ÉÏc Qí‚Ñ∏ã,Q°möÛ™‚ Zèq≤+á∏ëA‡OÅ!ÓGP˜„∏#'p7∏Ê! 
+è∞>"ò|a·¨K·⁄xØËCøÅÿn¡òAáP˙!CàÅ–ç(cç¬.qâq6ƒKS¢,j±ö'E¿¨ Leaj+Üx—B,_qhE0e·§J·"/®¢ÇúOO1∏.≈`§¬¸0ò.«ÿ√Ïèµ∆,ÑhîqÇ.yå°Ó∆PZ Ñ#I0]ƒhë@||ê«`ë¢àFä∞6=Ö–g –'Ö¡ˆÉ”{°∞∫°l≈h¯B≠NéÅÓ/@‚¨|ôz	Å0$`§}Ç»
+«ª†s†{pUI¡HÏ`táê‘G8œ„Ï7`∞¡–)	#¨{Ç!ÓÿÃu4|¬ÄlÕ∏ø@Jêxfê®¥CÆ-B”Ï6	#ÉËãp‰?‡x!Ñ]n?a+Ñ`øvËWà°ç(H[¡tGi6ûò√Lä—ä8∆®˜ b∞\¡ÿ–; ·î Ü¿™mb‡`}Ç1Ó&CX≈B‰<à¶”Xà@!ñêÓ0G»†PèaEP »oÅQ%Bhc¡‹à∏r«ÿ¯H,èpò=¿0˜√‹ —‡√ b®à¡z#≈xô†ÿSÑ!0ÑX4`‡;Ä…Q¬@OB,}Å∞i∏2`öY·¨'Ex–Ñ√‡vá˜H?E8sÄHs;Ap8ù¿ÿÆ¥
+ã ˝ﬂ»Ç-ˇ@"mìÜ „Ω≈
+AõöòÔyÇ‚<—òQ ‚§<ä±. hã¢DMâ\05@¿≥¢Ëy=Ê..ê/Td3qÿ! é∑Œ˙@òÿ}ØΩ¯ÄÅÓGÿØH	a0'4x∞–O–6:F8Iol$ÄbùòÖñ	°-«¿˜ Wé°∞Ç|
+Õ¡ÓP¢bu≈â—6ßKƒk PEé±X4FÄ”B›≠µh=¬p˚√›†qﬁƒPy¡dE˙"√0ã
+Ç2£à–”≈òà" H!fã˛¬:á±©Ä`¯ÄTRâ]1Á`ãa¯ZáÅB Ñ}°‰]Ö±DƒX'«Ä4ÉPíBxZ	·Ë}ÄQDXlã‚F˙Åà∆ ¯¢Ë ä·ƒ=≈ﬂ dÑfÀ—ôD8ÑB$(«ÌØ∂DX£búE+Åù ∂wpd|'¸2Dà±Çƒ<	`0É`XAÄJÜÑXhaAp™XbA'„.6Å∞˜ÄNÒ&& Û∞˙¨>á0‚‡s¡–B:H¬p›ﬁÉ‹1ñ:≈‡Æh¢∫¶Ïë,√ ˜‹JQT-%pñ3›‹¡B>AP|+Ü9ûÊﬁ¨œÎ!pCÜx¸√‡ç¢†F
+p6≈‰õ‚,Xà°Ó˜°§ü`U8‡8‘Ü(ë"T_ÄÄ–ÑH{!ÙEq
+ ¸Ä˙…ÊÅ¿Ñ¿b`Æ`Ú†‹Ëàx ·N°Rç °¡°`‰ 
+î ¡∞€Ü™aÈê ¡
+·AA`2!·ÒÄ¬`“áö‘¡> ·TA8Å†aàaÜ¡VAF´ä`Ë î«¸· a,‡¥©a·AAA	ç˙@·¡uJhÅ¿¡NAÊv‡&DÀåºÃÙå Ä(Õ&ûa°Õ¡>q¿Œ`
+·Ç°jAöz`ÄÉÅ@·f°x!@†÷`< ã$!,‡⁄`÷`Ï@¶	 0Q<}‘F~‰uAÄ·º˜¡hŸèÑ·B ¥ÅÓ`+∞/07∞?0G∞O'ê\k¿€eêmuê}Ñ‡¡Ô°RA:Ååaw	¡
+A
+p´
+≥pª¬°Ô¿@NÓ —°¶`NŒ Ôñ·a ˘…†è¢µÎb∂kj∂Îr∑a∑´~Çf¿∏Kà∏¡πTÄÓ·VA` í!ÓA™°NÀ!h‡F’`å ⁄`∆‡ÙA*H‡.¢°TADïÄ>!HA.m`a»!6> 4°\ËB¿–Ä<ÅNƒ°äÅF¡T
+¡:·$JH£ à
+ÄbaB!r¿>¿˛ ˆ‡¯ûa∞¬‚@™  ÄÑ
+·\†<ÄeÅ·j 2†$ø°·ŒÅTw– *0°T …¯!t!Ç``∞Äw/°,`|»aˆ@L†b@ú·†∆¥mÆ˝a‡A0‡8-Lá¸A°*·P†0·H †déÆÉ!·¨b©ê ·ºÅH!(·¿Ê(ò`Ê ˛Î!  ûØ«‡¥i\n/r
+¶¥‡‡û·n†˛ >a–†ÄË†4√a¥·î !⁄ÍA⁄ $ó≥<!Xa∞AF$ <aÄ¡8@˙ÅòÄ2Äˆ·x·ÓAÓÄìv°
+ °b¡j¡^añÓÏ`¯∞¥ÚòÄ⁄ ä ‡z 
+”>!®·⁄ÒòŸ¿H≤aè6ôÎ`∂KhÕKl∑t∑ã|Ï‡%Kä∏‡2¢A ar¡v¿0l Ñ Íp3¸Äá>Q…"œô#/ûh ¡TR¯«‡¸ “¯°·‘¿å’QUQ’!RU(u,u1S@FiÚ.˘Øü#ã]NÚAOREO≤KOÚQP+áPrZz`Ê ·L¶™rüTı¨j°L.ä‡˛ÓaN !‹vÅ ¶a¨ÒÜ~ 2~áÏ
+Á¸ö¿ﬁÄË‡ﬁ`˙è`ﬁ¿ˆÂ!6è⁄ÌLm?]·^'Îá˜;¡°"Å:AB®Ø	≠ a2¡H¡í@ˆ ∏úxMƒjgèYgñŒ«†zL6≠Ë≤h®´%µQuQ‡R5'Rµ/S3ÁWı=#r;XîÚiÙ˜$t˝$Á#YíWPáT!:·q™ ‡û+⁄kU¡	ıx‡ÅanµkTÄ‡‚* 0h†˛‡ ˆf‰
+!jÈ∆¡(A6Åx†1. Rò	ár‡∂ê¬Çv‹°A
+¿ÂÅ¯‡
+†!8°Ja¡RZx!ÓAÓ 03r°?°Ó'Æ≤a`®°8!$K8A`Ax!x·0¶≤†&ıah5ghñçVısWvóS≤4saº ‡n†‹`Ê·" Ë¡IÊX÷∫#†b´©za¯  nÎ4ñÊêf“A0aHÅgrR‚,·Ç¶	ék÷‹·É0·H‚‚a» °t ¡⁄‡Ù.¡FaZ!>î™˙@
+ Aö·å!í·"!û‡`!ú·8!!J†. sr÷—m¶8*w:!HA2o‘ ¿¸!ˆ 0ö°‡÷’¨¿0°ZÅ>aLË°È;x@ƒj¥∫°¿
+ájÈ7ä·oP »µtÈz!Ó	g¨¿¬
+2 ∆>¿¨`
+	@°Tt°%)¿2!Fƒ P+»Ä‰
+@∏Ò†z@ºA:ÅFçÊí≥∞1™H`–l>¡R¿>Å4πÅÆÀË ’gaÓ·Ó±¢î¿+îÅÓˆ`
+'ùfÆ°±(¡Åa,ÅPá!º·òÊ\ÅLaH4∏îl j`ÙkRA
+5x¸†¸@ˆaˆAˆf‚W∑VVáV∂èWìWï}|ïÉiÚ?j juë$’PRY%”da@wu∆nAÓG@∞¿t!$¡x`2!N kF`~⁄‡¯!  ”Ö™2· !@-º ˙†˙z``Ñ¨htÅ¡
+,@‡ XaNaHA&!™°Ï`lì°&!&Ä2Á§I÷jaÄ‰ÜÅ·&4'T¨ú Äßhaƒ´@T ƒ¿¡&‡ÙAÄˇ^!Ü ·:A ¨ƒÁ¸	∞‹Ääa
+—!^`‚·MA@Aﬁ`0·V¡ºùçL Ä¿BÄ¥ ‚ <
+Ä¶ †ú áà°:a:·PA8äH·Ä‡@{`û†l
+‡ÇaBˆ°Ók ÅMÒ£gÕWV6ÖVñãV÷ëWVïSvô|°¯öR‚é,Äˆõ`°l˜^§F™!èÃ !¸aV˝‹¡a*∫ÊtÌ¯æAK‹†‹ÄÓ∏º hó`œ
+ŒÜËπ$·úŸÅz *°bD!x	aÓóÅf	÷!,aDÅcÅÄW,òâàj`Uäv‹∏¨/±Ä–z`a4‡é†Ê†≤ Ë	¿÷‡»Ä ¡÷–!&A4N`Ä¡aq†2¡¡^.û·¡=dA∑& ‡yâ÷“j`yÀô;É!.´!Å¡Ë††·~ *‡°∆ÍkÃmV! Å(‡∆`–“¯a
+t†ä‡Ã°l~a‘ÅÓA~¡<ë±Ra@Õå¡∆®r `Öx@0¡z· ·v‡‰†>@úu!Ù¿˝kÀ§!k& ·N†x˙a(¸0-$aáY6¨∏5õ•µ
+˙!≤)QtßhÄr⁄
+òF¶xßÃ¡˘íA8Ä †wr…Ö‚Å‚”Êı:·Œ!XN¡∂@æè¡‹qGáf¶ë(˛§A≥P†ºz¡Vôƒ‡A4–Å"A6A.·$!Ó¡¿0!P·D°ZË©dÈ.ñÈÆûŒ§ ` í†¶`ﬁr‡Ê†‰¿f†0
+@⁄Ã`ﬁF¿íÄ∆†‹@¸Å!D· Î§ 0¿_r7ì 2êGäyq#ÚÄÌÏœÊ|˚?¥;G¥†ﬂ¥˚Sµlƒ{¥	A/F˚†ôf f	Å¿˜ !Ça !f¿ÊˆëJÊˆ‚ÊXt!ﬁÅ,*¥°ÚæÃé
+éi˛M#P˙¸æYÂﬁaÊV^kmY~q%~uP†∆ ·°¯·ÀmaÚ†2A-Änàxﬁ·°êà $B-|Eû†à±B9zõ@ÎtBÂêA"«°ó·¨¸:æ¿Ps‡Êw`=À*◊πX|Z!SÚTñe: å∞…)UT◊áÖbNâbÇ‚`3A∂G4»ƒ 1(ãK“ ‰≥Ïf0éf ‰∏j&¢ƒh≤bh™¶2¨ Ã„cY∞∫§÷â’2Y@òG§AπÏ*WDú—FtYuqFRµ“=BòR®Îe2Ì¨E©O…”ÇÑ‘í7#â ÄsÂLwZæC+P
+ÖÏ¯R=ÄoÅ3‰≤}ûb«ÿ°ˆp}ô©/±[‹º˜:=«œq€‹‡˜3>ƒp√Ï‰=BØq˚¡ˆ}ôe°{Ï˚ıè`W∏âÓj{ì\Ô7∏‡>{ú'»TfÄ'©æûÁIÚƒò˛GƒX÷Eç–Í9
+"H07CºEâ @¬à√`
+:ÄÊÅüexµ “Dã§@0à‰rRq⁄wëhFTÄ‚È4ë§A$Eô@…ÓWû‡ÄIÿ.CÄß {Ä‰¡NbƒÈ;`Ò.H§G¡‡{õYÓ_‡	ÓùGπ8w¿„aÚ•q&TÂi§ (≤"pò√·Ié ˘*3îd12EÈ—ÓûáAÓaÈå}Çd1EëC>3A˘7c™}ÜÑpàEpI¬
+4*≈¡·A∆Ç‹jàƒi\F‰]òWëF1 »bŸ"êƒôm)®WïGπhù%h$Uö‚±æ{çf˘m‡õjMü p*RÑ9.}ÑD8ÃTå‰∏¥ù‰X∞>åCò	ù¬ò÷7Bp4Eà%»∞jêa‡ú#· √y:=ócËh.à˙Aè£0ÿ ò{ÇgªñŒÄq¶-ó¢(=YÄ¬∏ÊKîƒ¡&K•>HíiGë‰©HëV…lEòÒhTaBYÍ‰Y>D@byà
+ôÂ»¶	Cº'¯Xê/Ê¡∞XX>]Ç´¬ñC†îáÇXE∫¡†û_•¡JZd‡>Míe9¶5G¡¥|Ü@q›DI!H*aÄƒÈ$@†˘¯ME¬da÷0gë•1T}˘LEˆí!ã“4ë%Iá∏–óixd≈∏≤g≈ÄdƒaNd hH01y$A"Eôrm~{Å"°àÆ√±<é¿~$æG@A	0æÉSÎp|ÉÚÖÄx‡I9'A0;◊Å’O)Ï	ã&+EJÄcÃbÖ∞l¬Q` Bq™D(¡¯G/ê¸D»{Ö‚P?èpò>ƒX"â(É`B8Jà±," ©Oë! p÷#Éÿë¬p}áqÓ/ ¿√"îK
+¡D/≈Äß¢,£Å0‡:¬(¡`@∞>¿±a§EÜ•da"–âëR.F\¿XK‹¨Öî≥r–x±=j≠u≤∂œ∑ êSèpP=¿h{Ö@®Ç·`;p˙Ñ(ÔdYàÒ@¯˚DËΩ£7ré“<!(˝i§G–Ú¿»]t
+Ü–‚Chn°ƒT
+ÅL)E@ßú7ü—(C∏∑ \Ÿ
+5‘2–0¯
+c‡QVÆ†®¡b¨/	P®†áÿ)` •P¥&8® |VÜ¡r«`~ WJ(vÍº2ÄÄbP#`ÙYAÑŒ °¨¿Ú"√ÿã¶,DáQ
+Ü r°¯b®!Óá∏É‹ã†¸+x•·†V0W—ÂaÄœÄ7∆P«b»X0¯)Ä¨BX>‡‹$Bê?¡˙J…pS&Ä÷ì¿ŒP 9K)ÂL´ï†WÀf8ëp(!<†˛†|‘íë—#∏eGã@,EËÆ"te≠†»W°∏8 ﬁÖ4’"îRäëPE(nõÊnã¥‚%«Rst
+§aX`»EÜ"*6 Ú!e¨—≥÷åøë‚9l-†2>-∏ã0Pà·XRxÒ A¿Ê#¡‡@Eå¡,ÑÄƒb*<Òqû@»*`™# å‚0	 §#C ã	@"ÓàÒ¥#ñóUnÅÄ>©ìàQ:áTÎs∞vN—€Kãy.å¯ã∫¶DrD‰ÜÊ
+KI†y-	—ˆ$X® ¢àá1Ñ‡kCÓ0Ë8òB|{ÅQ·x¶‚¥E ÅR	¿8K	ap/Ü@ÿÇÄuˇ@ 0û„%8Ä1‘>Äπ c‰Åõ:»êÇ‰Gq ÑÑBêHÅ"ÑXåëˆ5 8˚!$è∞J>¿¯OC‹
+·Ó;p⁄O7º‚ê¬àV!\EÖëƒ`CπËã∏˛$ãö-ëÅ:àdaàiaﬁ"«êãÄ\ët.Ö	tìF®{ãy: {©unµ◊ªg-ëí4√(Ê^#—/ü*EHÈ'Å˘ï‡ê’Üa(à¶@ U!è∞-ï≤ õ¬=ê+ƒ@†"TA	Ä⁄ìBÄ¸B®âp–[ »Ω ¬xdâqX+›1 ‰
+!Ç%Ñ–ü¬ßLË0 ")tÅ∏FëAÈåV¿_àÅB"Ñ¬¶ÄdEàD(|a,~”∂G¿è]à˛l%ƒ∏í¸∞†W√∏»CπuﬁÆ7◊Ä∏≤T
+ã [Âî¥¬“ﬂj÷#ëÕ’∫¢îE…ê√#yè8	áá†/8¡`≥‡èŸvúπ⁄»Ôlm®ü∑V$yØ=Ë˜æ˚ﬂ«€Ÿ{ouÔâÇ5Ò ù—&Ü ;Çà…·†7 ˆ_»Gc41
+`åNÉ0ã‚<á∞å¿¬YîÄ	ãâM*%Q™AÛt¿q> G»r@TGâ°TƒÑFb§IäaÓG¿ÆáÇtJâAB#E_ ô”õêêYΩ»Ä≥∏D	a#ﬂ6 b EÅˆ‡};`‡|:Ü8DòAÖh®;h=+áÿ#h}Üx8|®D∏E"HJπ∞Pæ¯ShZø E±≤: EÉFÛR£‡Ö8DDÑ J9&ÄX~∏Q ∏`JXIÖO”ä–{Äà}á8VêGWÿ ∞8D∏J@{¬@ Ñ¯pì®q uÉ∏ÄWÖ€å»v_5x{Ä–§Ëì¸áÿ
+X¿p}Ä8k∏yÖhY8–NÄhÜ(Aáÿ¯ }Äx}ÇH/Ä»Aí–#»Ä®\Ë<1ÑË5òEÇx+hÿ*ÜêyáÄ_ÜPnÄëàP∏/Ü{Ä¯aâp˚`
+Å81Ä(z 0Tá∏2Ä((Ä06á‹`áÿÄ1pFaÉdcXò{Ä≥EXò{ 05ÿ: (bÄ0Vp˘ –Fto«	pF¯{Ä
+8¥Ç ºk¿pE\\èÚ„∏§Ã}à§“c¨¿6ÉhSxTXSÖ0UH7Ö86 ¯{áhlÅH$ÉH@SHUHlá«¿{îËà0B(
+ÉÉ€(+‡B¯9P(ÅXLÑ †O‡zàe8l »#»åÄÉ|Å»,É»LçH‡˛á∏2∏¿4Ä©6Ç¿FhE êFÄ»NÉ®OÉ∞;®;É¿0Ö`}Ç¿ë¯cá	£`+ ®!á 8Öÿ8á(;ò@Ü∏Eá EÜJÜêO`RÜS–j <(*(Éà$"XÑX ÿÖp$X2Ë64,Ç|¥}ÉX
+ÜÄf@VQÈa6Ä@EîEÜ¿?ê8Üp2á`1áH<à†Ö0. Ñ¯%¨»Å¿EÅ∞@Å¯;8Åà8Çÿ!ÅëŒh¿KÇ®CWÀ JÄ0záJÑ8gÖ(Ñ®…Ëˇ ;Ñ†IÄ(dÄ8BÑ{EòhB(D–&ÑA88áÿÅ`vÄ(@Ä0/Ç∏G≤Ñp{……,ì…Lï…ló…åô…¨õ…ÃùèÙ,ÉXiìàW[wpCÅÑÿÄ$ÄCD(ÉxbâuÄ®bá‡Dà»HäJãJÖHdá&¿y¿Má»5 ®'Ä0~ @~áÜ8EH;Öp|ÄòVÄTPP$ı'Ç(ﬂx¯D0C`P0W–”àaÉxd©ÄÜ∏{Ä¥)∏7ÇPyáÿÄ¯<É@
+á`Y'†Bÿ4É(Åx5Bà3ÖÄoRlBã¨ g¿_Ä¨Ú±¯bÑeRYÓÄ»HÑhAôÿÉ…∏@ô‹á∏6≤$º¿PÑ[#@¿WXZ29!–Ä*Pä$Ö˙‰á(ÉËHP4Ç 6ÅÄ5ñ„‚”ı÷®7—‡Â ELŸá¡sìàtá(Ñ⁄sÉâ-{kz‡àH{¿± ÑHPZ#üÃ®FÖ:Ñ0.ÑP}ÇhCá∏%Wx`yHaXk
+¿ÜëQÇ-∏,Ç––}Ä‡Ö@¿\ÑÿbÖxRpùa® 0Ç¯áÿT»;Ö†{Ühïêg prË-AxÄ[¿C ™ÓÑËaÑ∞VÜPVñ`Ü``∞& (`"@U!TÉ‡F¯+êBÖàNH0ù òt]Ç∞('@Ë1–SùÄ9Ö?<8 'ò3Ñà,Ü <Ö∏Aã∞mÑXsÖ¿apVÖ†N∏…X]çp3Ö 9Ë:ò,Ñ°ÖÄmÜHTÖ»c –r	Q #Ç<ÿ-≈@|Bà$ÜY8ÖbOG$Ä® p'Ñ >Ç–DÇmZÄÀkEﬁÇ∏ºŸjÇ–GÃ8Ü≤ﬁÑXPT @i<‡CÉ¿Çπ`D 09≈zÔ∏#hpÑÄZ¯H ¿ é0Wá‡1Ñ¥v¯eçÚèX{á•∏\_ºˇÅÄnâpÄò|àÄ®CÜEMêÇÄ»Ñ]xÑËEñÀÃIÑhNíÄ( 8/P*ÑZxÇ¯F G‡”¯ÇpF%iŒhDXD¯OÑ*"–S»^uÜ8#ß®}Ä%ÇT'®,ÑËRÉËÇËnÉò>Ö)∏5ÑÃDÖ8>òAµëêT]Ü@`ÖXgÑXjä@Å–máÿÿ3É3m÷@;«r8 Ö`rá∏KÀ@|†|Å†
+É0NX5É;ÇƒDÅ òÚ¡õ8Üÿ±˝=ÿ0{Ä·-Ç0k,Éh?‡( @EP@({ÇHoáh{Ç@`õ8¿à
+Ü∏_H,@∞.Ü§4ÖpGÑK®PÖh]Œ60GEH|xn aÑ®
+Ñ†?kQ% Y"pZ«h^òfî{ÇX{ÜÎ99 CÉ@E–EÇEÇ–FVàp@—®G`Ñï0@ DÅiÄ0IIÜHI4±LÑ¯É`(É('Ê8h|Ä©rÖHiÿk∏Bx,x	Ü¿{Å‰ü<–@®;Pr(2Éº –á∏˘S‡ â(ÿ3∂4¯hËsHUÖ®cÄ–pÇ bÅ}ÄX¯8∑)4ÄË	á exXÇ–*Ä–Ç`$Å–†cá@j@\úÄsÄÆéÇ`UXYÖËh]Ö¿i†]Çÿ!ê9!∏]có u‡zJdßº®J§© ¥¨J‘ÆJÙ∞K≤∏.Ä¥ß å©’0Ñˆ∆È0<ºØÀ±â;Ñ¯|ÇFÉp¯ìË `oÑ® h   ÄÄ
+endstream
+endobj
+10 0 obj
+<</Type/FontDescriptor/FontName/MYMJQC+AvantGarde-Book/FontBBox[0 -192 875 752]/Flags 32
+/Ascent 752
+/CapHeight 752
+/Descent -192
+/ItalicAngle 0
+/StemV 131
+/MissingWidth 277
+/XHeight 561
+/CharSet(/A/C/E/K/L/N/P/R/S/T/V/a/b/c/colon/comma/d/e/f/five/h/hyphen/i/l/m/n/nine/numbersign/o/one/period/r/s/six/space/t/three/v/x/y)/FontFile3 76 0 R>>
+endobj
+76 0 obj
+<</Filter/LZWDecode
+/Subtype/Type1C/Length 3202>>stream
+Ä @ @ N∆q–éa9¢“ºﬁkÉAƒœÄÿ>†4[Ï®˘æPÄPË òóPÉS¡¿Z $˜w^È–{‹Ê  ‡ÁÑJTÜo8NFì9†Ë JEqH¨V,£“it⁄xƒs_è5
+ïR¨ "Nt√pÄMh2ùå¶ A¥Ààt£I∞ÿi1àÊ√…¿–sLë#%Ü∆V0õ¶±˙i8ÁjÅR nÑ`2≤àÊÛ°£  &"±}NØ[Ø& 7BÇ	∏ﬁC"úégHY,b&LfBqîÃP4ç%2°∞¨mà«B¡h∏b3çÑ° û ( Ä0 ¶ * 
+†∏ Ñ    Z @ à † ^ ¿ é   í ` î Ä j 	† n 	¿ 4ÅÄ ÿ Ä p Ä ê 
+  ∞ †¿ RÇ†@   H lÄ!‡0Ä$0xÄ@∏ÄD∏cÄG–/Äc∞MÄgh+ ÉmÄ†X
+1 •Ä Ä¿PÄ≈Ëh «Ä4ÄÊP,@<àÅ#êfÅ&ÅÓTÅ«»Eî∏g9> í¿±≤‡ÓFÄßπÿ«›8n «Ÿ§|é‡(pá‡v
+û·)Ósû·ˆsÄ†q{Qá¿÷gçD¯$eßπ»jÇ‡ôpe÷)ÇfA&UîP	õ©P_Ü(6`ëe‡ÍTå≈(“JådXÜeùäYÄ‰YŒ?ÉAt0"IT]DX¢7ã¢ùÆ\BDÑcÒû|	&xZö«¿rk gπ∫|Ä©ˆ`âˆüa°ˆ˘ {á«∏h{ÅG∏{á∏v}Åôqˆ‚8{Åá Z}ÇxËj`Yˆ	5†({Ç1—óÙIÉÖa≈æ(|àá∏¨
+çÉ Ú;éC¿¥2	®êE›Å˘ˆ÷ß∏Ç{à«∏6{Éá∏àeò„–‘^Â`ÏOé•8æ¿0§{Ë4±ˆÌáÿ‡}Ü˘πˆ8ücfeõû„âÓ‡1¢{É¶Æ¢|ÑYú{îΩY:g &π™ö‡±«ŸΩ÷ÊürißgπºgÅ@ì‹GRv fX¶ù†xóÊ‰JÅ†‚‡‡7	‡A≥ÉW@∆©ÜÄ%â≠πbÑÈÓÇ§`BhàÁ¶ÿvöâﬁgÖ»ñ)Ä¯8¢Fá±&D‡{B,UÄÅn+Öp∑bú7ÖqÜ∞å&pf€êI	@»2	ê“)ÉêAÿF±∞≈`~a¸Là!B¿qa¥@»¬±ÕC8CÅÊN9’Ë_uaIèuö≈@≤Õ—íªíz	&`($2«é>ÚΩyÄ{à%,¶–¯‡ *P∞?&Ç6<qÚÿPTyJ˝`Å& >
+»ap|Ä‘B* ¿LVp™h,nXπ*†˜cÃúÅé*Ü»≈ÚçP#ÿ¥j™¿ñ~§∞/QnK¡Ÿ&á∏cÆ\∫q∆£»NRn…⁄,—ÓÄ4ºe¢(}ç@
+:(∏Ù\q¯Ar•CÄQ_$SåJLIÅaæ¶@˜„‹è∞ﬁG•
+c‹UèyÊ( (6T≥¥3èπ“¿(7SH}œÖ£Ã{„‹¨!î40’ k,êÏÙLã¡\çê»9[∏9iåïò>ˆè&òÿ/·î#¿>=≈ì‚Ã}àµ`«8.cÌ∆>Ç»†·ÇQá†¿-√∏Ω ió±‘=¿tFâ’êA0›õµ A‹åaÚ_É‡Qƒ–0IÄ®⁄SAT Px©Bh¸	Ï èÄêA“òR´ëÚﬂ;b |(◊‡Å˘◊_ã∞Ç©nÀ¿xÍóÄ8n‡»≈®q!|{Ä D4˚ëìh	∞g&@≥‡gå°B,≈¬úP
+aR1 Bâ4%_P∫òàC°i,ê¯>@®ëÏUÄ`™3 ÆÆD¥y,Â%ºcc›çÓG0…Éha‡&D¶bﬁUÅ0ÙÀát≥íå]3@W;@Krù À%.b2äò	ÿ— ôVVh˘L√‡&–<F™®#|Äa¯á¿˘ †û;Ê◊ùXDa√‡{©∞*"∆∞Å!¿]Ö°ƒ#r6ùè1ÎNúc@‡ÿhå—J.ÖËB¿Rã4. @> ¡∞ ‡≤	(`∞pàU2hŒ¢|z·§<ƒXıcp$
+Aˆ m»˜—%’Å`<òäQP;ê8ÑPÊ‚∞x¿3Ä;oa%÷Ä∞Hû*Ër(¡Ó*ùX∆v»{éÜ(ÌV(øV†wà±Ç&¿¨b∏RåÅ5DX‡c8)ä¿∫)¬òñéD0 a™? J∞√–é0 ©Çÿ:ä0∏"¬Hã
+A–.ó GmäÈ^P™ÛV*«yÛ`-å$≈p°"§[-¡áØƒXΩÇ°rÜ±,DXK]ÇÈbã•‚7C‡√bÿ1å*Å‡ã,&Ü–Ã@@˜sá0
+ÚÙö≈åP{è±Ó*Ä"C\m±ÓƒXËÉD!ã ∫)XñND%è–ÔÑA†Û √dEãÒ,√¿Ωbú,à∂÷√(W!‹4 ∂!¡œ–√åwé=ˆ; yÉﬁ& úÙ#Ua†bÅ*¬ÆÑ3T™4∞·r˙≈c#‹1ÅQ$>¿»Êe`e∂p(:öxÅ¿bÖ¡\√h°Çdä ê·†wÅÿO◊R+@@’#jça~¡ÿê√b3¿p6«ÿr ,πPZÅ∞äÄﬁ(Ñ ·#<ä∞˙(√–¨Çt2à∞Ω¢hM·p/
+Z v¢RasnG¬¸·‹B2Gfﬁ∞K+ØE–{”˙å¡€oá~æ>Bñâ£8=!ÔWïH;T¢d~…11_Î√«_Jﬁ«’à·vX∞Y!xzzëa∏‡Añ·p†ÚaL¡F·*˜†§]Å¶X°¢^!ÄaZ°J°f!D·a†ÖÉ ®
+Öÿ%ä%‚`¸@ÿ@ †ö‡à`l`†@∫@¿Ä™ní¡@' ©¬å%’aG`ÖäÆR°Ó	aÓÅ¢Å:Ä2ùåŒ≥°ˆ¡ˆÖl aˆaˆAÊfv·TA"AX¡ˆAˆ†
+Ú *a∞∫† z LÄÇk:Ó∏a‡t¨‡ÿÓÒ@%&T·|c@ ¡O%: Aêx¡h‡Í †ê ¿∆qjrÄqj	`1t °ˆ`úiÄ¡ˆÒà `ú¿¡ˆ 
+Äö±®f é1®†¡Ô 6T†k¿+QôÅQ∆N% ,‡ l‰Î™¬·&ÎÅÓÎŒû!Ã	 *†aÓ
+†
+Î·ÓÓ°î 1NÄ*	ÅÓaî`ÂÒ„qÚÎË¿ò®·ZÜ*†,ÖP`∂ã†$ã·|«VAò% !úA!™IƒÄ^~~!∫Åvfÿ°r`å†¥†|a@>A †í ·xA8A>ÂÆÅ™!|	 z@Z†Ü ¶aJ ÿ¿Ú¡Å @†™ÄÃ ÃÄÜ æóÓ¡‚aÓ!»!û2rx·Fê©Ä¡∞Ã·ˆ `Üm¿à•u%e!KævGfR °à°paz¡ä`2Ò`6¿z‡P¿ÑÅË¿>`@¥ Ó ‹¿`@¶ŒÍ•Ë»SdÄ@Òà¿æ°@º·^ËË·Lw!√%RY'VÖ'ÅÔ∆*ãî`ñaH†D º`Ñ!ˆ`‡L‡HÅÓb†VV†Gˆ‡ÿÅ
+Ä‘¡ÓAÔ¿HaÜ°‰¶f S2 t¿F¡ªÍ!ªq⁄¿ÓË‘Ó®‡‡†‡Å™ÑH 
+endstream
+endobj
+18 0 obj
+<</Type/FontDescriptor/FontName/IPELTR+Palatino-Italic/FontBBox[-162 -276 1010 733]/Flags 98
+/Ascent 733
+/CapHeight 706
+/Descent -276
+/ItalicAngle -10
+/StemV 105
+/MissingWidth 250
+/XHeight 482
+/CharSet(/A/B/C/D/E/F/I/K/M/N/O/P/R/S/T/X/a/b/c/colon/comma/d/e/eight/emdash/f/five/four/g/h/hyphen/i/k/l/m/n/nine/numbersign/o/one/p/parenleft/parenright/period/r/s/seven/space/t/two/u/v/w/x/y/zero)/FontFile3 77 0 R>>
+endobj
+77 0 obj
+<</Filter/LZWDecode
+/Subtype/Type1C/Length 9081>>stream
+Ä @ @ &√	–“n7ãI'HY§«Éâﬂ∞‡8|@o±≥ÌP˙C>N PË òùkÉSÅ¿ÒÃ$¯Ñ^Î@{‹Ù  ‡ÁÑjlÜo8NFì9†Ë JEqH¨V,£“it⁄xƒs_è5
+ïR¨ "Nt√pÄMh2ùå¶ A¥ n:ƒ:Q§ÿlãÊ√…¿–sLÜC)í√c+BÃ¶±¸i8ÁjÅR nÑ`2≤à!W¸Q§ﬁ &"qSßW2k∂ ‡‡Çn,ç‰3Åär#ŒáRIÿÓa%û,F2iêúe'ôä“ë§¶T5õ£ëËP)E⁄4∏»h5«¡ û Ä`Ä H 
+  J ¿ ¶ ‡ ® 
+† ¨ @ Æ   Ñ Ä ≤ ` ¥ Ä \ † ^ ¿ ` ‡ b 	  í ` î Ä jó h '  “ `  @  ¿    $   & † ,É  ¿ ø* x @8mÄa»M Å∞m •®Ä«(0ÄÊ`2Åò<ÅB»xeò3ÅáxFÅß8V‚x ÿ t$ $`x&OÉ8(mÇ¢®*l¬,YÇ‰Dº¿¡F‡»4Ü‡»ñåÄ…ñ@–n‡—¯ë Ÿù ‡ÿ{ë¿qÚ3ÂI^|˙:15Q¯üá(Œ)è#ÿ“AÉ#πç†9ŒGdY>EìƒYEú$Aze8+ë√Ÿ>ÑY(ëdô$Lì≈a‚{à`¡ÓE ≈!ˆ( §@EëDaFƒaF$YEèc·7ë"˝d7ÄÁçÈ{g©„`‚GÑëEêe¿2 (
+(`©`}ñÄ)ˆ6 ¿q`g¿0
+íCπVPFíDX2KD¯,Gÿ´∂Ñ`˘$@ÑëDHî$x2O‡ë@f&ÅÇoö∆IpEÅ±"AÉ…;cX>+ücA3„¶XéD∞¯O•y@j†ÒNé#–‹<§RêÑ)(Ka,F‡˘ö{ïëPGî‰Y8îD0Áà√(®(√(–7ç"∏ÑXû·®0Gì§i.Eí¿A@Aí„‡Ï2æê=kƒQRéÜÖ +ödipF§YfEóQvDﬂ¯Ñhb¡¯I—FGÿ?„{áÓ$H¨ÇDRà‡2)ƒh`K‘}ÄaΩC¯ã¢,Á˙Õ`âb$Laÿ`Ä¬<áQˆGÿX å{Ö±'D3€l0KâÅ"*Dh∞†aÅ—Cä¢(=à∞Ù"√håB1˛Ö·Y†•"Ú àA>Ä»˜√ÏQ±>≈sçÅ¸9àÄ2ƒD` ‚FãA+ÑXØ~¬([?∆z√Xé¢<=	%ÿ`ìLIèpî=√€cÏ;	@Ú$ã@dAàAÄ{âÌX{àQf=∆0Ø‚¨Wp∂8¬(·‡Lt¡Ú ®¿"åE	a"√À¢5à`⁄‡å<áÒD Ü `XEÒL#D‘è{Ç,Rà© ˇEÄä‚(O°0"Ñõfb,]âët)¿@h]qû5¿–ã¡ÙVBE mÅJåA>)∏™ü\ã!D.Ö°D]Çq DP|¡0EÒ·{f,6¿¥#º“‡$}è@*8 4˙BÙ0É@HÇ'·∏F‡‘ƒ(å‚1É ÅÍ>®ÀËF
+
+™#D¿å{s‰t¡f¬ "!0}Å&’G¿P≠"ƒ â¡Æ=ƒ0◊ c‹UÄÏC ãÅË/∞tB&cÏ ÄB.êﬁCRãQpÜH∆„‹±‡HYÄ‡` F@¨¿‹Ü¿B¬∞!ÿ8áÿ‚àih{ÄQd=¿xº`|L	fÓ(‹B÷·‰`Å¸0 ∏`|ë&¿®¶ ¬@b	1l&E»?HKÑ—n¯r°p}Äêx«ÿ
+∞`¥∞¨=áÿ ·Luç!D2G(¢º@â ZT√»=l√ÏÉQ÷=¬0˜ b¥wÅí≈–ªbåm±§"≈¯}aú5a —£NπÄqD†à¢Mä¶Fã‡jaî-@≠‡Eç`3É†∑·Ñ+∏¿b‹8Üp†(«∏8NN	É¡Ùπ`¨@oÌuØäq:ÌH¢HA—"CΩ·D}é±√¿0‡∆Ra$!E í‚@Uâ 24G¿<¢Ñ{ÅAÏ=¿∏ﬁqîKáP∫É˚aXÅ˙Ü√‡b•Ç,9	 ‚&Ë˘¡‹Oàël>–≠C‰éyv`¢≥hÅ1`:p@U”ê‡æE\ÑùB*p’1¶"≈‡ñ‚î{É∑Å¡^2B,vÜ—¢Ö∞]ÄÿNÇ¡>√≤ A∏>	Ñpà‡baLIç2&TÃô”BiÄˆ l† {ávígµ¬0U—>#Îàí√xè∞qyC("·ÖP®pÅ†ã‚,-	 é%dxåB8N·—=ƒ@µ‚ÔôQÓ√≥@Lh@—Ó8Ä≠3 ¬òEäßÙ"g(¬‡Câ t!¬xâ¿@d3 nd Ñpõ≤J!ã°*ƒg`-òdà±h ò<˘L QFÑpÀBÙKÏ#b»y›¬,@∞Ê"ß»–`0E![Ø¬,8∞∞#bﬁCaÃYè2a˙ôÛFiÕQÊÃ€è¬®FëΩ„Hkè"T	ë)`¨ˆ3HGä˛†º"@RÄP‡ÉÿO!úAÍ!óháB*àΩDD`F  G±Ò2#òåú∏èÄL»Ë˚¿TG$≈†Äíj0ÿ√8Xê@¶√∞{°Îä!&fÇáÆ °0 ·>|ƒ.,æÃ,∆k¡@ÃÃ–lÃ÷@¸
+ ¿`ƒ” (·*Å46¡D–¡0≠®Å:¡DnÄ2°n¡@Ïi¬°Àn\Ó.d
+Œn!dÁa@·d 4°ÍÓ n–Ä2aÄÌé‹ß!@¡îA|Ó†Í†ﬁàÆä 0`r 
+¿Aa™\ﬂ†ﬁo*Õ⁄MÚô†⁄¯¿0@^d ƒ‡ŒVA·Zã·fÏ*™n"A°~A‡ñ¿‡Åû!>aÅ"v«pñ@Êb¿ËnäËÓíÈnöÈÓ¢Ín™!Ón≤Å ,&¨! a!f !t«™¿AÓv
+ °b!ZI Å!:¡g∆¿azaÇaP!2& û¿éÃÄhÅi†‡`<
+ÅD ·¡¡,¿»¿ﬁ`‘`Æ`ú†∂`‚
+P
+aTaö¡î‡0·nÙÄ	@∫‡à ÿ¡F‡<‡¡Ó!An˚‡#%`*
+aˆ·Å!Ü
+f ¯Ö‡sß>¡\·î <A.a0t‡ºÄ‹‡Ó.˙!¡&·J!∏Ó´x 
+¿¡z°!¶Ãa“¡x°Ç4 Ó‡‡µ¿˛Aˆ¿0ÎX Ú¡¿0j–t!ÿ°aÒ†˘'Á<tDtáLu Ù`ˆ!*a¡$°&°,¡4·!D‡Ä2,fv(‡Ù ∞Äz@éÄ∏ † zÄ∆q:Å8*∞H·âÓ≤Ø\ˆA.†ÔL¿ÃL…ÏŒ“Å&A ·!‡>¨Åz! ÊÑ@2Å42à‡‡ÚJ|ÚR@ D[¡‰ó‡*P‚òËgb
+¡@á 0Äda/$‡
+ÿ•Í&oCh?F ÿ±&`Ä‚´˙^—9¡Å`0Aeae· aN ° ¿UAiê`¿Ö|É,<z "†¥`$·¶·:ivÓj§&ÅÕ!L`Ë” PAˆ‡f@ÿ°òÅd¡⁄‡ÁN(ﬁFÃ·!¡©`0gÊ®\@6a∞Ñ3÷Ü@˚!@Œ¿®B ¡8°$Å?$FÃiﬁal∞
+aÇ°ˆ$` p`N | ®aj!:År¡t¡v¡TB°8«Ïà!iQ`˛·gŒZÙâH‘ëIA¶ÅÓ
+°ò‡˘J &Å‘´JÙ≥KfÕK¥æ`KL@t¿‹¡fAtÅö·l·~‡òÅ& Í¡ˆ ˛	†˙`‹
+†2`Ä†ƒß)¡d¨¢Åÿ”ÌN;N@˝NàÔNÙÛOi§axï dï5QUQ’!RU)RœwS56û4u@´!Hﬁ!
+a¿Ù b@“a¿!\
+ÅÄa~AÓa™¡fP–Ä	ÅPpÅËÓ°í’{WıÉXuä’èY'Œ≠!°x !ƒÅ¡Ä*!(@ÚA4AÒ∂.]¿‡¿öÄ‘†‰@æ@ÿa†·4!<!b!Z =V!dÇıÙi¶AÔ@ˆ ÍÄ¸ADÅJ·∫¡ · ÷]'†Gd50 ä·(·™®l  
+Á¢
+@n	¿¢g·
+LaN¶a\`>aÑA:ûaEAÛ∏A!ÚAL#†@Q& †Ê ¿bﬂ‘{GÙÇﬁTﬁœ.ôA¡
+@ÖA–¯AaQ·jÅvÅDÖÚ!ÿè!JÓNQ,°l±6q:v·¡Ô.aÔL@~@‹Åˆa°F≤h)ÃR‡s@Ó‡Ï°ˆAÓF,Ó°6A@±–!@∫@Ëâ‡ÏäÅòÊR`¿ÏãÜ Ëæ∆>a¿ﬁ·ˆÅˆ“˙¿ƒ‡ñ8Ñ^!$A`Œ\√ı™ÅÆ	!õA@`*l‚¡
+a§¡&°5"·{aXadTJﬁ 0¿å l@»ê@2ÏaVÅVx‡0A<˜à™2z¡*!?îÅ  Ú 0¡x◊°ÄÅt¡D@6ia Å2‡0A¿ÏÿÕ€`p“‡ö‡Ã
+ñpmz›.¡^
+ 6!°Ä¢ 0Å!ZÊ lŸ ƒÄR¿ö® ê ◊NŸTÔÅ! O0°l@˚·˙JÊÂÆ†˛¿Æ…°a!¿
+`p:Rl†>¡¯aÉÊVé¿»`‘A`¡<Al¡÷Áv¨d!@˛A	uäÔ»∞`ﬁØÂp†öé!ﬁ°J Ë@ñ¿j†î‡‘¿∆oö ∫AD°Hx( >¡∂avajÅZ·PÇ$¡j !ÄÅˆ	 +&°°¿`p¨v‡ ‡ö¿<‡B ò(¡ Å
+° –`0‡∏ Ñ@µ¥ ±q Í•!Ç/açÅ4‡¨Æ!‡2†Ù¿˙Ä‘`< ¶¿Ú°R·°"Âal¡2`FÜ∏¢‡Ùsƒ`
+!:¡Hæj¿<Hˆ†≤@äl¿–L«j˚!)N ¶¨a[Ä;m°HÆAÓAÓ¿*ÿa&ò‡ÅJa4(Ò`º`Ç\‡∞
+Ä¥„!@aj∂!v·p@<°ha>Å`∂†ÙÃ
+`‹kh \ax >6a&G^ Ê‡@à!@ !Ù∑‡‡ﬁRxiB7Ê
+
+Äå`#á°¯AˆA‹´ ¸≥Àm‚Ëƒ·¶R&ª:¸°¯ 0`Æï¡õadãÒ
+ˆ\ı… —`` ¿÷†ÙÂ4aÅ+8·;±¡˛ÅÓ!¯ÕÑ ¡àaÓaA~@ÃÅ9i¨nÅHøÅ°Râ√òARAi—†F1$‡Ã¿Œ¿Ú™a@!h0¡4°P±mÆ÷◊m°9n⁄¢%¢ö-£5£ÅA≤j¯¿ ! 2¡†Ü†hÄ¢‡X`o#a5¡L8¡Z¡Ç·XAú Ë 0 æ◊§ ì†˛Å8a.ûÅé!<‡ÿ°a	ô·w˚wÕ<‡Ê†ÛL†f	†† ‘`Ê•`a!Ho±\z∑Å*¡ ËÅnaP°XMR¡?†T[¡Ó!Û∞ tè-÷®<`¯ÄË©â§¿ﬁ¡Å!	@2Z~•iéhy
+ÉÊÜ2oä2k§‡fÖk_∂r·÷Ä1Ï¿
+^¨fÁ∂ÅÇß˙N!yúû!Xí'm4A∑”¶,¡¯†
+†π¡{`
+°é 2â_  †Ï≤®ICÂÍ¶n† ﬁÕ@âÀß7A0`vÄ˚†ëpAÚJﬁ°®Æa∏¡@*`Ù
+¿ `Ó• 2Ä‹èf°LP·∫·9!*ëj`Araít!T ïT†å	`»¿⁄ ⁄”A Ä@ın]i±jv≥ú<˚9Ω…AT„A>∂T)S©µR]Fã*«sY|–\+úÉÊÛÈù ^@ÇœîÒÂj˘
+- ,·6„æèí∞UˆÅ}êüd∑⁄=ˆQtâû‰GI<¥fﬁ·&ÀeÓ'EΩ∆@áπFÚ}í∆√Uvã^’ávaïV@Eæ¿Wpëçˆ#ëKEíQƒ{}â∏ÌÓYΩ¡-Ä}tªc®öÒ‡s›T¯	∞@/uñx*èO$îI $B"NhT(¥ãû¿ ∏6·S¨W;eJ-L|M“®¬A6ïU$”È–`ˆí6$Nà¥,ˆàA°Œh…8Ës:ùOÊ‘H¯<éÁt…Ü:ÜÄdL⁄˚+å«ÿú:à¿»Ú(£`ŒEª$$<î#È„†˙-êƒ(CDA,EñÑYÇUE—êiî&â®{ûdq.Iñ1z`|ÁπhWÁ	X ür|z!`*a%KdXÚëpàÿCÇ	¯#–`E1òﬁZëÄ)hFDa:EìÑYPEdQzfG‚Q8ëÑ	&EîY(FDq<nüÿ0EëÑ{¢OÑÅJëƒ¡^Hìdi<è%‡æ` ÜÜc®ÓH#0>FçÖÄÚOê≈Cl{Çß∏»‡·‡&ÿDÁÿ<D/§h≠0«≈~TÁ¿*Uû„)rQï†êÃeîÊë0jûÜh∏iÇ‡ô¸@I"DLÙJL‰Y*FDq(\A"7êÉπ*∂√ŸJ@íÉë*;cë ;c,è¯‘)å#p¢EàÄ@|\¶¡'Ñ∞<1£ÿ¯@2dñ@íD2?á„êÿ>√`“7è!1Å!¢.û‡<	ü‡^{Ä¶ôºWé≈x¿W‚yx4î√ı,OO§â*MƒqFÑi[§⁄QöFÒ»d°J$–}Öß‡ä
+Á`r3ì√Ä‘
+‚0¬"ëjd$È\Uî¿ÒJP$©}¥öß¿ß∑€∆)P3àÅ ∂"à¢p÷ZGQ|fÄ˝àD‰Ú3£˘,+é#9!êÄ…; •ÿQí§ ÙAëDB„	ˆ?ÁÿV2b Ï&9!†Mìg∏NAÄñÊ·Êv®Ò0JCÚB§‘ãÿ∞A‰8ÍEè »ÊKÑÒJWî°⁄$Ë‚=‡D Å6¬BâA,∫Ñòë |eèq($E(êIúäJCHNAX&‡–É–y°@;á 0LAxw‚ Sê+ ê¯Éçn~êFDH…!%$¡ƒ0m	HÍ"CáKiu/ÄP&,h∫R¬åÅ0‡;@†9Ö°hÇOB}>à¡(#Ñ‡‡PäFâ>#ƒËçb5@	ÅP$D¯çƒxqê»A`=†åÖ" ˜G¯U±¨>¿òä#4G Q&Ñ∞ã0Eâë'ÑHò1  òn£Ï&qNï\WäQä-EP¬c Eéñ.«ÿîb,ªÇ°1É‚I.‡(G&‡FfÃË‡  ä— ®í‚¨PŸç∞ïb?D(!√Ë	#ÏB4ú{Ò~o’˚øóˆˇ_¯xÇ A@Q
+%hçÇ@PÒ∞=∆ èÇ5	02'»{°ò;`Äá∏:°@T7‡‘CêöbåU
+1P,E|ÅŸ–èÅÄEÿ˘Ï–Ä¶=√∞⁄'·\|
+–**@0è"HXâëlÖc°pEÑ!√`V
+°Ä1`∞"ÿp6!poáq‘ ¿¡¬ò4∞§`D	 ê*ÜQ.*Ç¯¡¥àP®!Ä
+‚9 ¸0˜„‹´066É µ–4%	êí&Ch∞c4é!ú2á8ºÅ¯5äê<±∏˘B·Å´HF†",WàaƒpÉ°‡E¿¿ß ¬ò{ÉÑ¨Aòä‚*≥Üaƒ`5ì@¿Ú>¡¿ Mq (Dêõ"H›—b$l°b Äè¡:‚BX d,Å∆"`b0T¡6"‘∞™B…6¶ÒnúÖ8PN…·='∆»ü‘
+2
+‡”Bù3®uN±◊;dÌ≥∏wNÒﬂ∂>≈ }Ï#qˆ@»î#8N
+!Ó†ªb‡Vä–24ÿ\aR±0"≈ò‚®\ä∞0 ƒ`aÙAöÙê` Ñ"NÅñFd‡<Lâê02@πÇÙEß°,"D‡áÉ(ë"màã	",·ˆGÿC&p{à¸&Í][≠uÓ≈ŸªWn!‰…¬ <ÅÒk¿Nc,>ê2B∏~"6à∞ÏCîı~œ·˝?«˝  0Å	&ï0î §ƒOê‹<ÄÆ©Ä0Ä@Å+A(0√‹^–¡~hÄú"X=Ü‡ C N¡0/Ä–Ç0©‡t(ë&ÑXíx@âpˆBËu!P“√∞Jb≤√mı)∏ÑæÂB\>á`ÀE¬·ﬁnMÈ¿#ß¬H@á¿∞áÿU‚RGû&ÖÒc‹äaå0Ü8¢‰\
+ëNGÑêèa¯4Qˆ∏êC·Ï$Jë†&Ö ˆcpVçan/ »¬ı¡·&${b >áPiÕB`z	‚4à ﬁ!√àã†#QøMK>Äc‹AåÓ6-0“„‹Dçp≤¿ÅÿH°*x|Ç Fà1KYD(•cPEçët2FË”B–{®ehXÅU‡î}î@>¿`˚‡†c°»2Ö¿¶£`@¬òr
+·ê`¬ƒ]YBà6bƒá¿´£4[f	ò@¡1·«5F ÿTædõ†ƒ0«∏ ˙ATO£∞‘=≈x‡O˝0
+=* €p4ÄP¢èÔÁ`d
+°Ô˘ˇHl∞5bÉ∞˚ }Ä@)á∞P}É∏Ü(7¥$`?§@C¯@X Ä1^á∏, ®;ø„ˇ –‹ø ÕÑpCò<åÄ áò›Ä®5Ä5É(7‡<Ö0V8UÖÄS∏P	@bá∏wADAd0VÖ0Uå¡π–ë¿`Üòá∏d»8Ä®Å®2Ç¯1X)à7ÅÄEÅ0EÇ–IÇêL‡NÇ`Q‡dÅ8PÑ¿àaXgÿpXuíXu–qHl`oÖp`á8z3Ë≈% Ä®ráXÖ∏YÜPbá(Sá0EáÄ∑b]»e†]hwÉ®? ¿RÇ†U@N®EÅa%Åh>ò6Å5∏4®Å>∑}Å
+ÖpL†rÖ»ihm »A¿pAÉX:Åê9†1Ç¿åÿ≈òbÄO∏9ïÄOÄ0NÜ+ˇ@˘ü¡<¡\¡|¡ú"âC±Ö@|Å T Wªh[Üƒ%¬h'Ä®"™–4Ç‡#ÇÑ)8ªÄ·µxdÅ°XÜ–f∏qÖÿ‡r?Ää¯ãÇHqÅ(7 ®h`*Ë†}Å(6∫à3Å0‡'à$P`á®o”èt ¯X∏Ö∏cÜêÕ(| P|Ç 
+É‡K9ç∑HAÇ%à@ÄI0oìFhLÖXL »WÑ ÛÖA∏AÑ' »CÄÜÄFÖÿF,¡–EÄD¶ÄH0"x.Ñp?®EÖq%Ñ±?ÑêZú`$°H}‡{É¿^Ä¬Ã8
+Ñ®^Ä(0,µ©bÑXe¿gÜ`–á†p xQX
+¯PÜ dÖXkXh »vÇHe ,0?â{ÕA‡mÖÄSÜ €h\$Ç83®%Å¡‡®"»¿-ª7Ä8gÑhjb_%iÑPgÀâ7àòBÑò.Ñ4ÑB≥∆ybá∏* …îkÉ`{ÑàÉ∏Ñ0Ñ@ÉPCÄ»À$≥r)Ñ`_ÑX_X\Œ‘ÓπÅ†JÉÄGHXKíXPòHÖpJ -XH–ÄE‡EËE ¿MÜCÑÉˇ †|êAÑÄ#‡Ñ & ®$‡øÚD;Wá¿ ¿{Ç`gç}á%Ä8{ÜË
+Ö≥"Ñÿ‡Ä@m¿+Åà"Éò$É0 ¯8x3É‡0 Ç»[Üqu¿FÑÿÉ¢TÇT˙5Ä»]É0[É‡eDàEá(_Ö–q[ÑÕÖ∞à$Ük· =É81Ä_∏BìD®DÖâÑXah_&y7Öpb†85ÑP2ÑH(ÑP9ç±ÇÇ¯FÇpGÉ∞F2HC
+Py5®{Ñq—¿|Ü®úÑÄ
+ÑÄAìIXG∞Kß•cDÜ™çÜ{Å†m∏	ä»{Ç¯p:Ä84ÑP8ÑP=AÄ0#c˛PhEÉXF¯F∏ÑàCÑ˙ÊÑtø2√Ãê}ÖP~®§îÀ$PöÄ0ZÄîxÑÄgá∏∏6Üqnò6á∏z ®&Éh8É»6X1 ;€ŸÄ@8)á8{Ä°Ë«	Ä9Ö`H`{Ä0kÖp‡Ü∏∞+Öÿ‚aÅÇòU h 6 ®eÉ0NÉpEÇzµò#Ë#[Ü†n∏e\ÄL∞
+ÇËRÉàYX[Ä@lbÜyù†bÖê1x'0*Ç.
+¿5æ¯.∆»XÄPlÄXXÑÄ `   ÄÄ
+endstream
+endobj
+2 0 obj
+<</Producer(GPL Ghostscript 9.02)
+/CreationDate(D:20111111074513+01'00')
+/ModDate(D:20111111074513+01'00')
+/Creator(Windows PSCRIPT)
+/Title(Microsoft Word - PKCS-6.DOC)>>endobj
+xref
+0 79
+0000000000 65535 f 
+0000071844 00000 n 
+0000107575 00000 n 
+0000071714 00000 n 
+0000069934 00000 n 
+0000000015 00000 n 
+0000007670 00000 n 
+0000072062 00000 n 
+0000071892 00000 n 
+0000074815 00000 n 
+0000094340 00000 n 
+0000073417 00000 n 
+0000075749 00000 n 
+0000073767 00000 n 
+0000076356 00000 n 
+0000074265 00000 n 
+0000083811 00000 n 
+0000075235 00000 n 
+0000097983 00000 n 
+0000073354 00000 n 
+0000073581 00000 n 
+0000071936 00000 n 
+0000071966 00000 n 
+0000070094 00000 n 
+0000007690 00000 n 
+0000016586 00000 n 
+0000072470 00000 n 
+0000072500 00000 n 
+0000070256 00000 n 
+0000016607 00000 n 
+0000022904 00000 n 
+0000072565 00000 n 
+0000072595 00000 n 
+0000070418 00000 n 
+0000022925 00000 n 
+0000031147 00000 n 
+0000072649 00000 n 
+0000072679 00000 n 
+0000070580 00000 n 
+0000031168 00000 n 
+0000037500 00000 n 
+0000072744 00000 n 
+0000072774 00000 n 
+0000070742 00000 n 
+0000037521 00000 n 
+0000039731 00000 n 
+0000072839 00000 n 
+0000072869 00000 n 
+0000070904 00000 n 
+0000039752 00000 n 
+0000049097 00000 n 
+0000072923 00000 n 
+0000072953 00000 n 
+0000071066 00000 n 
+0000049118 00000 n 
+0000056803 00000 n 
+0000073007 00000 n 
+0000073037 00000 n 
+0000071228 00000 n 
+0000056824 00000 n 
+0000065322 00000 n 
+0000073091 00000 n 
+0000073121 00000 n 
+0000071390 00000 n 
+0000065343 00000 n 
+0000066936 00000 n 
+0000073186 00000 n 
+0000073216 00000 n 
+0000071552 00000 n 
+0000066957 00000 n 
+0000069913 00000 n 
+0000073270 00000 n 
+0000073300 00000 n 
+0000075974 00000 n 
+0000076742 00000 n 
+0000084318 00000 n 
+0000094698 00000 n 
+0000098411 00000 n 
+0000073659 00000 n 
+trailer
+<< /Size 79 /Root 1 0 R /Info 2 0 R
+/ID [<48660BC59286F54ED16AF0CDADF0F88B><48660BC59286F54ED16AF0CDADF0F88B>]
+>>
+startxref
+107760
+%%EOF

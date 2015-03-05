@@ -1,0 +1,1132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<!-- v4.33, 4732, 2012-07-30 14:54:21 -0700 -->
+<title>
+RFC 5746
+
+</title>
+<link rel="stylesheet" type="text/css" href="/css/yui/yui-20100305.css"></link>
+<link rel="stylesheet" type="text/css" href="/css/base2.css"></link>
+<style type="text/css">
+
+.metabox { width: 99%; margin-top:8px; padding:4px; margin-bottom:1em; }
+#metatable { border: 0; border-spacing: 0; }
+#metatable tr { vertical-align:top ;}
+#metatable .post-rfc { font-style: italic; color: #004000; }
+.comment_toggle { text-decoration: underline; color: blue; }
+.comment_date { white-space: nowrap; }
+
+div.diffTool { padding: 8px 4px; margin: 8px 0;}
+.diffTool label { float:left; width:50px; }
+
+.markup_draft pre {line-height: 1.2em; margin: 0; }
+.m_hdr, .m_ftr { color: #808080; }
+.m_ftr { border-bottom: 1px solid #a0a0a0; }
+.m_h { font-family: arial; font-weight:bold;}
+
+a.editlink {
+  background-image: url("/images/pencil.png");
+  background-size:10px;
+  background-position: right top;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  padding-right: 12px;
+} 
+
+a.editlink:link {text-decoration:none; color:inherit;}
+a.editlink:visited {text-decoration:none; color:inherit;}
+a.editlink:hover {text-decoration:underline;}
+a.editlink:active {text-decoration:underline;}
+
+
+</style>
+
+
+<meta name="description" content="Transport Layer Security (TLS) Renegotiation Indication Extension
+
+(Proposed Standard, 2010)
+
+" />
+
+
+<script type="text/javascript">
+IETF = {};
+IETF.user_groups = {};
+</script>
+
+<link rel="icon" href="/images/ietf-icon-blue.bmp" />
+
+<link rel="search" href="/js/datatracker-search.xml" type="application/opensearchdescription+xml" title="IETF Datatracker Search" />
+</head>
+<body class="yui-skin-sam" >
+<div style="background-color:#313163;color:white;font-size:150%;height:35px;" class="noprint">
+<a href="/" style="text-decoration:none;color:white"><img src="/images/ietflogo-blue-small.png" width="60" height="34" style="vertical-align:middle;padding-left:8px;" alt=""/><span style="padding-left:15px;font-weight:bold;letter-spacing:0.1em;">datatracker.ietf.org</a> </span>
+</div>
+
+
+<div id="ietf-login" class="noprint">
+<a href="https://datatracker.ietf.org/accounts/login/?next=/doc/rfc5746/%3Finclude_text%3D1" rel="nofollow">Sign In</a>
+</div>
+
+
+<table style="margin-left:8px;margin-top:8px;" width="98%;">
+<tr valign="top">
+<td style="width:130px;padding-right:8px;" class="noprint">
+<div class="ietf-navbar">
+
+ 
+
+
+<ul>
+<li class="sect first">Accounts</li>
+  <li><a href="/accounts/">New Account</a></li>
+
+
+
+
+
+
+<li class="sect first">Working Groups</li>
+
+  <li style="padding-bottom:0;"><div id="wgs" class="yuimenu"><div class="bd" style="border:0;">
+  <ul class="first-of-type" style="padding:0;">
+  <!-- begin wg_menu -->
+  
+
+
+<li class="yuimenuitem"><a class="yuimenuitemlabel">Applications</a><div id="wgs-app" class="yuimenu"><div class="bd"><ul>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/appsawg/">appsawg &mdash; Applications Area Working Group</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/core/">core &mdash; Constrained RESTful Environments</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/eai/">eai &mdash; Email Address Internationalization</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/httpbis/">httpbis &mdash; Hypertext Transfer Protocol Bis</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/hybi/">hybi &mdash; BiDirectional or Server-Initiated HTTP</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/imapmove/">imapmove &mdash; IMAP MOVE extension</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/iri/">iri &mdash; Internationalized Resource Identifiers</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/paws/">paws &mdash; Protocol to Access WS database</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/precis/">precis &mdash; Preparation and Comparison of Internationalized Strings</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/repute/">repute &mdash; Reputation Services</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/scim/">scim &mdash; System for Cross-domain Identity Management</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/sieve/">sieve &mdash; Sieve Mail Filtering Language</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/spfbis/">spfbis &mdash; SPF Update</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/urnbis/">urnbis &mdash; Uniform Resource Names, Revised</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/vcarddav/">vcarddav &mdash; vCard and CardDAV</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/websec/">websec &mdash; Web Security</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/weirds/">weirds &mdash; Web Extensible Internet Registration Data Service</a></li>
+</ul></div></div></li>
+
+
+
+
+
+<li class="yuimenuitem"><a class="yuimenuitemlabel">Internet</a><div id="wgs-int" class="yuimenu"><div class="bd"><ul>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/6lowpan/">6lowpan &mdash; IPv6 over Low power WPAN</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/6man/">6man &mdash; IPv6 Maintenance</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ancp/">ancp &mdash; Access Node Control Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/csi/">csi &mdash; Cga &amp; Send maIntenance</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dhc/">dhc &mdash; Dynamic Host Configuration</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dmm/">dmm &mdash; Distributed Mobility Management</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dnsext/">dnsext &mdash; DNS Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/hip/">hip &mdash; Host Identity Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/homenet/">homenet &mdash; Home Networking</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/intarea/">intarea &mdash; Internet Area Working Group</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/l2tpext/">l2tpext &mdash; Layer Two Tunneling Protocol Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/lisp/">lisp &mdash; Locator/ID Separation Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/lwig/">lwig &mdash; Light-Weight Implementation Guidance</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mif/">mif &mdash; Multiple Interfaces</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mip4/">mip4 &mdash; Mobility for IPv4</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/multimob/">multimob &mdash; Multicast Mobility</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/netext/">netext &mdash; Network-Based Mobility Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ntp/">ntp &mdash; Network Time Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/pcp/">pcp &mdash; Port Control Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/pppext/">pppext &mdash; Point-to-Point Protocol Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/savi/">savi &mdash; Source Address Validation Improvements</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/softwire/">softwire &mdash; Softwires</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/sunset4/">sunset4 &mdash; Sunsetting IPv4</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/tictoc/">tictoc &mdash; Timing over IP Connection and Transfer of Clock</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/trill/">trill &mdash; Transparent Interconnection of Lots of Links</a></li>
+</ul></div></div></li>
+
+
+
+<li class="yuimenuitem"><a class="yuimenuitemlabel">Ops &amp; Mgmt</a><div id="wgs-ops" class="yuimenu"><div class="bd"><ul>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/6renum/">6renum &mdash; IPv6 Site Renumbering</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/adslmib/">adslmib &mdash; ADSL MIB</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/armd/">armd &mdash; Address Resolution for Massive numbers of hosts in the Data center</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/bmwg/">bmwg &mdash; Benchmarking Methodology</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dime/">dime &mdash; Diameter Maintenance and Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dnsop/">dnsop &mdash; Domain Name System Operations</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/eman/">eman &mdash; Energy Management</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/grow/">grow &mdash; Global Routing Operations</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ipfix/">ipfix &mdash; IP Flow Information Export</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mboned/">mboned &mdash; MBONE Deployment</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/netconf/">netconf &mdash; Network Configuration</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/netmod/">netmod &mdash; NETCONF Data Modeling Language</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/opsawg/">opsawg &mdash; Operations and Management Area Working Group</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/opsec/">opsec &mdash; Operational Security Capabilities for IP Network Infrastructure</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/radext/">radext &mdash; RADIUS EXTensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/v6ops/">v6ops &mdash; IPv6 Operations</a></li>
+</ul></div></div></li>
+
+
+
+<li class="yuimenuitem"><a class="yuimenuitemlabel">RAI</a><div id="wgs-rai" class="yuimenu"><div class="bd"><ul>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/atoca/">atoca &mdash; Authority-to-Citizen Alert</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/avtcore/">avtcore &mdash; Audio/Video Transport Core Maintenance</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/avtext/">avtext &mdash; Audio/Video Transport Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/bfcpbis/">bfcpbis &mdash; Binary Floor Control Protocol Bis </a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/bliss/">bliss &mdash; Basic Level of Interoperability for SIP Services</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/clue/">clue &mdash; ControLling mUltiple streams for tElepresence</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/codec/">codec &mdash; Internet Wideband Audio Codec</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/cuss/">cuss &mdash; Call Control UUI Service for SIP</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dispatch/">dispatch &mdash; Dispatch</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/drinks/">drinks &mdash; Data for Reachability of Inter/tra-NetworK SIP</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ecrit/">ecrit &mdash; Emergency Context Resolution with Internet Technologies</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/geopriv/">geopriv &mdash; Geographic Location/Privacy</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/insipid/">insipid &mdash; INtermediary-safe SIP session ID</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mediactrl/">mediactrl &mdash; Media Server Control</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mmusic/">mmusic &mdash; Multiparty Multimedia Session Control</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/p2psip/">p2psip &mdash; Peer-to-Peer Session Initiation Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/payload/">payload &mdash; Audio/Video Transport Payloads</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/rtcweb/">rtcweb &mdash; Real-Time Communication in WEB-browsers</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/salud/">salud &mdash; Sip ALerting for User Devices</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/simple/">simple &mdash; SIP for Instant Messaging and Presence Leveraging Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/sipclf/">sipclf &mdash; SIP Common Log Format</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/sipcore/">sipcore &mdash; Session Initiation Protocol Core</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/siprec/">siprec &mdash; SIP Recording</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/soc/">soc &mdash; SIP Overload Control</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/speechsc/">speechsc &mdash; Speech Services Control</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/straw/">straw &mdash; Sip Traversal Required for Applications to Work</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/vipr/">vipr &mdash; Verification Involving PSTN Reachability</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/xmpp/">xmpp &mdash; Extensible Messaging and Presence Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/xrblock/">xrblock &mdash; Metric Blocks for use with RTCP&#39;s Extended Report Framework</a></li>
+</ul></div></div></li>
+
+
+
+<li class="yuimenuitem"><a class="yuimenuitemlabel">Routing</a><div id="wgs-rtg" class="yuimenu"><div class="bd"><ul>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/bfd/">bfd &mdash; Bidirectional Forwarding Detection</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ccamp/">ccamp &mdash; Common Control and Measurement Plane</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/forces/">forces &mdash; Forwarding and Control Element Separation</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/idr/">idr &mdash; Inter-Domain Routing</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/isis/">isis &mdash; IS-IS for IP Internets</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/karp/">karp &mdash; Keying and Authentication for Routing Protocols</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/l2vpn/">l2vpn &mdash; Layer 2 Virtual Private Networks</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/l3vpn/">l3vpn &mdash; Layer 3 Virtual Private Networks</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/manet/">manet &mdash; Mobile Ad-hoc Networks</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mpls/">mpls &mdash; Multiprotocol Label Switching</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/nvo3/">nvo3 &mdash; Network Virtualization Overlays</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ospf/">ospf &mdash; Open Shortest Path First IGP</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/pce/">pce &mdash; Path Computation Element</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/pim/">pim &mdash; Protocol Independent Multicast</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/pwe3/">pwe3 &mdash; Pseudowire Emulation Edge to Edge</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/roll/">roll &mdash; Routing Over Low power and Lossy networks</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/rtgwg/">rtgwg &mdash; Routing Area Working Group</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/sidr/">sidr &mdash; Secure Inter-Domain Routing</a></li>
+</ul></div></div></li>
+
+
+
+<li class="yuimenuitem"><a class="yuimenuitemlabel">Security</a><div id="wgs-sec" class="yuimenu"><div class="bd"><ul>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/abfab/">abfab &mdash; Application Bridging for Federated Access Beyond web</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dane/">dane &mdash; DNS-based Authentication of Named Entities</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/emu/">emu &mdash; EAP Method Update</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ipsecme/">ipsecme &mdash; IP Security Maintenance and Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/jose/">jose &mdash; Javascript Object Signing and Encryption</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/kitten/">kitten &mdash; Common Authentication Technology Next Generation</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/krb-wg/">krb-wg &mdash; Kerberos</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mile/">mile &mdash; Managed Incident Lightweight Exchange</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/nea/">nea &mdash; Network Endpoint Assessment</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/oauth/">oauth &mdash; Web Authorization Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/pkix/">pkix &mdash; Public-Key Infrastructure (X.509)</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/tls/">tls &mdash; Transport Layer Security</a></li>
+</ul></div></div></li>
+
+
+
+<li class="yuimenuitem"><a class="yuimenuitemlabel">Transport</a><div id="wgs-tsv" class="yuimenu"><div class="bd"><ul>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/alto/">alto &mdash; Application-Layer Traffic Optimization</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/behave/">behave &mdash; Behavior Engineering for Hindrance Avoidance</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/cdni/">cdni &mdash; Content Delivery Networks Interconnection</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/conex/">conex &mdash; Congestion Exposure</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/dccp/">dccp &mdash; Datagram Congestion Control Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/decade/">decade &mdash; Decoupled Application Data Enroute</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/fecframe/">fecframe &mdash; FEC Framework</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ippm/">ippm &mdash; IP Performance Metrics</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ledbat/">ledbat &mdash; Low Extra Delay Background Transport</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/mptcp/">mptcp &mdash; Multipath TCP</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/nfsv4/">nfsv4 &mdash; Network File System Version 4</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/ppsp/">ppsp &mdash; Peer to Peer Streaming Protocol</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/rmt/">rmt &mdash; Reliable Multicast Transport</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/storm/">storm &mdash; STORage Maintenance</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/tcpm/">tcpm &mdash; TCP Maintenance and Minor Extensions</a></li>
+<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/wg/tsvwg/">tsvwg &mdash; Transport Area Working Group</a></li>
+</ul></div></div></li>
+
+
+
+  <!-- end wg_menu -->
+  </ul>
+  </div></div></li>
+  
+  <li style="padding-top:0;"><a href="/wg/">Active WGs</a></li>
+  <li><a href="/wg/chartering/">Chartering WGs</a></li>
+  <li><a href="http://tools.ietf.org/wg/concluded">Concluded WGs</a></li>
+  <li><a href="http://www.ietf.org/list/nonwg.html">Non-WG Lists</a></li>
+ 
+
+<li class="sect">Drafts&nbsp;&amp;&nbsp;RFCs</li>
+  <li><a href="/doc/">Document search:</a></li>
+  <li><form action="/doc/search/" method="get" style="padding-bottom:0;margin-bottom:0;"><input type="text" style="margin-left:10px; width:100px; border:1px solid #89d;" name="name" /><input type="hidden" name="activeDrafts" value="on"/><input type="hidden" name="rfcs" value="on"/></form></li>
+  <li><a href="/submit/">Submit a draft</a></li> 
+
+
+
+   <li><a href="http://datatracker.ietf.org/accounts/login/?next=/doc/rfc5746/%3Finclude_text%3D1" rel="nofollow">Sign in to track drafts</a></li>
+
+
+
+<li class="sect">Meetings</li>
+  <li><a href="/meeting/agenda/">Agenda</a></li>
+  <li><a href="/meeting/">Materials</a></li>
+  <li><a href="http://www.ietf.org/meeting/proceedings.html">Past Proceedings</a></li>
+  <li><a href="http://www.ietf.org/meeting/upcoming.html">Upcoming</a></li>
+
+<li class="sect">Other Documents</li>
+  <li><a href="/ipr/">IPR Disclosures</a></li>
+  <li><a href="/liaison/">Liaison&nbsp;Statements</a></li>
+  <li><a href="/iesg/agenda/">IESG Agenda</a></li>
+  
+<li class="sect">Related Sites</li>
+  <li><a href="http://www.ietf.org/">Main IETF site</a></li>
+  <li><a href="http://tools.ietf.org/">IETF tools</a></li>
+  <li><a href="http://www.iab.org/">IAB</a></li>
+  <li><a href="http://www.rfc-editor.org/">RFC Editor</a></li>
+  <li><a href="http://iaoc.ietf.org">IASA/IAOC/Trust</a></li>
+  <li><a href="http://www.iana.org/">IANA</a></li>
+  <li><a href="http://www.irtf.org/">IRTF</a></li>
+</ul>
+
+</div>
+<div style="width: 100%; text-align: center; padding-top:4px;font-size:69%;">
+
+Version 4.33, 2012-07-30
+<br/>
+
+<a href="http://tools.ietf.org/tools/ietfdb/newticket">Report a bug</a>
+</div>
+</td>
+<td>
+
+<div style="padding:0 8px 0 8px;">
+
+<h1>Transport Layer Security (TLS) Renegotiation Indication Extension<br/>
+RFC 5746
+
+</h1>
+
+<div id="mytabs" class="yui-navset">
+<ul class="yui-nav">
+  <li class="selected"><a href="/doc/rfc5746/"><em>Document</em></a></li>
+  <li class="disabled"><a href="/doc/rfc5746/ballot/"><em>IESG Evaluation Record</em></a></li>
+  <li class="disabled"><a href="/doc/rfc5746/writeup/"><em>IESG Writeups</em></a></li>
+  <li><a href="/doc/rfc5746/history/"><em>History</em></a></li>
+</ul>
+<div class="yui-content">
+
+
+<div class="ietf-box metabox">
+<table id="metatable" width="100%">
+
+<tr><td style="width:18ex;">Document type:</td><td>RFC - Proposed Standard (IETF Stream)
+
+
+
+<br />Updates <a href="/doc/rfc2246/">RFC 2246</a>,  <a href="/doc/rfc4346/">RFC 4346</a>,  <a href="/doc/rfc4347/">RFC 4347</a>,  <a href="/doc/rfc4366/">RFC 4366</a>,  <a href="/doc/rfc5246/">RFC 5246</a>
+
+<br />Was <a href="/doc/draft-ietf-tls-renegotiation/">draft-ietf-tls-renegotiation</a>
+
+</td></tr>
+<tr><td>Published:</td><td> 2010-02</td></tr>
+
+<tr><td>Other versions:</td><td>
+
+
+<a href="http://www.rfc-editor.org/rfc/rfc5746.txt">plain text</a>,
+
+
+
+
+<a href="http://www.rfc-editor.org/rfc/pdfrfc/rfc5746.txt.pdf">pdf</a>,
+
+
+
+<a href="http://tools.ietf.org/html/rfc5746">html</a>
+
+
+</td></tr>
+
+</table>
+
+<div style="padding-top:6px;padding-bottom:6px;padding-left:2px;">
+
+ <a href="/ipr/search/?option=rfc_search&amp;rfc_search=5746" rel="nofollow">IPR Disclosures</a>
+| <a href="http://www.fenron.net/~fenner/ietf/deps/index.cgi?dep=rfc5746" rel="nofollow">Dependencies to this RFC</a>
+
+</div>
+
+
+
+
+</div> <!-- metabox -->
+
+<div id="rfcText1">
+
+
+<div class="markup_draft">
+<pre>Internet Engineering Task Force (IETF)                       E. Rescorla
+Request for Comments: 5746                                    RTFM, Inc.
+Updates: 5246, 4366, 4347, 4346, 2246                             M. Ray
+Category: Standards Track                                    S. Dispensa
+ISSN: 2070-1721                                              PhoneFactor
+                                                                N. Oskov
+                                                               Microsoft
+                                                           February 2010
+
+   Transport Layer Security (TLS) Renegotiation Indication Extension
+
+<span class="m_h">Abstract</span>
+
+   Secure Socket Layer (SSL) and Transport Layer Security (TLS)
+   renegotiation are vulnerable to an attack in which the attacker forms
+   a TLS connection with the target server, injects content of his
+   choice, and then splices in a new TLS connection from a client.  The
+   server treats the client&#39;s initial TLS handshake as a renegotiation
+   and thus believes that the initial data transmitted by the attacker
+   is from the same entity as the subsequent client data.  This
+   specification defines a TLS extension to cryptographically tie
+   renegotiations to the TLS connections they are being performed over,
+   thus preventing this attack.
+
+<span class="m_h">Status of This Memo</span>
+
+   This is an Internet Standards Track document.
+
+   This document is a product of the Internet Engineering Task Force
+   (IETF).  It represents the consensus of the IETF community.  It has
+   received public review and has been approved for publication by the
+   Internet Engineering Steering Group (IESG).  Further information on
+   Internet Standards is available in Section 2 of RFC 5741.
+
+   Information about the current status of this document, any errata,
+   and how to provide feedback on it may be obtained at
+   http://www.rfc-editor.org/info/rfc5746.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 1]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+<span class="m_h">Copyright Notice</span>
+
+   Copyright (c) 2010 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust&#39;s Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+<span class="m_h">Table of Contents</span>
+
+   1. Introduction ....................................................3
+   2. Conventions Used in This Document ...............................4
+   3. Secure Renegotiation Definition .................................4
+      3.1. Additional Connection State ................................4
+      3.2. Extension Definition .......................................5
+      3.3. Renegotiation Protection Request Signaling Cipher
+           Suite Value ................................................6
+      3.4. Client Behavior: Initial Handshake .........................6
+      3.5. Client Behavior: Secure Renegotiation ......................7
+      3.6. Server Behavior: Initial Handshake .........................7
+      3.7. Server Behavior: Secure Renegotiation ......................8
+   4. Backward Compatibility ..........................................9
+      4.1. Client Considerations ......................................9
+      4.2. Client Behavior: Legacy (Insecure) Renegotiation ..........10
+      4.3. Server Considerations .....................................10
+      4.4. Server Behavior: Legacy (Insecure) Renegotiation ..........11
+      4.5. SSLv3 .....................................................11
+   5. Security Considerations ........................................12
+   6. IANA Considerations ............................................13
+   7. Acknowledgements ...............................................13
+   8. References .....................................................13
+      8.1. Normative References ......................................13
+      8.2. Informative References ....................................13
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 2]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+<span class="m_h">1.  Introduction</span>
+
+   TLS [RFC5246] allows either the client or the server to initiate
+   renegotiation -- a new handshake that establishes new cryptographic
+   parameters.  Unfortunately, although the new handshake is carried out
+</pre>
+
+</div>
+
+
+</div> <!-- rfcText1 -->
+
+
+</div> <!-- yui-content -->
+</div> <!-- mytabs -->
+
+
+
+<script type="text/javascript" src="/js/lib/jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="/js/yui/yui-20100305.js"></script> 
+<script type="text/javascript">
+//<![CDATA[
+YAHOO.util.Event.onContentReady("wgs", function () {
+    var oMenu = new YAHOO.widget.Menu("wgs", { position: "static", hidedelay:  750, lazyload: true });
+    oMenu.render();      
+});      
+
+function toggleComment(n) {
+    var el = document.getElementById("commentF"+n);
+    var el2 = document.getElementById("commentS"+n);
+    var el3 = document.getElementById("commentT"+n);
+    if (el.style.display == 'none') {
+        el.style.display = 'block';
+        el2.style.display = 'none';
+        el3.innerHTML = ""; //[hide]";
+    } else {
+        el.style.display = 'none';
+        el2.style.display= 'block';
+        el3.innerHTML = "[show all]";
+    }
+}
+
+//]]>
+</script>
+<script type="text/javascript" src="/js/base.js"></script>
+
+
+
+<div id="rfcText2">
+
+
+<div class="markup_draft">
+<pre>   using the cryptographic parameters established by the original
+   handshake, there is no cryptographic binding between the two.  This
+   creates the opportunity for an attack in which the attacker who can
+   intercept a client&#39;s transport layer connection can inject traffic of
+   his own as a prefix to the client&#39;s interaction with the server.  One
+   form of this attack [Ray09] proceeds as shown below:
+
+   Client                        Attacker                        Server
+   ------                        -------                         ------
+                                     &lt;----------- Handshake ----------&gt;
+                                     &lt;======= Initial Traffic ========&gt;
+   &lt;--------------------------  Handshake ============================&gt;
+   &lt;======================== Client Traffic ==========================&gt;
+
+   To start the attack, the attacker forms a TLS connection to the
+   server (perhaps in response to an initial intercepted connection from
+   the client).  He then sends any traffic of his choice to the server.
+   This may involve multiple requests and responses at the application
+   layer, or may simply be a partial application layer request intended
+   to prefix the client&#39;s data.  This traffic is shown with == to
+   indicate it is encrypted.  He then allows the client&#39;s TLS handshake
+   to proceed with the server.  The handshake is in the clear to the
+   attacker but encrypted over the attacker&#39;s TLS connection to the
+   server.  Once the handshake has completed, the client communicates
+   with the server over the newly established security parameters with
+   the server.  The attacker cannot read this traffic, but the server
+   believes that the initial traffic to and from the attacker is the
+   same as that to and from the client.
+
+   If certificate-based client authentication is used, the server will
+   see a stream of bytes where the initial bytes are protected but
+   unauthenticated by TLS and subsequent bytes are authenticated by TLS
+   and bound to the client&#39;s certificate.  In some protocols (notably
+   HTTPS), no distinction is made between pre- and post-authentication
+   stages and the bytes are handled uniformly, resulting in the server
+   believing that the initial traffic corresponds to the authenticated
+   client identity.  Even without certificate-based authentication, a
+   variety of attacks may be possible in which the attacker convinces
+   the server to accept data from it as data from the client.  For
+   instance, if HTTPS [RFC2818] is in use with HTTP cookies [RFC2965],
+   the attacker may be able to generate a request of his choice
+   validated by the client&#39;s cookie.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 3]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   Some protocols -- such as IMAP or SMTP -- have more explicit
+   transitions between authenticated and unauthenticated phases and
+   require that the protocol state machine be partly or fully reset at
+   such transitions.  If strictly followed, these rules may limit the
+   effect of attacks.  Unfortunately, there is no requirement for state
+   machine resets at TLS renegotiation, and thus there is still a
+   potential window of vulnerability, for instance, by prefixing a
+   command that writes to an area visible by the attacker with a command
+   by the client that includes his password, thus making the client&#39;s
+   password visible to the attacker (note that this precise attack does
+   not work with challenge-response authentication schemes, but other
+   attacks may be possible).  Similar attacks are available with SMTP,
+   and in fact do not necessarily require the attacker to have an
+   account on the target server.
+
+   It is important to note that in both cases these attacks are possible
+   because the client sends unsolicited authentication information
+   without requiring any specific data from the server over the TLS
+   connection.  Protocols that require a round trip to the server over
+   TLS before the client sends sensitive information are likely to be
+   less vulnerable.
+
+   These attacks can be prevented by cryptographically binding
+   renegotiation handshakes to the enclosing TLS cryptographic
+   parameters, thus allowing the server to differentiate renegotiation
+   from initial negotiation, as well as preventing renegotiations from
+   being spliced in between connections.  An attempt by an attacker to
+   inject himself as described above will result in a mismatch of the
+   cryptographic binding and can thus be detected.  The data used in the
+   extension is similar to, but not the same as, the data used in the
+   tls-unique and/or tls-unique-for-telnet channel bindings described in
+   [TLS-CHANNEL-BINDINGS]; however, this extension is not a general-
+   purpose RFC 5056 [RFC5056] channel binding facility.
+
+<span class="m_h">2.  Conventions Used in This Document</span>
+
+   The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+   &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this
+   document are to be interpreted as described in [RFC2119].
+
+<span class="m_h">3.  Secure Renegotiation Definition</span>
+
+<span class="m_h">3.1.  Additional Connection State</span>
+
+   Both client and server need to store three additional values for each
+   TLS connection state (see RFC 5246, Section 6.1).  Note that these
+   values are specific to connection (not a TLS session cache entry).
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 4]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   o  a &quot;secure_renegotiation&quot; flag, indicating whether secure
+      renegotiation is in use for this connection.
+
+   o  &quot;client_verify_data&quot;:  the verify_data from the Finished message
+      sent by the client on the immediately previous handshake.  For
+      currently defined TLS versions and cipher suites, this will be a
+      12-byte value; for SSLv3, this will be a 36-byte value.
+
+   o  &quot;server_verify_data&quot;:  the verify_data from the Finished message
+      sent by the server on the immediately previous handshake.
+
+<span class="m_h">3.2.  Extension Definition</span>
+
+   This document defines a new TLS extension, &quot;renegotiation_info&quot; (with
+   extension type 0xff01), which contains a cryptographic binding to the
+   enclosing TLS connection (if any) for which the renegotiation is
+   being performed.  The &quot;extension data&quot; field of this extension
+   contains a &quot;RenegotiationInfo&quot; structure:
+
+      struct {
+          opaque renegotiated_connection&lt;0..255&gt;;
+      } RenegotiationInfo;
+
+   The contents of this extension are specified as follows.
+
+   o  If this is the initial handshake for a connection, then the
+      &quot;renegotiated_connection&quot; field is of zero length in both the
+      ClientHello and the ServerHello.  Thus, the entire encoding of the
+      extension is ff 01 00 01 00.  The first two octets represent the
+      extension type, the third and fourth octets the length of the
+      extension itself, and the final octet the zero length byte for the
+      &quot;renegotiated_connection&quot; field.
+
+   o  For ClientHellos that are renegotiating, this field contains the
+      &quot;client_verify_data&quot; specified in Section 3.1.
+
+   o  For ServerHellos that are renegotiating, this field contains the
+      concatenation of client_verify_data and server_verify_data.  For
+      current versions of TLS, this will be a 24-byte value (for SSLv3,
+      it will be a 72-byte value).
+
+   This extension also can be used with Datagram TLS (DTLS) [RFC4347].
+   Although, for editorial simplicity, this document refers to TLS, all
+   requirements in this document apply equally to DTLS.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 5]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+<span class="m_h">3.3.  Renegotiation Protection Request Signaling Cipher Suite Value</span>
+
+   Both the SSLv3 and TLS 1.0/TLS 1.1 specifications require
+   implementations to ignore data following the ClientHello (i.e.,
+   extensions) if they do not understand it.  However, some SSLv3 and
+   TLS 1.0 implementations incorrectly fail the handshake in such a
+   case.  This means that clients that offer the &quot;renegotiation_info&quot;
+   extension may encounter handshake failures.  In order to enhance
+   compatibility with such servers, this document defines a second
+   signaling mechanism via a special Signaling Cipher Suite Value (SCSV)
+   &quot;TLS_EMPTY_RENEGOTIATION_INFO_SCSV&quot;, with code point {0x00, 0xFF}.
+   This SCSV is not a true cipher suite (it does not correspond to any
+   valid set of algorithms) and cannot be negotiated.  Instead, it has
+   the same semantics as an empty &quot;renegotiation_info&quot; extension, as
+   described in the following sections.  Because SSLv3 and TLS
+   implementations reliably ignore unknown cipher suites, the SCSV may
+   be safely sent to any server.  The SCSV can also be included in the
+   SSLv2 backward compatible CLIENT-HELLO (see Appendix E.2 of
+   [RFC5246]).
+
+   Note:  a minimal client that does not support renegotiation at all
+   can simply use the SCSV in all initial handshakes.  The rules in the
+   following sections will cause any compliant server to abort the
+   handshake when it sees an apparent attempt at renegotiation by such a
+   client.
+
+<span class="m_h">3.4.  Client Behavior: Initial Handshake</span>
+
+   Note that this section and Section 3.5 apply to both full handshakes
+   and session resumption handshakes.
+
+   o  The client MUST include either an empty &quot;renegotiation_info&quot;
+      extension, or the TLS_EMPTY_RENEGOTIATION_INFO_SCSV signaling
+      cipher suite value in the ClientHello.  Including both is NOT
+      RECOMMENDED.
+
+   o  When a ServerHello is received, the client MUST check if it
+      includes the &quot;renegotiation_info&quot; extension:
+
+      *  If the extension is not present, the server does not support
+         secure renegotiation; set secure_renegotiation flag to FALSE.
+         In this case, some clients may want to terminate the handshake
+         instead of continuing; see Section 4.1 for discussion.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 6]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+      *  If the extension is present, set the secure_renegotiation flag
+         to TRUE.  The client MUST then verify that the length of the
+         &quot;renegotiated_connection&quot; field is zero, and if it is not, MUST
+         abort the handshake (by sending a fatal handshake_failure
+         alert).
+
+         Note: later in Section 3, &quot;abort the handshake&quot; is used as
+         shorthand for &quot;send a fatal handshake_failure alert and
+         terminate the connection&quot;.
+
+   o  When the handshake has completed, the client needs to save the
+      client_verify_data and server_verify_data values for future use.
+
+<span class="m_h">3.5.  Client Behavior: Secure Renegotiation</span>
+
+   This text applies if the connection&#39;s &quot;secure_renegotiation&quot; flag is
+   set to TRUE (if it is set to FALSE, see Section 4.2).
+
+   o  The client MUST include the &quot;renegotiation_info&quot; extension in the
+      ClientHello, containing the saved client_verify_data.  The SCSV
+      MUST NOT be included.
+
+   o  When a ServerHello is received, the client MUST verify that the
+      &quot;renegotiation_info&quot; extension is present; if it is not, the
+      client MUST abort the handshake.
+
+   o  The client MUST then verify that the first half of the
+      &quot;renegotiated_connection&quot; field is equal to the saved
+      client_verify_data value, and the second half is equal to the
+      saved server_verify_data value.  If they are not, the client MUST
+      abort the handshake.
+
+   o  When the handshake has completed, the client needs to save the new
+      client_verify_data and server_verify_data values.
+
+<span class="m_h">3.6.  Server Behavior: Initial Handshake</span>
+
+   Note that this section and Section 3.7 apply to both full handshakes
+   and session-resumption handshakes.
+
+   o  When a ClientHello is received, the server MUST check if it
+      includes the TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV.  If it does,
+      set the secure_renegotiation flag to TRUE.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 7]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   o  The server MUST check if the &quot;renegotiation_info&quot; extension is
+      included in the ClientHello.  If the extension is present, set
+      secure_renegotiation flag to TRUE.  The server MUST then verify
+      that the length of the &quot;renegotiated_connection&quot; field is zero,
+      and if it is not, MUST abort the handshake.
+
+   o  If neither the TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV nor the
+      &quot;renegotiation_info&quot; extension was included, set the
+      secure_renegotiation flag to FALSE.  In this case, some servers
+      may want to terminate the handshake instead of continuing; see
+      Section 4.3 for discussion.
+
+   o  If the secure_renegotiation flag is set to TRUE, the server MUST
+      include an empty &quot;renegotiation_info&quot; extension in the ServerHello
+      message.
+
+   o  When the handshake has completed, the server needs to save the
+      client_verify_data and server_verify_data values for future use.
+
+   TLS servers implementing this specification MUST ignore any unknown
+   extensions offered by the client and they MUST accept version numbers
+   higher than their highest version number and negotiate the highest
+   common version.  These two requirements reiterate preexisting
+   requirements in RFC 5246 and are merely stated here in the interest
+   of forward compatibility.
+
+   Note that sending a &quot;renegotiation_info&quot; extension in response to a
+   ClientHello containing only the SCSV is an explicit exception to the
+   prohibition in RFC 5246, Section 7.4.1.4, on the server sending
+   unsolicited extensions and is only allowed because the client is
+   signaling its willingness to receive the extension via the
+   TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV.  TLS implementations MUST
+   continue to comply with Section 7.4.1.4 for all other extensions.
+
+<span class="m_h">3.7.  Server Behavior: Secure Renegotiation</span>
+
+   This text applies if the connection&#39;s &quot;secure_renegotiation&quot; flag is
+   set to TRUE (if it is set to FALSE, see Section 4.4).
+
+   o  When a ClientHello is received, the server MUST verify that it
+      does not contain the TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV.  If
+      the SCSV is present, the server MUST abort the handshake.
+
+   o  The server MUST verify that the &quot;renegotiation_info&quot; extension is
+      present; if it is not, the server MUST abort the handshake.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 8]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   o  The server MUST verify that the value of the
+      &quot;renegotiated_connection&quot; field is equal to the saved
+      client_verify_data value; if it is not, the server MUST abort the
+      handshake.
+
+   o  The server MUST include a &quot;renegotiation_info&quot; extension
+      containing the saved client_verify_data and server_verify_data in
+      the ServerHello.
+
+   o  When the handshake has completed, the server needs to save the new
+      client_verify_data and server_verify_data values.
+
+<span class="m_h">4.  Backward Compatibility</span>
+
+   Existing implementations that do not support this extension are
+   widely deployed and, in general, must interoperate with newer
+   implementations that do support it.  This section describes
+   considerations for backward compatible interoperation.
+
+<span class="m_h">4.1.  Client Considerations</span>
+
+   If a client offers the &quot;renegotiation_info&quot; extension or the
+   TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV and the server does not reply
+   with &quot;renegotiation_info&quot; in the ServerHello, then this indicates
+   that the server does not support secure renegotiation.  Because some
+   attacks (see Section 1) look like a single handshake to the client,
+   the client cannot determine whether or not the connection is under
+   attack.  Note, however, that merely because the server does not
+   acknowledge the extension does not mean that it is vulnerable; it
+   might choose to reject all renegotiations and simply not signal it.
+   However, it is not possible for the client to determine purely via
+   TLS mechanisms whether or not this is the case.
+
+   If clients wish to ensure that such attacks are impossible, they need
+   to terminate the connection immediately upon failure to receive the
+   extension without completing the handshake.  Such clients MUST
+   generate a fatal &quot;handshake_failure&quot; alert prior to terminating the
+   connection.  However, it is expected that many TLS servers that do
+   not support renegotiation (and thus are not vulnerable) will not
+   support this extension either, so in general, clients that implement
+   this behavior will encounter interoperability problems.  There is no
+   set of client behaviors that will guarantee security and achieve
+   maximum interoperability during the transition period.  Clients need
+   to choose one or the other preference when dealing with potentially
+   un-upgraded servers.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                    [Page 9]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+<span class="m_h">4.2.  Client Behavior: Legacy (Insecure) Renegotiation</span>
+
+   This text applies if the connection&#39;s &quot;secure_renegotiation&quot; flag is
+   set to FALSE.
+
+   It is possible that un-upgraded servers will request that the client
+   renegotiate.  It is RECOMMENDED that clients refuse this
+   renegotiation request.  Clients that do so MUST respond to such
+   requests with a &quot;no_renegotiation&quot; alert (RFC 5246 requires this
+   alert to be at the &quot;warning&quot; level).  It is possible that the
+   apparently un-upgraded server is in fact an attacker who is then
+   allowing the client to renegotiate with a different, legitimate,
+   upgraded server.  If clients nevertheless choose to renegotiate, they
+   MUST behave as described below.
+
+   Clients that choose to renegotiate MUST provide either the
+   TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV or &quot;renegotiation_info&quot; in
+   their ClientHello.  In a legitimate renegotiation with an un-upgraded
+   server, that server should ignore both of these signals.  However, if
+   the server (incorrectly) fails to ignore extensions, sending the
+   &quot;renegotiation_info&quot; extension may cause a handshake failure.  Thus,
+   it is permitted, though NOT RECOMMENDED, for the client to simply
+   send the SCSV.  This is the only situation in which clients are
+   permitted to not send the &quot;renegotiation_info&quot; extension in a
+   ClientHello that is used for renegotiation.
+
+   Note that in the case of a downgrade attack, if this is an initial
+   handshake from the server&#39;s perspective, then use of the SCSV from
+   the client precludes detection of this attack by the server (if this
+   is a renegotiation from the server&#39;s perspective, then it will detect
+   the attack).  However, the attack will be detected by the client when
+   the server sends an empty &quot;renegotiation_info&quot; extension and the
+   client is expecting one containing the previous verify_data.  By
+   contrast, if the client sends the &quot;renegotiation_info&quot; extension,
+   then the server will immediately detect the attack.
+
+   When the ServerHello is received, the client MUST verify that it does
+   not contain the &quot;renegotiation_info&quot; extension.  If it does, the
+   client MUST abort the handshake.  (Because the server has already
+   indicated it does not support secure renegotiation, the only way that
+   this can happen is if the server is broken or there is an attack.)
+
+<span class="m_h">4.3.  Server Considerations</span>
+
+   If the client does not offer the &quot;renegotiation_info&quot; extension or
+   the TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV, then this indicates that
+   the client does not support secure renegotiation.  Although the
+   attack described in Section 1 looks like two handshakes to the
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                   [Page 10]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   server, other attacks may be possible in which the renegotiation is
+   seen only by the client.  If servers wish to ensure that such attacks
+   are impossible, they need to terminate the connection immediately
+   upon failure to negotiate the use of secure renegotiation.  Servers
+   that do choose to allow connections from unpatched clients can still
+   prevent the attack described in Section 1 by refusing to renegotiate
+   over those connections.
+
+   In order to enable clients to probe, even servers that do not support
+   renegotiation MUST implement the minimal version of the extension
+   described in this document for initial handshakes, thus signaling
+   that they have been upgraded.
+
+<span class="m_h">4.4.  Server Behavior: Legacy (Insecure) Renegotiation</span>
+
+   This text applies if the connection&#39;s &quot;secure_renegotiation&quot; flag is
+   set to FALSE.
+
+   It is RECOMMENDED that servers not permit legacy renegotiation.  If
+   servers nevertheless do permit it, they MUST follow the requirements
+   in this section.
+
+   o  When a ClientHello is received, the server MUST verify that it
+      does not contain the TLS_EMPTY_RENEGOTIATION_INFO_SCSV SCSV.  If
+      the SCSV is present, the server MUST abort the handshake.
+
+   o  The server MUST verify that the &quot;renegotiation_info&quot; extension is
+      not present; if it is, the server MUST abort the handshake.
+
+<span class="m_h">4.5.  SSLv3</span>
+
+   While SSLv3 is not a protocol under IETF change control (see
+   [SSLv3]), it was the original basis for TLS and most TLS
+   implementations also support SSLv3.  The IETF encourages SSLv3
+   implementations to adopt the &quot;renegotiation_info&quot; extension and SCSV
+   as defined in this document.  The semantics of the SCSV and extension
+   are identical to TLS stacks except for the size of the verify_data
+   values, which are 36 bytes long each.  Note that this will require
+   adding at least minimal extension processing to such stacks.  Clients
+   that support SSLv3 and offer secure renegotiation (either via SCSV or
+   &quot;renegotiation_info&quot;) MUST accept the &quot;renegotiation_info&quot; extension
+   from the server, even if the server version is {0x03, 0x00}, and
+   behave as described in this specification.  TLS servers that support
+   secure renegotiation and support SSLv3 MUST accept SCSV or the
+   &quot;renegotiation_info&quot; extension and respond as described in this
+   specification even if the offered client version is {0x03, 0x00}.
+   SSLv3 does not define the &quot;no_renegotiation&quot; alert (and does
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                   [Page 11]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   not offer a way to indicate a refusal to renegotiate at a &quot;warning&quot;
+   level).  SSLv3 clients that refuse renegotiation SHOULD use a fatal
+   handshake_failure alert.
+
+<span class="m_h">5.  Security Considerations</span>
+
+   The extension described in this document prevents an attack on TLS.
+   If this extension is not used, TLS renegotiation is subject to an
+   attack in which the attacker can inject their own conversation with
+   the TLS server as a prefix to the client&#39;s conversation.  This attack
+   is invisible to the client and looks like an ordinary renegotiation
+   to the server.  The extension defined in this document allows
+   renegotiation to be performed safely.  Servers SHOULD NOT allow
+   clients to renegotiate without using this extension.  Many servers
+   can mitigate this attack simply by refusing to renegotiate at all.
+
+   While this extension mitigates the man-in-the-middle attack described
+   in the overview, it does not resolve all possible problems an
+   application may face if it is unaware of renegotiation.  For example,
+   during renegotiation, either the client or the server can present a
+   different certificate than was used earlier.  This may come as a
+   surprise to application developers (who might have expected, for
+   example, that a &quot;getPeerCertificates()&quot; API call returns the same
+   value if called twice), and might be handled in an insecure way.
+
+   TLS implementations SHOULD provide a mechanism to disable and enable
+   renegotiation.
+
+   TLS implementers are encouraged to clearly document how renegotiation
+   interacts with the APIs offered to applications (for example, which
+   API calls might return different values on different calls, or which
+   callbacks might get called multiple times).
+
+   To make life simpler for applications that use renegotiation but do
+   not expect the certificate to change once it has been authenticated,
+   TLS implementations may also wish to offer the applications the
+   option to abort the renegotiation if the peer tries to authenticate
+   with a different certificate and/or different server name (in the
+   server_name extension) than was used earlier.  TLS implementations
+   may alternatively offer the option to disable renegotiation once the
+   client certificate has been authenticated.  However, enabling these
+   options by default for all applications could break existing
+   applications that depend on using renegotiation to change from one
+   certificate to another.  (For example, long-lived TLS connections
+   could change to a renewed certificate; or renegotiation could select
+   a different cipher suite that requires using a different
+   certificate.)
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                   [Page 12]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   Finally, designers of applications that depend on renegotiation are
+   reminded that many TLS APIs represent application data as a simple
+   octet stream; applications may not be able to determine exactly which
+   application data octets were received before, during, or after
+   renegotiation.  Especially if the peer presents a different
+   certificate during renegotiation, care is needed when specifying how
+   the application should handle the data.
+
+<span class="m_h">6.  IANA Considerations</span>
+
+   IANA has added the extension code point 65281 (0xff01), which has
+   been used for prototype implementations, for the &quot;renegotiation_info&quot;
+   extension to the TLS ExtensionType values registry.
+
+   IANA has added TLS cipher suite number 0x00,0xFF with name
+   TLS_EMPTY_RENEGOTIATION_INFO_SCSV to the TLS Cipher Suite registry.
+
+<span class="m_h">7.  Acknowledgements</span>
+
+   This vulnerability was originally discovered by Marsh Ray and
+   independently rediscovered by Martin Rex.  The general concept behind
+   the extension described here was independently invented by Steve
+   Dispensa, Nasko Oskov, and Eric Rescorla with refinements from Nelson
+   Bolyard, Pasi Eronen, Michael D&#39;Errico, Stephen Farrell, Michael
+   Gray, David-Sarah Hopwood, Ben Laurie, David Makepeace, Bodo Moeller,
+   Martin Rex, Peter Robinson, Jesse Walker, Nico Williams, and other
+   members of the Project Mogul team and the TLS WG.
+
+<span class="m_h">8.  References</span>
+
+<span class="m_h">8.1.  Normative References</span>
+
+   [RFC2119]  Bradner, S., &quot;Key words for use in RFCs to Indicate
+              Requirement Levels&quot;, BCP 14, RFC 2119, March 1997.
+
+   [RFC5246]  Dierks, T. and E. Rescorla, &quot;The Transport Layer Security
+              (TLS) Protocol Version 1.2&quot;, RFC 5246, August 2008.
+
+<span class="m_h">8.2.  Informative References</span>
+
+   [RFC4347]  Rescorla, E. and N. Modadugu, &quot;Datagram Transport Layer
+              Security&quot;, RFC 4347, April 2006.
+
+   [RFC5056]  Williams, N., &quot;On the Use of Channel Bindings to Secure
+              Channels&quot;, RFC 5056, November 2007.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                   [Page 13]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+   [TLS-CHANNEL-BINDINGS]
+              Altman, J., Williams, N., and L. Zhu, &quot;Channel Bindings
+              for TLS&quot;, Work in Progress, October 2009.
+
+   [RFC2818]  Rescorla, E., &quot;HTTP Over TLS&quot;, RFC 2818, May 2000.
+
+   [RFC2965]  Kristol, D. and L. Montulli, &quot;HTTP State Management
+              Mechanism&quot;, RFC 2965, October 2000.
+
+   [Ray09]    Ray, M., &quot;Authentication Gap in TLS Renegotiation&quot;,
+              November 2009, &lt;http://extendedsubset.com/?p=8&gt;.
+
+   [SSLv3]    Freier, A., Karlton, P., and P. Kocher, &quot;The SSL Protocol
+              Version 3.0&quot;, Work in Progress, November 1996.
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                   [Page 14]</span>
+<span class="m_hdr">RFC 5746               TLS Renegotiation Extension         February 2010</span>
+
+<span class="m_h">Authors&#39; Addresses</span>
+
+   Eric Rescorla
+   RTFM, Inc.
+   2064 Edgewood Drive
+   Palo Alto, CA  94303
+   USA
+
+   EMail:  ekr@rtfm.com
+
+   Marsh Ray
+   PhoneFactor
+   7301 W 129th Street
+   Overland Park, KS  66213
+   USA
+
+   EMail:  marsh@extendedsubset.com
+
+   Steve Dispensa
+   PhoneFactor
+   7301 W 129th Street
+   Overland Park, KS  66213
+   USA
+
+   EMail:  dispensa@phonefactor.com
+
+   Nasko Oskov
+   Microsoft
+   One Microsoft Way
+   Redmond, WA  98052
+   USA
+
+   EMail:  nasko.oskov@microsoft.com
+
+<span class="m_ftr">Rescorla, et al.             Standards Track                   [Page 15]</span>
+</pre>
+
+</div>
+
+
+</div>
+ 
+</div>
+<div id="ietf-extras"></div>
+</td></tr></table>
+
+
+
+</body></html>
