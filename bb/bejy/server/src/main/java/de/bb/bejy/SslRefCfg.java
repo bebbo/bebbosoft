@@ -103,7 +103,7 @@ public class SslRefCfg extends Configurable implements Configurator {
      * @see de.bb.bejy.Configurator#getRequired()
      */
     public String getRequired() {
-        return "de.bb.bejy.ssl";
+        return null;
     }
 
     /**
