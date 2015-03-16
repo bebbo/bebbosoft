@@ -1,0 +1,41 @@
+<project default="build" name="makeApp">
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+
+	<target name="extract">
+		<dirname file="${jarname}" property="destDir" />
+		<unjar src="${jarname}" dest="${destDir}/../unjared" overwrite="true" />
+	</target>
+
+	<target name="makePath">
+		<dirname file="${jarname}" property="destDir" />
+		<basename file="${jarname}" property="pureJar" />
+		<echo message=";lib\${pureJar}" file="${destDir}/../dospath.txt" append="true" />
+        <echo message=":lib/${pureJar}" file="${destDir}/../unixpath.txt" append="true" />
+	</target>
+
+	<target name="build">
+		<echo message="extracting dependent jars:" />
+
+		<foreach target="extract" param="jarname">
+			<path>
+				<fileset dir="${project.build.directory}/dependency">
+					<include name="*.jar" />
+				</fileset>
+			</path>
+		</foreach>
+
+		<delete file="${project.build.directory}/classes/dospath.txt"/>
+        <delete file="${project.build.directory}/classes/unixpath.txt"/>
+        <echo message="lib\bejy.jar" file="${project.build.directory}/classes/dospath.txt" />
+        <echo message="lib/bejy.jar" file="${project.build.directory}/classes/unixpath.txt" />
+		<foreach target="makePath" param="jarname">
+			<path>
+				<fileset dir="${project.build.directory}/classes/lib">
+					<include name="*.jar" />
+					<exclude name="bejy.jar" />
+				</fileset>
+			</path>
+		</foreach>
+	</target>
+
+</project>

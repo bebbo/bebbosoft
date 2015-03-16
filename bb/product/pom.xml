@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.bb</groupId>
+    <artifactId>bb</artifactId>
+    <version>1.0.3</version>
+  </parent>
+  <groupId>de.bb</groupId>
+  <artifactId>product</artifactId>
+  <version>0.0.1</version>
+  <packaging>pom</packaging>
+  <properties>
+    <depfile>${project.build.directory}/dependencies.lst</depfile>
+  </properties>
+  <build>
+    <pluginManagement>
+      <plugins>
+<!-- generate a dependency listing for further processing -->        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>list</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>list</goal>
+              </goals>
+              <configuration>
+                <outputFile>${depfile}</outputFile>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+<!-- - process the dependencies and create the config.ini - get the build 
+					number - update plugin.xml with all provided data: fullName, application, 
+					version, build -->        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.ant</groupId>
+              <artifactId>ant</artifactId>
+              <version>1.8.2</version>
+            </dependency>
+            <dependency>
+              <groupId>net.sf.ant-contrib</groupId>
+              <artifactId>ant-contrib</artifactId>
+              <version>1.0b2</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>ant-build</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>run</goal>
+              </goals>
+              <configuration>
+                <target>
+                  <property name="depfile" value="${depfile}"/>
+                  <property name="project.build.directory" value="${project.build.directory}"/>
+                  <ant antfile="src/main/ant/build.xml"/>
+                </target>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+<!-- assemble the application into a folder -->        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <descriptors>
+              <descriptor>${antPath}/src/main/assembly/dist.xml</descriptor>
+            </descriptors>
+          </configuration>
+          <executions>
+            <execution>
+              <id>do-assembly</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <modules>
+    <module>update-site</module>
+    <module>bejy</module>
+    <module>bejy-ldap</module>
+    <module>bb_mug</module>
+    <module>bejy-tiger</module>
+  </modules>
+</project>
