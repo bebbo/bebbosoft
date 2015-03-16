@@ -1,0 +1,98 @@
+<bwt>
+	<dialog name="exit" title="Confirm exit">
+		<size width="200" height="100" />
+		<child type="Label" text="really exit?">
+			<bounds x="10" y="10" width="180" height="40" />
+		</child>
+		<child type="Button" text="OK" command="1">
+			<bounds x="10" y="60" width="80" height="20" />
+		</child>
+		<child type="Button" text="Cancel" command="-1">
+			<bounds x="110" y="60" width="80" height="20" />
+		</child>
+	</dialog>
+
+	<dialog name="about" title="About">
+		<size width="200" height="100" />
+		<child type="Label" text="Tcp2Tcp V1.0">
+			<bounds x="10" y="10" width="180" height="40" />
+		</child>
+		<child type="Button" text="OK" command="1">
+			<bounds x="60" y="60" width="80" height="20" />
+		</child>
+	</dialog>
+
+    <dialog name="error" title="Error">
+        <size width="300" height="200" />
+        <child type="EditArea" command="message">
+            <bounds x="10" y="10" width="280" height="140" />
+        </child>
+        <child type="Button" text="OK" command="1">
+            <bounds x="160" y="160" width="80" height="20" />
+        </child>
+    </dialog>
+
+    <dialog name="certificate" title="Accept Certificate">
+        <size width="300" height="400" />
+        <child type="Label" text="Owner">
+            <bounds x="10" y="0" width="180" height="40" />
+        </child>
+        <child type="EditArea" command="owner">
+            <bounds x="10" y="30" width="280" height="100" />
+        </child>
+        <child type="Label" text="Issuer">
+            <bounds x="10" y="130" width="180" height="40" />
+        </child>
+        <child type="EditArea" command="issuer">
+            <bounds x="10" y="160" width="280" height="100" />
+        </child>
+        <child type="Label" text="Signature">
+            <bounds x="10" y="260" width="180" height="40" />
+        </child>
+        <child type="EditArea" command="signature">
+            <bounds x="10" y="290" width="280" height="40" />
+        </child>
+        <child type="Button" text="OK" command="1">
+            <bounds x="60" y="360" width="80" height="20" />
+        </child>
+        <child type="Button" text="Cancel" command="-1">
+            <bounds x="150" y="360" width="80" height="20" />
+        </child>
+    </dialog>
+
+	<dialog name="configuration" title="Configuration">
+		<size width="300" height="100" />
+		<child type="Label" text="Local Port">
+			<bounds x="10" y="10" width="100" height="20" />
+		</child>
+		<child type="Edit" command="localPort">
+			<bounds x="110" y="10" width="100" height="20" />
+		</child>
+        <child type="Label" text="Destination">
+            <bounds x="10" y="30" width="100" height="20" />
+        </child>
+        <child type="Edit" command="destination">
+            <bounds x="110" y="30" width="100" height="20" />
+        </child>
+		<child type="Button" text="OK" command="1">
+			<bounds x="60" y="60" width="80" height="20" />
+		</child>
+        <child type="Button" text="Cancel" command="-1">
+            <bounds x="150" y="60" width="80" height="20" />
+        </child>
+	</dialog>
+
+	<menubar name="default">
+		<menu text="&amp;File">
+			<menu text="&amp;Config" command="1001" />
+			<menu text="" />
+			<menu text="E&amp;xit" command="1099" />
+		</menu>
+		<menu text="&amp;Help">
+			<menu text="&amp;About" command="9999" />
+		</menu>
+	</menubar>
+
+	<application name="Tcp2Tcp" menu="default">
+	</application>
+</bwt>
