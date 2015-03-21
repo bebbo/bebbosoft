@@ -19,21 +19,25 @@
 package de.bb.bejy.http;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
+import javax.inject.Named;
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeListener;
@@ -41,10 +45,14 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
 
 import de.bb.bejy.Config;
+import de.bb.bejy.MiniClass;
 import de.bb.bejy.http.FilterRegistration.Dynamic;
 import de.bb.bejy.http.FilterRegistration.MappingData;
 import de.bb.bejy.http.jsp.JspServlet;
@@ -54,6 +62,13 @@ import de.bb.util.XmlFile;
 import de.bb.util.ZipClassLoader;
 
 public class WebAppContext extends HttpContext {
+
+    public static final String JAVAX_SERVLET_ANNOTATION_WEBSERVLET = "Ljavax/servlet/annotation/WebServlet;";
+    public static final String JAVAX_SERVLET_ANNOTATION_WEBFILTER = "Ljavax/servlet/annotation/WebFilter;";
+    public static final String JAVAX_SERVLET_ANNOTATION_WEBLISTENER = "Ljavax/servlet/annotation/WebListener;";
+
+    public static final String JAVAX_INJECT_NAMED = "Ljavax/inject/Named;";
+
     // private final static boolean DEBUG = true;
     private final static String PROPERTIES[][] = {
             { "path", "the local path to a directory or an WAR file" },
@@ -67,10 +82,6 @@ public class WebAppContext extends HttpContext {
             { "workDir", "the temp directory" }, };
 
     private ClassLoader parentClassLoader;
-
-    private HashSet<Servlet> servlets;
-
-    HashMap<String, ServletHandler> name2servletHandler;
 
     WebAppContext() {
         this(null);
@@ -98,60 +109,18 @@ public class WebAppContext extends HttpContext {
         // zcl.addPath(path);
         sPath = path + "/";
 
-        zcl = new ZipClassLoader(parentClassLoader);
+        setContextPath(path);
+
+        final WarClassLoader wcl = new WarClassLoader(parentClassLoader);
         ClassLoader lastCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(zcl);
+            Thread.currentThread().setContextClassLoader(wcl);
+            zcl = wcl;
 
-            // Properties props = System.getProperties();
-            // zcl.addPath(System.getProperty("java.class.path"));
-            zcl.addPath(path + "/WEB-INF/classes");
-            zcl.addPath(path + "/WEB-INF");
+            setClassPath(path);
 
-            // add libs to classpath
-            {
-                File dir = new File(path, "WEB-INF/lib");
-                String list[] = dir.list();
-                if (list != null) {
-                    for (int i = 0; i < list.length; ++i) {
-                        zcl.addPath(path + "/WEB-INF/lib/" + list[i]);
-                    }
-                }
-            }
-
-            // zcl2.addPath(sPath);
-            InputStream is = zcl.getResourceAsStream("web.xml");
-            XmlFile xf = new XmlFile();
-            if (is != null)
-                xf.read(is);
-
-            int idx = path.lastIndexOf('/');
-            String alias;
-            if (idx >= 0) {
-                alias = path.substring(idx);
-            } else {
-                alias = path;
-            }
-
-            alias = getProperty("alias", alias);
-
-            if (!alias.startsWith("/")) {
-                alias = "/" + alias;
-            }
-
-            sContext += alias;
-            while (sContext.startsWith("//")) {
-                sContext = sContext.substring(1);
-            }
-
-            if (sContext.endsWith("/")) {
-                sContext = sContext.substring(0, sContext.length() - 1);
-            }
-
-            if (sContext.startsWith(aRealm)) {
-                aRealm = sContext;
-            }
-            scLen = sContext.length();
+            final XmlFile xf = new XmlFile();
+            readWebXml(path, xf);
 
             addFileHandler(logFile, xf);
 
@@ -161,7 +130,7 @@ public class WebAppContext extends HttpContext {
 
             readListeners(logFile, xf);
 
-            name2servletHandler = readServlets(logFile, xf);
+            readServlets(logFile, xf);
 
             readServletMappings(logFile, xf);
 
@@ -169,136 +138,259 @@ public class WebAppContext extends HttpContext {
 
             readFilterMappings(logFile, xf);
 
-            servlets = new HashSet<Servlet>(name2servletHandler.values());
+            readErrorPages(xf);
 
-            // read error page definitions
-            for (Enumeration<String> e = xf.getSections("/web-app/error-page")
-                    .elements(); e.hasMoreElements();) {
-                String s = e.nextElement();
-                String ex = xf.getContent(s + "exception-type");
-                String err = xf.getContent(s + "error-code");
-                String loc = xf.getContent(s + "location");
-                if (loc == null) {
-                    continue;
-                }
-                if (ex != null) {
-                    exceptionMap.put(ex, loc);
-                }
-                if (err != null) {
-                    statusMap.put(err, loc);
-                }
-            }
+            readLoginConfig(logFile, xf);
 
-            // read login configuration
-            {
-                String realm = xf
-                        .getContent("/web-app/login-config/realm-name");
-                if (realm != null && realm.length() > 0) {
-                    aRealm = realm;
-                }
-                if (aGroup == null)
-                    aGroup = aRealm;
-                String am = xf.getContent("/web-app/login-config/auth-method");
-                if (am == null) {
-                    am = "";
-                } else {
-                    am = am.trim();
-                }
-                if ("BASIC".equalsIgnoreCase(am)) {
-                    verify = Config.getGroup(aGroup);
-                } else if ("FORM".equalsIgnoreCase(am)) {
-                    String login = xf
-                            .getContent("/web-app/login-config/form-login-config/form-login-page");
-                    String loginError = xf
-                            .getContent("/web-app/login-config/form-login-config/form-error-page");
-                    if (login != null) {
-                        String servletClassName = getInitParameter("loginClass");
-                        ServletRegistration.Dynamic servletRegistration = (de.bb.bejy.http.ServletRegistration.Dynamic) addServlet(
-                                "j_security_check", servletClassName);
+            readSecurityConfigs(xf);
 
-                        ServletHandler h = new ServletHandler();
-                        h.setClassLoader(zcl);
-                        h.setContext(this);
-                        h.setName("j_security_check");
-                        h.servletRegistration = servletRegistration;
-
-                        name2servletHandler.put("j_security_check", h);
-
-                        verify = new FormVerification(login.trim(), loginError,
-                                h);
-                    }
-                } else if (am.length() > 0) {
-                    logFile.writeDate("WARNING: auth-method " + am
-                            + " is not supported, using BASIC");
-                    verify = Config.getGroup(aGroup);
-                }
-            }
-
-            // DENY /WEB-INF/
-            {
-                SecurityConstraint sc = new SecurityConstraint("WEB-INF");
-                constraints.clear();
-                sc.addMethod("*");
-                constraints.put("/WEB-INF/*", sc);
-            }
-
-            // read security-constraints
-            for (Enumeration<String> e = xf.getSections(
-                    "/web-app/security-constraint").elements(); e
-                    .hasMoreElements();) {
-                String s = e.nextElement();
-                for (Enumeration<String> ee = xf.getSections(
-                        s + "web-resource-collection").elements(); ee
-                        .hasMoreElements();) {
-                    String wrc = ee.nextElement();
-                    String wrcname = xf.getContent(wrc + "web-resource-name");
-                    if (wrcname == null) {
-                        wrcname = "unnamed";
-                    }
-                    SecurityConstraint sc = new SecurityConstraint(wrcname);
-                    for (Enumeration<String> f = xf.getSections(
-                            wrc + "http-method").elements(); f
-                            .hasMoreElements();) {
-                        String method = f.nextElement();
-                        sc.addMethod(xf.getContent(method));
-                    }
-                    for (Enumeration<String> f = xf.getSections(
-                            s + "auth-constraint/role-name").elements(); f
-                            .hasMoreElements();) {
-                        String role = f.nextElement();
-                        sc.addRole(xf.getContent(role));
-                    }
-                    String transport = xf.getContent(s
-                            + "user-data-constraint/transport-guarantee");
-                    sc.setTransport(transport);
-                    for (Enumeration<String> f = xf.getSections(
-                            wrc + "url-pattern").elements(); f
-                            .hasMoreElements();) {
-                        String pattern = f.nextElement();
-                        constraints.put(xf.getContent(pattern), sc);
-                    }
-                }
-            }
-
-            // add mime types
-            for (Enumeration<String> e = xf
-                    .getSections("/web-app/mime-mapping").elements(); e
-                    .hasMoreElements();) {
-                String s = e.nextElement();
-                String ex = xf.getContent(s + "extension");
-                String mi = xf.getContent(s + "mime-type");
-                if (ex != null && mi != null) {
-                    mimeTypes.put(ex, mi);
-                }
-            }
+            readMimeMappings(xf);
 
             if (getProperty("workDir") != null) {
                 parameter.put(ServletContext.TEMPDIR, getProperty("workDir"));
             }
             addJspHandler();
 
+            final MultiMap<String, String> pattern2Class = MiniClass
+                    .findRelatedClasses(zcl,
+                            JAVAX_SERVLET_ANNOTATION_WEBSERVLET,
+                            JAVAX_SERVLET_ANNOTATION_WEBFILTER,
+                            JAVAX_SERVLET_ANNOTATION_WEBLISTENER,
+                            JAVAX_INJECT_NAMED);
+
+            loadAnnotatedServlets(pattern2Class.subMap(
+                    JAVAX_SERVLET_ANNOTATION_WEBSERVLET,
+                    JAVAX_SERVLET_ANNOTATION_WEBSERVLET + "\0").values());
+
+            loadAnnotatedFilters(pattern2Class.subMap(
+                    JAVAX_SERVLET_ANNOTATION_WEBFILTER,
+                    JAVAX_SERVLET_ANNOTATION_WEBFILTER + "\0").values());
+
+            loadNamedBeans(pattern2Class.subMap(JAVAX_INJECT_NAMED,
+                    JAVAX_INJECT_NAMED + "\0").values());
+
         } finally {
             Thread.currentThread().setContextClassLoader(lastCl);
+        }
+    }
+
+    private void loadNamedBeans(final Collection<String> collection)
+            throws ClassNotFoundException {
+        for (final String className : collection) {
+            final Class<?> clazz = zcl.loadClass(className);
+            final Named namedAnnotation = clazz.getAnnotation(Named.class);
+            final String name = namedAnnotation.value();
+        }
+    }
+
+    private void loadAnnotatedFilters(final Collection<String> collection)
+            throws ClassNotFoundException {
+        for (final String className : collection) {
+            final Class<? extends Filter> clazz = (Class<? extends Filter>) zcl
+                    .loadClass(className);
+            final WebFilter webFilterAnnotation = clazz
+                    .getAnnotation(WebFilter.class);
+            final javax.servlet.FilterRegistration.Dynamic reg = addFilter(
+                    webFilterAnnotation.filterName(), clazz);
+            reg.setAsyncSupported(webFilterAnnotation.asyncSupported());
+            for (final WebInitParam ip : webFilterAnnotation.initParams()) {
+                reg.setInitParameter(ip.name(), ip.value());
+            }
+        }
+    }
+
+    private void loadAnnotatedServlets(final Collection<String> collection)
+            throws ClassNotFoundException {
+        for (final String className : collection) {
+            final Class<? extends Servlet> clazz = (Class<? extends Servlet>) zcl
+                    .loadClass(className);
+            final WebServlet webServletAnnotation = clazz
+                    .getAnnotation(WebServlet.class);
+            final javax.servlet.ServletRegistration.Dynamic reg = addServlet(
+                    webServletAnnotation.name(), clazz);
+            reg.setAsyncSupported(webServletAnnotation.asyncSupported());
+            for (final WebInitParam ip : webServletAnnotation.initParams()) {
+                reg.setInitParameter(ip.name(), ip.value());
+            }
+            reg.setLoadOnStartup(webServletAnnotation.loadOnStartup());
+            reg.addMapping(webServletAnnotation.urlPatterns());
+        }
+    }
+
+    private void readMimeMappings(final XmlFile xf) {
+        // add mime types
+        for (Enumeration<String> e = xf.getSections("/web-app/mime-mapping")
+                .elements(); e.hasMoreElements();) {
+            String s = e.nextElement();
+            String ex = xf.getContent(s + "extension");
+            String mi = xf.getContent(s + "mime-type");
+            if (ex != null && mi != null) {
+                mimeTypes.put(ex, mi);
+            }
+        }
+    }
+
+    private void readSecurityConfigs(final XmlFile xf) {
+        // DENY /WEB-INF/
+        {
+            SecurityConstraint sc = new SecurityConstraint("WEB-INF");
+            constraints.clear();
+            sc.addMethod("*");
+            constraints.put("/WEB-INF/*", sc);
+        }
+
+        // read security-constraints
+        for (Enumeration<String> e = xf.getSections(
+                "/web-app/security-constraint").elements(); e.hasMoreElements();) {
+            String s = e.nextElement();
+            for (Enumeration<String> ee = xf.getSections(
+                    s + "web-resource-collection").elements(); ee
+                    .hasMoreElements();) {
+                String wrc = ee.nextElement();
+                String wrcname = xf.getContent(wrc + "web-resource-name");
+                if (wrcname == null) {
+                    wrcname = "unnamed";
+                }
+                SecurityConstraint sc = new SecurityConstraint(wrcname);
+                for (Enumeration<String> f = xf
+                        .getSections(wrc + "http-method").elements(); f
+                        .hasMoreElements();) {
+                    String method = f.nextElement();
+                    sc.addMethod(xf.getContent(method));
+                }
+                for (Enumeration<String> f = xf.getSections(
+                        s + "auth-constraint/role-name").elements(); f
+                        .hasMoreElements();) {
+                    String role = f.nextElement();
+                    sc.addRole(xf.getContent(role));
+                }
+                String transport = xf.getContent(s
+                        + "user-data-constraint/transport-guarantee");
+                sc.setTransport(transport);
+                for (Enumeration<String> f = xf
+                        .getSections(wrc + "url-pattern").elements(); f
+                        .hasMoreElements();) {
+                    String pattern = f.nextElement();
+                    constraints.put(xf.getContent(pattern), sc);
+                }
+            }
+        }
+    }
+
+    private void readLoginConfig(LogFile logFile, final XmlFile xf) {
+        // read login configuration
+        {
+            String realm = xf.getContent("/web-app/login-config/realm-name");
+            if (realm != null && realm.length() > 0) {
+                aRealm = realm;
+            }
+            if (aGroup == null)
+                aGroup = aRealm;
+            String am = xf.getContent("/web-app/login-config/auth-method");
+            if (am == null) {
+                am = "";
+            } else {
+                am = am.trim();
+            }
+            if ("BASIC".equalsIgnoreCase(am)) {
+                verify = Config.getGroup(aGroup);
+            } else if ("FORM".equalsIgnoreCase(am)) {
+                String login = xf
+                        .getContent("/web-app/login-config/form-login-config/form-login-page");
+                String loginError = xf
+                        .getContent("/web-app/login-config/form-login-config/form-error-page");
+                if (loginError != null)
+                    loginError = loginError.trim();
+                if (login != null) {
+                    String servletClassName = getInitParameter("loginClass");
+                    ServletRegistration.Dynamic servletRegistration = (de.bb.bejy.http.ServletRegistration.Dynamic) addServlet(
+                            "j_security_check", servletClassName);
+
+                    servletRegistration.setInitParameter("form-login-page",
+                            login);
+                    servletRegistration.setInitParameter("form-error-page",
+                            loginError);
+                }
+            } else if (am.length() > 0) {
+                logFile.writeDate("WARNING: auth-method " + am
+                        + " is not supported, using BASIC");
+                verify = Config.getGroup(aGroup);
+            }
+        }
+    }
+
+    private void readErrorPages(final XmlFile xf) {
+        // read error page definitions
+        for (Enumeration<String> e = xf.getSections("/web-app/error-page")
+                .elements(); e.hasMoreElements();) {
+            String s = e.nextElement();
+            String ex = xf.getContent(s + "exception-type");
+            String err = xf.getContent(s + "error-code");
+            String loc = xf.getContent(s + "location");
+            if (loc == null) {
+                continue;
+            }
+            if (ex != null) {
+                exceptionMap.put(ex, loc);
+            }
+            if (err != null) {
+                statusMap.put(err, loc);
+            }
+        }
+    }
+
+    private void setContextPath(String path) {
+        int idx = path.lastIndexOf('/');
+        String alias;
+        if (idx >= 0) {
+            alias = path.substring(idx);
+        } else {
+            alias = path;
+        }
+
+        alias = getProperty("alias", alias);
+
+        if (!alias.startsWith("/")) {
+            alias = "/" + alias;
+        }
+
+        sContext += alias;
+        while (sContext.startsWith("//")) {
+            sContext = sContext.substring(1);
+        }
+
+        if (sContext.endsWith("/")) {
+            sContext = sContext.substring(0, sContext.length() - 1);
+        }
+
+        if (sContext.startsWith(aRealm)) {
+            aRealm = sContext;
+        }
+        scLen = sContext.length();
+    }
+
+    private void setClassPath(String path) throws MalformedURLException {
+        zcl.addPath(path + "/WEB-INF/classes");
+
+        // add libs to classpath
+        {
+            File dir = new File(path, "WEB-INF/lib");
+            String list[] = dir.list();
+            if (list != null) {
+                for (int i = 0; i < list.length; ++i) {
+                    zcl.addPath(path + "/WEB-INF/lib/" + list[i]);
+                }
+            }
+        }
+    }
+
+    private void readWebXml(String path, final XmlFile xf)
+            throws FileNotFoundException, IOException {
+        final File webXmlFile = new File(path + "/WEB-INF/web.xml");
+        if (webXmlFile.exists()) {
+            InputStream is = new FileInputStream(webXmlFile);
+            xf.read(is);
+            is.close();
         }
     }
 
@@ -313,9 +405,9 @@ public class WebAppContext extends HttpContext {
                 continue;
             }
 
-            ServletHandler servletHandler = name2servletHandler
+            ServletRegistration.Dynamic servletRegistration = servletRegistrations
                     .get(servletName);
-            if (servletHandler == null) {
+            if (servletRegistration == null) {
                 logFile.writeDate("no servlet with name:" + servletName);
                 continue;
             }
@@ -339,7 +431,7 @@ public class WebAppContext extends HttpContext {
                 // if (url.endsWith("/*")) url = url.substring(0, url.length() -
                 // 1);
 
-                servletHandler.servletRegistration.addMapping(urlPattern);
+                servletRegistration.addMapping(urlPattern);
             }
         }
     }
@@ -560,9 +652,6 @@ public class WebAppContext extends HttpContext {
                         filterRegistration.setInitParameter(pn, pv);
                     }
                 }
-
-                filterRegistration.filter.init(filterRegistration);
-
             } catch (Exception ex) {
                 logFile.writeDate(ex.getMessage());
             }
@@ -596,7 +685,6 @@ public class WebAppContext extends HttpContext {
                         + " does not exist");
                 continue;
             }
-            javax.servlet.Filter f = filterRegistration.filter;
 
             EnumSet<DispatcherType> dispatcherTypes = null;
             for (Iterator<String> di = xf.sections(section + "dispatcher"); di
@@ -634,13 +722,14 @@ public class WebAppContext extends HttpContext {
 
     @Override
     protected void destroy() {
-        for (Servlet s : servlets) {
+        for (ServletRegistration.Dynamic servletRegistration : servletRegistrations
+                .values()) {
             try {
-                s.destroy();
+                servletRegistration.servlet.destroy();
             } catch (Exception e) {
             }
         }
-        for (FilterRegistration.Dynamic filterRegistration : (Collection<FilterRegistration.Dynamic>) (Collection) filterRegistrations
+        for (FilterRegistration.Dynamic filterRegistration : filterRegistrations
                 .values()) {
             try {
                 filterRegistration.filter.destroy();
@@ -731,25 +820,40 @@ public class WebAppContext extends HttpContext {
 
             // apply servletRegistration
             // sort by init
-            MultiMap<Integer, ServletHandler> sorted = new MultiMap<Integer, ServletHandler>();
-            for (ServletHandler servletHandler : name2servletHandler.values()) {
-                de.bb.bejy.http.ServletRegistration.Dynamic servletRegistration = servletHandler.servletRegistration;
+            final MultiMap<Integer, ServletHandler> sorted = new MultiMap<Integer, ServletHandler>();
+            for (final ServletRegistration.Dynamic servletRegistration : servletRegistrations
+                    .values()) {
+                final ServletHandler servletHandler = new ServletHandler(this,
+                        servletRegistration);
+
                 for (String mapping : servletRegistration.getMappings()) {
                     addHandler(mapping, servletHandler);
                 }
                 servletHandler.init(servletRegistration);
-                if (servletHandler.servletRegistration.loadOnStartup >= 0)
+                if (servletHandler.servletRegistration.loadOnStartup >= 0) {
                     sorted.put(
                             servletHandler.servletRegistration.loadOnStartup,
                             servletHandler);
+                } else {
+                    sorted.put(Integer.MAX_VALUE, servletHandler);
+                }
+
+                if ("j_security_check".endsWith(servletRegistration.name)) {
+                    final String login = servletHandler
+                            .getInitParameter("form-login-page");
+                    final String loginError = servletHandler
+                            .getInitParameter("form-error-page");
+                    verify = new FormVerification(login, loginError,
+                            servletHandler);
+                }
             }
 
             // apply
             for (ServletHandler sh : sorted.values()) {
                 de.bb.bejy.http.ServletRegistration.Dynamic servletRegistration = sh.servletRegistration;
                 try {
-                    sh.init(servletRegistration);
                     sh.loadServlet(log, injector);
+                    servletRegistration.servlet.init(servletRegistration);
                 } catch (Throwable ttt) {
                     log.writeDate("exception during loadServlet for: "
                             + servletRegistration.name + ": "
@@ -778,7 +882,8 @@ public class WebAppContext extends HttpContext {
                 filterQueue.add(mdata);
             }
 
-            for (FilterRegistration filterRegistration : filterRegistrations.values()) {
+            for (FilterRegistration filterRegistration : filterRegistrations
+                    .values()) {
                 try {
                     filterRegistration.filter.init(filterRegistration);
                 } catch (ServletException e) {
