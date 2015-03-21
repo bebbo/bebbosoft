@@ -66,10 +66,10 @@ class HttpResponse implements javax.servlet.http.HttpServletResponse {
     final static byte[] SERVER = "\r\nServer: ".getBytes();
     final static byte[] DATE = "\r\nDate: ".getBytes();
     final static byte[] CONTENTLENGTH = "\r\nContent-Length: ".getBytes();
-    final static byte[] SETCOOKIE_JSESSION = "\r\nSet-Cookie: JSESSIONID=\"".getBytes();
-    final static byte[] COOKIEPATH = "\"; path=\"".getBytes();
-    final static byte[] COOKIESECURE = "\"; secure".getBytes();
-    final static byte[] COOKIEEND = "\"; httponly".getBytes();
+    final static byte[] SETCOOKIE_JSESSION = "\r\nSet-Cookie: JSESSIONID=".getBytes();
+    final static byte[] COOKIEPATH = "; path=".getBytes();
+    final static byte[] COOKIESECURE = "; secure".getBytes();
+    final static byte[] COOKIEEND = "; httponly".getBytes();
     final static byte[] SETCOOKIE = "\r\nSet-Cookie: ".getBytes();
     final static byte[] COLONSPACE = ": ".getBytes();
 
