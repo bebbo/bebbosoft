@@ -25,6 +25,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 
+import de.bb.bejy.http.ServletRegistration.Dynamic;
 import de.bb.util.LogFile;
 
 public class ServletHandler extends HttpHandler implements
@@ -48,10 +49,19 @@ public class ServletHandler extends HttpHandler implements
         init("ServletHandler", PROPERTIES);
     }
 
+    ServletHandler(WebAppContext webAppContext, Dynamic servletRegistration) {
+        this.classLoader = webAppContext.zcl;
+        this.servletRegistration = servletRegistration;
+        servlet = servletRegistration.servlet;
+    }
+
+    
     public void activate(LogFile logFile) throws Exception {
         super.activate(logFile);
         this.logFile = logFile;
         className = getProperty("servlet");
+        if (className != null && className.equals("de.bb.jsp.JspServlet"))
+            className = "de.bb.bejy.http.jsp.JspServlet";
         if (DEBUG)
             System.out.println(className);
     }
