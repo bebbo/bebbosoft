@@ -144,6 +144,9 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
                                 sname = "";
 
                             long age = new File(spath).lastModified();
+                            File lf = new File(path, sname + ".link");
+                            if (lf.exists() &&  lf.lastModified() > age)
+                                age = lf.lastModified();
 
                             if (spath.equals(sfolder)) {
                                 long ageWebXml = new File(sfolder, "WEB-INF/this.xml").lastModified();
@@ -227,6 +230,8 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
         for (int i = 0; i < files.length; ++i) {
             String webAppName = files[i];
             File f = new File(folder, files[i]);
+            if (f.lastModified() > t)
+                t = f.lastModified();
             if (webAppName.endsWith(".link")) {
                 FileReader fr = null;
                 try {
@@ -235,6 +240,9 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
                     String line = br.readLine();
                     f = new File(line);
                     webAppName = webAppName.substring(0, webAppName.length() - 5);
+                    File webAppFolder = new File(folder, webAppName);
+                    if (!webAppFolder.exists())
+                        t = last + 1;
                 } catch (IOException e) {
                 }
                 if (fr != null) {
