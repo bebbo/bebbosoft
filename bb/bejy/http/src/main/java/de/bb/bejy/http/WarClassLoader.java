@@ -22,8 +22,11 @@ import de.bb.util.ZipClassLoader;
 
 public class WarClassLoader extends ZipClassLoader implements Injector {
 
+    public WarClassLoader(ClassLoader parentClassLoader) {
+        super(parentClassLoader);
+    }
+
     public void inject(LogFile log, Object o) throws Exception {
         
     }
-
 }
