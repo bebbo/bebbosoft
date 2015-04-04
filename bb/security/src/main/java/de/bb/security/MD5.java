@@ -34,7 +34,7 @@ public class MD5 extends MessageDigest
   public MD5()
   {
     super("MD5", 64);
-    engineReset();
+    reset();
   }
 
   /**
@@ -61,7 +61,7 @@ public class MD5 extends MessageDigest
   /**
    * Initialize new context
    */
-  final protected void engineReset()
+  public void reset()
   {
     count = 0;
     /** /

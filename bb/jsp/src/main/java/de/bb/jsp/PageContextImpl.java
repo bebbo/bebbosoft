@@ -16,7 +16,7 @@
  *  
  *****************************************************************************/
 
-package de.bb.bejy.http.jsp;
+package de.bb.jsp;
 
 import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
@@ -45,9 +45,6 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.el.ExpressionEvaluator;
 import javax.servlet.jsp.el.VariableResolver;
-
-import de.bb.bejy.http.IterEnum;
-import de.bb.bejy.http.WebAppContext;
 
 public class PageContextImpl extends PageContext {
     private static final boolean debug = false;
@@ -282,8 +279,8 @@ public class PageContextImpl extends PageContext {
                 return;
             }
         }
-        if (application instanceof WebAppContext)
-            errorPage = ((WebAppContext) application).getErrorPage(e);
+//        if (application instanceof WebAppContext)
+//            errorPage = ((WebAppContext) application).getErrorPage(e);
         if (errorPage != null) {
             request.setAttribute("javax.servlet.jsp.jspException", e);
             RequestDispatcher rd = request.getRequestDispatcher(errorPage);

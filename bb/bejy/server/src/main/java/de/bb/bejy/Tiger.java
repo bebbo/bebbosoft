@@ -69,6 +69,11 @@ public class Tiger {
             if (xml.getString(global, "javac", null) == null)
                 xml.setString(global, "javac", javac);
 
+            final String mimes = getOrCreate(xml, bejy + "mime-types");
+            final String mime_type = xml.createSection(mimes + "mime-type");
+            xml.setString(mime_type, "extension", "css");
+            xml.setString(mime_type, "type", "text/css");
+            
             final String srv = getOrCreate(xml, bejy + "server");
 
             xml.setString(srv, "name", "tiger");

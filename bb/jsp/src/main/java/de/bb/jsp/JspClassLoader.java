@@ -16,7 +16,7 @@
  *  
  *****************************************************************************/
 
-package de.bb.bejy.http.jsp;
+package de.bb.jsp;
 
 import java.io.*;
 

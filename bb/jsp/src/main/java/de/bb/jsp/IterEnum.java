@@ -15,27 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  
  *****************************************************************************/
+package de.bb.jsp;
 
-package de.bb.bejy.http.jsp;
+import java.util.Iterator;
 
-import java.io.IOException;
+public class IterEnum<T> implements java.util.Enumeration<T> {
+  Iterator<T> iter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+  public IterEnum(Iterator<T> i)
+  {
+    iter = i;
+  }
 
-public class StaticJspServlet extends JspServlet {
-    /**
-   */
-    private static final long serialVersionUID = -8850205404491344935L;
-    private String jspFileName;
+  public boolean hasMoreElements()
+  {
+    return iter.hasNext();
+  }
 
-    public void setJspFileName(String n) {
-        jspFileName = n;
-    }
-
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException {
-        service(request, response, jspFileName);
-    }
+  public T nextElement()
+  {
+    return iter.next();
+  }
 }

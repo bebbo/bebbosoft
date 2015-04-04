@@ -530,7 +530,7 @@ public abstract class Configurable {
 
             if (pn.toLowerCase().indexOf("password") >= 0) {
                 if (hashPassword()) {
-                    if (!pv.startsWith("{P5SHA256}")) // no double encode
+                    if (!pv.startsWith("{PKCS5SHA256}")) // no double encode
                         pv = Pkcs5.encodePbkdf2("SHA256", pv, 13);
                 } else {
                     DES3 des = new DES3();

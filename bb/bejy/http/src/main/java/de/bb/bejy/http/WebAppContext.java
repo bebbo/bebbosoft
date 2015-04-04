@@ -55,7 +55,7 @@ import de.bb.bejy.Config;
 import de.bb.bejy.MiniClass;
 import de.bb.bejy.http.FilterRegistration.Dynamic;
 import de.bb.bejy.http.FilterRegistration.MappingData;
-import de.bb.bejy.http.jsp.JspServlet;
+import de.bb.jsp.JspServlet;
 import de.bb.util.LogFile;
 import de.bb.util.MultiMap;
 import de.bb.util.XmlFile;
@@ -466,7 +466,7 @@ public class WebAppContext extends HttpContext {
                     servletRegistration = (de.bb.bejy.http.ServletRegistration.Dynamic) this
                             .addServlet(servletName, servletClassName.trim());
                 } else if (jspFile != null) {
-                    JspServlet jspServlet = new de.bb.bejy.http.jsp.StaticJspServlet();
+                    JspServlet jspServlet = new de.bb.bejy.http.StaticJspServlet();
                     jspServlet.setJspFileName(jspFile);
                     jspServlet.setZipClassLoader(zcl);
                     servletRegistration = (de.bb.bejy.http.ServletRegistration.Dynamic) this
@@ -514,7 +514,7 @@ public class WebAppContext extends HttpContext {
             h.setClassLoader(zcl);
             h.setName("jsp");
             h.setContext(this);
-            de.bb.bejy.http.jsp.JspServlet sjs = new de.bb.bejy.http.jsp.JspServlet();
+            de.bb.jsp.JspServlet sjs = new de.bb.jsp.JspServlet();
             sjs.setZipClassLoader(zcl);
             h.setServlet(sjs);
             addHandler("*.jsp", h);

@@ -16,7 +16,7 @@
  *  
  *****************************************************************************/
 
-package de.bb.bejy.http.jsp;
+package de.bb.jsp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,8 +43,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.bb.io.FastByteArrayOutputStream;
-import de.bb.jsp.JspCC;
-import de.bb.jsp.Smap;
 import de.bb.util.Misc;
 import de.bb.util.Process;
 import de.bb.util.ZipClassLoader;

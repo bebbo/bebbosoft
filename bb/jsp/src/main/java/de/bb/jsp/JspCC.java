@@ -257,7 +257,7 @@ public class JspCC {
         path = "";
         curTag = null;
 
-        baseClass = "de.bb.bejy.http.jsp.JspServletImpl";
+        baseClass = "de.bb.jsp.JspServletImpl";
         threadSafe = false;
         needsSession = "true";
         bufferSize = 8192;
@@ -2005,7 +2005,7 @@ public class JspCC {
                 // try to apply all parameters
                 if (property.equals("*")) {
                     if (!noLink)
-                        scriptlet.writeln("de.bb.bejy.http.jsp.BeanHelper._jsp_copyParameters(request, " + name + ");");
+                        scriptlet.writeln("de.bb.jsp.BeanHelper._jsp_copyParameters(request, " + name + ");");
                     return;
                 }
 

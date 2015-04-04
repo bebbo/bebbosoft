@@ -118,7 +118,7 @@ public class ConfigGroup extends Configurable implements UserGroupDbi, Loadable 
         if (pass2 == null)
             return null;
         if (pass2.startsWith("{P5")) {
-            if (Pkcs5.verifyPBKDF2(pass2, password))
+            if (Pkcs5.verifyPbkdf2(pass2, password))
                 return user2Roles.get(user);
         } else 
         if (password.equals(pass2))

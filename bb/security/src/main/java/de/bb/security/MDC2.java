@@ -56,13 +56,13 @@ public class MDC2 extends MessageDigest
     s2 = new byte[8];
     x1 = new byte[8];
     x2 = new byte[8];
-    engineReset();
+    reset();
   }
 
   /**
    * Initialize the context.
    */
-  final protected void engineReset()
+  public void reset()
   {
     count = 0;
 
@@ -79,7 +79,7 @@ public class MDC2 extends MessageDigest
    * Complete processing on the message digest.
    * @return the byte array containing the engineDigest
    */
-  final protected byte[] engineDigest()
+ public byte[] digest()
   {
     int i = (int)count & 7;
     if (i > 0) {
@@ -93,7 +93,7 @@ public class MDC2 extends MessageDigest
     System.arraycopy(s1, 0, buf, 0, 8);
     System.arraycopy(s2, 0, buf, 8, 8);
 
-    engineReset();
+    reset();
     return buf;
   }
 

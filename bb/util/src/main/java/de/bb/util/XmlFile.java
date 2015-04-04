@@ -687,7 +687,7 @@ public class XmlFile {
     }
 
     /**
-     * Read and parse the specified intput stream. Appends data to current
+     * Read and parse the specified input stream. Appends data to current
      * instance.
      * 
      * @param is

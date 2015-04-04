@@ -1141,8 +1141,9 @@ public class HttpContext extends Configurable implements
     public javax.servlet.ServletRegistration.Dynamic addServlet(
             String servletName, String servletClassName) {
         try {
+            ClassLoader cl = zcl == null ? Thread.currentThread().getContextClassLoader() : zcl;
             @SuppressWarnings("unchecked")
-            Class<? extends Servlet> clazz = (Class<Servlet>) zcl
+            Class<? extends Servlet> clazz = (Class<Servlet>) cl
                     .loadClass(servletClassName);
             return addServlet(servletName, clazz);
         } catch (ClassNotFoundException e) {

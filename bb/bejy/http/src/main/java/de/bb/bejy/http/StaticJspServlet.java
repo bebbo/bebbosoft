@@ -16,17 +16,28 @@
  *  
  *****************************************************************************/
 
-package de.bb.bejy.http.jsp;
-import javax.servlet.jsp.JspEngineInfo;
+package de.bb.bejy.http;
 
-class JspEngineInfoImpl extends JspEngineInfo
-{
-  public String getImplementationVersion()
-  {
-    return "1.2";
-  }
-  public java.lang.String getSpecificationVersion() // from javax.servlet.jsp.JspEngineInfo
-  {
-    return "1.3";
-  }
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import de.bb.jsp.JspServlet;
+
+public class StaticJspServlet extends JspServlet {
+    /**
+   */
+    private static final long serialVersionUID = -8850205404491344935L;
+    private String jspFileName;
+
+    public void setJspFileName(String n) {
+        jspFileName = n;
+    }
+
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException {
+        service(request, response, jspFileName);
+    }
 }

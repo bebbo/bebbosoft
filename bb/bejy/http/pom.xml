@@ -1,29 +1,28 @@
 <project>
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>de.bb.bejy</groupId>
-		<artifactId>bejy</artifactId>
-		<version>1.6.0</version>
-	</parent>
-	<groupId>de.bb.bejy</groupId>
-	<artifactId>http</artifactId>
-	<version>1.6.2</version>
-	<packaging>jar</packaging>
-	<dependencies>
-		<dependency>
-			<artifactId>server</artifactId>
-			<groupId>de.bb.bejy</groupId>
-			<version>1.6.3-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>javax.servlet-api</artifactId>
-		    <version>3.1.0</version>
-			<scope>compile</scope>
-		</dependency>
-<!-- 
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.bb.bejy</groupId>
+    <artifactId>bejy</artifactId>
+    <version>1.6.0</version>
+  </parent>
+  <groupId>de.bb.bejy</groupId>
+  <artifactId>http</artifactId>
+  <version>1.6.2</version>
+  <packaging>jar</packaging>
+  <dependencies>
+    <dependency>
+      <artifactId>server</artifactId>
+      <groupId>de.bb.bejy</groupId>
+      <version>1.6.3-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- 
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
@@ -37,11 +36,28 @@
 			<version>2.0</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<artifactId>jsp</artifactId>
-			<groupId>de.bb</groupId>
-			<version>1.6.0</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
+
+     <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.1.0.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+    <dependency>
+      <artifactId>jsp</artifactId>
+      <groupId>de.bb</groupId>
+      <version>1.6.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <artifactId>io</artifactId>
+      <groupId>de.bb</groupId>
+      <version>0.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>

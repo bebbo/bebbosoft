@@ -1755,7 +1755,7 @@ public abstract class MailDBI {
     public ResultSet selectFromImapMimeTextPlain(String filename) throws SQLException {
         checkConnection();
         String q = "SELECT * FROM imap_mime WHERE filename='" + filename
-                + "' AND contentType like 'text/plain%' ORDER BY path";
+                + "' AND contentType like 'text/%' ORDER BY path";
         return stmt2.executeQuery(q);
     }
 
@@ -1862,8 +1862,17 @@ public abstract class MailDBI {
                 // success -> update the password to PBKDF2
                 updateMailUser(user, mail_domain, passwd);
             } else if (storedEncodedPassword.startsWith("{P5")) {
-                if (!Pkcs5.verifyPBKDF2(storedEncodedPassword, passwd))
+                if (!Pkcs5.verifyPbkdf2(storedEncodedPassword, passwd))
                     return rs;
+                // success -> update the password to PBKDF2
+                updateMailUser(user, mail_domain, passwd);
+            } else if (storedEncodedPassword.startsWith("{P")) {
+                if (!Pkcs5.verifyPbkdf2(storedEncodedPassword, passwd))
+                    return rs;
+                
+                if (storedEncodedPassword.startsWith("{PKCS5"))
+                    updateMailUser(user, mail_domain, passwd);
+
             } else {
                 // if the old format is used, check it
                 rs.close();

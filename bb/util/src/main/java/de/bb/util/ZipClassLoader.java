@@ -1,5 +1,5 @@
 /******************************************************************************
- * A class loader implementation with some usefull features. 
+ * A class loader implementation with some useful features. 
  *
  * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
@@ -47,7 +47,7 @@ public class ZipClassLoader extends ClassLoader {
     // private HashMap cache = new HashMap();
 
     // work with a 5 second timeout to release zip and jar files.
-    private static SessionManager cache = new SessionManager(1000L * 5);
+    private static SessionManager<URL, Object> cache = new SessionManager<URL, Object>(1000L * 5);
 
     /**
      * Default constructor.

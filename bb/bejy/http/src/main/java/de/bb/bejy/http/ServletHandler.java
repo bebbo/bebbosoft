@@ -60,10 +60,13 @@ public class ServletHandler extends HttpHandler implements
         super.activate(logFile);
         this.logFile = logFile;
         className = getProperty("servlet");
-        if (className != null && className.equals("de.bb.jsp.JspServlet"))
-            className = "de.bb.bejy.http.jsp.JspServlet";
+        if (className == null)
+            className = "de.bb.jsp.JspServlet";
         if (DEBUG)
             System.out.println(className);
+        
+        ServletRegistration.Dynamic sr = (Dynamic) hContext.addServlet(className + ":" + getProperty("mask"), className);
+        init(sr);
     }
 
     public void setServlet(javax.servlet.Servlet s)

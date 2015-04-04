@@ -37,7 +37,7 @@ public final class SHA extends MessageDigest
   public SHA()
   {
     super("SHA1", 64);
-    engineReset();
+    reset();
   }
 
   /**
@@ -204,7 +204,7 @@ public final class SHA extends MessageDigest
   /**
    * Initialize new context
    */
-  final protected void engineReset()
+  public void reset()
   {
     /* SHA1 initialization constants */
 /*    

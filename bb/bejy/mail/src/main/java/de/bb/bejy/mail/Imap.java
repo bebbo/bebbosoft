@@ -59,10 +59,10 @@ final class Imap extends de.bb.bejy.Protocol {
 
     private final static String version;
     static {
-        String s = "$Revision: 6.3 $";
+        String s = "$Revision: 6.4 $";
         no = "1." + s.substring(11, s.length() - 1);
         version = Version.getShort() + " IMAP " + no
-                + " (c) 2000-2014 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+                + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     /**

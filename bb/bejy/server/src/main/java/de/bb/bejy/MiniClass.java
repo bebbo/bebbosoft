@@ -70,7 +70,11 @@ package de.bb.bejy;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashSet;
+
+import de.bb.util.MultiMap;
+import de.bb.util.ZipClassLoader;
 
 /**
  * @author bebbo
@@ -87,13 +91,17 @@ public class MiniClass {
     private final static int CONSTANT_Methodref = 10;
     private final static int CONSTANT_InterfaceMethodref = 11;
     private final static int CONSTANT_NameAndType = 12;
+    private static final int CONSTANT_MethodHandle = 15;
+    private static final int CONSTANT_MethodType = 16;
+    private static final int CONSTANT_InvokeDynamic = 18;
 
     // private short minor;
     // private short major;
 
     /**
-     * These 3 arrays hold the constant pool. cTags = tag cRefs = 1 or 2 refs into constant pool cData = raw data for
-     * Integer, Long, Float, Double or UTF8
+     * These 3 arrays hold the constant pool. cTags = tag cRefs = 1 or 2 refs
+     * into constant pool cData = raw data for Integer, Long, Float, Double or
+     * UTF8
      */
     private int cTags[];
     private short cRefs[][];
@@ -109,10 +117,8 @@ public class MiniClass {
     private short access;
 
     /**
-     * Reads the class file into internal structures. Also for each UTF8 the references are stored, to detect when an
-     * UTF8 String must be copied.
-     * 
-     * 
+     * Reads the class file into internal structures. Also for each UTF8 the
+     * references are stored, to detect when an UTF8 String must be copied.
      * 
      * @param fis
      *            fileInputStream
@@ -173,54 +179,63 @@ public class MiniClass {
         int tag = dis.readUnsignedByte();
         cTags[i] = tag;
         switch (tag) {
-            case CONSTANT_Utf8:
-                len = dis.readUnsignedShort();
-                b = new byte[len + 2];
-                dis.readFully(b, 2, len);
-                b[0] = (byte) (len >> 8);
-                b[1] = (byte) len;
-                // writeln("" + i + ": " + cs);
-                break;
-            case CONSTANT_Integer:
-            case CONSTANT_Float:
-                b = new byte[4];
-                dis.readFully(b);
-                /*
-                 * int vi = (b[0] & 0xff); vi = (b[1] & 0xff) | (vi << 8); vi = (b[2] & 0xff) | (vi << 8); vi = (b[3] &
-                 * 0xff) | (vi << 8); writeln("" + i + ": I: " + vi);
-                 */
-                break;
-            case CONSTANT_Long:
-            case CONSTANT_Double:
-                b = new byte[8];
-                dis.readFully(b);
-                ret = true;
-                /*
-                 * long vl = (b[0] & 0xff); vl = (b[1] & 0xff) | (vl << 8); vl = (b[2] & 0xff) | (vl << 8); vl = (b[3] &
-                 * 0xff) | (vl << 8); vl = (b[4] & 0xff) | (vl << 8); vl = (b[5] & 0xff) | (vl << 8); vl = (b[6] & 0xff)
-                 * | (vl << 8); vl = (b[7] & 0xff) | (vl << 8); writeln("" + i + ": L: " + vl);
-                 */
-                break;
-            case CONSTANT_Class:
-                cRefs[i][0] = dis.readShort();
-                // writeln("" + i + ": C " + getString(cRefs[i][0]) + " -> " + cRefs[i][0]);
-                break;
-            case CONSTANT_String:
-                cRefs[i][0] = dis.readShort();
-                // writeln("" + i + ": S " + getString(cRefs[i][0]) + " -> " + cRefs[i][0]);
-                break;
-            case CONSTANT_Fieldref:
-            case CONSTANT_InterfaceMethodref:
-            case CONSTANT_Methodref:
-            case CONSTANT_NameAndType:
-                cRefs[i][0] = dis.readShort();
-                cRefs[i][1] = dis.readShort();
-                // writeln("" + i + ": " + tag + " -> " + cRefs[i][0] + "/" + cRefs[i][1]);
-                break;
-            default:
-                /*
-                 * writeln( "unknown constant: " + tag + " at " + i + " previous tag=" + cTags[i - 1]);
-                 */
+        case CONSTANT_Utf8:
+            len = dis.readUnsignedShort();
+            b = new byte[len + 2];
+            dis.readFully(b, 2, len);
+            b[0] = (byte) (len >> 8);
+            b[1] = (byte) len;
+            // writeln("" + i + ": " + cs);
+            break;
+        case CONSTANT_Integer:
+        case CONSTANT_Float:
+            b = new byte[4];
+            dis.readFully(b);
+            /*
+             * int vi = (b[0] & 0xff); vi = (b[1] & 0xff) | (vi << 8); vi =
+             * (b[2] & 0xff) | (vi << 8); vi = (b[3] & 0xff) | (vi << 8);
+             * writeln("" + i + ": I: " + vi);
+             */
+            break;
+        case CONSTANT_Long:
+        case CONSTANT_Double:
+            b = new byte[8];
+            dis.readFully(b);
+            ret = true;
+            /*
+             * long vl = (b[0] & 0xff); vl = (b[1] & 0xff) | (vl << 8); vl =
+             * (b[2] & 0xff) | (vl << 8); vl = (b[3] & 0xff) | (vl << 8); vl =
+             * (b[4] & 0xff) | (vl << 8); vl = (b[5] & 0xff) | (vl << 8); vl =
+             * (b[6] & 0xff) | (vl << 8); vl = (b[7] & 0xff) | (vl << 8);
+             * writeln("" + i + ": L: " + vl);
+             */
+            break;
+        case CONSTANT_Class:
+        case CONSTANT_String:
+        case CONSTANT_MethodType:
+            cRefs[i][0] = dis.readShort();
+            // writeln("" + i + ": S " + getString(cRefs[i][0]) + " -> " +
+            // cRefs[i][0]);
+            break;
+        case CONSTANT_Fieldref:
+        case CONSTANT_InterfaceMethodref:
+        case CONSTANT_Methodref:
+        case CONSTANT_NameAndType:
+        case CONSTANT_InvokeDynamic:
+            cRefs[i][0] = dis.readShort();
+            cRefs[i][1] = dis.readShort();
+            // writeln("" + i + ": " + tag + " -> " + cRefs[i][0] + "/" +
+            // cRefs[i][1]);
+            break;
+        case CONSTANT_MethodHandle:
+            cRefs[i][0] = (short)(dis.readByte() & 0xff);
+            cRefs[i][1] = dis.readShort();
+            break;
+        default:
+            /*
+             * writeln( "unknown constant: " + tag + " at " + i +
+             * " previous tag=" + cTags[i - 1]);
+             */
         }
         cData[i] = b;
         return ret;
@@ -270,8 +285,8 @@ public class MiniClass {
     }
 
     /**
-     * Returns true if the specified class name is referenced from the constants. E.g. useful to check whether some
-     * annotation is referenced.
+     * Returns true if the specified class name is referenced from the
+     * constants. E.g. useful to check whether some annotation is referenced.
      * 
      * @param className
      *            the class name
@@ -304,59 +319,34 @@ public class MiniClass {
     public String toString() {
         return "MiniClass: " + getClassName();
     }
-}
 
-/*
- * Log: $Log: MiniClass.java,v $
- * Log: Revision 1.8  2013/06/18 13:23:47  bebbo
- * Log: @I preparations to use nio sockets
- * Log: @V 1.5.1.68
- * Log:
- * Log: Revision 1.7  2012/08/11 17:03:49  bebbo
- * Log: @I typed collections
- * Log:
- * Log: Revision 1.6  2011/03/06 18:19:53  bebbo
- * Log: @R made a release version
- * Log:
- * Log: Revision 1.5  2011/01/07 15:31:37  bebbo
- * Log: @F formatting
- * Log:
- * Log: Revision 1.4  2011/01/07 15:26:59  bebbo
- * Log: @N added refersToClass(className) to get fast info whether a class is referenced
- * Log:
- * Log: $Log: MiniClass.java,v $
- * Log: Revision 1.8  2013/06/18 13:23:47  bebbo
- * Log: @I preparations to use nio sockets
- * Log: @V 1.5.1.68
- * Log:
- * Log: Revision 1.7  2012/08/11 17:03:49  bebbo
- * Log: @I typed collections
- * Log:
- * Log: Revision 1.6  2011/03/06 18:19:53  bebbo
- * Log: @R made a release version
- * Log:
- * Log: Revision 1.5  2011/01/07 15:31:37  bebbo
- * Log: @F formatting
- * Log:
- * Log: Revision 1.3  2006/03/17 11:29:45  bebbo
- * Log: @B fixed NPE
- * Log:
- * Log: Revision 1.2  2006/02/06 09:13:14  bebbo
- * Log: @I cleanup
- * Log:
- * Log: Revision 1.1  2004/04/07 16:32:05  bebbo
- * Log: @R determining classes without using a ClassLoader
- * Log:
- * Log: Revision 1.4  2003/01/20 08:11:50  bebbo
- * Log: @B existing method and function names are correctly preserved and no longer used twice.
- * Log:
- * Log: Revision 1.3  2002/12/19 14:54:58  bebbo
- * Log: @B only private members are crippled now, since analysis of parent classes is missing!
- * Log:
- * Log: Revision 1.2  2002/11/22 21:23:31  bebbo
- * Log: @B fixed the unused entries. Also started method code parsing.
- * Log:
- * Log: Revision 1.1  2002/11/18 12:00:12  bebbo
- * Log: @N first version
- * Log:
- */
+    public static MultiMap<String, String> findRelatedClasses(
+            final ZipClassLoader zcl, final String... patterns) throws Exception {
+        // get all classes
+        final HashSet<URL> urls = new HashSet<URL>();
+        for (final URL url : zcl.getURLs()) {
+            urls.add(url);
+        }
+        final String[] classes = zcl.list("*.class", urls);
+
+        final MultiMap<String, String> pattern2Class = new MultiMap<String, String>();
+        for (final String cnc : classes) {
+            final InputStream is = zcl.getResourceAsStream(cnc);
+            if (is == null)
+                continue;
+            final MiniClass mc = new MiniClass(is);
+            is.close();
+            if (mc.isInterface())
+                continue;
+            final String cn = cnc.substring(0, cnc.length() - 6);
+            final HashSet<String> strings = mc.getStrings();
+
+            for (final String pattern : patterns) {
+                if (strings.contains(pattern))
+                    pattern2Class.put(pattern, cn);
+            }
+        }
+        return pattern2Class;
+
+    }
+}

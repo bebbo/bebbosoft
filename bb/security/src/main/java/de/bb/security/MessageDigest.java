@@ -43,17 +43,6 @@ public abstract class MessageDigest {
     }
 
     /**
-     * Completes the hash computation by performing final operations such as padding. The digest is reset after this
-     * call is made.
-     * 
-     * @return the array of bytes for the resulting hash value.
-     */
-    final public byte[] digest() {
-        /* Resetting is the responsibility of implementors. */
-        return engineDigest();
-    }
-
-    /**
      * Performs a final update on the digest using the specified array of bytes, then completes the digest computation.
      * That is, this method first calls <a href = "#update(byte[])">update</a> on the array, then calls <a href =
      * "#digest()">digest()</a>.
@@ -64,7 +53,7 @@ public abstract class MessageDigest {
      * @return the array of bytes for the resulting hash value.
      */
     final public byte[] digest(byte[] input) {
-        update(input);
+        update(input, 0, input.length);
         return digest();
     }
 
@@ -81,74 +70,6 @@ public abstract class MessageDigest {
     }
 
     /**
-     * Compares two digests for equality. Does a simple byte compare.
-     * 
-     * @param digesta
-     *            one of the digests to compare.
-     * 
-     * @param digestb
-     *            the other digest to compare.
-     * 
-     * @return true if the digests are equal, false otherwise.
-     */
-    public static boolean isEqual(byte[] digesta, byte[] digestb) {
-        int i;
-
-        if (digesta.length != digestb.length)
-            return false;
-
-        for (i = 0; i < digesta.length; i++) {
-            if (digesta[i] != digestb[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Resets the digest for further use.
-     */
-    public void reset() {
-        engineReset();
-    }
-
-    /**
-     * Updates the digest using the specified byte.
-     * 
-     * @param input
-     *            the byte with which to update the digest.
-     */
-    final public void update(byte input) {
-        engineUpdate(input);
-    }
-
-    /**
-     * Updates the digest using the specified array of bytes, starting at the specified offset.
-     * 
-     * @param input
-     *            the array of bytes.
-     * 
-     * @param offset
-     *            the offset to start from in the array of bytes.
-     * 
-     * @param len
-     *            the number of bytes to use, starting at <code>offset</code>.
-     */
-    final public void update(byte[] input, int offset, int len) {
-        engineUpdate(input, offset, len);
-    }
-
-    /**
-     * Updates the digest using the specified array of bytes.
-     * 
-     * @param input
-     *            the array of bytes.
-     */
-    final public void update(byte[] input) {
-        engineUpdate(input, 0, input.length);
-    }
-
-    /**
      * <b>SPI</b>: Completes the hash computation by performing final operations such as padding. Once
      * <code>engineDigest</code> has been called, the engine should be reset (see <a href = "#reset">reset</a>).
      * Resetting is the responsibility of the engine implementor.
@@ -162,7 +83,7 @@ public abstract class MessageDigest {
      * 
      * @return the array of bytes for the resulting hash value.
      */
-    protected byte[] engineDigest() {
+    public byte[] digest() {
         long bitCount = count << 3;
 
         int i = (int) count & mask;
@@ -180,7 +101,7 @@ public abstract class MessageDigest {
         transform();
 
         byte digestBits[] = getDigest();
-        engineReset();
+        reset();
 
         return digestBits;
     }
@@ -199,7 +120,7 @@ public abstract class MessageDigest {
      * @param b
      *            the byte which is added
      */
-    protected void engineUpdate(byte b) {
+    public void update(byte b) {
         int k = (int) count++ & mask;
         data[k] = b;
         if (k == mask) {
@@ -220,7 +141,7 @@ public abstract class MessageDigest {
      * @param len
      *            count of bytes which are added
      */
-    protected void engineUpdate(byte d[], int off, int len) {
+    public void update(byte d[], int off, int len) {
         int k = (int) count & mask;
         count += len;
         if (k + len < data.length) //pa???t noch rein?
@@ -243,10 +164,15 @@ public abstract class MessageDigest {
         System.arraycopy(d, n, data, 0, len);
     }
 
+    public void update(byte d[]) {
+        update(d, 0, d.length);
+    }
+
     /**
      * <b>SPI</b>: Resets the digest for further use.
      */
-    protected abstract void engineReset();
+    public void reset() {
+    }
 
     /**
      * rotate the given value to left side
@@ -317,7 +243,7 @@ public abstract class MessageDigest {
     public static MessageDigest get(final String algo) {
         if (algo.equals("SHA256"))
             return new SHA256();
-        if (algo.equals("SHA"))
+        if (algo.equals("SHA") || algo.equals("SHA1"))
             return new SHA();
         if (algo.equals("MD5"))
             return new MD5();

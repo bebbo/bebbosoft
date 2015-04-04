@@ -58,4 +58,7 @@ public class FastBufferedOutputStream extends OutputStream {
     pos += len;
   }
 
+  public String toString() {
+      return new String(buffer, 0, 0, pos);
+  }
 }

@@ -81,13 +81,13 @@ public final class RMD160 extends MessageDigest
    */    
   public RMD160 () {
     super ("RMD160", 64);
-    engineReset();
+    reset();
   }
   /**
    * Resets this object disregarding any temporary data present at the
    * time of the invocation of this call.
    */
-  final protected void engineReset () 
+  public void reset () 
   {
     // magic RIPEMD160 initialisation constants
     context[0] = 0x67452301;
@@ -107,7 +107,7 @@ public final class RMD160 extends MessageDigest
    *
    * @return    the array of bytes for the resulting hash value.
    */
-  final protected byte[] engineDigest () 
+  public byte[] digest () 
   {
     // pad output (in bytes) to 56 mod 64
     int bufferNdx = (int)(count % 64);
@@ -121,7 +121,7 @@ public final class RMD160 extends MessageDigest
     for (int i = 0; i < 8; i++)
         tail[padLen + i] = (byte)((count * 8) >>> (8 * i));
     // append length before final transform
-    engineUpdate(tail, 0, tail.length);
+    update(tail, 0, tail.length);
 
     byte[] result = new byte[20];
     // cast this RIPEMD160's context (array of 5 ints) into an array of 20 bytes.
@@ -129,7 +129,7 @@ public final class RMD160 extends MessageDigest
         for (int j = 0; j < 4; j++)
             result[i * 4 + j] = (byte)((context[i] >>> (8 * j)) & 0xFF);
 
-    engineReset();
+    reset();
     return result;
   }    
     

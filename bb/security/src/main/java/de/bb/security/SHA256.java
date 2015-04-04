@@ -39,7 +39,7 @@ public final class SHA256 extends MessageDigest {
      */
     public SHA256() {
         super("SHA256", 64);
-        engineReset();
+        reset();
     }
 
     /**
@@ -128,7 +128,7 @@ public final class SHA256 extends MessageDigest {
     /**
      * Initialize new context
      */
-    final protected void engineReset() {
+    public void reset() {
         state0 = 0x6a09e667;
         state1 = 0xbb67ae85;
         state2 = 0x3c6ef372;
