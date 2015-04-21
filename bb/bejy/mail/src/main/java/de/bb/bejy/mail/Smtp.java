@@ -26,9 +26,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import de.bb.bejy.Version;
@@ -52,10 +49,10 @@ final class Smtp extends de.bb.bejy.Protocol {
 
     private final static String version;
     static {
-        String s = "$Revision: 6.3 $";
+        String s = "$Revision: 6.4 $";
         no = "1." + s.substring(11, s.length() - 1);
         version = Version.getShort() + " ESMTP " + no
-                + " (c) 2000-2014 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+                + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     /**
@@ -98,7 +95,7 @@ final class Smtp extends de.bb.bejy.Protocol {
         bServerName = new ByteRef(sf.mailCfg.getMainDomain());
 
         VERBOSE = DEBUG | sf.isVerbose();
-        // logFile.writeDate("VERBOSE is " + VERBOSE);
+        // logFile.writeDate(t() + "VERBOSE is " + VERBOSE);
     }
 
     private final static int S_IDLE = 0, S_HELO = 1, S_MAIL = 2;
@@ -167,7 +164,7 @@ final class Smtp extends de.bb.bejy.Protocol {
         String userId = null;
 
         String resolvedDomain = MailCfg.dns.getDomainFromIp(remoteAddress);
-        logFile.writeDate("connect from [" + remoteAddress + "=" + resolvedDomain + "]");
+        logFile.writeDate(tx() + "connect from [" + remoteAddress + "=" + resolvedDomain + "]");
         recipients.clear();
 
         ByteRef clientHelo = new ByteRef();
@@ -193,10 +190,12 @@ final class Smtp extends de.bb.bejy.Protocol {
             ByteRef line = readLine(br);
             if (line == null)
                 return false;
-            if (DEBUG)
-                System.out.println(line);
-            if (VERBOSE)
-                logFile.writeDate(line.toString());
+
+            if (line.startsWith(LOGIN)) {
+                logFile.writeDate(tin() + "LOGIN ...");
+            } else {
+                logFile.writeDate(tin() + line.toString());
+            }
 
             ByteRef cmd = line.substring(0, 4).toUpperCase();
             if (cmd.equals(QUIT)) {
@@ -212,7 +211,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                     lwrite(ESYNTAX);
                     continue;
                 }
-//                logFile.writeDate("starting TLS");
+//                logFile.writeDate(t() + "starting TLS");
                 lwrite(TLSREADY);
                 os.flush();
                 
@@ -226,13 +225,13 @@ final class Smtp extends de.bb.bejy.Protocol {
                 try {
                     this.startTLS(s3);
                 } catch (IOException ioe) {
-                    logFile.writeDate("STARTTLS failed: " + ioe.getMessage());
+                    logFile.writeDate(tx() + "STARTTLS failed: " + ioe.getMessage());
                     throw ioe;
                 }
                 is = getIs();
                 os = new BufferedOutputStream(getOs());
 
-                logFile.writeDate("STARTTLS using: " + s3.getCipherSuite());
+                logFile.writeDate(tx() + "STARTTLS using: " + s3.getCipherSuite());
                 NOSTARTTLS.remove(remoteAddress);
 
                 recipients.clear();
@@ -263,10 +262,10 @@ final class Smtp extends de.bb.bejy.Protocol {
                 if (cmd.equals(HELO)) {
                     clientHelo = line.substring(5).trim();
                     if (clientHelo.length() == 0) {
-                        logFile.writeDate("NOHELO from " + remoteAddress);
+                        logFile.writeDate(tx() + "NOHELO from " + remoteAddress);
                         error = ENOVALIDSERVER;
                     } else if (resolvedDomain == null) {
-                        logFile.writeDate("unresolved domain in HELO from " + remoteAddress);
+                        logFile.writeDate(tx() + "unresolved domain in HELO from " + remoteAddress);
                         error = ENOVALIDSERVER;
                     } else {
 
@@ -282,7 +281,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                 } else if (cmd.equals(EHLO)) {
                     clientHelo = line.substring(5).trim();
                     if (clientHelo.length() == 0) {
-                        logFile.writeDate("NOHELO from " + remoteAddress);
+                        logFile.writeDate(tx() + "NOHELO from " + remoteAddress);
                         error = ENOVALIDSERVER;
                     } else {
                         reqAuth = factory.getBooleanProperty("validateServer", false)
@@ -316,7 +315,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                                 }
                                 byte[] a = line.toByteArray();
                                 ByteRef domain, user = new ByteRef(Mime.decode(a, 0, a.length)).toLowerCase();
-                                logFile.writeDate("login for user: " + user);
+                                logFile.writeDate(tx() + "login for user: " + user);
 
                                 domain = bServerName;
                                 int idx = user.indexOf('@');
@@ -353,7 +352,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                                     }
                                     MailDBI.handleLoginFailure(user.toString(), domain.toString(), remoteAddress);
                                 }
-                                logFile.writeDate("with invalid password");
+                                logFile.writeDate(tx() + "with invalid password");
                             }
                             break;
                         }
@@ -395,7 +394,7 @@ final class Smtp extends de.bb.bejy.Protocol {
 
                             if (localOnly && resolvedDomain == null) {
                                 String msg = "you need a resolved ip to send";
-                                logFile.writeDate("UNRESOLVED: " + msg);
+                                logFile.writeDate(tx() + "UNRESOLVED: " + msg);
                                 error = new ByteRef("450 " + msg + "\r\n");
                                 break;
                             }
@@ -410,7 +409,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                                     fromDomain = fromDomain.substring(dot + 1);
                                 }
 
-                                logFile.writeDate("ANONYMOUS MAIL FROM:<> " + clientHelo + "[" + remoteAddress + "="
+                                logFile.writeDate(tx() + "ANONYMOUS MAIL FROM:<> " + clientHelo + "[" + remoteAddress + "="
                                         + resolvedDomain + "] from postmaster@" + fromDomain);
 
                                 localOnly = true;
@@ -432,23 +431,13 @@ final class Smtp extends de.bb.bejy.Protocol {
                             //
                             if (localOnly) {
                                 if (reqAuth) {
-                                    logFile.writeDate("REQAUTH: " + clientHelo + "[" + remoteAddress + "="
+                                    logFile.writeDate(tx() + "REQAUTH: " + clientHelo + "[" + remoteAddress + "="
                                             + resolvedDomain + "] sender:" + user + "@" + domain);
-                                    logFile.writeDate("NORELAY to " + user + "@" + domain + " login required");
+                                    logFile.writeDate(tx() + "NORELAY to " + user + "@" + domain + " login required");
                                     error = REQAUTH;
                                     break;
                                 }
 
-                                if (factory.getBooleanProperty("validateSender", false)
-                                        && !validateSender(fromUser, fromDomain)) {
-                                    String msg = "sender:" + user + "@" + domain + " sending from " + clientHelo + "["
-                                            + remoteAddress + "=" + resolvedDomain + "]";
-
-                                    logFile.writeDate("NOACCESS: " + msg);
-                                    error = new ByteRef("450-sender mail address verification failed\r\n450 " + msg
-                                            + "\r\n");
-                                    break;
-                                }
                                 lwrite(LOCALONLY);
                             } else {
                                 // disallow all but the login address
@@ -457,7 +446,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                                     if (!mDbi.isForwarder(fromUser, fromDomain, loginUser, loginDomain)) {
                                         String m = EALIAS + fromUser + "@" + fromDomain + " <> " + loginUser + "@"
                                                 + loginDomain;
-                                        logFile.writeDate(m);
+                                        logFile.writeDate(tin() + m);
                                         error = new ByteRef(m + "\r\n");
                                         break;
                                     }
@@ -465,7 +454,7 @@ final class Smtp extends de.bb.bejy.Protocol {
 
                                 if (!mDbi.isLocalDomain(fromDomain)) {
                                     String m = ENOTLOCAL + fromDomain;
-                                    logFile.writeDate(m);
+                                    logFile.writeDate(tin() + m);
                                     error = new ByteRef(m + "\r\n");
                                     break;
                                 }
@@ -473,7 +462,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                                 lwrite(SENDANY);
                             }
 
-                            logFile.writeDate("MAIL FROM:<" + fromUser + "@" + fromDomain + "> " + clientHelo + "["
+                            logFile.writeDate(tx() + "MAIL FROM:<" + fromUser + "@" + fromDomain + "> " + clientHelo + "["
                                     + remoteAddress + "=" + resolvedDomain + "]");
 
                             state = S_MAIL;
@@ -523,7 +512,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                                 if (!mDbi.isLocalUser(user.toString(), sToDomain)) {
                                     // if wildcard account exists
                                     if (!mDbi.isLocalUser("*", sToDomain)) {
-                                        logFile.writeDate("NOUSER " + user + "@" + toDomain);
+                                        logFile.writeDate(tx() + "NOUSER " + user + "@" + toDomain);
                                         error = EUSERNOTHERE;
                                         break;
                                     }
@@ -533,7 +522,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                             }
 
                             if (mDbi.isPOBoxFull(user.toString(), sToDomain)) {
-                                logFile.writeDate("MAILBOX FULL for " + user + "@" + toDomain);
+                                logFile.writeDate(tx() + "MAILBOX FULL for " + user + "@" + toDomain);
                                 error = EMAILBOXFULL;
                                 break;
                             }
@@ -542,7 +531,7 @@ final class Smtp extends de.bb.bejy.Protocol {
 
                                 //                            // check for self hosted domains and deny those!
                                 //                            if (null == MailCfg.dns.getExtendedSpf(fromDomain) && !validateDns(resolvedDomain)) {
-                                //                                logFile.writeDate("BLOCKED: " + clientHelo + "[" + remoteAddress + "=" + resolvedDomain
+                                //                                logFile.writeDate(t() + "BLOCKED: " + clientHelo + "[" + remoteAddress + "=" + resolvedDomain
                                 //                                        + "] for domain:" + fromDomain);
                                 //                                error = new ByteRef("555-sending server is brown listed\r\n550 server: " + clientHelo
                                 //                                        + "[" + remoteAddress + "=" + resolvedDomain + "] tried to send for domain: "
@@ -621,41 +610,42 @@ final class Smtp extends de.bb.bejy.Protocol {
                                 if (from == null) {
                                     fos.write(("from: <" + fromUser + "@" + fromDomain + ">\r\n").getBytes());
                                 } else if (localOnly) {
-                                    final int bra = from.indexOf('<');
-                                    final int ket = from.indexOf('>');
-                                    if (bra >= 0 && ket > bra)
-                                        from = from.substring(bra + 1, ket).trim();
                                     
-                                    // remove trailing comments in braces '(...)'
-                                    from = from.nextWord('(').trim();
-                                    
-                                    final int at2 = from.indexOf('@');
-                                    final String innerFromUser = from.substring(0, at2).toString();
-                                    final String innerFromDomain = from.substring(at2 + 1).toString();
-
-                                    for (final String recipient : recipients) {
-                                        final int at = recipient.indexOf('@');
-                                        final String sToDomain = recipient.substring(at + 1);
-
-                                        if (mDbi.useGuessPermission(sToDomain)) {
-                                            final boolean okToSend = checkSendPermission(logFile,
-                                                    clientHelo.toString(), remoteAddress, resolvedDomain,
-                                                    innerFromUser, innerFromDomain, sToDomain);
-                                            if (!okToSend) {
-                                                error = new ByteRef(
-                                                        "451-sending server is not yet permitted to send mail for senders domain\r\n451 server: "
-                                                                + clientHelo + "[" + remoteAddress + "="
-                                                                + resolvedDomain + "] tried to send for domain: "
-                                                                + innerFromDomain + "\r\n");
-
-                                                line = null;
-
-                                                // skip the mail content
-                                                copyMail(null);
-                                                break;
-                                            }
-                                        }
-                                    }
+//                                    final int bra = from.indexOf('<');
+//                                    final int ket = from.indexOf('>');
+//                                    if (bra >= 0 && ket > bra)
+//                                        from = from.substring(bra + 1, ket).trim();
+//                                    
+//                                    // remove trailing comments in braces '(...)'
+//                                    from = from.nextWord('(').trim();
+//                                    
+//                                    final int at2 = from.indexOf('@');
+//                                    final String innerFromUser = from.substring(0, at2).toString();
+//                                    final String innerFromDomain = from.substring(at2 + 1).toString();
+//
+//                                    for (final String recipient : recipients) {
+//                                        final int at = recipient.indexOf('@');
+//                                        final String sToDomain = recipient.substring(at + 1);
+//
+//                                        if (mDbi.useGuessPermission(sToDomain)) {
+//                                            final boolean okToSend = checkSendPermission(logFile,
+//                                                    clientHelo.toString(), remoteAddress, resolvedDomain,
+//                                                    innerFromUser, innerFromDomain, sToDomain);
+//                                            if (!okToSend) {
+//                                                error = new ByteRef(
+//                                                        "451-sending server is not yet permitted to send mail for senders domain\r\n451 server: "
+//                                                                + clientHelo + "[" + remoteAddress + "="
+//                                                                + resolvedDomain + "] tried to send for domain: "
+//                                                                + innerFromDomain + "\r\n");
+//
+//                                                line = null;
+//
+//                                                // skip the mail content
+//                                                copyMail(null);
+//                                                break;
+//                                            }
+//                                        }
+//                                    }
                                     // from check failed
                                     if (line == null)
                                         break;
@@ -696,12 +686,12 @@ final class Smtp extends de.bb.bejy.Protocol {
                                     int r = Process.execute(vScan, (InputStream) null, msg, null,
                                             factory.getIntProperty("virusScanTimeout", 120000));
                                     if (r != 0) {
-                                        logFile.writeDate("VIRUS: " + f + " failed: " + msg);
+                                        logFile.writeDate(tx() + "VIRUS: " + f + " failed: " + msg);
                                         error = E551;
                                         break;
                                     }
                                 }
-                                logFile.writeDate("STORED mail from " + fromUser + "@" + fromDomain + " --> "
+                                logFile.writeDate(tx() + "STORED mail from " + fromUser + "@" + fromDomain + " --> "
                                         + recipients);
                                 mDbi.sendMultiMail(me, fromUser, fromDomain, recipients);
                             } catch (Exception ex) {
@@ -717,7 +707,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                             break;
                         }
 
-                        logFile.writeDate("unknown: '" + cmd + "'");
+                        logFile.writeDate(tx() + "unknown: '" + cmd + "'");
 
                         break;
                     } // end switch
@@ -732,7 +722,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                 mDbi = null;
             }
             if (VERBOSE)
-                logFile.writeDate("ok=" + ok + ", state=" + state);
+                logFile.writeDate(tx() + "ok=" + ok + ", state=" + state);
             if (!ok) {
                 lwrite(error);
             }
@@ -769,14 +759,12 @@ final class Smtp extends de.bb.bejy.Protocol {
     }
 
     private void lwrite(ByteRef msg) throws IOException {
-        if (VERBOSE)
-            logFile.writeDate(msg.toString().trim());
+        logFile.writeDate(tout() + msg.toString().trim());
         msg.writeTo(os);
     }
 
     private void lwrite(String msg) throws IOException {
-        if (VERBOSE)
-            logFile.writeDate(msg.trim());
+        logFile.writeDate(tout() + msg.trim());
         ByteUtil.writeString(msg, os);
     }
 
@@ -855,77 +843,77 @@ final class Smtp extends de.bb.bejy.Protocol {
      *            the senders domain taken of from:
      * @return
      */
-    private static boolean guessPermission(String clientHelo, String remoteAddress, String resolvedDomain,
-            String fromDomain) {
-        // ips contains all allowed senders
-        HashSet<String> ips = new HashSet<String>();
-        String ipForDomain = MailCfg.dns.getIpFromDomain(fromDomain);
-        if (ipForDomain != null)
-            ips.add(ipForDomain);
-
-        // add all mail servers for fromDomain
-        for (Iterator<String> i = MailCfg.dns.getMXfromDomain(fromDomain).iterator(); i.hasNext();) {
-            String mxName = i.next();
-            String ip = MailCfg.dns.getIpFromDomain(mxName);
-            if (ip != null)
-                ips.add(ip);
-        }
-
-        // gather the senders IP and some IP related to the sender
-        HashSet<String> sendIps = new HashSet<String>();
-        try {
-            { // add the 255.255.0.0 part to sendIp
-                String ip = remoteAddress;
-                int dot2 = ip.indexOf('.') + 1;
-                dot2 = ip.indexOf('.', dot2) + 1;
-                ip = ip.substring(0, dot2);
-                sendIps.add(ip);
-            }
-            // add all mail servers for the resolvedDomain to senders
-            // System.out.println("add mx domains for: " + resolvedDomain);
-
-            List<String> list = null;
-            if (resolvedDomain != null)
-                for (;;) {
-                    list = MailCfg.dns.getMXfromDomain(resolvedDomain);
-                    if (list != null)
-                        break;
-                    int dot = resolvedDomain.indexOf('.');
-                    if (dot < 0)
-                        break;
-                    resolvedDomain = resolvedDomain.substring(dot + 1);
-                }
-            if (list != null)
-                for (Iterator<String> i = list.iterator(); i.hasNext();) {
-                    String ip = i.next();
-                    if (ip != null)
-                        ip = MailCfg.dns.getIpFromDomain(ip);
-                    if (ip != null) {
-                        int dot2 = ip.indexOf('.') + 1;
-                        dot2 = ip.indexOf('.', dot2) + 1;
-                        ip = ip.substring(0, dot2);
-                        sendIps.add(ip);
-                        // System.out.println("-->" + ip);
-                    }
-                }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        // find matches
-        for (Iterator<String> j = sendIps.iterator(); j.hasNext();) {
-            String radd = j.next();
-            for (Iterator<String> i = ips.iterator(); i.hasNext();) {
-                String ip = i.next();
-                // System.out.println(radd + "~" + ip);
-                if (ip.startsWith(radd)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
+//    private static boolean guessPermission(String clientHelo, String remoteAddress, String resolvedDomain,
+//            String fromDomain) {
+//        // ips contains all allowed senders
+//        HashSet<String> ips = new HashSet<String>();
+//        String ipForDomain = MailCfg.dns.getIpFromDomain(fromDomain);
+//        if (ipForDomain != null)
+//            ips.add(ipForDomain);
+//
+//        // add all mail servers for fromDomain
+//        for (Iterator<String> i = MailCfg.dns.getMXfromDomain(fromDomain).iterator(); i.hasNext();) {
+//            String mxName = i.next();
+//            String ip = MailCfg.dns.getIpFromDomain(mxName);
+//            if (ip != null)
+//                ips.add(ip);
+//        }
+//
+//        // gather the senders IP and some IP related to the sender
+//        HashSet<String> sendIps = new HashSet<String>();
+//        try {
+//            { // add the 255.255.0.0 part to sendIp
+//                String ip = remoteAddress;
+//                int dot2 = ip.indexOf('.') + 1;
+//                dot2 = ip.indexOf('.', dot2) + 1;
+//                ip = ip.substring(0, dot2);
+//                sendIps.add(ip);
+//            }
+//            // add all mail servers for the resolvedDomain to senders
+//            // System.out.println("add mx domains for: " + resolvedDomain);
+//
+//            List<String> list = null;
+//            if (resolvedDomain != null)
+//                for (;;) {
+//                    list = MailCfg.dns.getMXfromDomain(resolvedDomain);
+//                    if (list != null)
+//                        break;
+//                    int dot = resolvedDomain.indexOf('.');
+//                    if (dot < 0)
+//                        break;
+//                    resolvedDomain = resolvedDomain.substring(dot + 1);
+//                }
+//            if (list != null)
+//                for (Iterator<String> i = list.iterator(); i.hasNext();) {
+//                    String ip = i.next();
+//                    if (ip != null)
+//                        ip = MailCfg.dns.getIpFromDomain(ip);
+//                    if (ip != null) {
+//                        int dot2 = ip.indexOf('.') + 1;
+//                        dot2 = ip.indexOf('.', dot2) + 1;
+//                        ip = ip.substring(0, dot2);
+//                        sendIps.add(ip);
+//                        // System.out.println("-->" + ip);
+//                    }
+//                }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//        // find matches
+//        for (Iterator<String> j = sendIps.iterator(); j.hasNext();) {
+//            String radd = j.next();
+//            for (Iterator<String> i = ips.iterator(); i.hasNext();) {
+//                String ip = i.next();
+//                // System.out.println(radd + "~" + ip);
+//                if (ip.startsWith(radd)) {
+//                    return true;
+//                }
+//            }
+//        }
+//
+//        return false;
+//    }
 
     /**
      * Returns true if at least one ip segments are in the resolvedDomain. e.g. nat-195-91-144-163.inet-comfort.ru and
@@ -1011,81 +999,6 @@ final class Smtp extends de.bb.bejy.Protocol {
     //    }
 
     /**
-     * @param fromUser
-     * @param fromDomain
-     * @return
-     */
-    private boolean validateSender(String fromUser, String fromDomain) {
-        if (fromUser.length() + fromDomain.length() == 0)
-            return true;
-        //        Socket socket = null;
-        //        InputStream is = null;
-        //        OutputStream os = null;
-        for (int pass = 0; pass < 5; ++pass) {
-            try {
-                List<String> mailServer = MailCfg.dns.getRealMXfromDomain(fromDomain);
-
-                if (VERBOSE)
-                    System.out.println("mx=" + mailServer);
-
-                if (mailServer.size() > 0) {
-                    logFile.writeDate("validate sender: " + fromUser + "@" + fromDomain + " ==> " + mailServer);
-                    return true;
-                }
-                /*
-                 * for (Iterator i = mailServer.iterator(); i.hasNext();) { try { String mailAddr = (String) i.next();
-                 * if (VERBOSE) System.out.println("using: " + mailAddr);
-                 * 
-                 * socket = new Socket(mailAddr, 25); socket.setSoTimeout(3 * 60 * 1000); is = socket.getInputStream();
-                 * os = socket.getOutputStream(); ByteRef br = new ByteRef(); ByteRef line = null; while ((line == null
-                 * || line.charAt(3) == '-') && br != null) { if (line == null) br = br.update(is); line =
-                 * br.nextLine(); } if (VERBOSE) System.out.println(line);
-                 * 
-                 * ByteRef cmd = line.substring(0, 3).toUpperCase(); if (!cmd.equals(N220)) continue;
-                 * 
-                 * String a = "HELO " + bServerName + "\r\n"; os.write(a.getBytes()); if (VERBOSE)
-                 * System.out.println(a);
-                 * 
-                 * line = br.nextLine(); while ((line == null || line.charAt(3) == '-') && br != null) { if (line ==
-                 * null) br = br.update(is); line = br.nextLine(); } if (VERBOSE) System.out.println(line);
-                 * 
-                 * cmd = line.substring(0, 3).toUpperCase(); if (!cmd.equals(N250)) continue;
-                 * 
-                 * a = "MAIL FROM:<>\r\n"; os.write(a.getBytes()); if (VERBOSE) System.out.println(a);
-                 * 
-                 * line = br.nextLine(); while ((line == null || line.charAt(3) == '-') && br != null) { if (line ==
-                 * null) br = br.update(is); line = br.nextLine(); } if (VERBOSE) System.out.println(line); cmd =
-                 * line.substring(0, 3); if (!cmd.equals(N250)) continue;
-                 * 
-                 * a = "RCPT TO:<" + fromUser + '@' + fromDomain + ">\r\n"; os.write(a.getBytes()); if (VERBOSE)
-                 * System.out.println(a);
-                 * 
-                 * line = br.nextLine(); while ((line == null || line.charAt(3) == '-') && br != null) { if (line ==
-                 * null) br = br.update(is); line = br.nextLine(); } if (VERBOSE) System.out.println(line);
-                 * 
-                 * cmd = line.substring(0, 3); if (cmd.equals(N250)) return true;
-                 * 
-                 * } catch (Throwable e) { } finally { try { if (os != null) os.write("quit\r\n".getBytes()); } catch
-                 * (Exception e) { // } try { if (socket != null) socket.close(); } catch (Exception e) { // } is =
-                 * null; os = null; socket = null; } }
-                 */
-            } catch (Throwable e) {
-                // } finally
-                // {
-                // try
-                // {
-                // if (socket != null)
-                // socket.close();
-                // } catch (Exception e)
-                // {
-                // //
-                // }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Validate domain whether IP exists and remoteAddress whether domain name exists.
      * 
      * @param domain
@@ -1096,7 +1009,7 @@ final class Smtp extends de.bb.bejy.Protocol {
         String addr = MailCfg.dns.getIpFromDomain(domain.toString());
         String name = MailCfg.dns.getDomainFromIp(remoteAddress);
         boolean res = domain.equalsIgnoreCase(name) || remoteAddress.equals(addr);
-        logFile.writeDate("validate server: " + domain + " [" + remoteAddress + "] == " + name + " [" + addr + "] : "
+        logFile.writeDate(tx() + "validate server: " + domain + " [" + remoteAddress + "] == " + name + " [" + addr + "] : "
                 + res);
         return res;
     }
@@ -1111,13 +1024,13 @@ final class Smtp extends de.bb.bejy.Protocol {
         String fromEmail = fromUser + "@" + fromDomain;
         // check SPF
         int ret = SpfContext.validateSpf(fromEmail, toDomain, remoteAddress, resolvedDomain, clientHelo);
-        logFile.writeDate("spf: " + (char) ret + " " + fromEmail + ", " + toDomain + ", " + remoteAddress + ", "
+        logFile.writeDate(tx() + "spf: " + (char) ret + " " + fromEmail + ", " + toDomain + ", " + remoteAddress + ", "
                 + resolvedDomain + ", " + clientHelo);
         boolean r = false;
         if (ret == '+') {
             r = true;
         } else if (ret == '-' || ret == '~') {
-            logFile.writeDate("NOSENDPERMISSION: " + clientHelo + "[" + remoteAddress + "=" + resolvedDomain
+            logFile.writeDate(tx() + "NOSENDPERMISSION: " + clientHelo + "[" + remoteAddress + "=" + resolvedDomain
                     + "] for domain:" + fromDomain);
         } else { // ? or error
             //            if (resolvedDomain != null && !containsIp(resolvedDomain, remoteAddress)) {
@@ -1132,20 +1045,20 @@ final class Smtp extends de.bb.bejy.Protocol {
             //                        r = subdomain.indexOf('.') < 0;
             //                    }
             //                    if (r)
-            //                        logFile.writeDate("direct subdomain: " + subdomain + " :: " + fromDomain);
+            //                        logFile.writeDate(t() + "direct subdomain: " + subdomain + " :: " + fromDomain);
             //                }
             //                // check SOA
             //                //                if (!r) {
             //                //                    r = sameSoa(resolvedDomain, fromDomain);
             //                //                    if (r)
-            //                //                        logFile.writeDate("samesoa succeeded: " + resolvedDomain + " =~= " + fromDomain);
+            //                //                        logFile.writeDate(t() + "samesoa succeeded: " + resolvedDomain + " =~= " + fromDomain);
             //                //                }
             //
             //                // check MX / DNS IP addresses
             //                if (!r) {
             //                    r = guessPermission(clientHelo, remoteAddress, resolvedDomain, fromDomain);
             //                    if (r)
-            //                        logFile.writeDate("GUESSPERMISSION: " + clientHelo + ", " + remoteAddress + ", "
+            //                        logFile.writeDate(t() + "GUESSPERMISSION: " + clientHelo + ", " + remoteAddress + ", "
             //                                + resolvedDomain + ", " + fromDomain);
             //                }
             //            }
@@ -1178,18 +1091,29 @@ final class Smtp extends de.bb.bejy.Protocol {
                 }
             }
             if (r) {
-                logFile.writeDate("GREYLIST OK: " + clientHelo + ", " + remoteAddress + ", " + resolvedDomain + ", "
+                logFile.writeDate(tx() + "GREYLIST OK: " + clientHelo + ", " + remoteAddress + ", " + resolvedDomain + ", "
                         + fromDomain);
             } else {
-                logFile.writeDate("GREYLIST PENDING: " + clientHelo + "[" + remoteAddress + "=" + resolvedDomain
+                logFile.writeDate(tx() + "GREYLIST PENDING: " + clientHelo + "[" + remoteAddress + "=" + resolvedDomain
                         + "] for domain:" + fromDomain);
             }
             //            }
         }
 
-        logFile.writeDate("check: " + r + " " + clientHelo + ", " + remoteAddress + ", " + resolvedDomain + ", "
+        logFile.writeDate(tx() + "check: " + r + " " + clientHelo + ", " + remoteAddress + ", " + resolvedDomain + ", "
                 + fromUser + ", " + fromDomain + ", " + toDomain);
         checkCache.put(fromDomain + "#" + toDomain, r);
         return r;
+    }
+
+    private static String tx() {
+        return "[" + Thread.currentThread().getName() + "] | ";
+    }
+
+    private static String tin() {
+        return "[" + Thread.currentThread().getName() + "] < ";
+    }
+    private static String tout() {
+        return "[" + Thread.currentThread().getName() + "] > ";
     }
 }

@@ -33,8 +33,8 @@ public class SmtpFactory extends MailFactory {
                     "a full path to an virusscanner which returns 0 on ok, not 0 on error."
                             + " Parameter is the mail file name.", ""},
             {"virusScanTimeout", "allowed timeout to check for viruses in ms", "60000"},
-            {"greyListBlock", "interval to initally reject delivery in minutes", "5"},
-            {"greyListAccept", "interval to initally accept redelivery in minutes", "120"},
+            {"greyListBlock", "interval to initally reject delivery in minutes", "30"},
+            {"greyListAccept", "interval to initally accept redelivery in minutes", "300"},
             {"greyListKeep", "interval to keep grey list permissions in minutes", "10080"}};
 
     final static SessionManager<String, String> GREYLIST1 = new SessionManager<String, String>(1000L * 60 * 5);
