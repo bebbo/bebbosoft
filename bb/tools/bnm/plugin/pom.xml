@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>bnm</artifactId>
+    <groupId>de.bb.tools.bnm</groupId>
+    <version>0.1.2</version>
+  </parent>
+  <groupId>de.bb.tools.bnm.plugin</groupId>
+  <artifactId>plugin</artifactId>
+  <packaging>pom</packaging>
+  <version>0.1.2</version>
+  <description>BNM plugins</description>
+  <modules>
+    <module>antrun-plugin</module>
+    <module>bundle-plugin</module>
+    <module>clean-plugin</module>
+    <module>compiler-plugin</module>
+    <module>deploy-plugin</module>
+    <module>install-plugin</module>
+    <module>jar-plugin</module>
+    <module>resources-plugin</module>
+    <module>surefire-plugin</module>
+    <module>dependency-plugin</module>
+    <module>exec-plugin</module>
+    <module>noop-plugin</module>
+    <module>flex-plugin</module>
+  </modules>
+</project>

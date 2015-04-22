@@ -1,0 +1,16 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>create</goal>
+      <implementation>de.bb.tools.bnm.plugin.noop.NoopPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>parse-version</goal>
+      <implementation>de.bb.tools.bnm.plugin.noop.NoopPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>timestamp-property</goal>
+      <implementation>de.bb.tools.bnm.plugin.noop.NoopPlugin</implementation>
+    </mojo>
+ </mojos>
+</plugin>

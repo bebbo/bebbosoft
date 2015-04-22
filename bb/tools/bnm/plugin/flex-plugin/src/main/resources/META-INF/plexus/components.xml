@@ -1,0 +1,33 @@
+<component-set>
+	<components>
+		<component>
+			<role-hint>swf</role-hint>
+			<configuration>
+				<lifecycles>
+					<lifecycle>
+						<id>default</id>
+						<phases>
+							<compile>de.bb.tools.bnm.plugin:flex-plugin:compile-swf
+							</compile>
+							<deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy
+							</deploy>
+							<install>org.apache.maven.plugins:maven-install-plugin:install
+							</install>
+							<process-resources>
+								org.apache.maven.plugins:maven-resources-plugin:resources
+							</process-resources>
+							<process-test-resources>
+								org.apache.maven.plugins:maven-resources-plugin:testResources
+							</process-test-resources>
+							<test>de.bb.tools.bnm.plugin:flex-plugin:test-run
+							</test>
+							<test-compile>
+								de.bb.tools.bnm.plugin:flex-plugin:test-compile
+							</test-compile>
+						</phases>
+					</lifecycle>
+				</lifecycles>
+			</configuration>
+		</component>
+	</components>
+</component-set>

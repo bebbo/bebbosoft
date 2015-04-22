@@ -1,0 +1,12 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>bundle</goal>
+      <implementation>de.bb.tools.bnm.plugin.bundle.BundlePlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>install</goal>
+      <implementation>de.bb.tools.bnm.plugin.install.InstallPlugin</implementation>
+    </mojo>
+  </mojos>
+</plugin>

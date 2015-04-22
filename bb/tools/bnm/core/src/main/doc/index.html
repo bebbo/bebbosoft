@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>BNM IS not Maven</title>
+</head>
+<body>
+<h1>BNM</h1>
+<b>BNM IS not Maven</b>
+BNM is the try to re-implement maven in a different way:
+<ul>
+	<li>have a compact all in one core application</li>
+	<li>work faster than the original
+	<ul>
+		<li>parallelize down loads</li>
+		<li>parallelize the build process</li>
+		<li>no updates for final artifacts (non SNAPSHOT version)</li>
+		<li>fast algorithms</li>
+	</ul>
+	</li>
+	<li>be more strict (maybe more precise!?)
+	<ul>
+		<li>no support for version ranges since it breaks reproduction</li>
+		<li>disallow variable usage in id, artifactId, groupId, version,
+		scope and packaging fields.</li>
+	</ul>
+	</li>
+	<li>provide more usability with new Eclipse integration approach
+	<ul>
+		<li>wizard to create project roots</li>
+		<li>wizards to create projects inside the project tree</li>
+		<li>final artifacts are read only</li>
+		<li>action to create the next SNAPSHOT version of an artifact and
+		update all dependencies inside the project tree</li>
+		<li>action to finalize an artifact and update all dependencies
+		inside the project tree</li>
+
+		<li>action to get a subproject as Eclipse project</li>
+		<li>integrated builder to run 'bnm install' on changes for all
+		dependent projects</li>
+	</ul>
+	</li>
+	<li>add missing features
+	<ul>
+		<li>add an include mechanism to resolve inheritance issues</li>
+	</ul>
+
+	</li>
+</ul>
+<h2>documentation</h2>
+If you plan to use a tool like BNM it is important to know how
+everything works together.
+<h3>ingredients</h3>
+First the ingredients:
+<ul>
+	<li>settings.xml</li>
+
+	<li>pom.xml - own, parent and included</li>
+</ul>
+<h3>merge order</h3>
+Those are merged in this order to create a resolved pom (see below how merge works).
+<ul>
+	<li>settings.xml</li>
+	<li>included from root pom.xml</li>
+
+	<li>root pom.xml</li>
+	<li>included from first child pom.xml</li>
+	<li>first child pom.xml</li>
+	<li>...</li>
+	<li>included from artifact pom.xml</li>
+	<li>artifact pom.xml</li>
+
+</ul>
+So how does this merge work? Once the resolved pom is created
+<ul>
+	<li>the active profiles of the resolved pom</li>
+	<li>the active profiles of the settings.xml</li>
+</ul>
+are applied. And finally the properties are resolved which results into
+the effective pom.
+<h3>merge mechanics</h3>
+The merge mechanism takes a parent pom.xml and a child pom.xml and performs the following steps:
+<ul>
+	<li>The elements
+	<ul><li>parent</li>
+		<li>modules</li>
+		<li>groupId</li>
+		<li>artifactId</li>
+		<li>version</li>
+	</ul>of the parent pom.xml are replaced with the values of the child pom.xml, even when null.</li>
+	<li>The elements
+	<ul><li>build</li>
+		<li>dependencyManagement</li>
+		<li>pluginManagement</li>
+		<li>reporting</li>
+	</ul>are merged by applying this algorithm to the elements recursively.</li>
+	<li>simple elements (String, URL, boolean, types) are replaced with the child value, if it is set.
+	If the value is unset in the child, the parent value persists.</li>
+	<li>list elements are merged by this algorithm:
+	<ul><li>parent list members having a field named inherited set to false are removed.</li>
+		<li>if a list member contains the groupId, artifactId fields
+		<ul><li>if the member has the type plugin, children of same groupId, artifactId, version are merged by applying this algorithm recursively. Plugins with different version coexists!</li>
+			<li>otherwise child member with the same groupId, artifactId are replacing parent members (thus overriding the version!).</li>
+			<li>if a list member contains an id field, child members with the same id are replacing parent members.		
+			Elements with different id are appended.</li>
+			<li>otherwise all child members are appended to the parent list</li>			
+		</ul></li>
+	</ul></li>
+	<li>map elements (like properties or configuration) are merged by these rules:
+		<ul><li>if the map key refers to a CTYPE (like properties), if a child value exists it replaces the parent value.</li>
+		<li>if the key refers to elements all named identical, it is treated as a list. By default if a child list exists it replaces the parent list.
+		But this behaviour can be modified by attributes in the child list:
+			<ul><li>mode="append" will result into appending the child list.</li>
+			<li>mode="prepend" will result into prepending the child list.</li>
+			<li>mode="merge" uses the list merge algorithm described above.</li>
+			</ul></li>
+		<li>if the key refers to different named elements this map merge algorithm is applied recursively</li>
+		</ul></li>
+</ul>
+</body>
+</html>

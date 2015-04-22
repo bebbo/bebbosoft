@@ -1,0 +1,20 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>jar</goal>
+      <implementation>de.bb.tools.bnm.plugin.jar.JarPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>ejb</goal>
+      <implementation>de.bb.tools.bnm.plugin.jar.JarPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>war</goal>
+      <implementation>de.bb.tools.bnm.plugin.jar.WarPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>test-jar</goal>
+      <implementation>de.bb.tools.bnm.plugin.jar.TestJarPlugin</implementation>
+    </mojo>
+ </mojos>
+</plugin>

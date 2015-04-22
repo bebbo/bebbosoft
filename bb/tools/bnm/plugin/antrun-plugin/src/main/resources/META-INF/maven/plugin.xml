@@ -1,0 +1,8 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>run</goal>
+      <implementation>de.bb.tools.bnm.plugin.antrun.AntrunPlugin</implementation>
+    </mojo>
+  </mojos>
+</plugin>

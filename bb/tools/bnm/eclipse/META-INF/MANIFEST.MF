@@ -1,0 +1,25 @@
+Bundle-ManifestVersion: 2
+Bundle-Name: BNM eclipse integration
+Bundle-SymbolicName: de.bb.tools.bnm.eclipse;singleton:=true
+Bundle-Version: 0.1.3
+Bundle-Activator: de.bb.tools.bnm.eclipse.Plugin
+Bundle-Vendor: BebboSoft GbR
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.console,
+ org.eclipse.text,
+ org.eclipse.pde.core;x-internal:=true,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.pde.ui;x-internal:=true,
+ org.eclipse.ltk.ui.refactoring,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.launching,
+ org.eclipse.debug.core,
+ org.eclipse.jface.text,
+ de.bb.util;bundle-version="1.0.15",
+ de.bb.tools.bnm.core;bundle-version="0.1.3"
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy

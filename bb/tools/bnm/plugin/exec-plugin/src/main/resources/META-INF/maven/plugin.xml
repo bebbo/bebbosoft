@@ -1,0 +1,12 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>exec</goal>
+      <implementation>de.bb.tools.bnm.plugin.exec.ExecPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>java</goal>
+      <implementation>de.bb.tools.bnm.plugin.exec.JavaPlugin</implementation>
+    </mojo>
+  </mojos>
+</plugin>

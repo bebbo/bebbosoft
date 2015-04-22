@@ -1,0 +1,16 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>resources</goal>
+      <implementation>de.bb.tools.bnm.plugin.resources.ResourcesPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>copy-resources</goal>
+      <implementation>de.bb.tools.bnm.plugin.resources.CopyResourcesPlugin</implementation>
+    </mojo>    
+    <mojo>
+      <goal>testResources</goal>
+      <implementation>de.bb.tools.bnm.plugin.resources.TestResourcesPlugin</implementation>
+    </mojo>    
+  </mojos>
+</plugin>

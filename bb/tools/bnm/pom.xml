@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.bb.tools</groupId>
+    <artifactId>tools</artifactId>
+    <version>1.0.4</version>
+  </parent>
+  <groupId>de.bb.tools.bnm</groupId>
+  <artifactId>bnm</artifactId>
+  <version>0.1.2</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>core</module>
+    <module>eclipse</module>
+    <module>plugin</module>
+    <module>launcher</module>
+    <module>feature</module>
+  </modules>
+</project>

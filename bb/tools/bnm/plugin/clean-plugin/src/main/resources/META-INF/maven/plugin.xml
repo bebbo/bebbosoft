@@ -1,0 +1,8 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>clean</goal>
+      <implementation>de.bb.tools.bnm.plugin.clean.CleanPlugin</implementation>
+    </mojo>
+  </mojos>
+</plugin>

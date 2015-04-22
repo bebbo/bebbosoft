@@ -1,0 +1,12 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>compile</goal>
+      <implementation>de.bb.tools.bnm.plugin.compiler.CompilerPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>testCompile</goal>
+      <implementation>de.bb.tools.bnm.plugin.compiler.TestCompilerPlugin</implementation>
+    </mojo>
+  </mojos>
+</plugin>

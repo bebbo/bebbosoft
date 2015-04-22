@@ -1,0 +1,9 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>test</goal>
+      <implementation>de.bb.tools.bnm.plugin.surefire.SureFirePlugin</implementation>
+      <buildIfModified>true</buildIfModified>
+    </mojo>
+  </mojos>
+</plugin>

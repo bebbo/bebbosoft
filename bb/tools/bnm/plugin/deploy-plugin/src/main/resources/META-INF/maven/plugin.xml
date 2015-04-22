@@ -1,0 +1,12 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>deploy</goal>
+      <implementation>de.bb.tools.bnm.plugin.deploy.DeployPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>deploy-file</goal>
+      <implementation>de.bb.tools.bnm.plugin.deploy.DeployFilePlugin</implementation>
+    </mojo>
+  </mojos>
+</plugin>

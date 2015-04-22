@@ -1,0 +1,20 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>compile-swc</goal>
+      <implementation>de.bb.tools.bnm.plugin.flex.CompileSwcPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>compile-swf</goal>
+      <implementation>de.bb.tools.bnm.plugin.flex.CompileSwfPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>test-compile</goal>
+      <implementation>de.bb.tools.bnm.plugin.flex.TestCompileSwcPlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>test-run</goal>
+      <implementation>de.bb.tools.bnm.plugin.flex.TestRunSwcPlugin</implementation>
+    </mojo>
+ </mojos>
+</plugin>

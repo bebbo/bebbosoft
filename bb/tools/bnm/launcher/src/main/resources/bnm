@@ -1,0 +1,7 @@
+#!/bin/sh
+LAUNCHERPATH=`dirname $(readlink -f $0)`
+if [ ! -z "$M2_REPO" ]; then
+	BNMDEF=-DM2_REPO=${M2_REPO}	
+fi
+java $BNMDEF -cp $LAUNCHERPATH BnmLauncher --version=0.1.0 $*
+
