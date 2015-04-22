@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Bebbo's Java Server</title>
+<link href="default.css" type=text/css rel=stylesheet>
+<meta http-equiv=content-type content="text/html; charset=iso-8859-1">
+</head>
+
+<h2>Welcome to BEJY</h2>
+<table width="100%"><tbody><tr><th><img src = "gfx/show.gif"> &nbsp; NEW</th>
+  <tr><td><p>
+      BEJY is a modular server application, designed for small memory footprints and high performance.
+      </p><p>
+      BEJY is a good choice for
+      <ul><li>a secure web server solution
+      </li><li>developers web container to enhance turn around cycles due to BEJY's ultra fast start time
+      </li><li>mail server with IMAP support
+      </li><li>hosting customers and giving each customer an own BEJY instance wihtout for full VM services.
+      </li></ul>
+      </p><p>
+      The current version comes with HTTP, SMTP, POP3, IMAP protocol implementations.
+      The HTTP protocol implementation also covers a servlet engine, a JSP engine,
+      a handler to invoke CGI, and other useful things.
+      </p><p>
+      The servlet engine implements the final spec servlet 2.3.
+      Furthermore webapps and WAR archives are fully supported.
+      </p><p>
+      The JSP engine implements the final spec 1.2
+      </p><p>
+      <b>To use it you have to accept the
+      <a target=_blank href="license.html">non commercial license!</a></b>
+      purposes.
+</p></td></tr></tbody></table>
+<table width="100%">
+  <tbody>
+  <tr>
+    <th><img src = "gfx/show.gif"> &nbsp; Getting Started</th>
+  <tr><td><p>
+  Depending on your scenario you need to do some preconfigurations:
+  <ul><li><b>BEJY as web container with JSP support:</b>
+    <ol><li>Install the JDK in addtion (or instead) of the JRE, since a JAVA compiler is required
+    </li><li>Configure the Java compiler by
+      <ul><li>modify the start script and add &lt;jdk&gt;/lib/tools.jar to the classpath <b>or</b>
+      </li><li>modify bejy.xml and specify the full path to the javac executable <b>or</b>
+      </li><li>modify the global search path so the correct javac os found
+      </li></ul>
+    </li></ol>
+  </li><li><b>BEJY as mail server:</b>
+    <ol><li>Obtain and install a supported database - currently one of those:
+      <ul><li>MySQL 3.x or newer - developer tested and productive - available at <a href="http://dev.mysql.com/downloads/" target="_blank">www.mysql.com</a>
+      </li><li>MSSQL 2000 or newer - developer tested - available at <a href="http://www.microsoft.com/downloads/results.aspx?pocId=&freetext=SQLSERVER&DisplayLang=en" target="_blank">www.microsoft.com</a>
+      </li><li>Oracle 8.x or newer - developer tested - available at <a href="http://www.oracle.com/database/index.html" target="_blank">www.oracle.com</a>
+      </li><li>HSQLDB 1.8 or newer - developer tested  - available at <a href="http://hsqldb.org/" target="_blank">hsqldb.org/</a>
+      </li></ul>
+    </li><li>Create a database for the mail database tables.
+    </li><li>Create a user for BEJY which requires full rights to the mail database.
+    </li><li>Obtain the correct JDBC driver which matches your database and put into the lib folder.
+    </li><li>modify the start script and add the JDBC driver to the classpath
+    </li><li>Now restart BEJY and use the <a href="http://localhost:8081/admin/w_mail.jsp" target="_blank">email wizard</a> to configure the rest.
+    </ol>
+  </li></ul>
+   For further configurations the <a href="http://localhost:8081/admin/" target="_blank">admin UI</a> should be used.<br>
+   The initial username is <b>admin</b>, the initial password is empty, nothing, nada - leave it blank!
+</p></td></tr></tbody></table>
+<table width="100%">
+  <tbody>
+  <tr>
+    <th><img src = "gfx/show.gif"> &nbsp; Support</th>
+  <tr><td><p>
+  If you have questions, problems or feature requests feel free to use the <a href="http://www.bejy.org/forum.jsp" target="_blank">forum at bejy.org</a>.
+  <br>Thanks for using BEJY!
+</p></TD></TR></TBODY></TABLE>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TH>&nbsp;</TH>
+  <TR>
+    <TD>(c) by Stefan Bebbo Franke in 2000-2006, all rights reserved
+  </TD></TR></TBODY></TABLE></BODY></HTML>

@@ -1,0 +1,301 @@
+<html>
+<head>
+	<title>Bebbo's Java Server's config</title>
+	<link href="default.css" type="text/css" rel="stylesheet">
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#c0bd98">
+<h2>Bejy Config</h2>
+<table width="100%"><th><img src = "gfx/show.gif"> &nbsp; BEJY configuration</th><tr><td><p>
+Bejy's config file uses a XML syntax to describe the configuration.
+The configuration data for a module is defined by the module.
+So if someone creates a new module, he also defines the needed configuration for that module,
+which integrates seamless into BEJY's config file.
+The base module, which starts the servers, requires a server tag for each server.
+Each server must have a protocol which may contain further information.
+</p><p>
+Since version 1.2.x.y BEJY is deployed with a small admin page. All configuration SHOULD be done using this admin page.
+<br>To open the admin page use
+<a href="http://localhost:8081/admin/">http://localhost:8081/admin/</a> with username "admin" and an empty password.
+The first page you see looks like <a href="cfg/p1.html" target="BEJY_config">this</a>.
+<br>You see a tree of all configured elements. The XML file contains the same nested entries.
+</p></td></tr></table>
+<table width="100%"><th><img src = "gfx/show.gif"> &nbsp; BEJY</th><tr><td><p>
+This is the configuration of the main node of BEJY:
+
+<table border=0>
+    <input type="hidden" name="itemName" value="BEJY">
+<tr><td><input type="submit" name="BEJY" value="new dns"></td>
+          <td>creates a new dns, dynamic name search</td>
+          </tr><tr><td><input type="submit" name="BEJY" value="new user group"></td>
+          <td>creates a new user group, to maintain users and their passwords</td>
+          </tr><tr><td><input type="submit" name="BEJY" value="new mail config"></td>
+          <td>creates a new mail config, mail configuration</td>
+          </tr><tr><td><input type="submit" name="BEJY" value="new tcp/ip server"></td>
+          <td>creates a new tcp/ip server, which uses a configurable protocol implementation</td>
+          </tr></table>
+
+<ul><li><a href="#dns">dns</a><br>
+A DNS entry is needed if you run a mail server.
+You may only add <b>one</b> DNS entry.
+The DNS entry is responsible for all DNS lookups in BEJY.
+</li><li><a href="#usergroup">user group</a><br>
+A user group is a collection of <a href="#user">user</a> nodes. You may create as many groups as you like.
+</li><li><a href="howtomail.html#mailconfig">mail config</a><br>
+The mail config contains the settings to use BEJY as mail server. You also have to configure the tco/ip servers.
+</li><li><a href="#tcpipserver">tcp/ip server</a><br>
+A tcp/ip server defines a server which listens on one defined TCP/IP port and uses its configured protocol.
+</li><li><a href="#global">global</a><br>
+This item shows only up if there is no global node.
+</li><li><a href="#mimetypes">mime types</a><br>
+This item shows only up if there is no mime types node. A mime types node is a collection of <a href="#mimetype">mime type</a> nodes.
+This node is applied to all HTTP servers.
+</li></ul>
+</p></td></tr></table>
+
+<table id="dns" width="100%"><th><img src = "gfx/show.gif"> &nbsp; dns</th><tr><td><p>
+This is the configuration of the dns node:
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>server</td><td>
+        <input type="text" name="server" value="127.0.0.1">
+        </td><td>domain name or ip address of the used DNS server</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="DNS" value="apply changes">
+      </td><td>
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      </table>
+
+<ul><li>server
+<br>You MUST define a valid DNS server IP address or domain name. We recommend to have a local DNS service running.
+In this case you would enter "127.0.0.1"
+</li></ul>
+</p></td></tr></table>
+
+<table id="usergroup" width="100%"><th><img src = "gfx/show.gif"> &nbsp; user group</th><tr><td><p>
+Configure a user group:
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.ConfigGroup" selected>de.bb.bejy.ConfigGroup</option></select></td><td>a class implementing this configurable</td></tr><tr><td>name</td><td>
+        <input type="text" name="name" value="">
+        </td><td>group name</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="user group" value="apply changes">
+      </td><td>
+        <input type="submit" name="user group" value="\/">
+        <input type="submit" name="user group" value="remove this element">
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="user group" value="new user"></td>
+          <td>creates a new user, with some password</td>
+          </tr></table>
+
+<ul><li>class
+<br>You MUST choose a valid class name. The combo box lists all found implementations.
+</li><li>name
+<br>The name is used to reference this user group. If you used duplicte names, the last found user group with the same name is referenced.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#user">new user</a>
+<br>adds a new user to the group
+</li></ul>
+</p></td></tr></table>
+
+<table id="user" width="100%"><th><img src = "gfx/show.gif"> &nbsp; user</th><tr><td><p>
+Configure a user
+<table border=0>
+    <input type="hidden" name="itemName" value="user">
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>name</td><td>
+        <input type="text" name="name" value="">
+        </td><td>name of the user</td></tr><tr><td>password</td><td>
+          <input type="password" name="password" value="">
+          <input type="password" name="password2" value="">
+        </td><td>the password</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="user" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="user" value="\/">
+        <input type="submit" name="user" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      </table>
+<ul><li>name
+<br>This is the users name. If the name is used twice, the last found user with this name is used.
+</li><li>password
+<br>set the password for the user. Enter it twice.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li></ul>
+
+</p></td></tr></table>
+
+<table id="global" width="100%"><th><img src = "gfx/show.gif"> &nbsp; global</th><tr><td><p>
+Configure global settings
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>javac</td><td>
+        <input type="text" name="javac" value="javac -g">
+        </td><td>command line of the java compiler executable</td></tr><tr><td>logFile</td><td>
+        <input type="text" name="logFile" value="*">
+        </td><td>the default log file, use * for stdout</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="global" value="apply changes">
+      </td><td>
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      </table>
+
+<ul><li>javac
+<br>I you run JSPs you MUST configure the Java commandline compiler.
+</li><li>logFile
+<br>Base name of the logFile. Use * to write to stdout.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li></ul>
+
+</p></td></tr></table>
+<table id="mimetypes" width="100%"><th><img src = "gfx/show.gif"> &nbsp; mime types</th><tr><td><p>
+
+Configure the mime types.
+<table border=0>
+<tr><td><input type="submit" name="mime types" value="new mime type"></td>
+          <td>creates a new mime type, which assigns the content type to a file extension</td>
+          </tr></table>
+
+<ul><li><a href="#mimetype">mime type</a>
+<br>A mime type is a mapping .
+</li></ul>
+
+</p></td></tr></table>
+<table id="mimetype" width="100%"><th><img src = "gfx/show.gif"> &nbsp; mime type</th><tr><td><p>
+Configure a single mime type.
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>extension</td><td>
+        <input type="text" name="extension" value="gif">
+        </td><td>file extension</td></tr><tr><td>type</td><td>
+        <input type="text" name="type" value="image/gif">
+        </td><td>the associated mime-type</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="gif" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="gif" value="\/">
+        <input type="submit" name="gif" value="remove this element">
+
+      </td></tr>
+      </table>
+<ul><li>extension
+<br>This is the name of the file extension. If there are duplicate extensions, the last found is used.
+</li><li>type
+<br>defines the mime type for this file extension.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li></ul>
+
+</p></td></tr></table>
+<table id="tcpipserver" width="100%"><th><img src = "gfx/show.gif"> &nbsp; tcp/ip server</th><tr><td><p>
+Configure a TCP/IP server.
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>bindAddr</td><td>
+        <input type="text" name="bindAddr" value="">
+        </td><td>a specific address to bind to (e.g. 127.0.0.1), empty = 0.0.0.0</td></tr><tr><td>maxThreads</td><td>
+        <input type="text" name="maxThreads" value="999">
+        </td><td>limits the maximal thread count handling this servers requests</td></tr><tr><td>maxWait</td><td>
+        <input type="text" name="maxWait" value="1">
+        </td><td>limits the maximal inactive threads (recommended: count of CPUs)</td></tr><tr><td>name</td><td>
+        <input type="text" name="name" value="">
+        </td><td>a verbose name for this server</td></tr><tr><td>port</td><td>
+        <input type="text" name="port" value="">
+        </td><td>the port number to listen on</td></tr><tr><td>timeout</td><td>
+        <input type="text" name="timeout" value="120000">
+        </td><td>(ms) limits the maximal waiting time with blocking methods (e.g. read())</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="null" value="apply changes">
+      </td><td>
+        <input type="submit" name="null" value="\/">
+        <input type="submit" name="null" value="remove this element">
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="null" value="new tcp/ip protocol"></td>
+          <td>creates a new tcp/ip protocol, a protocol implementation</td>
+          </tr><tr><td><input type="submit" name="null" value="new ssl"></td>
+          <td>creates a new ssl, to specify the key file, its password and a certificate file to enable SSL</td>
+          </tr></table>
+
+<ul><li>bindAddr
+<br>If specified the server binds only to this IP address.
+</li><li>maxThread
+<br>Limits the number of maximal active threads for this server to the specified number.
+</li><li>maxWait
+<br>Limits the number of maximal inactive threads for this server to the specified number.
+</li><li>name
+<br>defines the display name in the admin page.
+</li><li>port
+<br>Defines the TCP/IP port to listen on
+</li><li>timeout
+<br>Sets a timeout for read/write operations until a connection is closed. The value is in milli seconds.
+</li><li><a href="#protocol">tcp/ip protocol</a>
+<br>You MUST add a protocol to make the server work.
+</li><li><a href="#ssl">ssl</a>
+<br>You MAY add ssl settings to enable SSL for this server.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li></ul>
+
+</p></td></tr></table>
+<table id="protocol" width="100%"><th><img src = "gfx/show.gif"> &nbsp; tcp/ip protocol</th><tr><td><p>
+Configure a TCP/IP protocol.
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.http.HttpFactory" >de.bb.bejy.http.HttpFactory</option> <option value="de.bb.bejy.http.RRFactory" >de.bb.bejy.http.RRFactory</option> <option value="de.bb.bejy.mail.ImapFactory" >de.bb.bejy.mail.ImapFactory</option> <option value="de.bb.bejy.mail.Pop3Factory" >de.bb.bejy.mail.Pop3Factory</option> <option value="de.bb.bejy.mail.SmtpFactory" >de.bb.bejy.mail.SmtpFactory</option></select></td><td>a class implementing this configurable</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="unknown" value="apply changes">
+      </td><td>
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      </table>
+
+<ul><li>class
+<br>You MUST select one of the available protocols. Further settings depend on the protocol. Have look into
+<a href="howtohttp.html">how to HTTP</a> and <a href="howtomail.html">how to mail</a>.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li></ul>
+
+</p></td></tr></table>
+<table width="100%"><th>&nbsp;</th><tr><td align="left">
+(c) by Stefan Bebbo Franke in 2000-2003, all rights reserved
+</td></tr>
+</table>
+</body>
+</html>
+

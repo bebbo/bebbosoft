@@ -1,0 +1,159 @@
+<html>
+<head>
+	<title>Bebbo's Java Server's "How to Mail" page</title>
+	<link href="default.css" type="text/css" rel="stylesheet">
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#c0bd98">
+<h2>How to mail</h2>
+
+<table width="100%">
+<th><img src = "gfx/show.gif"> &nbsp; BEJY mail setup</th>
+<tr><td><p>
+To configure a mail server, there you have to do some basic <a href="config.html">configuration</a>.
+<ul><li>You MUST setup a proper <a href="#database">mail database</a>
+</li><li>You MUST add the JDBC driver to access your <a href="#database">mail database</a>
+</li><li>You MUST configure a <a href="config.html#dns">dns</a> node
+</li><li>You MUST configure a <a href="#mailconfig">mail config</a> node
+</li><li>You MUST configure a <a href="config.html#tcpipserver">tcp/ip server</a> node for each POP3, IMAP, SMTP protocol
+</li><li>You SHOULD configure the <a href="config.html#global">global</a> node
+</li><li>You SHOULD configure the <a href="config.html#mimetypes">mime types</a> node
+</li><li>You MAY configure <a href="config.html#usergroup">user group</a> nodes
+</li><li>You SHOULD add <a href="#users">users</a> and domains to the mail database
+</li></ul>
+
+To make the server act as an POP3 server select the protocol
+<pre>de.bb.bejy.mail.Pop3Factory</pre>
+To make the server act as an SMTP server select the protocol
+<pre>de.bb.bejy.mail.SmtpFactory</pre>
+To make the server act as an IMAP server select the protocol
+<pre>de.bb.bejy.mail.ImapFactory</pre>
+
+</p></td></tr></table>
+<table id="database" width="100%"><th><img src = "gfx/show.gif"> &nbsp; mail database</th><tr><td><p>
+<img src="gfx/mail.gif">
+<table width="100%">
+<th><img src = "gfx/show.gif"> &nbsp; MSSQL setup</th>
+<tr><td><p>
+<ol><li>Login into the database as system user
+</li><li>Create a mail database:
+  <br><b>sqlprompt> create database mail;</b>
+</li><li>Create a login for the mail server on your SQL server:
+  <br><b>sqlprompt> sp_addlogin 'bejy', 'secret', 'mail';</b>
+</li><li>Switch to database:
+  <br><b>sqlprompt> use mail;</b>
+</li><li>Create a user for the mail server on your SQL server:
+  <br><b>sqlprompt> sp_adduser 'bejy', 'bejy';</b>
+</li><li>Execute the provided create script, to create all needed tables:
+use the file 'create_mssql.sql'
+</li><li>Grant access to all tables to the new created user:
+  <br><b>sqlprompt> grant all on mail_user to bejy;</b>
+  <br><b>sqlprompt> grant all on domain to bejy;</b>
+  <br><b>sqlprompt> ...</b>
+  <br><b>sqlprompt> grant all on forward to bejy;</b>
+</li></ol>
+</p></td></tr></table>
+
+<table width="100%">
+<th><img src = "gfx/show.gif"> &nbsp; MySQL setup</th>
+<tr><td><p>
+<ol><li>Login into the database as system user
+</li><li>Create a mail database:
+  <br><b>sqlprompt> create database mail;</b>
+</li><li>Create a login for the mail server on your SQL server:
+  <br><b>sqlprompt> grant usage on mail.* to bejy@bejyhost;</b>
+</li><li>: Grant access to the new created user:
+  <br><b>sqlprompt> grant all on mail.* to bejy@bejyhost identified by 'secret';</b>
+</li><li>Update internal stuff:
+  <br><b>sqlprompt> flush privileges;</b>
+</li><li>Login into database as bejy (using the 'secret' as password).
+</li><li>Execute the provided create script, to create all needed tables:
+use the file 'create_mysql.sql'
+</li></ol>
+
+</p></td></tr></table>
+<table id="jdbc" width="100%"><th><img src = "gfx/show.gif"> &nbsp; JDBC driver</th><tr><td><p>
+Add the JDBC driver archive to the classpath. Now you can select it in the <a href="#mailconfig">mail config</a>
+
+</p></td></tr></table>
+<table id="mailconfig" width="100%"><th><img src = "gfx/show.gif"> &nbsp; mail config</th><tr><td><p>
+Configure the mail settings
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>intervallSwitch</td><td>
+        <input type="text" name="intervallSwitch" value="12">
+        </td><td>the count of delivery retries until intervall switches and a 2nd mail notification is sent</td></tr><tr><td>jdbcDriver</td><td> <select name="jdbcDriver">  <option value="com.jnetdirect.jsql.JSQLDriver" selected > com.jnetdirect.jsql.JSQLDriver</option></select></td><td>class name of the JDBC driver implementation</td></tr><tr><td>jdbcUrl</td><td>
+        <input type="text" name="jdbcUrl" value="jdbc:mysql://localhost/mail?user=bejy&password=secret">
+        </td><td>the JDBC url to establish the database connection</td></tr><tr><td>longIntervall</td><td>
+        <input type="text" name="longIntervall" value="30">
+        </td><td>the time intervall used between delivery retries after intervall switch</td></tr><tr><td>mailDbi</td><td> <select name="mailDbi">  <option value="de.bb.bejy.mail.MSSQLDbi"  > de.bb.bejy.mail.MSSQLDbi</option> <option value="de.bb.bejy.mail.MySQLDbi" selected > de.bb.bejy.mail.MySQLDbi</option> <option value="de.bb.bejy.mail.OracleDbi"  > de.bb.bejy.mail.OracleDbi</option></select></td><td>class name of the user mail database implementation</td></tr><tr><td>mailFolder</td><td>
+        <input type="text" name="mailFolder" value="mail">
+        </td><td>path to the mail folder</td></tr><tr><td>mainDomain</td><td>
+        <input type="text" name="mainDomain" value="">
+        </td><td>class name of the user mail database implementation</td></tr><tr><td>maxRetries</td><td>
+        <input type="text" name="maxRetries" value="60">
+        </td><td>the max count of delivery retries</td></tr><tr><td>shortIntervall</td><td>
+        <input type="text" name="shortIntervall" value="5">
+        </td><td>the time intervall in minutes used between delivery retries before intervall switch</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="mail config" value="apply changes">
+      </td></tr>
+      </table>
+
+<ul><li>intervallSwitch
+<br>the count of delivery retries until intervall switches from the shortIntervall to the longIntervall and a 2nd mail notification is sent
+</li><li>jdbcDriver
+<br>class name of the JDBC driver implementation, if non is listed check your class path!
+</li><li>jdbcUrl
+<br>the database specific JDBC url, w.g. jdbc:mysql://localhost/mail?user=bejy&password=secret
+</li><li>longIntervall
+<br>the long intervall between resend tries in minutes
+</li><li>mailDbi
+<br>class name of the database implementation, e.g. de.bb.bejy.mail.MySQLDbi if you use mysql
+</li><li>mailFolder
+<br>the folder where the mail files are stored. The folder is maintained by BEJY. If you put foreign files into this folder, expect that those files get deleted!
+</li><li>mainDomain
+<br>This is the default domain name of your mail server
+</li><li>maxRetries
+<br>limit the retries to deliver a mail
+</li><li>shortIntervall
+<br>the short intervall between resend tries in minutes
+</li><li>
+<br>
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li></ul>
+
+
+
+</p></td></tr></table>
+
+<table id="users" width="100%">
+<th><img src = "gfx/show.gif"> &nbsp; adding mail user</th>
+<tr><td><p>
+<ol><li>Ensure that the domain is listed in the table 'domain'.
+If not, add the domain to the table and specify the mail user who owns that domain:
+<table border=1><tr><th>SERVER</th><th>COMMAND</th></tr>
+<tr><td>all</td><td>sqlprompt> insert into domain (domain, owner) values ('thedomain.org', 'pete');</td></tr>
+</table>
+</li><li>Add the mail user to the mail table:
+<table border=1><tr><th>SERVER</th><th>COMMAND</th></tr>
+<tr><td>MSSQL</td><td>sqlprompt> insert into mail_user (name, domain, passwd) values('pete', 'thedomain.org', 'petespassword');</td></tr>
+<tr><td>MySQL</td><td>sqlprompt> insert into mail_user (name, domain, passwd) values('pete', 'thedomain.org', password('petespassword'));</td></tr>
+</table>
+</li></ol>
+</p>
+</td></tr>
+</table>
+
+
+<table width="100%">
+    <th>&nbsp;</th>
+<tr><td align="left">
+(c) by Stefan Bebbo Franke in 2000-2003, all rights reserved
+</td></tr>
+</table>
+</body>
+</html>
+

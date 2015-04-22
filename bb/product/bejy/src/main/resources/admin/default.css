@@ -1,0 +1,128 @@
+UNKNOWN {
+	FONT-SIZE	: 12px;
+	COLOR		: black;
+	FONT-FAMILY	: Verdana,Arial,Helvetica
+}
+
+frameset {
+	border-bottom-style: solid;
+	border-width: 1;
+}
+
+BODY {
+	MARGIN      : 0 0 0 0;
+	FONT-SIZE	: 9pt;
+	COLOR		: #000033;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	BACKGROUND-COLOR: #FDDB81;
+}
+H2 {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 14pt;
+	COLOR		: #F61D1D;
+	FONT-STYLE	: italic;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+H3 {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 12pt;
+	COLOR		: #000000;
+	FONT-STYLE	: italic;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+th {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 10pt;
+	COLOR		: #000033;
+	BACKGROUND-COLOR: #decB81;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	TEXT-ALIGN	: left;
+}
+
+TD.normal {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+
+}
+std {
+	FONT-SIZE	: 9pt;
+	COLOR		: #000000;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+.td-bg-lightgrey {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	BACKGROUND-COLOR: #efefef
+}
+.td-font-grey {
+	FONT-SIZE	: 9pt;
+	COLOR		: #565656;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+A {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	TEXT-DECORATION	: none
+}
+B {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+}
+A:link {
+	COLOR		: #cc1D1D
+}
+A:active {
+	COLOR		: #ff3333
+}
+A:visited {
+	COLOR		: #cc1D1D
+}
+A:hover {
+	COLOR		: #777777
+}
+PRE {
+	FONT-SIZE	: 8pt;
+	FONT-FAMILY	: Courier New
+}
+.title {
+	FONT-WEIGHT	: bolder;
+	FONT-SIZE	: 48pt;
+	WIDTH		: 80%;
+	COLOR		: #8f0010;
+	FONT-STYLE	: italic;
+	FONT-FAMILY	: Arial, Helvetica, Verdana
+}
+.subtitle {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 12pt;
+	WIDTH		: 80%;
+	COLOR		: #000000;
+	FONT-FAMILY	: Arial, Helvetica, Verdana
+}
+
+div.m {
+  border: none;
+  overflow:hidden;
+  white-space:nowrap;  
+}
+div.m table {
+  border: none;
+  border-collapse: collapse;
+  padding: 0 0 0 0;
+}
+div.m table td {
+  border: none;
+  vertical-align: top;
+  padding: 0 0 0 0;
+}
+div.m table th {
+  vertical-align: top;
+  padding: 0 0 0 0;
+  background-image: url(gfx/hline.gif);
+  background-repeat: repeat-y;
+  background-color: transparent;
+}
+
+form {
+	margin: 0px;
+}

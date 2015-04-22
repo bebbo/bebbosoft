@@ -1,0 +1,17 @@
+<<<default.css>>>
+//Content
+|| [Welcome ==> _parent index.html]
+||
+//Examples
+||[A JSP page==>main jsp/index.jsp;extrainfo?p1=a&p2=b&p3=c]
+||[Same content via HTTPS==>_blank https://localhost/]
+||[Mail user settings ==> _blank https://localhost/jsp/mail.jsp]
+||
+//Administration
+||[BEJY admin ==> _blank http://localhost:8081/admin]
+||
+//More (old) info
+||[Configure BEJY ==> main config.html]
+||[How to HTTP ==> main howtohttp.html]
+||[How to mail ==>main howtomail.html]
+||[F A Q ==>main faq.html]

@@ -1,0 +1,105 @@
+UNKNOWN {
+	FONT-SIZE	: 12px;
+	COLOR		: black;
+	FONT-FAMILY	: Verdana,Arial,Helvetica
+}
+BODY {
+	FONT-SIZE	: 9pt;
+	COLOR		: #000033;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	BACKGROUND-COLOR: #FDDB81;
+}
+H2 {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 14pt;
+	COLOR		: #F61D1D;
+	FONT-STYLE	: italic;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+H3 {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 12pt;
+	COLOR		: #000000;
+	FONT-STYLE	: italic;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+th {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 10pt;
+	COLOR		: #000033;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	background-color: #FDD468;
+	TEXT-ALIGN	: left;
+	alignment	: left
+}
+TD.normal {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+
+}
+.1 {
+	BACKGROUND-COLOR: #FBB804;
+	COLOR		: #000000;
+	FONT-WEIGHT	: bold;
+}
+.2 {
+	COLOR		: #000033;
+	FONT-WEIGHT	: bold;
+}
+std {
+	FONT-SIZE	: 9pt;
+	COLOR		: #000000;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+.td-bg-lightgrey {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	BACKGROUND-COLOR: #efefef
+}
+.td-font-grey {
+	FONT-SIZE	: 9pt;
+	COLOR		: #565656;
+	FONT-FAMILY	: Arial, Verdana, Helvetica
+}
+A {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+	TEXT-DECORATION	: none
+}
+B {
+	FONT-SIZE	: 9pt;
+	FONT-FAMILY	: Arial, Verdana, Helvetica;
+}
+A:link {
+	COLOR		: #cc1D1D
+}
+A:active {
+	COLOR		: #ff3333
+}
+A:visited {
+	COLOR		: #cc1D1D
+}
+A:hover {
+	COLOR		: #777777
+}
+PRE {
+	FONT-SIZE	: 8pt;
+	FONT-FAMILY	: Courier New
+}
+.title {
+	FONT-WEIGHT	: bolder;
+	FONT-SIZE	: 48pt;
+	FILTER		: DropShadow(color=#220010, offx=4, offy=4);
+	WIDTH		: 80%;
+	COLOR		: #8f0010;
+	FONT-STYLE	: italic;
+	FONT-FAMILY	: Arial, Helvetica, Verdana
+}
+.subtitle {
+	FONT-WEIGHT	: bold;
+	FONT-SIZE	: 12pt;
+	FILTER		: DropShadow(color=#000033, offx=1, offy=1);
+	WIDTH		: 80%;
+	COLOR		: #000000;
+	FONT-FAMILY	: Arial, Helvetica, Verdana
+}

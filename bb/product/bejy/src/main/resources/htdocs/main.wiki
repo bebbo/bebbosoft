@@ -1,0 +1,48 @@
+<<<default.css>>>
+==Welcome to BEJY==
+//[gfx/show.gif] NEW
+
+BEJY is a modular server application, designed for small memory footprints and high performance.
+BEJY is a good choice for
+* a secure web server solution
+* developers web container to enhance turn around cycles due to BEJY's ultra fast start time
+*mail server with IMAP support
+*hosting customers and giving each customer an own BEJY instance wihtout for full VM services.
+The current version comes with HTTP, SMTP, POP3, IMAP protocol implementations.
+\\The HTTP protocol implementation also covers a servlet engine, a JSP engine,
+      a handler to invoke CGI, and other useful things.
+      The servlet engine implements the final spec servlet 2.3.
+      Furthermore webapps and WAR archives are fully supported.
+      The JSP engine implements the final spec 1.2
+\\__To use it you have to accept the [non commercial license | license.html]!__
+
+//[gfx/show.gif] Getting Started
+
+Depending on your scenario you need to do some preconfigurations:
+*__BEJY as web container with JSP support:__
+*#Install the JDK in addtion (or instead) of the JRE, since a JAVA compiler is required
+*#Configure the Java compiler by
+*#modify the start script and add <jdk>/lib/tools.jar to the classpath <b>or</b>
+*#modify bejy.xml and specify the full path to the javac executable <b>or</b>
+*#modify the global search path so the correct javac os found
+*__BEJY as mail server:__
+*# Obtain and install a supported database - currently one of those:
+*#* MySQL 3.x or newer - developer tested and productive - available at [http://dev.mysql.com/downloads/]
+*#*MSSQL 2000 or newer - developer tested - available at [http://www.microsoft.com/downloads]
+*#*Oracle 8.x or newer - developer tested - available at [http://www.oracle.com/database/index.html]
+*#*HSQLDB 1.8 or newer - developer tested  - available at [http://hsqldb.org]
+*#Create a database for the mail database tables.
+*#Create a user for BEJY which requires full rights to the mail database.
+*#Obtain the correct JDBC driver which matches your database and put into the lib folder.
+*#modify the start script and add the JDBC driver to the classpath
+*#Now restart BEJY and use the email wizard at [http://localhost:8081/admin/w_mail.jsp] to configure the rest.
+
+For further configurations the admin UI at [http://localhost:8081/admin/] should be used.
+The initial username is **admin**, the initial password is empty, nothing, nada - leave it blank!
+
+
+//[gfx/show.gif] Support
+If you have questions, problems or feature requests feel free to use the forum at [http://www.bejy.net/forum.jsp].
+\\Thanks for using BEJY!
+
+\\(c) by Stefan Bebbo Franke in 2000-2006, all rights reserved

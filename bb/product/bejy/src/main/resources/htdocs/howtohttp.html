@@ -1,0 +1,525 @@
+<html>
+<head>
+	<title>Bebbo's Java Server's "How to HTTP" page</title>
+	<link href="default.css" type="text/css" rel="stylesheet">
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#c0bd98">
+<h2>How to HTTP</h2>
+
+<table width="100%">
+<th><img src = "gfx/show.gif"> &nbsp; BEJY HTTP server</th>
+<tr><td><p>
+To configure a HTTP server, there you have to do some basic <a href="config.html">configuration</a>.
+</ul><li>You SHOULD configure the <a href="config.html#global">global</a> node
+</li><li>You SHOULD configure the <a href="config.html#mimetypes">mime types</a> node
+</li><li>You MAY configure <a href="config.html#usergroup">user group</a> nodes
+</li><li>You MUST configure a <a href="config.html#tcpipserver">tcp/ip server</a> node
+</li></ul>
+To make the server act as an HTTP server select the protocol
+<pre>de.bb.bejy.http.HttpFactory</pre>
+
+</p></td></tr></table>
+<table id="HTTPprotocol" width="100%"><th><img src = "gfx/show.gif"> &nbsp; HTTP protocol</th><tr><td><p>
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.http.HttpFactory" selected>de.bb.bejy.http.HttpFactory</option> <option value="de.bb.bejy.http.RRFactory" >de.bb.bejy.http.RRFactory</option> <option value="de.bb.bejy.mail.ImapFactory" >de.bb.bejy.mail.ImapFactory</option> <option value="de.bb.bejy.mail.Pop3Factory" >de.bb.bejy.mail.Pop3Factory</option> <option value="de.bb.bejy.mail.SmtpFactory" >de.bb.bejy.mail.SmtpFactory</option></select></td><td>a class implementing this configurable</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="HTTP" value="apply changes">
+      </td><td>
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="HTTP" value="new virtual host"></td>
+          <td>creates a new virtual host, to listen on domain names, explicit IP addresses or everything</td>
+          </tr></table>
+
+<ul><li>class
+<br>You MUST select one of the available protocols. Further settings depend on the protocol. Have look into
+<a href="howtohttp.html">how to HTTP</a> and <a href="howtomail.html">how to mail</a>.
+</li><li><a href="#virtualhost">virtual host</a>
+<br>Defines a virtual host that is served by this HTTP server. You may add multiple virtual hosts to the TCP/IP server.
+This allows you to provide different content per domain.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li></ul>
+
+</p></td></tr></table>
+<table id="virtualhost" width="100%"><th><img src = "gfx/show.gif"> &nbsp; virtual host</th><tr><td><p>
+Configure a virtual host.
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>logFile</td><td>
+        <input type="text" name="logFile" value="*">
+        </td><td>file and path for http log file or * for stdout</td></tr><tr><td>name</td><td>
+        <input type="text" name="name" value="*">
+        </td><td>a list of domain names, ip addresses or *</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="virtual host" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="virtual host" value="\/">
+        <input type="submit" name="virtual host" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="virtual host" value="new context"></td>
+          <td>creates a new context, a customizable context with user defined handlers</td>
+          </tr><tr><td><input type="submit" name="virtual host" value="new war"></td>
+          <td>creates a new war, allows to load a single WAR file and map it to a URL context</td>
+          </tr><tr><td><input type="submit" name="virtual host" value="new webapps"></td>
+          <td>creates a new webapps, to load all WAR files and unpacked WAR files in the specified directory</td>
+          </tr></table>
+
+<ul><li>logFile
+<br>Defines the file name for the HTTP access log.
+</li><li>name
+<br>A list of domain names or "*" to listen on any domain.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#context">context</a>
+<br>This is a user define context, where you may add content <a href="#handler">handlers</a>.
+</li><li><a href="#war">war</a>
+<br>configure a single WAR archive or a folder with an exploded WAR archive
+</li><li><a href="#webapps">webapps</a>
+<br>defines a node to configure a webapps directory and loads its contained webapps.
+</li></ul>
+
+</p></td></tr></table>
+<table id="context" width="100%"><th><img src = "gfx/show.gif"> &nbsp; context</th><tr><td><p>
+Configure a context. A context is usually the root of a single web application.
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>group</td><td>
+        <input type="text" name="group" value="">
+        </td><td>optional name of a user group to restrict access</td></tr><tr><td>path</td><td>
+        <input type="text" name="path" value="">
+        </td><td>the local path</td></tr><tr><td>realm</td><td>
+        <input type="text" name="realm" value="">
+        </td><td>a descriptive name for this realm</td></tr><tr><td>urlPath</td><td>
+        <input type="text" name="urlPath" value="">
+        </td><td>the URL context path</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="/" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="/" value="\/">
+        <input type="submit" name="/" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="/" value="new handler"></td>
+          <td>creates a new handler, to handle incoming HTTP requests</td>
+          </tr><tr><td><input type="submit" name="/" value="new parameter"></td>
+          <td>creates a new parameter, which is an init parameter for the current instance, used on next activation</td>
+          </tr></table>
+
+<ul><li>group
+<br>Optional name of a user group, leave it empty to have public access
+</li><li>path
+<br>this is the path to the context root in the local file system
+</li><li>realm
+<br>The realm name is displayed to users and allows to merge different contexts to the same user group without additional password prompts.
+</li><li>urlPath
+<br>the URL path is used to match the requests path and detect whether this context is used or not.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#handler">handler</a>
+<br>Add a new handler to this context<a href="#handler">handlers</a>.
+</li><li><a href="#parameter">parameter</a>
+<br>Add a context init parameter.
+</li></ul>
+
+</p></td></tr></table>
+<table id="handler" width="100%"><th><img src = "gfx/show.gif"> &nbsp; handler</th><tr><td><p>
+Configure a handler
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.http.CgiHandler" >de.bb.bejy.http.CgiHandler</option> <option value="de.bb.bejy.http.FileHandler" >de.bb.bejy.http.FileHandler</option> <option value="de.bb.bejy.http.ServletHandler" >de.bb.bejy.http.ServletHandler</option></select></td><td>a class implementing this configurable</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="unknown" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="unknown" value="\/">
+        <input type="submit" name="unknown" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="unknown" value="new parameter"></td>
+          <td>creates a new parameter, which is an init parameter for the current instance, used on next activation</td>
+          </tr></table>
+
+<ul><li>class
+<br>Defines which class is used for this handler. You may choose
+  <ul><li><a href="#cgihandler">cgi handler</a>
+  </li><li><a href="#filehandler">file handler</a>
+  </li><li><a href="#servlethandler">servlet handler</a>
+  </li><li><a href="#denyhandler">deny handler</a>
+  </li><li><a href="#welcomehandler">welcome handler</a>
+  </li></ul>
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#parameter">parameter</a>
+<br>Add a context init parameter.
+</li></ul>
+
+
+</p></td></tr></table>
+<table id="cgihandler" width="100%"><th><img src = "gfx/show.gif"> &nbsp; CGI handler</th><tr><td><p>
+Configure a CGI handler
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.http.CgiHandler" selected>de.bb.bejy.http.CgiHandler</option> <option value="de.bb.bejy.http.FileHandler" >de.bb.bejy.http.FileHandler</option> <option value="de.bb.bejy.http.ServletHandler" >de.bb.bejy.http.ServletHandler</option></select></td><td>a class implementing this configurable</td></tr><tr><td>command</td><td>
+        <input type="text" name="command" value="">
+        </td><td>the CGI command line</td></tr><tr><td>mask</td><td>
+        <input type="text" name="mask" value="">
+        </td><td>the match pattern</td></tr><tr><td>timeout</td><td>
+        <input type="text" name="timeout" value="180000">
+        </td><td>maximum timeout im ms to wait for completion</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="CGI Handler" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="CGI Handler" value="\/">
+        <input type="submit" name="CGI Handler" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="CGI Handler" value="new parameter"></td>
+          <td>creates a new parameter, which is an init parameter for the current instance, used on next activation</td>
+          </tr></table>
+
+<ul><li>class
+<br>Defines which class is used for this handler.
+</li><li>command
+<br>Defines the command line to invoke the CGI
+</li><li>mask
+<br>the handler is only invoked if the content relative URL path matches the mask
+</li><li>timeout
+<br>Limit the time for the CGI. If the limit is reached, the CGI gets aborted.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#parameter">parameter</a>
+<br>Add a context init parameter.
+</li></ul>
+
+</p></td></tr></table>
+<table id="filehandler" width="100%"><th><img src = "gfx/show.gif"> &nbsp; file handler</th><tr><td><p>
+Configure a file handler
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.http.CgiHandler" >de.bb.bejy.http.CgiHandler</option> <option value="de.bb.bejy.http.FileHandler" selected>de.bb.bejy.http.FileHandler</option> <option value="de.bb.bejy.http.ServletHandler" >de.bb.bejy.http.ServletHandler</option></select></td><td>a class implementing this configurable</td></tr><tr><td>default</td><td>
+        <input type="text" name="default" value="">
+        </td><td>the default welcome files</td></tr><tr><td>mask</td><td>
+        <input type="text" name="mask" value="">
+        </td><td>the match pattern</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="FileHandler" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="FileHandler" value="\/">
+        <input type="submit" name="FileHandler" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="FileHandler" value="new parameter"></td>
+          <td>creates a new parameter, which is an init parameter for the current instance, used on next activation</td>
+          </tr></table>
+
+<ul><li>class
+<br>Defines which class is used for this handler.
+</li><li>default
+<br>Defines the default welcome files. Only file and welcome handler can specify default files!
+</li><li>mask
+<br>the handler is only invoked if the content relative URL path matches the mask
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#parameter">parameter</a>
+<br>Add a context init parameter.
+</li></ul>
+
+
+</p></td></tr></table>
+<table id="servlethandler" width="100%"><th><img src = "gfx/show.gif"> &nbsp; servlet handler</th><tr><td><p>
+Configure a servlet handler
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.http.CgiHandler" >de.bb.bejy.http.CgiHandler</option> <option value="de.bb.bejy.http.FileHandler" >de.bb.bejy.http.FileHandler</option> <option value="de.bb.bejy.http.ServletHandler" selected>de.bb.bejy.http.ServletHandler</option></select></td><td>a class implementing this configurable</td></tr><tr><td>mask</td><td>
+        <input type="text" name="mask" value="">
+        </td><td>the match pattern</td></tr><tr><td>servlet</td><td> <select name="servlet">  <option value="de.bb.bejy.http.CgiHandler"  > de.bb.bejy.http.CgiHandler</option> <option value="de.bb.bejy.http.FileHandler"  > de.bb.bejy.http.FileHandler</option> <option value="de.bb.bejy.http.ServletHandler"  > de.bb.bejy.http.ServletHandler</option> <option value="de.bb.jsp.JspServlet"  > de.bb.jsp.JspServlet</option> <option value="de.bb.jsp.StaticJspServlet"  > de.bb.jsp.StaticJspServlet</option></select></td><td>class name of the servlet. Specify the class name of your servlet, which must be in classpath. de.bb.jsp.JspServlet is a servlet handler for *.jsp files.</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="ServletHandler" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="ServletHandler" value="\/">
+        <input type="submit" name="ServletHandler" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="ServletHandler" value="new parameter"></td>
+          <td>creates a new parameter, which is an init parameter for the current instance, used on next activation</td>
+          </tr></table>
+
+<ul><li>class
+<br>Defines which class is used for this handler.
+</li><li>mask
+<br>the handler is only invoked if the content relative URL path matches the mask
+</li><li>servlet
+<br>Lists all servlets found in the classpath. To enable JSPs select the de.bb.jsp.JspServlet.
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#parameter">parameter</a>
+<br>Add a context init parameter.
+</li></ul>
+
+</p></td></tr></table>
+<table id="denyhandler" width="100%"><th><img src = "gfx/show.gif"> &nbsp; deny handler</th><tr><td><p>
+Configure a deny handler. A deny handler is used to prevent access to resources.
+Requests to resources in this context matching the mask are prompted with 401 - authentication required.
+This is done whether those resources exist or not.
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">  <option value="de.bb.bejy.http.CgiHandler" >de.bb.bejy.http.CgiHandler</option> <option value="de.bb.bejy.http.FileHandler">de.bb.bejy.http.FileHandler</option> <option value="de.bb.bejy.http.ServletHandler" >de.bb.bejy.http.ServletHandler</option><option value="de.bb.bejy.http.H401" selected>de.bb.bejy.http.H401</option> </select></td><td>a class implementing this configurable</td></tr>
+  <tr><td>mask</td><td>
+        <input type="text" name="mask" value="">
+        </td><td>the match pattern</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="DenyHandler" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="DenyHandler" value="\/">
+        <input type="submit" name="DenyHandler" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="DenyHandler" value="new parameter"></td>
+          <td>creates a new parameter, which is an init parameter for the current instance, used on next activation</td>
+          </tr></table>
+
+<ul><li>class
+<br>Defines which class is used for this handler.
+</li><li>mask
+<br>the handler is only invoked if the content relative URL path matches the mask
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#parameter">parameter</a>
+<br>unused.
+</li></ul>
+
+</p></td></tr></table>
+<table id="welcomehandler" width="100%"><th><img src = "gfx/show.gif"> &nbsp; welcome handler</th><tr><td><p>
+Configure a welcome handler. A welcome handler is only used to specify the welcome files.
+If a request matches a folder, the welcome files are tries in order and the first match is used to fulfill the request.
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>class</td><td> <select name="class">
+    <option value="de.bb.bejy.http.CgiHandler" >de.bb.bejy.http.CgiHandler</option>
+    <option value="de.bb.bejy.http.FileHandler">de.bb.bejy.http.FileHandler</option>
+    <option value="de.bb.bejy.http.ServletHandler" >de.bb.bejy.http.ServletHandler</option>
+    <option value="de.bb.bejy.http.WelcomeHandler" selected>de.bb.bejy.http.WelcomeHandler</option>
+    </select></td><td>a class implementing this configurable</td></tr><tr><td>default</td><td>
+        <input type="text" name="default" value="">
+        </td><td>the default welcome files</td></tr><tr><td>mask</td><td>
+        <input type="text" name="mask" value="">
+        </td><td>the match pattern</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="WelcomeHandler" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="WelcomeHandler" value="\/">
+        <input type="submit" name="WelcomeHandler" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      <tr><td><input type="submit" name="WelcomeHandler" value="new parameter"></td>
+          <td>creates a new parameter, which is an init parameter for the current instance, used on next activation</td>
+          </tr></table>
+
+<ul><li>class
+<br>Defines which class is used for this handler.
+</li><li>default
+<br>Defines the default welcome files. Only file and welcome handler can specify default files!
+</li><li>mask
+<br>the handler is only invoked if the content relative URL path matches the mask
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li><li><a href="#parameter">parameter</a>
+<br>unused
+</li></ul>
+
+
+</p></td></tr></table>
+<table id="parameter" width="100%"><th><img src = "gfx/show.gif"> &nbsp; parameter</th><tr><td><p>
+Configure an init parameter
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>name</td><td>
+        <input type="text" name="name" value="">
+        </td><td>name of the parameter</td></tr><tr><td>value</td><td>
+        <input type="text" name="value" value="">
+        </td><td>value of the parameter</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="parameter" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="parameter" value="\/">
+        <input type="submit" name="parameter" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      </table>
+
+<ul><li>name
+<br>name of the parameter
+</li><li>value
+<br>value of the parameter
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li></ul>
+
+
+</p></td></tr></table>
+<table id="war" width="100%"><th><img src = "gfx/show.gif"> &nbsp; war</th><tr><td><p>
+Configure a single WAR file or directory.
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>alias</td><td>
+        <input type="text" name="alias" value="">
+        </td><td>an alias for which is used instead of the WAR file name</td></tr><tr><td>group</td><td>
+        <input type="text" name="group" value="">
+        </td><td>optional name of a user group to restrict access</td></tr><tr><td>path</td><td>
+        <input type="text" name="path" value="">
+        </td><td>the local path to a directory or an WAR file</td></tr><tr><td>realm</td><td>
+        <input type="text" name="realm" value="">
+        </td><td>a descriptive name for this realm</td></tr><tr><td>urlPath</td><td>
+        <input type="text" name="urlPath" value="">
+        </td><td>the URL context path. resulting URL consists from urlPath and WAR file name or alias</td></tr><tr><td>workDir</td><td>
+        <input type="text" name="workDir" value="">
+        </td><td>the temp directory</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="/" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="/" value="\/">
+        <input type="submit" name="/" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      </table>
+
+<ul><li>alias
+<br>Overrides the WAR name
+</li><li>group
+<br>optional user group to restirct access
+</li><li>path
+<br>path to the WAR file or exploded WAR directory
+</li><li>realm
+<br>The realm name is displayed to users and allows to merge different contexts to the same user group without additional password prompts.
+</li><li>urlPath
+<br>the URL path is used to match the requests path and detect whether this context is used or not.
+</li><li>workDir
+<br>optional define an own working directory
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li></ul>
+
+
+</p></td></tr></table>
+<table id="webapps" width="100%"><th><img src = "gfx/show.gif"> &nbsp; webapps</th><tr><td><p>
+Configure a webapps directory
+
+<table border=0>
+  <tr><th bgcolor="#ffe0e0">name</th><th bgcolor="#ffe0e0">value</th><th bgcolor="#ffe0e0">description</th></tr>
+  <tr><td>path</td><td>
+        <input type="text" name="path" value="">
+        </td><td>path to webapps folder</td></tr><tr><td>urlPath</td><td>
+        <input type="text" name="urlPath" value="">
+        </td><td>url prefix</td></tr><tr><td>workDir</td><td>
+        <input type="text" name="workDir" value="">
+        </td><td>a work folder</td></tr>
+      <tr><td>&nbsp;</td><td>
+      <input type="submit" name="webapps" value="apply changes">
+      </td><td>
+
+        <input type="submit" name="webapps" value="\/">
+        <input type="submit" name="webapps" value="remove this element">
+
+      </td></tr>
+      <tr><td colspan="3"><hr></td></tr>
+      </table>
+
+<ul><li>path
+<br>path to the WAR file or exploded WAR directory
+</li><li>urlPath
+<br>the URL path is used to match the requests path and detect whether this context is used or not.
+</li><li>workDir
+<br>optional define an own working directory
+</li><li>apply changes
+<br>applies the displayed settings to the running server
+</li><li>\/
+<br>makes the current element the last element of the same type.
+</li><li>remove this element
+<br>removes this element from current configuration
+</li></ul>
+
+
+</p></td></tr></table>
+<table width="100%">
+    <th>&nbsp;</th>
+<tr><td align="left">
+(c) by Stefan Bebbo Franke in 2000-2003, all rights reserved
+</td></tr>
+</table>
+</body>
+</html>
+

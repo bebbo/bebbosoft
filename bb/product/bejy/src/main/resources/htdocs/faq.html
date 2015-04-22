@@ -1,0 +1,370 @@
+<html>
+<head>
+<title>BEJY FAQ</title>
+<link href="default.css" type="text/css" rel="stylesheet">
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#c0bd98">
+<h2>FAQs</h2>
+<h3>Hints might not yet be accurate for BEJY 1.3.x.x, but most issues are done.</h3>
+<p><a href="#0">
+0. Is there a jump start for newbies, even with mail?
+</a></p>
+<p><a href="#1">
+1. What additional items (besides the main BEJY package) do I need to use BEJY?
+</a></p>
+<p><a href="#2">
+2. What configuration files need to be modified to use BEJY ?
+</a></p>
+<p><a href="#3">
+3. How do I run BEJY under Win2K ?
+</a></p>
+<p><a href="#4">
+4. How do I stop BEJY under Win2K ?
+</a></p>
+<p><a href="#5">
+5. Once I have developed my web site where should it be put for proper
+serving ?
+</a></p>
+<p><a href="#6">
+6. May I use both POP3 and IMAP mail services ?
+</a></p>
+<p><a href="#7">
+7. What is the difference between IMAP/SMTP and POP3/SMTP servers ?
+</a></p>
+<p><a href="#8">
+8. How do I block open-relay so that my mail server is not used by spammers?
+</a></p>
+<p><a href="#9">
+9. Does BEJY have a FTP server capability ?
+</a></p>
+<p><a href="#10">
+10. May BEJY be used for more than one domain name ?
+</a></p>
+<p><a href="#11">
+11. Is there a utility to modify the "bejy.xml" file for me ?
+</a></p>
+<p><a href="#12">
+12. Can you tell me how to set up the DNS entry to decode the
+"somedomain.com" to point to my IP ?
+</a></p>
+<p><a href="#13">
+13. What items do I need to run the mail server components ?
+</a></p>
+<p><a href="#14">
+14. Can you explain what you mean by "context" ?
+</a></p>
+<p><a href="#15">
+15. How do I set the SQL database up for the mail server ?
+</a></p>
+<p><a href="#16">
+16. How do I add / delete e-mail accounts on the mail server ?
+</a></p>
+<p><a href="#17">
+17. Is a Web Mail feature built into BEJY ?
+</a></p>
+
+
+<p><h2>If you have further questions don't hesitate to ask <a href="mailto:postmaster@bejy.org">Mister BEJY</a>!</h2></p>
+
+
+<p><a name="1"></a><b>
+1. What additional items (besides the main BEJY package) do I need to use
+BEJY ?
+</b></p><p>
+<table border="1">
+<tr><th>Purpose</th><th>required</th><th>from</th>
+</tr>
+<tr><td>minimal HTTP server</td>
+    <td>Java Runtime Engine (JRE)</td>
+    <td><a target="_blank" href="http://java.sun.com/j2se/">http://java.sun.com/j2se</a></td>
+</tr>
+<tr><td>+ JSP</td>
+    <td>Java SDK (JDK)</td>
+    <td><a target="_blank" href="http://java.sun.com/j2se/">http://java.sun.com/j2se</a></td>
+</tr>
+<tr><td>+ PHP</td>
+    <td>PHP binary</td>
+    <td><a target="_blank" href="http://php.net">http://www.php.net</a></td>
+</tr>
+<tr><td>+ Perl</td>
+    <td>Perl environment</td>
+    <td>For Windows (TM of Microsoft):<br><a target="_blank" href="http://www.activestate.com">http://www.activestate.com</a></td>
+</tr>
+<tr><td>+ Tcl</td>
+    <td>Tcl environment</td>
+    <td>For Windows (TM of Microsoft):<br><a target="_blank" href="http://www.activestate.com">http://www.activestate.com</a></td>
+</tr>
+<tr><td>+ HTTPS</td>
+    <td>valid certificate + key pair</td>
+    <td>e.g. from VeriSign<br><a target="_blank" href="http://www.verisign.com">http://www.verisign.com</a></td>
+</tr>
+<tr><td>Mail server POP3/IMAP/SMTP</td>
+    <td>database + JDBC driver</td>
+    <td>depends on used database:<ul>
+      <li><a target="_blank" href="http://www.mysql.com">MySQL</a> + <a target="_blank" href="http://www.mysql.com/downloads/api-jdbc.html">MySQL Connector/J</a></li>
+    </ul></td>
+</tr>
+</table>
+</p>
+
+<p><a name="2"></a><b>
+2. What configuration files need to be modified to use BEJY ?
+</b></p><p>
+The most important one to modify is the "bejy.xml" file.  The "bejy.cmd"
+file also must be verified for proper paths to the Java runtime (virtual
+machine).
+</p>
+
+<p><a name="3"></a><b>
+3. How do I run BEJY under Win2K ?
+</b></p><p>
+Execute the bejy.cmd file.  For loading on boot place it in the Startup
+folder of the Start menu.  Or, alternatively run it as a service: There are also
+public tools to run any program as service: e.g.
+<a target="_blank" href="http://www.codeproject.com/system/xyntservice.asp">http://www.codeproject.com/system/xyntservice.asp</a>
+
+</p>
+
+<p><a name="3"></a><b>
+4. How do I stop BEJY under Win2K ?
+</b></p><p>
+Close the DOS window or terminate the task using the task manager.
+</p>
+
+<p><a name="5"></a><b>
+5. Once I have developed my web site where should it be put for proper
+serving ?
+</b></p><p>
+That depends upon what you specify in the "bejy.xml" file.  Typically it is
+in the "htdocs" subdirectory of the BEJY subdirectory.
+
+</p>
+
+<p><a name="6"></a><b>
+6. May I use both POP3 and IMAP mail services ?
+</b></p><p>
+Yes. Both can be run simultaneous. You can also run each without SSL and with SSL on different ports simultaneaus.
+It also safe to use the same mail account from as many clients as you like at the same time.
+</p>
+
+<p><a name="7"></a><b>
+7. What is the difference between IMAP/SMTP and POP3/SMTP servers ?
+</b></p><p>
+The IMAP protocol enables lot more capabilities, to handle your mail. Most important features are:<ul>
+<li>Flags for "read", "marked", "deleted"</li>
+<li>Usage of serverside folders</li></ul>
+... and even more.
+</p>
+
+<p><a name="8"></a><b>
+8. How do I block open-relay so that my mail server is not used by spammers?
+</b></p><p>
+This feature is built in! BEJY allows only sending to foreign recipients,
+if:<ol type="a">
+<li>the sender authentifies with username / password</li>
+<li>within 15 minutes when the same IP was used to fetch mail using POP or
+IMAP. There a username / password was verified.</li></ol>
+</p>
+
+<p><a name="9"></a><b>
+9. Does BEJY have a FTP server capability ?
+</b></p><p>
+No, currently it does not support FTP services.  However, you may write your
+own FTP protocol implementation.  But I discourage the usage of FTP because
+of the security issues. Use ssh and scp instead! This is also not yet
+supported by BEJY.
+</p><p>
+If you insist on having the FTP server for your system there are Open Source
+FTP servers available for download at:
+<a target="_blank" href="http://sourceforge.net/softwaremap/trove_list.php">http://sourceforge.net/softwaremap/trove_list.php</a>
+</p><p>
+Specifically an open source Java FTP server is available at:
+<a target="_blank" href="http://sourceforge.net/projects/jqftp/">http://sourceforge.net/projects/jqftp</a>
+
+</p>
+
+<p><a name="10"></a><b>
+10. May BEJY be used for more than one domain name ?
+</b></p><p>
+Yes.  The XML file must be properly modified for the particular "host".
+</p>
+
+<p><a name="11"></a><b>
+11. Is there a utility to modify the "bejy.xml" file for me ?
+</b></p><p>
+Yes. There is a simple admin page. Run the example configuration and open <a href="http://localhost:8081/admin">http://localhost:8081/admin</a>
+</p>
+
+<p><a name="12"></a><b>
+12. Can you tell me how to set up the DNS entry to decode the "somedomain.com" to point to my IP ?
+</b></p><p>
+Sorry, that is beyond the scope of this FAQ.  However you may find FAQs
+about this at <a target="_blank" href="http://www.zoneedit.com/">http://www.zoneedit.com</a>
+</p><p>
+If you are interested in hosting your own DNS server try the following:
+<a target="_blank" href="http://bind8nt.meiway.com/">http://bind8nt.meiway.com</a>
+</p>
+
+<p><a name="13"></a><b>
+13. What items do I need to run the mail server components ?
+</b></p><p>
+You need to have a SQL database server installed to handle the mail
+database.  Also a JDBC (Java Database Connectivity) driver on the classpath
+so that BEJY may find it.  The JDBC driver provides a standard interface
+(API) that BEJY uses to access the mail database.  For Windows systems the
+CLASSPATH environment variable must point to the JDBC driver.  An open
+source SQL database, MySQL, and a JDBC driver for the MySQL database is
+available here:
+<a target="_blank" href="http://www.mysql.com/downloads/">http://www.mysql.com/downloads</a>
+</p>
+
+<p><a name="14"></a><b>
+14. Can you explain what you mean by "context" ?
+</b></p><p>
+When you run a web server, there often are more than one application running
+on it. This is true for different hosts, but it is also true for different
+subdirectories of one host. One of those subdirectories, with all its
+sub-content, is called a context. One web application requires PHP, another
+requires JSP: At context level you decide, what is usable and visible for
+that context. Same for users. You define groups and use them for a complete
+context.
+</p><p>
+Also important to know is, that servlet and JSP sessions are context local.
+It provides you additional security to separate applications in separate contexts.
+</p><p>
+Usually you decide to use only one technology within one web application, so
+usually you don't specify all of those handlers at once, but you may do it.
+I recommend, to separate the applications in different directories and also
+use different contexts.
+</p>
+
+<p><a name="15"></a><b>
+15. How do I set the SQL database up for the mail server ?
+</b></p><p>
+First modify the "bejy.xml" file to point to a mail database.  Change the
+"mailDbi" to point to one of the BEJY supplied interfaces, the "jdbcUrl" to
+point to the database server URL <i>typically this is something like</i><pre>
+"jdbc:mysql://localhost/mail?(master user name)&amp;password=(your master password)"</pre>
+Here the URL uses localhost since the database runs on the same server hardware unit as BEJY is
+deployed on, with the subdirectory of "mail" under this context using the
+master user that was set up as part of the MySQL setup.
+</p><p>The "nameServer" config variable must point to a DNS name server.  If you are running the
+BEJY web/mail server behind a router this would be the routers IP address if it also provides a DNS cache;
+if not then typically this would be the DNS address your ISP gave you to configure your service.
+</p><p>
+Also execute the SQL scripts provided for creating the tables within the
+mail database by entering the SQL shell and executing them.
+</p>
+
+<p><a name="16"></a><b>
+16. How do I add / delete e-mail accounts on the mail server ?
+</b></p><p>
+The owner of the domain (which still must be added to the database manually) can add/modify/remove
+mail accounts by using the supplied mail.jsp.
+</p>
+
+<p><a name="17"></a><b>
+17. Is a Web Mail feature built into BEJY ?
+</b></p><p>
+No, but a Java Script open source web mail is available for download at:
+</p><p>
+<a target="_blank" href="http://jwebmail.sourceforge.net/">http://jwebmail.sourceforge.net</a>
+Other CGI web mail packages are also available through SourceForge.
+</p>
+<p>My current favorite is <a target="_blank" href="http://www.squirrelmail.com">SquirrelMail</a>.
+Here is also the snippet of my bejy.xml:<pre>
+        &lt;context path="/prj/sqmail/squirrelmail-1.4.0" urlPath="/sqmail/"&gt;
+          &lt;handler class="de.bb.bejy.http.CgiHandler" command="/php-4.3.0-Win32/php.exe" mask="/index.php" timeout="180000"/&gt;
+          &lt;handler class="de.bb.bejy.http.CgiHandler" command="/php-4.3.0-Win32/php.exe" mask="/src/*.php" timeout="180000"/&gt;
+          &lt;handler class="de.bb.bejy.http.CgiHandler" command="/php-4.3.0-Win32/php.exe" mask="/plugins/calendar/*.php" timeout="180000"/&gt;
+          &lt;handler class="de.bb.bejy.http.FileHandler" mask="/images/*"/&gt;
+          &lt;handler class="de.bb.bejy.http.WelcomeHandler" default="index.php" mask="*"/&gt;
+        &lt;/context&gt;</pre>
+This configuration restricts the access to distincts folders and files for safety.
+</p>
+
+<p><a name="0"></a><b>
+0. Is there a jump start for newbies, even with mail?
+</b></p><p>
+Here it is:
+</p><pre>
+1. Install BEJY from ZIP archive.
+2. Edit bejy (unix) or bejy.cmd (windows) and modify the paths to java
+executables.
+3. Edit bejy.xml and modify the paths to javac executables
+4. Start BEJY with the supplied configuration.
+5. Verify the http server and request http://localhost (or use your
+servername).
+
+Now setup the mail part: (here mysql)
+6. Login into the database as system user
+     mysql -u root -p
+7. Create a mail database:
+     sqlprompt> create database mail;
+8. Create a login for the mail server on your SQL server:
+     sqlprompt> grant usage on mail.* to bejy@bejyhost;
+9. Grant access to the new created user:
+     sqlprompt> grant all on mail.* to bejy@bejyhost identified by
+'secret';
+10.Update internal stuff:
+     sqlprompt> flush privileges;
+
+11.Login into database as bejy (using the 'secret' as password).
+     mysql -u bejy -p
+12.Execute the commands and then the provided create script, to create all
+needed tables:
+     create database mail;
+     use mail;
+     use the file 'create_mysql.sql' from folder sqlscripts (e.g. copy and
+paste to cmd line)
+
+13. Edit bejy (unix) or bejy.cmd (windows) and modify the classpath:
+     ensure that the JDBC driver archive is in classpath.
+
+14. Start BEJY and tse the admin page and enter the correct settings:
+  DNS:
+        nameServer="212.123.96.100"
+  Mail:
+    mailDbi="de.bb.bejy.mail.MySQLDbi"
+    jdbcUrl="jdbc:mysql://localhost/mail?user=bejy&amp;password=secret"
+    path="mail"
+    mainDomain="mydomain"
+    jdbcDriver org.gjt.mm.mysql.Driver (or similar)
+
+  Global:
+     javac="c:\jdk13\bin\javac.exe -g"
+
+// ADD FIRST USERS AND DOMAINS TO MAIL SERVER:
+
+15. Login into database as bejy (using the 'secret' as password).
+      mysql -u bejy -p
+
+16. Create first domains and assign this user as owner.
+      INSERT INTO domain (domain, owner)
+      VALUES ('mydomain.com', 1);
+
+    The value 1 is the id of 'admin' in table mail_user (we create it with next step).
+    To assign somebody else as owner, just use his mail_user.id.
+
+17. Create a first mail_user:
+      INSERT INTO mail_user (name, domain, passwd)
+      VALUES ('admin', 'mydomain.com', PASSWORD('verysecret'));
+
+
+18. Restart BEJY.
+19. Verify the http server and request http://localhost (or use your
+servername).
+20. Verify your mail installation clickin on "mail admin example".
+21. Use this page to add mail users.
+
+A comfortable configuration of domains does not yet exist, you have to do
+it in the database yet.
+
+Users can be added with the provided mail.jsp page.
+
+22. Setup a mail client and send / receive mails.
+</pre>
+
+</body>
+</html>

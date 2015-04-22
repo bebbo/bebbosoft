@@ -1,0 +1,56 @@
+<web-app>
+
+  <servlet>
+    <servlet-name>wiki</servlet-name>
+    <servlet-class>de.bb.wiki.Wikilet</servlet-class>
+      <init-param>
+        <param-name>editURL</param-name>
+        <param-value>/WEB-INF/jsp/wikiedit.jsp</param-value>
+      </init-param>
+      <init-param>
+        <param-name>uploadURL</param-name>
+        <param-value>/WEB-INF/jsp/wikiupload.jsp</param-value>
+      </init-param>
+      <init-param>
+        <param-name>cvs</param-name>
+        <param-value>cvs.exe</param-value>
+      </init-param>
+      <init-param>
+        <param-name>cvsroot</param-name>
+        <param-value>/export/CVS</param-value>
+      </init-param>
+      <init-param>
+        <param-name>images</param-name>
+        <param-value>.gif .jpg</param-value>
+      </init-param>
+  </servlet>
+
+  <servlet>
+    <servlet-name>WelcomeServlet</servlet-name>
+    <servlet-class>WelcomeServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <url-pattern>/WelcomeServlet</url-pattern>
+    <servlet-name>WelcomeServlet</servlet-name>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>WelcomeTest</servlet-name>
+    <servlet-class>WelcomeTest</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <url-pattern>*.wiki</url-pattern>
+    <servlet-name>wiki</servlet-name>
+  </servlet-mapping>
+  <servlet-mapping>
+    <url-pattern>/EDIT</url-pattern>
+    <servlet-name>wiki</servlet-name>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
