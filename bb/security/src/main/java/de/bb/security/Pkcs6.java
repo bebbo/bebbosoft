@@ -30,36 +30,34 @@ public class Pkcs6 {
     // ===========================================================================
     // some oid's
     // ===========================================================================
-    final public static byte rsaEncryption[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7,
-            (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x01 };
-    final static byte md2withRSAEncryption[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7,
-            (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x02 };
-    final static byte md5withRSAEncryption[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7,
-            (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x04 };
-    final static byte sha1withRSAEncryption[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7,
-            (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x05 };
-    final static byte sha256WithRSAEncryption[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7,
-        (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 11 };
+    final public static byte rsaEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.1");
+//        { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x01 };
+    final static byte md2withRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.2");
+    //{ (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x02 };
+    final static byte md5withRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.4");
+//    { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x04 };
+    final static byte sha1withRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.5");
+//    { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x05 };
+    final static byte sha256WithRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.11");
+//    { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 11 };
 
-    final static byte id_at_aliasedEntryName[] = { 2 * 40 + 5, 4, 1 };
-    final static byte id_at_knowldgeinformation[] = { 2 * 40 + 5, 4, 2 };
-    final static byte id_at_commonName[] = { 2 * 40 + 5, 4, 3 };
-    final static byte id_at_surname[] = { 2 * 40 + 5, 4, 4 };
-    final static byte id_at_serialNumber[] = { 2 * 40 + 5, 4, 5 };
-    final static byte id_at_countryName[] = { 2 * 40 + 5, 4, 6 };
-    final static byte id_at_localityName[] = { 2 * 40 + 5, 4, 7 };
-    final static byte id_at_stateOrProvinceName[] = { 2 * 40 + 5, 4, 8 };
-    final static byte id_at_streetAddress[] = { 2 * 40 + 5, 4, 9 };
-    final static byte id_at_organizationName[] = { 2 * 40 + 5, 4, 10 };
-    final static byte id_at_organizationalUnitName[] = { 2 * 40 + 5, 4, 11 };
-    final static byte id_at_email[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D,
-            (byte) 0x01, (byte) 0x09, 1 };
+    final static byte id_at_aliasedEntryName[] = Asn1.string2Oid("2.5.4.1");
+    final static byte id_at_knowldgeinformation[] = Asn1.string2Oid("2.5.4.2");
+    final static byte id_at_commonName[] = Asn1.string2Oid("2.5.4.3");
+    final static byte id_at_surname[] = Asn1.string2Oid("2.5.4.4");
+    final static byte id_at_serialNumber[] = Asn1.string2Oid("2.5.4.5");
+    final static byte id_at_countryName[] = Asn1.string2Oid("2.5.4.6");
+    final static byte id_at_localityName[] = Asn1.string2Oid("2.5.4.7");
+    final static byte id_at_stateOrProvinceName[] = Asn1.string2Oid("2.5.4.8");
+    final static byte id_at_streetAddress[] = Asn1.string2Oid("2.5.4.9");
+    final static byte id_at_organizationName[] = Asn1.string2Oid("2.5.4.10");
+    final static byte id_at_organizationalUnitName[] = Asn1.string2Oid("2.5.4.11");
+    final static byte id_at_email[] = Asn1.string2Oid("1.2.840.113549.1.9.1");
 
     final static byte newSeq[] = { (byte) 0x30, (byte) 0x80 };
     final static byte newSet[] = { (byte) 0x31, (byte) 0x80 };
     final static byte nullBytes[] = {};
     final static byte nul[] = Asn1.makeASN1(nullBytes, 5);
-    
 
     public static final byte[] objectAlgorithmSHA = Asn1.string2Oid("1.3.14.3.2.26");
     public static final byte[] objectAlgorithmSHA256 = Asn1.string2Oid("2.16.840.1.101.3.4.2.1");
@@ -72,7 +70,8 @@ public class Pkcs6 {
     }
 
     /**
-     * Create a certifcate without siganture. You have to sign this later by calling sign().
+     * Create a certifcate without siganture. You have to sign this later by
+     * calling sign().
      * 
      * @param issuer
      *            The issuer of the certificate.
@@ -126,7 +125,8 @@ public class Pkcs6 {
     }
 
     /**
-     * Create a certificate request without signature. You have to sign this later by calling sign().
+     * Create a certificate request without signature. You have to sign this
+     * later by calling sign().
      * 
      * @param owner
      *            The owner ot the certificate.
@@ -137,8 +137,9 @@ public class Pkcs6 {
      * @return A new allocated byte array containing the certificate body.
      * @see PKCS-10
      * 
-     *      CertificationRequestInfo ::= SEQUENCE { version Version, subject Name, subjectPublicKeyInfo
-     *      SubjectPublicKeyInfo, attributes [0] IMPLICIT Attributes }
+     *      CertificationRequestInfo ::= SEQUENCE { version Version, subject
+     *      Name, subjectPublicKeyInfo SubjectPublicKeyInfo, attributes [0]
+     *      IMPLICIT Attributes }
      */
     public static byte[] createCertificateRequest(byte owner[], byte pubN[], byte pubE[], byte privF[]) {
         byte ver[] = Asn1.makeASN1(0, Asn1.INTEGER);
@@ -149,14 +150,14 @@ public class Pkcs6 {
         t = Asn1.addTo(t, Asn1.makeASN1(pubE, 2));
         byte pub[] = Asn1.makeASN1(t, 3);
 
-        //        byte sig[] = Pkcs6.sign(pub, pubN, privF);
+        // byte sig[] = Pkcs6.sign(pub, pubN, privF);
 
         // Kennung f??r RSA
         t = Asn1.addTo(newSeq, Asn1.makeASN1(rsaEncryption, 6));
         t = Asn1.addTo(t, nul);
         t = Asn1.addTo(newSeq, t);
         pub = Asn1.addTo(t, pub);
-        //        pub = Asn1.addTo(t, sig);
+        // pub = Asn1.addTo(t, sig);
 
         // alles zusammen setzen
         t = newSeq;
@@ -173,8 +174,9 @@ public class Pkcs6 {
     }
 
     /**
-     * Sign a given sequence with a RSA private key. This is e.g. used for signing certificates or certificate requests.
-     * An enhanced version which uses the Chinese remainder theorem is planned <g>.
+     * Sign a given sequence with a RSA private key. This is e.g. used for
+     * signing certificates or certificate requests. An enhanced version which
+     * uses the Chinese remainder theorem is planned <g>.
      * 
      * @param sign
      *            The data which is signed.
@@ -209,7 +211,7 @@ public class Pkcs6 {
             md = new SHA();
             hashOid = objectAlgorithmSHA;
         }
-        
+
         byte t[] = Asn1.addTo(newSeq, Asn1.makeASN1(hashOid, 6)); // OID
         byte mdx[] = Asn1.addTo(t, nul); // null
 
@@ -221,7 +223,7 @@ public class Pkcs6 {
 
         return padSignedContent(signedContent, keyLength);
     }
-    
+
     public static byte[] padSignedContent(byte[] signedContent, int keyLength) {
         byte[] t = new byte[keyLength];
         t[0] = 0;
@@ -443,10 +445,15 @@ public class Pkcs6 {
         return Arrays.copyOfRange(u, i, u.length);
     }
 
+    private final static int ENCRYPTION_PATH[] = { 0x90, 0x90, 6 };
+
     /**
      * Returns the signature if the chain was validated successfully.
-     * @param certs a vector of certificates
-     * @return the signature if the chain was validated successfully, null otherwise.
+     * 
+     * @param certs
+     *            a vector of certificates
+     * @return the signature if the chain was validated successfully, null
+     *         otherwise.
      */
     public static byte[] getCertificateSignature(Vector<byte[]> certs) {
         if (certs.isEmpty())
@@ -476,7 +483,24 @@ public class Pkcs6 {
             if (signedData == null)
                 return null;
 
-            byte calcedHash[] = new SHA().digest(signedData);
+            byte oid[] = Asn1.getSeq(signedData, ENCRYPTION_PATH, 0);
+            if (oid == null)
+                return null;
+
+            byte oidData[] = Asn1.getData(oid);
+
+            MessageDigest md = null;
+            if (Misc.equals(oidData, sha1withRSAEncryption))
+                md = new SHA();
+            else if (Misc.equals(oidData, sha256WithRSAEncryption))
+                md = new SHA256();
+            else if (Misc.equals(oidData, md5withRSAEncryption))
+                md = new MD5();
+
+            if (md == null)
+                return null;
+
+            byte calcedHash[] = md.digest(signedData);
 
             if (!Misc.equals(u, calcedHash))
                 return null;
@@ -576,17 +600,17 @@ public class Pkcs6 {
      * @return a new allocated byte array with the result of (z**e)mod n
      */
     public static byte[] doRSA(byte z[], byte n[], byte e[]) {
-//        BigInteger bn = new BigInteger(1, n);
-//        BigInteger bf = new BigInteger(1, e);
-//        BigInteger zz = new BigInteger(1, z);
-//        zz = zz.modPow(bf, bn);
-        
+        // BigInteger bn = new BigInteger(1, n);
+        // BigInteger bf = new BigInteger(1, e);
+        // BigInteger zz = new BigInteger(1, z);
+        // zz = zz.modPow(bf, bn);
+
         int mlen = (n.length >> 2) + 1;
         int[] iz = FastMath32.byte2Int(z, mlen);
         int[] in = FastMath32.byte2Int(n, mlen);
-        
+
         int[] ir = FastMath32.oddModPow(iz, e, in);
-        
+
         int nlen = n.length;
         if (n[0] == 0)
             --nlen;
@@ -608,18 +632,23 @@ public class Pkcs6 {
         if (z.length == 0)
             return z;
         /*
-         * / BigInteger bz = new BigInteger(1, z);
-         * 
-         * BigInteger p = new BigInteger(1, pkData[3]); BigInteger q = new BigInteger(1, pkData[4]); BigInteger dp1 =
-         * new BigInteger(1, pkData[5]); BigInteger dq1 = new BigInteger(1, pkData[6]); BigInteger iqmp = new
-         * BigInteger(1, pkData[7]);
-         * 
-         * BigInteger cDp = bz.modPow(dp1, p); BigInteger cDq = bz.modPow(dq1, q); if (cDp.compareTo(cDq) < 0) cDp =
-         * cDp.add(p); BigInteger u = ((cDp.subtract(cDq)).multiply(iqmp)).remainder(p); BigInteger r =
-         * cDq.add(u.multiply(q));
-         * 
-         * byte []b = r.toByteArray(); /
-         */
+        BigInteger bz = new BigInteger(1, z);
+
+        BigInteger p = new BigInteger(1, pkData[3]);
+        BigInteger q = new BigInteger(1, pkData[4]);
+        BigInteger dp1 = new BigInteger(1, pkData[5]);
+        BigInteger dq1 = new BigInteger(1, pkData[6]);
+        BigInteger iqmp = new BigInteger(1, pkData[7]);
+
+        BigInteger cDp = bz.modPow(dp1, p);
+        BigInteger cDq = bz.modPow(dq1, q);
+        if (cDp.compareTo(cDq) < 0)
+            cDp = cDp.add(p);
+        BigInteger u = ((cDp.subtract(cDq)).multiply(iqmp)).remainder(p);
+        BigInteger r = cDq.add(u.multiply(q));
+
+        byte[] b = r.toByteArray();
+        */
         // long start = System.currentTimeMillis();
         int mlen = pkData[3].length;
         if (mlen < pkData[4].length)
@@ -645,151 +674,9 @@ public class Pkcs6 {
         byte b2[] = new byte[z.length];
         FastMath32.int2Byte(it, b2);
 
-        // System.out.println("RSA took: " + (System.currentTimeMillis() - start) + "ms");
+        // System.out.println("RSA took: " + (System.currentTimeMillis() -
+        // start) + "ms");
         return b2;
 
-        /*
-         * / sub(t, cDp, cDq, p); // on underflow add p mul(u, t, iqmp); mod(u, p); mul(t, u, q); add(r, t, cDq); /
-         * 
-         * BigInteger f = new BigInteger(1, pkData[2]); BigInteger n = new BigInteger(1, pkData[0]); long now =
-         * System.currentTimeMillis(); bz.modPow(f, n); System.out.println((System.currentTimeMillis() - now)); byte
-         * fb[] = FastMath32.oddModPow(z, pkData[2], pkData[0]);
-         * 
-         * if (new BigInteger(1, b).compareTo(new BigInteger(1, fb)) != 0) { Misc.dump("Z", System.out, z);
-         * Misc.dump("N", System.out, pkData[0]); Misc.dump("F", System.out, pkData[2]); Misc.dump("SOLL", System.out,
-         * b); Misc.dump("IST", System.out, fb);
-         * 
-         * IntImpl zi = new IntImpl(z); IntImpl ni = new IntImpl(pkData[0]); IntImpl fi = new IntImpl(pkData[2]);
-         * IntImpl res = zi.modPow(fi, ni); System.out.println(res.toHexString()); }
-         * 
-         * byte t[] = new byte[z.length]; if (b.length > t.length) System.arraycopy(b, b.length-t.length, t, 0,
-         * t.length); else System.arraycopy(b, 0, t, t.length-b.length, b.length);
-         */
-
     }
-
 }
-
-/*
- * $Log: Pkcs6.java,v $
- * Revision 1.18  2014/10/04 19:13:10  bebbo
- * @C added comments
- *
- * Revision 1.17  2014/09/18 13:49:19  bebbo
- * @N added support for TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 and TLS_DHE_RSA_WITH_AES_256_CBC_SHA
- *
- * Revision 1.16  2014/04/13 20:18:38  bebbo
- * @B fixed a missing close() call
- *
- * Revision 1.15  2013/11/23 10:43:08  bebbo
- * @N added public static byte[] decodeRSA(byte[])
- * @N added public static byte[] getCertificateSignature(Vector<byte[]>)
- *
- * Revision 1.14  2012/12/19 12:25:41  bebbo
- * @B fixed certificate request structure
- * @R changed encoding type for commonName and email
- *
- * Revision 1.13  2012/11/12 20:47:30  bebbo
- * @N new method to read and decrypt the certificate signature
- *
- * Revision 1.12  2012/08/19 15:25:48  bebbo
- * @R certificates are now signed using objectAlgorithmSHA
- *
- * Revision 1.11  2012/08/11 19:57:01  bebbo
- * @I working stage
- *
- * Revision 1.10  2010/12/17 23:25:05  bebbo
- * /FIXED: ssl config now supports multiple certificates
- * Revision 1.9 2010/12/17 17:41:27 bebbo
- * 
- * @R switched to use SHA instead of MD5 to sign a certificate Revision 1.8 2010/12/17 17:40:28 bebbo
- * 
- * @R switched to use SHA instead of MD5 to sign a certificate Revision 1.7 2010/12/17 17:36:50 bebbo
- * 
- * @D removed some debug output Revision 1.6 2009/02/05 20:06:28 bebbo
- * 
- * @N added support for TLS 1.0
- * 
- * Revision 1.5 2008/03/13 20:49:14 bebbo
- * 
- * @I using FastMath32 instead of BigInteger
- * 
- * Revision 1.4 2007/04/21 19:11:35 bebbo
- * 
- * @N added new method for private key RSA operation
- * 
- * Revision 1.3 2002/11/06 09:46:12 bebbo
- * 
- * @I cleanup for imports
- * 
- * Revision 1.2 2001/03/29 18:25:05 bebbo
- * 
- * @C comments
- * 
- * Revision 1.1 2001/03/05 17:47:44 bebbo
- * 
- * @N new or changed comment
- * 
- * Revision 1.7 2000/07/19 15:16:14 bebbo
- * 
- * @D removed dump
- * 
- * Revision 1.6 2000/07/18 18:08:35 bebbo
- * 
- * @B fixed path to public key
- * 
- * Revision 1.5 2000/07/18 11:10:58 bebbo
- * 
- * @B fixed certificate request structure
- * 
- * Revision 1.4 2000/07/07 10:14:52 bebbo
- * 
- * @N new functions to get exponents / modulos
- * 
- * Revision 1.3 2000/06/20 16:28:37 bebbo
- * 
- * @N added getX509Exponent and getX509Modulo functions
- * 
- * Revision 1.2 2000/06/19 11:16:13 bebbo
- * 
- * @R rsaEncryption is public now
- * 
- * Revision 1.1 2000/06/18 17:05:34 bebbo
- * 
- * @R splitted into separate files from Pkcs
- * 
- * Revision 1.8 2000/06/18 16:20:49 bebbo
- * 
- * @N added email id, added email to CertificateInfo
- * 
- * Revision 1.7 2000/06/16 19:00:51 bebbo
- * 
- * @N added modified pbkdf1a (key material generator)
- * 
- * Revision 1.6 2000/05/22 09:30:09 hagen removed cvs conflicts static initializer fx replaced by direct assignment
- * (doesnt compile under JDK 1.2 otherwise)
- * 
- * Revision 1.5 2000/05/20 19:47:38 bebbo
- * 
- * @R Asn1.getSeq changed. All related changes are done. Read docu!
- * 
- * Revision 1.4 2000/02/09 10:37:02 bebbo
- * 
- * @R doRSA is now here (was in Ssl3)
- * 
- * Revision 1.3 2000/02/02 17:41:39 bebbo
- * 
- * @N added getOrganizationName to retrieve the Name from Pkcs-info block
- * 
- * Revision 1.2 2000/02/02 13:53:16 bebbo
- * 
- * @B fixed TAB handling in INI files
- * 
- * @B Certificate request now conforms to PKCS-10
- * 
- * Revision 1.1 1999/11/03 11:43:59 bebbo
- * 
- * @N added PKCS-5 encrypt and decrypt functions
- * 
- * @B fixed PKCS key streaming
- */
