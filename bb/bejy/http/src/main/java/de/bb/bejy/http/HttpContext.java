@@ -224,14 +224,14 @@ public class HttpContext extends Configurable implements
             String remoteUser = (String) session.getAttribute("j_username");
             if (remoteUser == null) {
                 final FormVerification fv = (FormVerification) verify;
-                if (localPath.equals(fv.loginPage)
-                        || localPath.equals(fv.loginErrorPage)
+                if (localPath.equals("/" + fv.loginPage)
+                        || localPath.equals("/" + fv.loginErrorPage)
                         || sc.isAllowAll())
                     return request;
 
                 if (!localPath.endsWith("/j_security_check")) {
                     session.setAttribute("j_redirect", request.getRequestURI());
-                    response.sendRedirect(this.sContext + fv.loginPage);
+                    response.sendRedirect(this.sContext + "/" + fv.loginPage);
                     return null;
                 }
                 try {
@@ -282,7 +282,7 @@ public class HttpContext extends Configurable implements
         if (verify instanceof FormVerification) {
             final FormVerification fv = (FormVerification) verify;
             if (fv.loginErrorPage != null) {
-                response.sendRedirect(this.sContext + fv.loginErrorPage);
+                response.sendRedirect(this.sContext + "/" + fv.loginErrorPage);
                 return null;
             }
         }
