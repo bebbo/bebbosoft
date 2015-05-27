@@ -67,6 +67,7 @@ package de.bb.bejy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -117,9 +118,12 @@ public class ConfigGroup extends Configurable implements UserGroupDbi, Loadable 
         String pass2 = user2Password.get(user);
         if (pass2 == null)
             return null;
-        if (pass2.startsWith("{P5")) {
-            if (Pkcs5.verifyPbkdf2(pass2, password))
+        if (pass2.startsWith("{P")) {
+            if (Pkcs5.verifyPbkdf2(pass2, password)) {
+                if (!pass2.startsWith("{PBKDF2-"))
+                    user2Password.put(user, Pkcs5.encodePbkdf2("SHA256", password, 10));
                 return user2Roles.get(user);
+            }
         } else 
         if (password.equals(pass2))
             return user2Roles.get(user);
@@ -140,7 +144,10 @@ public class ConfigGroup extends Configurable implements UserGroupDbi, Loadable 
             String name = u.getProperty("name");
             String pass = u.getProperty("password", "");
             user2Password.put(name, pass);
-            user2Roles.put(name, u.getRoles());
+            Collection<String> roles = u.getRoles();
+            if (roles == null)
+                roles = Collections.emptyList();
+            user2Roles.put(name, roles);
         }
     }
 
