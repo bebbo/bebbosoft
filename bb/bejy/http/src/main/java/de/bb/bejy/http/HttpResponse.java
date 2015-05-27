@@ -307,11 +307,11 @@ class HttpResponse implements javax.servlet.http.HttpServletResponse {
         outHeaders.put("Location", rdr);
 
         status = 302;
-        setContentLength(0);
-        if (includeCount == 0) {
-            statusText = "redirecting to: " + rdr;
-            writeHeader();
-        }
+//        setContentLength(0);
+//        if (includeCount == 0) {
+//            statusText = "redirecting to: " + rdr;
+//            writeHeader();
+//        }
     }
 
     public void setBufferSize(int sz) // from javax.servlet.ServletResponse

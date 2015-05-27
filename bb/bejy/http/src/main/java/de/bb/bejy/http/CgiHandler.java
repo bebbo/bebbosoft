@@ -350,6 +350,7 @@ public class CgiHandler extends HttpHandler {
                 System.out.println(l);
         }
 
+        sr.setContentLength(br.length());
         br.writeTo(os);
     }
 
