@@ -191,10 +191,11 @@ public class Dns extends Configurable {
             map.put(new Integer(rdData.getPriority()), rdData);
         }
 
-        // also add domain to prevent empty lists
-        RD rdData = new RD(domain);
-        map.put(new Integer(Integer.MAX_VALUE), rdData);
-
+        if (map.isEmpty()) {
+            // also add domain to prevent empty lists
+            RD rdData = new RD(domain);
+            map.put(new Integer(Integer.MAX_VALUE), rdData);
+        }
         // reduce TTL to 1 mins if none was set
         if (ttl == Integer.MAX_VALUE)
             ttl = 1 * 60 * 1000;
