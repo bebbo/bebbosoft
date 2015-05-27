@@ -207,7 +207,12 @@ public class XmlFile {
                     to.key = to.name + "#" + i2s(tagsByName.size());
                     tagsByName.put(to.key, to);
                 }
-                tag.key = tag.name + "#" + i2s(tagsByName.size());
+                int n = tagsByName.size();
+                tag.key = tag.name + "#" + i2s(n);
+                while (tagsByName.containsKey(tag.key)) {
+                	++n;
+                    tag.key = tag.name + "#" + i2s(n);
+                }
                 tagsByName.put(tag.key, tag);
             } else
                 tagsByName.put(tag.name, tag);
@@ -455,6 +460,18 @@ public class XmlFile {
             }
             return bos.toString();
         }
+
+		public boolean moveBehind(Tag movedTag, Tag behindTag) {
+			int behindIndex = allByOrder.indexOf(behindTag);
+			if (behindIndex < 0)
+				return false;
+			
+			if (!allByOrder.remove(movedTag))
+				return false;
+			
+			allByOrder.add(behindIndex, movedTag);
+			return true;
+		}
     }
 
     private static class CData extends ByteRef {
@@ -1106,7 +1123,7 @@ public class XmlFile {
     }
 
     /**
-     * Drop the section and remov all content and children from this section.
+     * Drop the section and remove all content and children from this section.
      * 
      * @param section
      *            a path to a XML tag
@@ -1414,4 +1431,14 @@ public class XmlFile {
             num = key.length() - 1;
         return key.substring(slash, num);
     }
+
+	public boolean moveBehind(String moved, String behind) {
+		Tag movedTag = getTag(moved);
+		Tag behindTag = getTag(behind);
+		if (movedTag == null || behindTag == null || movedTag.parent != behindTag.parent)
+			return false;
+		
+		return movedTag.parent.moveBehind(movedTag, behindTag);
+	}
+	
 }
