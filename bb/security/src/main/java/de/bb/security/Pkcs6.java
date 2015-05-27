@@ -221,16 +221,17 @@ public class Pkcs6 {
         t = Asn1.addTo(newSeq, mdx);
         final byte signedContent[] = Asn1.addTo(t, Asn1.makeASN1(signature, 4));
 
-        return padSignedContent(signedContent, keyLength);
+        return padSignedContent(signedContent, keyLength, 1);
     }
 
-    public static byte[] padSignedContent(byte[] signedContent, int keyLength) {
+    public static byte[] padSignedContent(byte[] signedContent, int keyLength, int type) {
         byte[] t = new byte[keyLength];
         t[0] = 0;
-        t[1] = 1;
+        t[1] = (byte) type;
 
-        for (int i = 2; i < t.length - signedContent.length; ++i)
+        for (int i = 2; i < t.length - signedContent.length; ++i) {
             t[i] = (byte) 0xff;
+        }
         t[t.length - signedContent.length - 1] = 0;
         System.arraycopy(signedContent, 0, t, t.length - signedContent.length, signedContent.length);
         return t;
@@ -379,6 +380,7 @@ public class Pkcs6 {
     }
 
     private final static int certPKpath[] = { 0x90, 0x90, 0x10, 0x10, 0x10, 0x10, 0x90, 0x83 };
+    private final static int csrPKpath[] = { 0x90, 0x90, 0x10, 0x90, 0x83 };
 
     /**
      * Get the public modulo from a X.509 certificate
@@ -390,6 +392,8 @@ public class Pkcs6 {
     public static byte[] getX509Modulo(byte cert[]) {
         // get the public modulo from certificate
         byte b[] = Asn1.getSeq(cert, certPKpath, 0);
+        if (b == null)
+            b = Asn1.getSeq(cert, csrPKpath, 0);
         // dump(b);
         int p1[] = { 0x90, 0x82 };
         return Asn1.getSeq(b, p1, b[0] == 0 ? 1 : 0);
@@ -405,6 +409,8 @@ public class Pkcs6 {
     public static byte[] getX509Exponent(byte cert[]) {
         // get the public exponent from certificate
         byte b[] = Asn1.getSeq(cert, certPKpath, 0);
+        if (b == null)
+            b = Asn1.getSeq(cert, csrPKpath, 0);
 
         int p2[] = { 0x90, 0x02, 0x82 };
         return Asn1.getSeq(b, p2, b[0] == 0 ? 1 : 0);
@@ -446,6 +452,7 @@ public class Pkcs6 {
     }
 
     private final static int ENCRYPTION_PATH[] = { 0x90, 0x90, 6 };
+    private final static int ENCRYPTION_PATH_CSR[] = {0x90, 0x10, 0x90, 6 };
 
     /**
      * Returns the signature if the chain was validated successfully.
@@ -484,6 +491,8 @@ public class Pkcs6 {
                 return null;
 
             byte oid[] = Asn1.getSeq(signedData, ENCRYPTION_PATH, 0);
+            if (oid == null)
+                oid = Asn1.getSeq(cert, ENCRYPTION_PATH_CSR, 0);
             if (oid == null)
                 return null;
 
