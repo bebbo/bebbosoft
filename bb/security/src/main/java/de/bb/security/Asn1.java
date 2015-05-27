@@ -877,7 +877,7 @@ public class Asn1 implements Iterator<Asn1> {
             int z = Integer.parseInt(st.nextToken()) * 40;
             if (!st.hasMoreElements())
                 return null;
-            z |= Integer.parseInt(st.nextToken());
+            z += Integer.parseInt(st.nextToken());
             b[0] = (byte) z;
             len = 1;
             for (; st.hasMoreElements();) {
