@@ -17,8 +17,6 @@
 
 package de.bb.security;
 
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
 import de.bb.util.Mime;
@@ -28,29 +26,27 @@ import de.bb.util.Misc;
  * This class contains functions from Pkcs 5
  */
 public class Pkcs5 {
-    final static byte encryptionAlgorithm3DES[] = { (byte) 0x2A, (byte) 0x86,
-            (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x03,
-            (byte) 0x07 };
-    final static byte pbkdf2[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48,
-            (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x05, 12 };
-    final static byte pbes2[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48,
-            (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x05, 13 };
+    final static byte encryptionAlgorithm3DES[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7,
+            (byte) 0x0D, (byte) 0x03, (byte) 0x07 };
+    final static byte pbkdf2[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D,
+            (byte) 0x01, (byte) 0x05, 12 };
+    final static byte pbes2[] = { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D,
+            (byte) 0x01, (byte) 0x05, 13 };
 
     final static byte newSeq[] = { (byte) 0x30, (byte) 0x80 };
 
     final static Random rand = SecureRandom.getInstance();
 
     /**
-     * Generates a key from password, salt and iteration count using the given
-     * message digest. The key len is less equal to the hash result len!
+     * Generates a key from password, salt and iteration count using the given message digest. The key len is less equal
+     * to the hash result len!
      * 
      * @param pwd
      *            the password.
      * @param salt
      *            the salt.
      * @param count
-     *            the used iteration count. A big iteration count increases
-     *            protected against brute force attacks.
+     *            the used iteration count. A big iteration count increases protected against brute force attacks.
      * @param md
      *            the used message digest.
      * @param klen
@@ -59,8 +55,7 @@ public class Pkcs5 {
      *            new allocated byte array containing the key.
      * @see PKCS-5
      */
-    public static byte[] pbkdf1(byte pwd[], byte salt[], int count,
-            MessageDigest md, int kLen) {
+    public static byte[] pbkdf1(byte pwd[], byte salt[], int count, MessageDigest md, int kLen) {
         md.update(pwd);
         md.update(salt);
         for (int i = 1; i < count; ++i)
@@ -71,16 +66,15 @@ public class Pkcs5 {
     }
 
     /**
-     * Generates a key from password, salt and iteration count using the given
-     * message digest. like pbkdf1, but for indeoendend key length
+     * Generates a key from password, salt and iteration count using the given message digest. like pbkdf1, but for
+     * indeoendend key length
      * 
      * @param pwd
      *            the password.
      * @param salt
      *            the salt.
      * @param count
-     *            the used iteration count. A big iteration count increases
-     *            protected against brute force attacks.
+     *            the used iteration count. A big iteration count increases protected against brute force attacks.
      * @param md
      *            the used message digest.
      * @param klen
@@ -89,8 +83,7 @@ public class Pkcs5 {
      *            new allocated byte array containing the key.
      * @see PKCS-5
      */
-    public static byte[] pbkdf1a(byte pwd[], byte salt[], int count,
-            MessageDigest md, int kLen) {
+    public static byte[] pbkdf1a(byte pwd[], byte salt[], int count, MessageDigest md, int kLen) {
         byte b[] = new byte[kLen];
         byte m[] = new byte[0];
         for (int j = 0; j < kLen; j += m.length) {
@@ -109,16 +102,15 @@ public class Pkcs5 {
     }
 
     /**
-     * Generates a key from password, salt and iteration count using the given
-     * message digest. It generates keys of any length.
+     * Generates a key from password, salt and iteration count using the given message digest. It generates keys of any
+     * length.
      * 
      * @param pwd
      *            the password.
      * @param salt
      *            the salt.
      * @param count
-     *            the used iteration count. A big iteration count increases
-     *            protected against brute force attacks.
+     *            the used iteration count. A big iteration count increases protected against brute force attacks.
      * @param md
      *            the used message digest.
      * @param klen
@@ -127,8 +119,7 @@ public class Pkcs5 {
      *            new allocated byte array containing the key.
      * @see PKCS-5
      */
-    public static byte[] pbkdf2Broken(byte pwd[], byte salt[], int count,
-            MessageDigest md, int kLen) {
+    public static byte[] pbkdf2Broken(byte pwd[], byte salt[], int count, MessageDigest md, int kLen) {
         md.update((byte) 0);
         int hLen = md.digest().length;
         int pass = kLen + hLen - 1;
@@ -157,16 +148,15 @@ public class Pkcs5 {
     }
 
     /**
-     * Generates a key from password, salt and iteration count using the given
-     * message digest. It generates keys of any length.
+     * Generates a key from password, salt and iteration count using the given message digest. It generates keys of any
+     * length.
      * 
      * @param pwd
      *            the password.
      * @param salt
      *            the salt.
      * @param count
-     *            the used iteration count. A big iteration count increases
-     *            protected against brute force attacks.
+     *            the used iteration count. A big iteration count increases protected against brute force attacks.
      * @param md
      *            the used message digest.
      * @param klen
@@ -175,8 +165,7 @@ public class Pkcs5 {
      *            new allocated byte array containing the key.
      * @see PKCS-5
      */
-    public static byte[] pbkdf2(byte pwd[], byte salt[], int count,
-            MessageDigest md, int kLen) {
+    public static byte[] pbkdf2(byte pwd[], byte salt[], int count, MessageDigest md, int kLen) {
 
         // get digest length
         md.update((byte) 0);
@@ -210,8 +199,8 @@ public class Pkcs5 {
     }
 
     /**
-     * This function performs an encryption using the given BlockCipher. Note
-     * that there must exist enough keyData to create key and iv!
+     * This function performs an encryption using the given BlockCipher. Note that there must exist enough keyData to
+     * create key and iv!
      * 
      * @param bc
      *            the used BlockCipher.
@@ -231,8 +220,8 @@ public class Pkcs5 {
     }
 
     /**
-     * This function performs an decryption using the given BlockCipher. Note
-     * that there must exist enough keyData to create key and iv!
+     * This function performs an decryption using the given BlockCipher. Note that there must exist enough keyData to
+     * create key and iv!
      * 
      * @param bc
      *            the used BlockCipher.
@@ -263,12 +252,10 @@ public class Pkcs5 {
      * @param keyLen
      *            the len for the used key.
      * @passwd the used password. valid values are "3DES".
-     * @return a new allocated ASN.1 sequence containing encoded and encrypted
-     *         data or null on error.
+     * @return a new allocated ASN.1 sequence containing encoded and encrypted data or null on error.
      * @see PKCS-5
      */
-    public static byte[] pb2encrypt(byte in[], int count, String algid,
-            int keyLen, String passwd) {
+    public static byte[] pb2encrypt(byte in[], int count, String algid, int keyLen, String passwd) {
         try {
             BlockCipher bc = null;
             if (algid.compareTo("3DES") == 0)
@@ -281,8 +268,7 @@ public class Pkcs5 {
             byte[] salt = new byte[8];
             rand.nextBytes(salt);
             byte iv[] = new byte[bc.blockSize()];
-            byte key[] = pbkdf2(passwd.getBytes(), salt, count, sha, iv.length
-                    + keyLen);
+            byte key[] = pbkdf2(passwd.getBytes(), salt, count, sha, iv.length + keyLen);
             System.arraycopy(key, keyLen, iv, 0, iv.length);
             // verschluesseln
             byte b[] = pbes(bc, in, key);
@@ -316,14 +302,12 @@ public class Pkcs5 {
     }
 
     /**
-     * Restore original data froam a sequence conatining an PBES2 encoded
-     * sequence.
+     * Restore original data froam a sequence conatining an PBES2 encoded sequence.
      * 
      * @param in
      *            encrypted data.
      * @passwd the used password.
-     * @return a new allocated ASN.1 sequence containing encoded and encrypted
-     *         data.
+     * @return a new allocated ASN.1 sequence containing encoded and encrypted data.
      * @see PKCS-5
      */
     public static byte[] pb2decrypt(byte in[], String passwd) {
@@ -348,8 +332,7 @@ public class Pkcs5 {
                 return null;
 
             byte cipher[] = Asn1.getSeq(seq, pao2, 0); // get used cipher
-            if (!Misc.equals(cipher, 0, encryptionAlgorithm3DES, 0,
-                    encryptionAlgorithm3DES.length))
+            if (!Misc.equals(cipher, 0, encryptionAlgorithm3DES, 0, encryptionAlgorithm3DES.length))
                 return null;
 
             byte iv[] = Asn1.getSeq(seq, pad, 0); // get used initialization
@@ -360,16 +343,14 @@ public class Pkcs5 {
             int count = Asn1.getInt(seq, pai); // get used count
             int keyLen = Asn1.getInt(seq, pai2); // get used keyLen
             byte algId[] = Asn1.getSeq(seq, pao, 0); // digest alg
-            if (!Misc.equals(algId, 0, Pkcs1.digestAlgorithmSHA, 0,
-                    Pkcs1.digestAlgorithmSHA.length))
+            if (!Misc.equals(algId, 0, Pkcs1.digestAlgorithmSHA, 0, Pkcs1.digestAlgorithmSHA.length))
                 return null;
 
             BlockCipher bc = new DES3();
 
             // key generieren
             SHA sha = new SHA();
-            byte key[] = pbkdf2(passwd.getBytes(), salt, count, sha, iv.length
-                    + keyLen);
+            byte key[] = pbkdf2(passwd.getBytes(), salt, count, sha, iv.length + keyLen);
             if (!Misc.equals(key, keyLen, iv, 0, iv.length))
                 return null;
             // entschluesseln
@@ -383,8 +364,7 @@ public class Pkcs5 {
     }
 
     /**
-     * Verify a password by encoding the given password and comparing the result
-     * to the provided encoded password.
+     * Verify a password by encoding the given password and comparing the result to the provided encoded password.
      * 
      * @param encodedPassword
      *            the encoded password
@@ -392,8 +372,7 @@ public class Pkcs5 {
      *            the provided password
      * @return true if the password matches
      */
-    public static boolean verifyPbkdf2(final String encodedPassword,
-            final String password) {
+    public static boolean verifyPbkdf2(final String encodedPassword, final String password) {
         try {
 
             // must start with {....}
@@ -430,8 +409,7 @@ public class Pkcs5 {
 
             if (old) {
                 // decode data
-                byte decoded[] = Mime.decode(encodedPassword.substring(ce + 1)
-                        .getBytes());
+                byte decoded[] = Mime.decode(encodedPassword.substring(ce + 1).getBytes());
                 if (decoded == null || decoded.length != 2 + 16 + 32)
                     return false;
 
@@ -446,24 +424,22 @@ public class Pkcs5 {
                 byte[] pbkdf2 = null;
 
                 if (palgo.startsWith("P5"))
-                    pbkdf2 = Pkcs5.pbkdf2Broken(password.getBytes("utf-8"),
-                            salt, passes, md, 32);
+                    pbkdf2 = Pkcs5.pbkdf2Broken(password.getBytes("utf-8"), salt, passes, md, 32);
                 else if (palgo.startsWith("PKCS5"))
-                    pbkdf2 = Pkcs5.pbkdf2(password.getBytes("utf-8"), salt,
-                            passes, md, 32);
+                    pbkdf2 = Pkcs5.pbkdf2(password.getBytes("utf-8"), salt, passes, md, 32);
 
                 if (pbkdf2 == null)
                     return false;
                 return Misc.equals(pbkdf2, 0, decoded, 18, 32);
             }
-            
+
             // new {PBKDF2-hash}nnnnn$saltbase64$hashbase64
             ++ce;
             int dollar = encodedPassword.indexOf('$', ce);
             if (dollar <= ce)
                 return false;
             int passes = Integer.parseInt(encodedPassword.substring(ce, dollar));
-            
+
             ce = dollar + 1;
             dollar = encodedPassword.indexOf('$', ce);
             if (dollar <= ce)
@@ -474,15 +450,14 @@ public class Pkcs5 {
             byte[] pbkdf2 = Pkcs5.pbkdf2(password.getBytes("utf-8"), salt, passes, md, 32);
 
             return Misc.equals(pbkdf2, hash);
-            
+
         } catch (Exception e) {
         }
         return false;
     }
 
     /**
-     * Encode a password using PBKDF2, the specified hash algorithm and the
-     * number of passes.
+     * Encode a password using PBKDF2, the specified hash algorithm and the number of passes.
      * 
      * @param algo
      *            the message digest e.g. "SHA256"
@@ -492,8 +467,7 @@ public class Pkcs5 {
      *            the passes - this value is used as (1 << n2Passes).
      * @return a String containing the hashed and encoded password
      */
-    public static String encodePbkdf2(String algo, final String password,
-            int n2Passes) {
+    public static String encodePbkdf2(String algo, final String password, int n2Passes) {
         int rand = SecureRandom.getInstance().nextInt() & 0xff;
         try {
             final MessageDigest md = MessageDigest.get(algo);
@@ -505,13 +479,13 @@ public class Pkcs5 {
             final byte salt[] = new byte[16];
             SecureRandom.getInstance().nextBytes(salt);
 
-            byte[] pbkdf2 = Pkcs5.pbkdf2(password.getBytes("utf-8"), salt,
-                    passes, md, 32);
+            byte[] pbkdf2 = Pkcs5.pbkdf2(password.getBytes("utf-8"), salt, passes, md, 32);
 
-            if (algo.equals("SHA")) algo = "SHA1";
-            
-            final String encodedPassword = "{PBKDF2-" + algo + "}" + passes + "$"
-                    + new String(Mime.encode(salt)) + "$" + new String(Mime.encode(pbkdf2));
+            if (algo.equals("SHA"))
+                algo = "SHA1";
+
+            final String encodedPassword = "{PBKDF2-" + algo + "}" + passes + "$" + new String(Mime.encode(salt)) + "$"
+                    + new String(Mime.encode(pbkdf2));
             return encodedPassword;
         } catch (Exception e) {
             throw new RuntimeException(e);
