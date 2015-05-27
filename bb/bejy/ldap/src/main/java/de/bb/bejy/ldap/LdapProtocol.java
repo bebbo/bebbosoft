@@ -64,7 +64,7 @@ public class LdapProtocol extends Protocol {
         String s = "$Revision: 1.18 $";
         no = "1.3." + s.substring(11, s.length() - 1);
         version = Version.getShort() + " LDAP " + no
-                + " (c) 2000-2013 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+                + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     private LogFile logFile;
@@ -332,7 +332,7 @@ public class LdapProtocol extends Protocol {
     }
 
     private boolean checkWritePermission(ByteRef dn) {
-        for (final String wp : currentReadPermissions) {
+        for (final String wp : currentWritePermissions) {
             if (dn.endsWith(wp)) {
                 return true;
             }
@@ -368,7 +368,7 @@ public class LdapProtocol extends Protocol {
                     final ByteRef attr = attrTypeAndValue.next().asByteRef().toLowerCase();
                     final Iterator<Asn1> vals = attrTypeAndValue.next().children();
                     switch (operation) {
-                    case 0: // add 
+                    case 0: // add
                     {
                         final ByteRef value = vals.next().asByteRef();
                         if (attr.equals("userpassword")) {
@@ -554,7 +554,9 @@ public class LdapProtocol extends Protocol {
 
         Asn1 attributeDescriptionList = seq.next();
 
-        logFile.writeDate("search: " + searchBaseDn + " (" + search + ")");
+        logFile.writeDate("search: ldap:///" + searchBaseDn + "?" + printableAttrs(attributeDescriptionList) + "?" 
+        + (scope == 0 ? "base" : scope == 1 ? "one" : "sub") + "?"
+                + search + "?");
 
         final ByteRef cacheKey = currentUser.append(content.asByteRef()).append(LdapFactory.getXmlFileDate());
 
@@ -573,13 +575,13 @@ public class LdapProtocol extends Protocol {
 
             searchRoot = "/ldap/" + searchRoot;
 
-            //            System.out.println(search);
+            // System.out.println(search);
             final XmlFile xmlFile = getXmlFile();
             if (xmlFile.sections(searchRoot).hasNext()) {
                 findRecursive(xmlFile, searchRoot, search, attributeDescriptionList, scope);
                 // CACHE.put(cacheKey, currentResponses);
             } else {
-                notFound = false; //true;
+                notFound = false; // true;
             }
             currentResponses = null;
         }
@@ -591,6 +593,18 @@ public class LdapProtocol extends Protocol {
         result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
 
         writeResponse(result);
+    }
+
+    private String printableAttrs(Asn1 attributeDescriptionList) {
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<Asn1> i = attributeDescriptionList.children(); i.hasNext();) {
+            Asn1 attr = i.next();
+            ByteRef sattr = attr.asByteRef().toLowerCase();
+            if (sb.length() > 0)
+                sb.append(",");
+            sb.append(sattr.toString());
+        }
+        return sb.toString();
     }
 
     private void sendSearchError() throws IOException {
@@ -687,8 +701,7 @@ public class LdapProtocol extends Protocol {
                 attrResult = Asn1.addTo(attrResult, attName);
                 continue;
             }
-            
-            
+
             String val = sattr.equals(last) ? xml.getString(key, "name", null) : xml.getString(key + sattr, "name",
                     null);
 
@@ -835,8 +848,7 @@ public class LdapProtocol extends Protocol {
             }
         }
 
-        logFile.writeDate("bind: v" + version + " for '" + name + "' "
-                + ((resultVal == RESULT_SUCCESS) ? "login successful" : "login failed"));
+        logFile.writeDate("bind: v" + version + " for '" + name + "' " + ((resultVal == RESULT_SUCCESS) ? "login successful" : "login failed"));
 
         currentUser = name;
 
@@ -871,7 +883,10 @@ public class LdapProtocol extends Protocol {
         response = Asn1.addTo(response, responseContent);
 
         Iterator<Asn1> msg = new Asn1(responseContent).children();
-        msg.next();
+        Asn1 cn = msg.next();
+        byte[] data = Asn1.getData(cn.toByteArray());
+        if (data.length > 1)
+            logFile.writeDate("> " + new ByteRef(data));
         Asn1 r = msg.next();
         if ((0x1f & r.getType()) == Asn1.SEQUENCE) {
             for (Iterator<Asn1> j = r.children(); j.hasNext();) {
@@ -889,12 +904,12 @@ public class LdapProtocol extends Protocol {
                             vals.append(i.next().asByteRef());
                         }
                     }
-                    logFile.writeDate("> " + name + " = " + vals);
+                    logFile.writeDate("  > " + name + " = " + vals);
                 }
             }
         }
 
-        //System.out.println("> " + new Asn1(response));
+        // System.out.println("> " + new Asn1(response));
         // Misc.dump(System.out, response);
         os.write(response);
         os.flush();
@@ -905,6 +920,10 @@ public class LdapProtocol extends Protocol {
         switch (searchAsn.getType() & 0xf) {
         case 0x0:
             return new AndFilter(i);
+        case 0x1:
+            return new OrFilter(i);
+        case 0x2:
+            return new NotFilter(i);
         case 0x3:
             return new EqualityFilter(i);
         case 0x4:
@@ -923,7 +942,6 @@ public class LdapProtocol extends Protocol {
     class SubStringFilter implements Search {
 
         private String attribute;
-        private String attributeEq;
 
         private int where;
 
@@ -931,7 +949,6 @@ public class LdapProtocol extends Protocol {
 
         SubStringFilter(Iterator<Asn1> i) {
             this.attribute = i.next().asByteRef().toString();
-            this.attributeEq = attribute + "=";
             Asn1 list = i.next();
             this.where = list.getType() & 3;
             for (Iterator<Asn1> j = list.children(); j.hasNext();) {
@@ -975,7 +992,9 @@ public class LdapProtocol extends Protocol {
         }
 
         public String toString() {
-            return "substr(" + attribute + ": " + substrings + ")";
+            String s = substrings.toString();
+            s = s.substring(1, s.length() - 1);
+            return "(" + attribute + "=*" + s + "*)";
         }
     }
 
@@ -1019,7 +1038,65 @@ public class LdapProtocol extends Protocol {
         }
 
         public String toString() {
-            return "(hasAttr: " + attribute + ")";
+            return "(" + attribute + "=*)";
+        }
+    }
+
+    class OrFilter implements LdapProtocol.Search {
+        ArrayList<LdapProtocol.Search> searches = new ArrayList<Search>();
+
+        public OrFilter(Iterator<Asn1> i) {
+            while (i.hasNext()) {
+                searches.add(createSearch(i.next()));
+            }
+        }
+
+        public int match(XmlFile xml, String key) {
+            for (LdapProtocol.Search s : this.searches) {
+                int r = s.match(xml, key);
+                if (r > 0) {
+                    return r;
+                }
+            }
+            return -1;
+        }
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("(|");
+            for (Search s : searches) {
+                sb.append(s.toString());
+            }
+            sb.append(")");
+            return sb.toString();
+        }
+    }
+
+    class NotFilter implements LdapProtocol.Search {
+        ArrayList<LdapProtocol.Search> searches = new ArrayList<Search>();
+
+        public NotFilter(Iterator<Asn1> i) {
+            while (i.hasNext()) {
+                searches.add(createSearch(i.next()));
+            }
+        }
+
+        public int match(XmlFile xml, String key) {
+            for (LdapProtocol.Search s : this.searches) {
+                int r = s.match(xml, key);
+                return r > 0 ? 0 : 1;
+            }
+            return -1;
+        }
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("(!");
+            for (Search s : searches) {
+                sb.append(s.toString());
+            }
+            sb.append(")");
+            return sb.toString();
         }
     }
 
@@ -1037,13 +1114,19 @@ public class LdapProtocol extends Protocol {
                 int r = s.match(xml, key);
                 if (r <= 0)
                     return r;
-                s.toString();
             }
             return 1;
         }
 
         public String toString() {
-            return "and " + searches;
+            StringBuilder sb = new StringBuilder();
+            sb.append("(&");
+            for (Search s : searches) {
+                sb.append(s.toString());
+            }
+            sb.append(")");
+            return sb.toString();
+
         }
     }
 
@@ -1063,7 +1146,8 @@ public class LdapProtocol extends Protocol {
         /**
          * A XML node can reflect an LDAP object or an attribute.
          * 
-         * If the last segment matches, it's a LDAP object. Otherwise it's an attribute.
+         * If the last segment matches, it's a LDAP object. Otherwise it's an
+         * attribute.
          * 
          * Ensure that LDAP objects are not found as attribute.
          */
@@ -1093,15 +1177,15 @@ public class LdapProtocol extends Protocol {
                     if (value.equalsIgnoreCase(xml.getString(key, "name", null)))
                         return 1;
                 }
-                /*                String v = xml.getString(key, "ref", null);
-                                if (v != null && v.indexOf(value) >= 0)
-                                    return 2;
-                */}
+                /*
+                 * String v = xml.getString(key, "ref", null); if (v != null &&
+                 * v.indexOf(value) >= 0) return 2;
+                 */}
             return -1;
         }
 
         public String toString() {
-            return "(" + what + " == " + value + ")";
+            return "(" + what + "=" + value + ")";
         }
     }
 
