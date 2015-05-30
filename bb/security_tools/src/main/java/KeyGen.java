@@ -43,25 +43,28 @@ public class KeyGen {
         }
         try {
             BigInteger p, q, e, one;
-            byte ee[] = {1, 0, 1};
+            byte ee[] = { 1, 0, 1 };
             e = new BigInteger(ee);
-            byte bb[] = {1};
+            byte bb[] = { 1 };
             one = new BigInteger(bb);
             write("e");
             // BigInteger a, b;
             do {
+                int l1 = (klen + 1) / 2;
+                //                    p = new BigInteger(klen / 2, 100, sr);
                 write("p");
-                do {
-                    p = new BigInteger(klen / 2, 100, sr);
-                    write(".");
-                } while (p.equals(1));
+                p = Pkcs6.generatePrime(l1);
+                //                    q = new BigInteger(klen / 2, 100, sr);
                 write("q");
-                do {
-                    q = new BigInteger(klen / 2, 100, sr);
-                    write(".");
-                } while (q.equals(1));
+                q = Pkcs6.generatePrime(klen - l1);
+                
+                if (p.multiply(q).bitLength() < klen) {
+                    write("P");
+                    p = Pkcs6.generatePrime(l1 + 1);
+                }
+                
             } while (p.compareTo(q) == 0 || one.compareTo(e.gcd(p.subtract(one))) != 0
-                    || one.compareTo(e.gcd(q.subtract(one))) != 0);
+                    || one.compareTo(e.gcd(q.subtract(one))) != 0 || p.multiply(q).bitLength() != klen);
             writeln(" - ok");
 
             byte seq[] = Pkcs1.createKeyPair(p, q);
@@ -80,9 +83,9 @@ public class KeyGen {
 
             // now create a certification request
             // int pad[] = {0x90, 0x84};
-            int pan[] = {0x90, 2, 0x82};
-            int pae[] = {0x90, 2, 2, 0x82};
-            int paf[] = {0x90, 2, 2, 2, 0x82};
+            int pan[] = { 0x90, 2, 0x82 };
+            int pae[] = { 0x90, 2, 2, 0x82 };
+            int paf[] = { 0x90, 2, 2, 2, 0x82 };
             // seq = Asn1.getSeq(seq, pad, 0);
             byte kn[] = Asn1.getSeq(seq, pan, 0);
             byte ke[] = Asn1.getSeq(seq, pae, 0);
@@ -102,11 +105,13 @@ public class KeyGen {
 
     static void write(String s) {
         System.out.print(s);
+        System.out.flush();
     }
 
     static void writeln(String s) {
         System.out.println(s);
     }
+
 }
 
 /*
