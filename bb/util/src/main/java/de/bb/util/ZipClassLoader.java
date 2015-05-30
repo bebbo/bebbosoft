@@ -444,6 +444,8 @@ public class ZipClassLoader extends ClassLoader {
                 String szip = surl.substring(4, excl);
 
                 Object o = getObject(new URL(szip));
+                if (!(o instanceof ZipFile))
+                    return null;
                 String file = surl.substring(excl + 2);
                 ZipFile zf = (ZipFile) o;
                 ZipEntry ze = zf.getEntry(file);
