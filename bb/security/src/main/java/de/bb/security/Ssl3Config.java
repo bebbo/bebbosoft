@@ -1,6 +1,5 @@
 package de.bb.security;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 
 import de.bb.security.Ssl3Server.SID;
@@ -30,13 +29,10 @@ public class Ssl3Config {
         for (int i = 0; i < 8; ++i) {
             t[i] = pkData[i];
         }
-        // create the diffie hellman primes
+        // create the diffie hellman prime
         SecureRandom secureRnd = SecureRandom.getInstance();
-        int nlen = pkData[0].length - (pkData[0][0] == 0 ? 1 : 0);
-        byte p[] = new BigInteger(nlen * 8, 100, secureRnd).toByteArray();
-        byte y[] = new byte[nlen];
-        System.arraycopy(p, p.length - y.length, y, 0, y.length);
-
+        int nlen = 256;//pkData[0].length - (pkData[0][0] == 0 ? 1 : 0);
+        byte p[] = Pkcs6.generatePrime(nlen * 8).toByteArray();
         byte g[] = new byte[nlen];
         secureRnd.nextBytes(g);
         g[0] &= 0x7f;
