@@ -17,6 +17,7 @@ package de.bb.security;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
@@ -379,8 +380,8 @@ public class Pkcs6 {
         return s;
     }
 
-    private final static int certPKpath[] = { 0x90, 0x90, 0x10, 0x10, 0x10, 0x10, 0x90, 0x83 };
-    private final static int csrPKpath[] = { 0x90, 0x90, 0x10, 0x90, 0x83 };
+    private final static int CERTPK_PATH[] = { 0x90, 0x90, 0x10, 0x10, 0x10, 0x10, 0x90, 0x83 };
+    private final static int CSRPK_PATH[] = { 0x90, 0x90, 0x10, 0x90, 0x83 };
 
     /**
      * Get the public modulo from a X.509 certificate
@@ -391,9 +392,9 @@ public class Pkcs6 {
      */
     public static byte[] getX509Modulo(byte cert[]) {
         // get the public modulo from certificate
-        byte b[] = Asn1.getSeq(cert, certPKpath, 0);
+        byte b[] = Asn1.getSeq(cert, CERTPK_PATH, 0);
         if (b == null)
-            b = Asn1.getSeq(cert, csrPKpath, 0);
+            b = Asn1.getSeq(cert, CSRPK_PATH, 0);
         // dump(b);
         int p1[] = { 0x90, 0x82 };
         return Asn1.getSeq(b, p1, b[0] == 0 ? 1 : 0);
@@ -408,20 +409,20 @@ public class Pkcs6 {
      */
     public static byte[] getX509Exponent(byte cert[]) {
         // get the public exponent from certificate
-        byte b[] = Asn1.getSeq(cert, certPKpath, 0);
+        byte b[] = Asn1.getSeq(cert, CERTPK_PATH, 0);
         if (b == null)
-            b = Asn1.getSeq(cert, csrPKpath, 0);
+            b = Asn1.getSeq(cert, CSRPK_PATH, 0);
 
         int p2[] = { 0x90, 0x02, 0x82 };
         return Asn1.getSeq(b, p2, b[0] == 0 ? 1 : 0);
     }
 
-    private static int certSigPath[] = { 0x90, 0x10, 0x10, 0x83 };
-    private static int certContent[] = { 0x90, 0x10 };
-    private static int signatureHash[] = { 0x90, 0x84 };
+    private static int CERTSIGPATH_PATH[] = { 0x90, 0x10, 0x10, 0x83 };
+    private static int CERTCONTENT_PATH[] = { 0x90, 0x10 };
+    private static int SIGNATUREHASH_PATH[] = { 0x90, 0x84 };
 
     public static byte[] getCertificateSignature(byte[] cert) {
-        byte signedData[] = Asn1.getSeq(cert, certSigPath, 0);
+        byte signedData[] = Asn1.getSeq(cert, CERTSIGPATH_PATH, 0);
         byte[] n = getX509Modulo(cert);
         byte[] e = getX509Exponent(cert);
 
@@ -470,23 +471,23 @@ public class Pkcs6 {
         byte[] n = getX509Modulo(cert);
         byte[] e = getX509Exponent(cert);
 
-        byte[] u = null;
+        byte[] hash = null;
         for (int i = certs.size() - 1; i >= 0; --i) {
             cert = certs.get(i);
-            byte signature[] = Asn1.getSeq(cert, certSigPath, 0);
+            byte signature[] = Asn1.getSeq(cert, CERTSIGPATH_PATH, 0);
             if (signature == null || n == null || e == null)
                 return null;
 
-            u = doRSA(signature, n, e);
-            u = decodeRSA(u);
-            if (u == null)
+            byte[] decodedSignature = doRSA(signature, n, e);
+            byte[] encodedHash = decodeRSA(decodedSignature);
+            if (encodedHash == null)
                 return null;
 
-            u = Asn1.getSeq(u, signatureHash, 0);
-            if (u == null)
+            hash = Asn1.getSeq(encodedHash, SIGNATUREHASH_PATH, 0);
+            if (hash == null)
                 return null;
 
-            byte signedData[] = Asn1.getSeq(cert, certContent, 0);
+            byte signedData[] = Asn1.getSeq(cert, CERTCONTENT_PATH, 0);
             if (signedData == null)
                 return null;
 
@@ -511,14 +512,14 @@ public class Pkcs6 {
 
             byte calcedHash[] = md.digest(signedData);
 
-            if (!Misc.equals(u, calcedHash))
+            if (!Misc.equals(hash, calcedHash))
                 return null;
 
             n = getX509Modulo(cert);
             e = getX509Exponent(cert);
         }
 
-        return u;
+        return hash;
     }
 
     private static int reqPKpath[] = { 0x90, 0x90, 0x10, 0x90, 0x83 };
@@ -686,6 +687,70 @@ public class Pkcs6 {
         // System.out.println("RSA took: " + (System.currentTimeMillis() -
         // start) + "ms");
         return b2;
-
     }
+    
+    
+    public static BigInteger generatePrime(int bitsP) {
+
+        int nb = 1;
+        for (int i = bitsP; i > 0; ++nb) {
+            i >>>= 1;
+        }
+
+        nb = (bitsP - nb) >> 1;
+
+        for (;;) {
+            BigInteger r = primeForStrongPrime(nb);
+            BigInteger s = new BigInteger(nb, SecureRandom.getInstance());
+            BigInteger rs = r.multiply(s);
+            BigInteger rr = s.modPow(r.subtract(BigInteger.ONE), rs);
+            BigInteger ss = r.modPow(s.subtract(BigInteger.ONE), rs);
+            if (rr.compareTo(ss) < 0)
+                rr = ss.subtract(rr);
+            else
+                rr = rr.subtract(ss);
+
+            BigInteger z = primeInArithmeticProgression(bitsP, rr, rs);
+            if (z != null)
+                return z;
+        }
+    }
+
+    static private BigInteger primeForStrongPrime(int bitsP) {
+        int nb = 1;
+        for (int i = bitsP; i > 0; ++nb)
+            i >>>= 1;
+
+        nb = bitsP - nb;
+
+        for (;;) {
+            BigInteger z = primeInArithmeticProgression(bitsP, BigInteger.ONE,
+                    new BigInteger(nb, SecureRandom.getInstance()));
+            if (z != null)
+                return z;
+        }
+    }
+
+    static private BigInteger primeInArithmeticProgression(int bitsP, BigInteger z0, BigInteger d) {
+        BigInteger z = BigInteger.ONE.shiftLeft(bitsP - 1);
+        z = z.subtract(z.mod(d)).add(z0.mod(d));
+        // gerade?
+        if (!z.testBit(0))
+            z = z.add(d);
+        d = d.add(d);
+
+        // sicherstellen, daß z groß genug ist
+        while (z.bitLength() < bitsP)
+            z = z.add(d);
+
+        // suchen, bis der Bereich abgegrast ist
+        while (z.bitLength() == bitsP) {
+            if (!z.testBit(1) && z.isProbablePrime(33))
+                return z; // yepp!
+            z = z.add(d);
+        }
+        // keine gefunden
+        return null;
+    }
+
 }
