@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -111,20 +112,10 @@ class Spooler extends Thread {
      * @see java.lang.Thread#run()
      */
     public void run() {
-        MailDBI dbi = null;
-        while (!terminate) {
-            try {
-                dbi = cfg.getDbi(this);
-                if (dbi != null)
-                    break;
-            } catch (Exception e1) {
-            }
-            logFile.writeDate("ERROR: no DBI retrying in 30 seconds");
-            try {
-                Thread.sleep(30000);
-            } catch (InterruptedException e) {
-            }
-        }
+        MailDBI dbi = obtainDbi();
+        
+        fixSpoolerTable(dbi);
+        
         try {
             boolean maxReached = false;
             while (!terminate) {
@@ -189,6 +180,36 @@ class Spooler extends Thread {
             if (dbi != null)
                 cfg.releaseDbi(this, dbi);
         }
+    }
+
+    /**
+     * ensure that there are no hanging spooled mails, due to the aborted old process.
+     * @param dbi
+     */
+    private void fixSpoolerTable(MailDBI dbi) {
+        // restart all pending entries
+        try {
+            dbi.resetSpoolEntries();
+        } catch (SQLException e) {
+        }
+    }
+
+    private MailDBI obtainDbi() {
+        MailDBI dbi = null;
+        while (!terminate) {
+            try {
+                dbi = cfg.getDbi(this);
+                if (dbi != null)
+                    break;
+            } catch (Exception e1) {
+            }
+            logFile.writeDate("ERROR: no DBI retrying in 30 seconds");
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+            }
+        }
+        return dbi;
     }
 
     /**

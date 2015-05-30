@@ -40,10 +40,10 @@ public class MailCfg extends Configurable implements Configurator {
                     {"mainDomain", "domain used in HELO of this mail server"},
                     {"sendThreads", "the max count of sending Threads", "3"},
                     {"dbiMaxCount", "the max count of database connections", "25"},
-                    {"dbiThreshold", "the max count of unused database connections", "2"},
+            { "dbiThreshold", "the max count of unused database connections", "2" },
                     {"shortIntervall",
                             "the time intervall in minutes used between delivery retries before intervall switch", "5"},
-                    {"longIntervall", "the time intervall used between delivery retries after intervall switch", "30"},
+            { "longIntervall", "the time intervall used between delivery retries after intervall switch", "30" },
                     {
                             "intervallSwitch",
                             "the count of delivery retries until intervall switches and a 2nd mail notification is sent",
@@ -60,7 +60,7 @@ public class MailCfg extends Configurable implements Configurator {
 
     String jdbcUrl;
 
-    Class clazz;
+    Class<? extends MailDBI> clazz;
 
     private String mainDomain;
 
@@ -166,15 +166,16 @@ public class MailCfg extends Configurable implements Configurator {
 
         String dName = getProperty("jdbcDriver");
         try {
-            clazz = Class.forName(dName);
-            clazz.newInstance();
+            // load JDBC driver
+            Class<?> jdbclazz = Class.forName(dName);
+            jdbclazz.newInstance();
         } catch (Exception e) {
             throw new Exception("cannot load jdbcDriver: " + dName);
         }
 
         String iName = getProperty("mailDbi");
         try {
-            clazz = Class.forName(iName);
+            clazz = (Class<? extends MailDBI>) Class.forName(iName);
         } catch (Exception e) {
             throw new Exception("cannot load mailDbi: " + iName);
         }
@@ -235,15 +236,8 @@ public class MailCfg extends Configurable implements Configurator {
 
         if (spooler == null) {
 
-            // restart all pending entries
-            MailDBI dbi = getDbi(this);
-            dbi.resetSpoolEntries();
-            releaseDbi(this, dbi);
-
             spooler = new Spooler(logFile, this);
-
             spooler.init(this);
-
             spooler.start();
 
             // run recover if enabled
@@ -255,8 +249,7 @@ public class MailCfg extends Configurable implements Configurator {
             // run each 24 hours - but add only if it does not yet exist
             if (cleanup == null) {
                 cleanup = new Cleanup(logFile, this);
-                Config.getCron().runEvery("e-mail garbage collector", cleanup, /*24 * 60 * 60 */1000L,
-                        24 * 60 * 60 * 1000L);
+                Config.getCron().runEvery("e-mail garbage collector", cleanup, /*24 * 60 * 60 */1000L, 24 * 60 * 60 * 1000L);
             }
         }
     }
@@ -353,4 +346,3 @@ public class MailCfg extends Configurable implements Configurator {
         Config.getCron().runIn("recover e-mail", recoverThread, 0);
     }
 }
-
