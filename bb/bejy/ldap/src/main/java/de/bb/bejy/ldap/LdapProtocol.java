@@ -1170,7 +1170,7 @@ public class LdapProtocol extends Protocol {
                 String key = i.next();
 
                 // skip LDAP objects - identified by nested object class
-                if (xml.sections(key + "objectclass").hasNext())
+                if (xml.sections(key).hasNext())
                     continue;
                 id = getLastSegment(key);
                 if (what.equalsIgnoreCase(id)) {
