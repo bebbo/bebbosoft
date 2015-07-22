@@ -2,6 +2,7 @@ package de.bb.bejy.j2ee;
 
 import java.security.Identity;
 import java.security.Principal;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJBHome;
@@ -121,5 +122,19 @@ class SCWrapper implements SessionContext {
     public MessageContext getMessageContext() throws IllegalStateException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+
+    @Override
+    public Map<String, Object> getContextData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public boolean wasCancelCalled() throws IllegalStateException {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
