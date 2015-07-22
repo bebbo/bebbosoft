@@ -714,7 +714,7 @@ public class Ssl3Server extends Ssl3 {
                 byte[] t = new byte[mdd.length + shd.length];
                 System.arraycopy(mdd, 0, t, 0, mdd.length);
                 System.arraycopy(shd, 0, t, mdd.length, shd.length);
-                prepared = Pkcs6.padSignedContent(t, keyLength, 2);
+                prepared = Pkcs6.padSignedContent(t, keyLength, 1);
             }
             if (DEBUG.ON)
                 Misc.dump("prepared", System.out, prepared);
