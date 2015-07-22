@@ -218,6 +218,12 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
     public String getImplementationId() {
         return "de.bb.bejy.group";
     }
+
+    public boolean hashPassword() {
+        return false; // we need the password
+    }
+    
+    
 }
 /******************************************************************************
  * $Log: LDAPUserGroup.java,v $
