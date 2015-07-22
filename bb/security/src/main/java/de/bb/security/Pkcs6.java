@@ -32,15 +32,10 @@ public class Pkcs6 {
     // some oid's
     // ===========================================================================
     final public static byte rsaEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.1");
-//        { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x01 };
     final static byte md2withRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.2");
-    //{ (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x02 };
     final static byte md5withRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.4");
-//    { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x04 };
     final static byte sha1withRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.5");
-//    { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 0x05 };
     final static byte sha256WithRSAEncryption[] = Asn1.string2Oid("1.2.840.113549.1.1.11");
-//    { (byte) 0x2A, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xF7, (byte) 0x0D, (byte) 0x01, (byte) 0x01, (byte) 11 };
 
     final static byte id_at_aliasedEntryName[] = Asn1.string2Oid("2.5.4.1");
     final static byte id_at_knowldgeinformation[] = Asn1.string2Oid("2.5.4.2");
@@ -298,7 +293,7 @@ public class Pkcs6 {
                     --stop;
                 String value = new String(b, k, stop - k);
 
-                // System.out.println("<" + key + "> = '" + value + "'");
+                // // System.out.println("<" + key + "> = '" + value + "'");
 
                 int type = Asn1.PrintableString;
                 byte oid[] = null;
@@ -453,7 +448,7 @@ public class Pkcs6 {
     }
 
     private final static int ENCRYPTION_PATH[] = { 0x90, 0x90, 6 };
-    private final static int ENCRYPTION_PATH_CSR[] = {0x90, 0x10, 0x90, 6 };
+    private final static int ENCRYPTION_PATH_CSR[] = { 0x90, 0x10, 0x90, 6 };
 
     /**
      * Returns the signature if the chain was validated successfully.
@@ -603,26 +598,26 @@ public class Pkcs6 {
      * 
      * @param z
      *            the data to encrypt/decrypt
-     * @param n
+     * @param mod
      *            the modulo
      * @param e
      *            the exponent
      * @return a new allocated byte array with the result of (z**e)mod n
      */
-    public static byte[] doRSA(byte z[], byte n[], byte e[]) {
+    public static byte[] doRSA(byte z[], byte mod[], byte e[]) {
         // BigInteger bn = new BigInteger(1, n);
         // BigInteger bf = new BigInteger(1, e);
         // BigInteger zz = new BigInteger(1, z);
         // zz = zz.modPow(bf, bn);
 
-        int mlen = (n.length >> 2) + 1;
+        int mlen = (mod.length >> 2) + 1;
         int[] iz = FastMath32.byte2Int(z, mlen);
-        int[] in = FastMath32.byte2Int(n, mlen);
+        int[] in = FastMath32.byte2Int(mod, mlen);
 
         int[] ir = FastMath32.oddModPow(iz, e, in);
 
-        int nlen = n.length;
-        if (n[0] == 0)
+        int nlen = mod.length;
+        if (mod[0] == 0)
             --nlen;
         byte[] b = new byte[nlen];
         FastMath32.int2Byte(ir, b);
@@ -641,55 +636,86 @@ public class Pkcs6 {
     public static byte[] doRSA(byte[] z, byte[][] pkData) {
         if (z.length == 0)
             return z;
-        /*
-        BigInteger bz = new BigInteger(1, z);
 
-        BigInteger p = new BigInteger(1, pkData[3]);
-        BigInteger q = new BigInteger(1, pkData[4]);
-        BigInteger dp1 = new BigInteger(1, pkData[5]);
-        BigInteger dq1 = new BigInteger(1, pkData[6]);
-        BigInteger iqmp = new BigInteger(1, pkData[7]);
-
-        BigInteger cDp = bz.modPow(dp1, p);
-        BigInteger cDq = bz.modPow(dq1, q);
-        if (cDp.compareTo(cDq) < 0)
-            cDp = cDp.add(p);
-        BigInteger u = ((cDp.subtract(cDq)).multiply(iqmp)).remainder(p);
-        BigInteger r = cDq.add(u.multiply(q));
-
-        byte[] b = r.toByteArray();
-        */
+        // if (false) {
+        // BigInteger bz = new BigInteger(1, z);
+        //
+        // BigInteger p = new BigInteger(1, pkData[3]);
+        // BigInteger q = new BigInteger(1, pkData[4]);
+        // BigInteger dp1 = new BigInteger(1, pkData[5]);
+        // BigInteger dq1 = new BigInteger(1, pkData[6]);
+        // BigInteger iqmp = new BigInteger(1, pkData[7]);
+        //
+        // System.out.println("bz: " + bz.toString(16));
+        // System.out.println("dp1:" + dp1.toString(16));
+        // System.out.println("p:  " + p.toString(16));
+        // BigInteger cDp = bz.modPow(dp1, p);
+        // System.out.println("cdp:" + cDp.toString(16));
+        //
+        // System.out.println("dq1:" + dq1.toString(16));
+        // System.out.println("q:  " + q.toString(16));
+        // BigInteger cDq = bz.modPow(dq1, q);
+        // System.out.println("cdq:" + cDq.toString(16));
+        // if (cDp.compareTo(cDq) < 0)
+        // cDp = cDp.add(p);
+        //
+        // System.out.println("cdp:" + cDp.toString(16));
+        // BigInteger u = ((cDp.subtract(cDq)).multiply(iqmp)).remainder(p);
+        // System.out.println("u:" + u.toString(16));
+        // BigInteger r = cDq.add(u.multiply(q));
+        // System.out.println("r:" + r.toString(16));
+        //
+        // byte[] b = r.toByteArray();
+        // if (b.length < pkData[0].length) {
+        // int l = pkData[0].length;
+        // if (pkData[0][0] == 0)
+        // --l;
+        // byte t[] = new byte[l];
+        // System.arraycopy(b, 0, t, t.length - b.length, b.length);
+        // b = t;
+        // }
+        // return b;
+        // }
         // long start = System.currentTimeMillis();
         int mlen = pkData[3].length;
         if (mlen < pkData[4].length)
             mlen = pkData[4].length;
         mlen = (mlen >> 2) + 1;
-        int[] ip = FastMath32.byte2Int(pkData[3], mlen);
-        int[] iq = FastMath32.byte2Int(pkData[4], mlen);
+        int[] ip = FastMath32.byte2Int(pkData[3], mlen + 1);
+        int[] iq = FastMath32.byte2Int(pkData[4], mlen + 1);
         int[] iiqmp = FastMath32.byte2Int(pkData[7], mlen);
         int maxLen = mlen + mlen + 1;
         int[] iz = FastMath32.byte2Int(z, mlen);
+
         int[] icDp = FastMath32.oddModPow(iz, pkData[5], ip);
         int[] icDq = FastMath32.oddModPow(iz, pkData[6], iq);
         int[] it = new int[maxLen];
         if (FastMath32.sub(it, icDp, icDq, mlen)) {
             FastMath32.add(it, it, mlen, ip, mlen);
         }
+
         int[] iu = new int[maxLen + 1];
         FastMath32.mul(iu, it, iiqmp, mlen);
         FastMath32.mod(iu, ip, it, iu, maxLen, mlen);
+
         FastMath32.mul(it, iu, iq, mlen);
         FastMath32.add(it, it, maxLen, icDq, mlen);
 
         byte b2[] = new byte[z.length];
         FastMath32.int2Byte(it, b2);
 
-        // System.out.println("RSA took: " + (System.currentTimeMillis() -
-        // start) + "ms");
-        return b2;
+        // verify the CRT result - broken CRT will allow to obtain the private key!
+        byte[] org = doRSA(b2, pkData[0], pkData[1]);
+        if (Misc.equals(org, z)) {
+            // System.out.println("RSA took: " + (System.currentTimeMillis() -
+            // start) + "ms");
+            return b2;
+        }
+
+        // CRT failed
+        return doRSA(z, pkData[0], pkData[2]);
     }
-    
-    
+
     public static BigInteger generatePrime(int bitsP) {
 
         int nb = 1;
@@ -724,8 +750,7 @@ public class Pkcs6 {
         nb = bitsP - nb;
 
         for (;;) {
-            BigInteger z = primeInArithmeticProgression(bitsP, BigInteger.ONE,
-                    new BigInteger(nb, SecureRandom.getInstance()));
+            BigInteger z = primeInArithmeticProgression(bitsP, BigInteger.ONE, new BigInteger(nb, SecureRandom.getInstance()));
             if (z != null)
                 return z;
         }
