@@ -107,7 +107,9 @@ public class MimePart implements Part {
             fis.skip(mimeInfo.bBegin);
             return new SIStream(new ByteRef(), getSize(), new FastBufferedInputStream(fis, 0x8000));
         }
-        return new ByteArrayInputStream(partsData);
+        ByteArrayInputStream bis = new ByteArrayInputStream(partsData);
+        bis.skip(mimeInfo.bBegin);
+        return bis;
     }
 
     public String getName() {
