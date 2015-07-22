@@ -55,11 +55,11 @@ public class Inject {
 
     private final static String version;
     static {
-        String s = "$Revision: 1.10 $";
+        String s = "$Revision: 1.11 $";
         String sub = s.substring(11, s.length() - 1);
-        //    int dot = sub.indexOf('.');
+        // int dot = sub.indexOf('.');
         no = "1.1." + sub;
-        version = "Inject V" + no + " (c) 2000-20014 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        version = "Inject V" + no + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     /**
@@ -80,10 +80,10 @@ public class Inject {
         return version;
     }
 
-    private static String sysMessage =
-            "USAGE: java de.bb.bejy.mail.Inject [-C<configfile>] [-F<mailFile>+] [-L<logfile>] [-S<defaultSender>]\r\n"
-                    + "if -F is not used, the mail content is read from stdin\r\n"
-                    + "defaultSender is used, if mail contains no FROM:\r\n";
+    private static String sysMessage = "USAGE: java de.bb.bejy.mail.Inject [-i] [-C<configfile>] [-F<mailFile>+] [-L<logfile>] [-S<defaultSender>] [-f<from>] [<to>]\r\n"
+            + "if -F is not used, the mail content is read from stdin\r\n"
+            + "defaultSender is used, if mail contains no from value\r\n"
+            + "-i dummy\r\n" + "-f specify the from\r\n";
 
     private static String configFile = "bejy.xml";
 
@@ -97,16 +97,19 @@ public class Inject {
 
     private static String logFileName = "bejyMail";
 
+    private static boolean escapeDots;
+
+    private static ByteRef definedFrom;
+
     /**
      * @param args
      */
     public static void main(String[] args) {
+        logFile = new LogFile(logFileName);
         try {
-            parseParams(args);
-
             // create a log and a config
-            logFile = new LogFile(logFileName);
-            try {
+            ArrayList<String> tos = parseParams(args);
+
             XmlFile config = new XmlFile();
             config.readFile(configFile);
 
@@ -130,7 +133,7 @@ public class Inject {
                 throw new Exception("cannot load mailDbi: " + iName);
             }
 
-            // create the required mailDBI 
+            // create the required mailDBI
             String jdbcUrl = config.getString("/bejy/mail", "jdbcUrl", null);
             String mailFolder = config.getString("/bejy/mail", "mailFolder", "mail");
             mDbi.setLogFile(logFile);
@@ -141,7 +144,7 @@ public class Inject {
             if (files.size() > 0) {
                 for (Iterator<String> i = files.iterator(); i.hasNext();) {
                     try {
-                        sendMail(i.next());
+                        sendMail(i.next(), tos);
                     } catch (Exception e) {
                         logFile.writeDate(e.getMessage());
                     }
@@ -158,24 +161,29 @@ public class Inject {
                     for (;;) {
                         String line;
                         line = ir.readLine();
-                        if (line == null || ".".equals(line))
+                        if (line == null || ".".equals(line)) {
                             break;
+                        }
                         fos.write(line.getBytes());
                         fos.write(13);
                         fos.write(10);
                     }
                 } catch (Throwable ex) // handle EOS
                 {
+                    fos.write(".\r\n".getBytes());
                 }
                 fos.close();
-                sendMail(f.getCanonicalPath());
+                sendMail(f.getCanonicalPath(), tos);
                 f.delete();
             }
-            } finally {
-                logFile.flush();
-            }
+
         } catch (Exception ex) {
+            logFile.writeDate(ex.getMessage());
+            logFile.flush();
             ex.printStackTrace();
+            System.exit(1);
+        } finally {
+            logFile.flush();
         }
     }
 
@@ -185,7 +193,7 @@ public class Inject {
      * @param inFile
      * @throws Exception
      */
-    private static void sendMail(String inFile) throws Exception {
+    private static void sendMail(String inFile, ArrayList<String> givenTos) throws Exception {
         logFile.writeDate("scanning file: " + inFile);
         FileInputStream fis = new FileInputStream(inFile);
         ArrayList<Info> segments = null;
@@ -227,7 +235,7 @@ public class Inject {
                 continue;
             }
             if (collectBcc) {
-                postBcc = line; //(ByteRef)line.clone();
+                postBcc = line; // (ByteRef)line.clone();
                 collectBcc = false;
             }
             if (line.length() < 3)
@@ -266,6 +274,11 @@ public class Inject {
             addFrom = true;
         }
 
+        if (definedFrom != null) {
+            from = definedFrom;
+            addFrom = true;
+        }
+
         if (from != null) {
             ByteRef ud = from;
             int j = from.indexOf('<');
@@ -284,13 +297,19 @@ public class Inject {
             throw new Exception("no 'from:' found, mail " + inFile + " not sent!");
         }
 
-        //    if(!mDbi.isLocalUser(senderName, senderDomain))
+        // if(!mDbi.isLocalUser(senderName, senderDomain))
         {
-            //      throw new Exception("from: <" + senderName + "@" + senderDomain + "> is no local user, mail " + inFile + " not sent!");
+            // throw new Exception("from: <" + senderName + "@" + senderDomain +
+            // "> is no local user, mail " + inFile + " not sent!");
         }
 
         ArrayList<String> rcpt = new ArrayList<String>();
         List<ByteRef> ll = Imap.parseMailAddresses(to);
+
+        for (String dt : givenTos) {
+            ll.add(new ByteRef(dt));
+        }
+
         // parse from:
         for (Iterator<ByteRef> i = ll.iterator(); i.hasNext();) {
             ByteRef ud = i.next();
@@ -320,10 +339,8 @@ public class Inject {
             // add header
             String date = DateFormat.EEE__dd_MMM_yyyy_HH_mm_ss__zzzz(System.currentTimeMillis());
             // insert a header
-            String h =
-                    "Received: from " + senderName + "@" + senderDomain + " (from command line)\r\n\tby bejy inject (V"
-                            + getVersion() + ") with SMTP id " + me.mailId + "\r\n\tfor " + rcpt.get(0) + ";\r\n\t"
-                            + date + "\r\n";
+            String h = "Received: from " + senderName + "@" + senderDomain + " (from command line)\r\n\tby bejy inject (V" + getVersion() + ") with SMTP id "
+                    + me.mailId + "\r\n\tfor " + rcpt.get(0) + ";\r\n\t" + date + "\r\n";
             os.write(h.getBytes());
 
             // remove BCC:
@@ -336,6 +353,16 @@ public class Inject {
                 fis.skip(post - offset);
             }
 
+            if (ll.size() == givenTos.size()) {
+                // add to
+                os.write(("To: " + givenTos.iterator().next() + "\r\n").getBytes());
+                if (givenTos.size() > 1) {
+                    givenTos.remove(0);
+                    String cc = givenTos.toString();
+                    os.write(("Cc: " + cc.substring(1, cc.length() - 1) + "\r\n").getBytes());
+                }
+            }
+            
             // add from if missing
             if (addFrom)
                 os.write(("From: " + senderName + "@" + senderDomain + "\r\n").getBytes());
@@ -369,39 +396,57 @@ public class Inject {
      * Method parseParams.
      * 
      * @param args
+     * @return
      * @throws Exception
      */
-    private static void parseParams(String[] args) throws Exception {
+    private static ArrayList<String> parseParams(String[] args) throws Exception {
         // parse options
+        ArrayList<String> res = new ArrayList<String>();
         for (int i = 0; i < args.length; ++i) {
             String a = args[i];
 
             if (a.charAt(0) == '-') {
-                if (a.length() < 2 || "?CLFS".indexOf(a.charAt(1)) == -1)
+                if (a.length() < 2 || "?ifCLFS".indexOf(a.charAt(1)) == -1)
                     throw new Exception("invalid argument: " + a + "\r\n\r\n" + sysMessage);
 
-                String aa = a.substring(2);
                 int ch = a.charAt(1);
                 switch (ch) {
-                    case '?':
-                        throw new Exception(sysMessage);
-                    case 'C':
-                        configFile = aa;
-                        break;
-                    case 'L':
-                        logFileName = aa;
-                        break;
-                    case 'F':
-                        files.add(aa);
-                        break;
-                    case 'S':
-                        defaultSender = new ByteRef(aa);
-                        break;
+                // options without parameter
+                case '?':
+                    throw new Exception(sysMessage);
+                case 'i':
+                    escapeDots = true;
+                    continue;
+                }
+
+                String aa = a.substring(2);
+                if (aa.length() == 0 && i + 1 < args.length) {
+                    aa = args[++i];
+                }
+                switch (ch) {
+                case 'C':
+                    configFile = aa;
+                    break;
+                case 'L':
+                    logFileName = aa;
+                    break;
+                case 'F':
+                    files.add(aa);
+                    break;
+                case 'S':
+                    defaultSender = new ByteRef(aa);
+                    break;
+                case 'f':
+                    definedFrom = new ByteRef(aa);
+                    break;
                 }
                 continue;
             }
 
+            res.add(a);
         }
+
+        return res;
     }
 
 }
