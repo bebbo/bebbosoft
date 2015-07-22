@@ -63,8 +63,7 @@ public class LdapProtocol extends Protocol {
     static {
         String s = "$Revision: 1.18 $";
         no = "1.3." + s.substring(11, s.length() - 1);
-        version = Version.getShort() + " LDAP " + no
-                + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        version = Version.getShort() + " LDAP " + no + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     private LogFile logFile;
@@ -161,7 +160,7 @@ public class LdapProtocol extends Protocol {
                 bind(content);
                 break;
             case 0x2: // unbind
-                logFile.write("bye bye " + currentUser);
+                logFile.writeDate("bye bye " + currentUser);
                 currentUser = null;
                 currentReadPermissions.clear();
                 currentWritePermissions.clear();
@@ -299,9 +298,10 @@ public class LdapProtocol extends Protocol {
 
                     // update own entry
                     if (attr.equals(last)) {
-                        //final String val = values.hasNext() ? values.next().asByteRef().toString() : "";
-                        final String val = lastSegment.length() > last.length() + 2 ? lastSegment.substring(last
-                                .length() + 2) : values.hasNext() ? values.next().asByteRef().toString() : "";
+                        // final String val = values.hasNext() ?
+                        // values.next().asByteRef().toString() : "";
+                        final String val = lastSegment.length() > last.length() + 2 ? lastSegment.substring(last.length() + 2) : values.hasNext() ? values
+                                .next().asByteRef().toString() : "";
                         xml.setString(createdKey, "name", val);
                     } else {
 
@@ -351,66 +351,81 @@ public class LdapProtocol extends Protocol {
         // check access for the key
         byte[] resultVal = null;
 
-        if (checkWritePermission(modifyBaseDn)) {
-            final Asn1 modifications = content.next();
+        boolean access = checkWritePermission(modifyBaseDn);
+        boolean selfAccess = access ? false : modifyBaseDn.endsWith(currentUser);
 
-            final String modifyKey = "/ldap/" + dn2Key(modifyBaseDn);
+        if (!access && !selfAccess) {
+            logFile.writeDate("search: " + currentUser + " has NO WRITE ACCESS to " + modifyBaseDn);
+            sendModifyError();
+            return;
+        }
 
-            synchronized (factory) {
-                final XmlFile xml = getXmlFile();
+        final Asn1 modifications = content.next();
 
-                // apply the incoming changes
-                final String last = base(getLastSegment(modifyKey));
-                for (Iterator<Asn1> i = modifications.children(); i.hasNext();) {
-                    final Iterator<Asn1> mod = i.next().children();
-                    final int operation = mod.next().asInt();
-                    final Iterator<Asn1> attrTypeAndValue = mod.next().children();
-                    final ByteRef attr = attrTypeAndValue.next().asByteRef().toLowerCase();
-                    final Iterator<Asn1> vals = attrTypeAndValue.next().children();
-                    switch (operation) {
-                    case 0: // add
-                    {
-                        final ByteRef value = vals.next().asByteRef();
-                        if (attr.equals("userpassword")) {
-                            setPassword(modifyKey, value);
-                        } else {
-                            final String key = xml.createSection(modifyKey + attr);
-                            xml.setString(key, "name", value.toString("utf-8"));
-                        }
-                        if (resultVal == null)
-                            resultVal = RESULT_SUCCESS;
-                        break;
-                    }
-                    case 1: // del
-                    {
-                        final String key = vals.hasNext() ? modifyKey + "\\" + attr + "\\"
-                                + vals.next().asByteRef().toString("utf-8") : modifyKey + attr;
-                        xml.setString(key, null, "");
-                        if (resultVal == null)
-                            resultVal = RESULT_SUCCESS;
-                        break;
-                    }
-                    case 2: // change
-                    {
-                        final ByteRef value = vals.next().asByteRef();
-                        if (attr.equals("userpassword")) {
-                            setPassword(modifyKey, value);
-                        } else {
-                            final String key = modifyKey + attr;
-                            xml.setString(key, "name", value.toString("utf-8"));
-                        }
-                        if (resultVal == null)
-                            resultVal = RESULT_SUCCESS;
-                        break;
-                    }
-                    default:
-                        resultVal = ERROR_INSUFFICIENT_ACCESS_RIGHTS;
+        final String modifyKey = "/ldap/" + dn2Key(modifyBaseDn);
+
+        synchronized (factory) {
+            final XmlFile xml = getXmlFile();
+
+            // apply the incoming changes
+            final String last = base(getLastSegment(modifyKey));
+            for (Iterator<Asn1> i = modifications.children(); i.hasNext();) {
+                final Iterator<Asn1> mod = i.next().children();
+                final int operation = mod.next().asInt();
+                final Iterator<Asn1> attrTypeAndValue = mod.next().children();
+                final ByteRef attr = attrTypeAndValue.next().asByteRef().toLowerCase();
+                
+                if (selfAccess) {
+                    if (attr.equalsIgnoreCase("readpermission") || attr.equalsIgnoreCase("writepermission")) {
+                        logFile.writeDate("search: " + currentUser + " has NO WRITE ACCESS to readpermission/writepermission at " + modifyBaseDn);
+                        sendModifyError();
+                        return;
                     }
                 }
-
-                if (resultVal == RESULT_SUCCESS)
-                    saveXmlFile();
+                
+                final Iterator<Asn1> vals = attrTypeAndValue.next().children();
+                switch (operation) {
+                case 0: // add
+                {
+                    final ByteRef value = vals.next().asByteRef();
+                    if (attr.equals("userpassword")) {
+                        setPassword(modifyKey, value);
+                    } else {
+                        final String key = xml.createSection(modifyKey + attr);
+                        xml.setString(key, "name", value.toString("utf-8"));
+                    }
+                    if (resultVal == null)
+                        resultVal = RESULT_SUCCESS;
+                    break;
+                }
+                case 1: // del
+                {
+                    final String key = vals.hasNext() ? modifyKey + "\\" + attr + "\\" + vals.next().asByteRef().toString("utf-8") : modifyKey + attr;
+                    xml.setString(key, null, "");
+                    if (resultVal == null)
+                        resultVal = RESULT_SUCCESS;
+                    break;
+                }
+                case 2: // change
+                {
+                    final ByteRef value = vals.next().asByteRef();
+                    if (attr.equals("userpassword")) {
+                        setPassword(modifyKey, value);
+                    } else {
+                        final String key = modifyKey + attr;
+                        xml.setString(key, "name", value.toString("utf-8"));
+                    }
+                    if (resultVal == null)
+                        resultVal = RESULT_SUCCESS;
+                    break;
+                }
+                default:
+                    resultVal = ERROR_INSUFFICIENT_ACCESS_RIGHTS;
+                }
             }
+
+            if (resultVal == RESULT_SUCCESS)
+                saveXmlFile();
         }
         if (resultVal == null)
             resultVal = ERROR_INSUFFICIENT_ACCESS_RIGHTS;
@@ -482,17 +497,20 @@ public class LdapProtocol extends Protocol {
             // clear the manual password
             xml.setString(key, "auth", null);
 
-            byte salt[] = new byte[16];
-            SecureRandom.getInstance().nextBytes(salt);
-
-            SHA sha = new SHA();
-            sha.update(newPassword.toByteArray());
-            sha.update(salt);
-            final byte[] digest = sha.digest();
-
-            ByteRef all = new ByteRef(digest).append(new ByteRef(salt));
-
-            final String value = "{SSHA}" + new String(Mime.encode(all.toByteArray()), 0);
+            String value = newPassword.toString();
+            if (!value.startsWith("{SSHA}")) {
+                byte salt[] = new byte[16];
+                SecureRandom.getInstance().nextBytes(salt);
+    
+                SHA sha = new SHA();
+                sha.update(newPassword.toByteArray());
+                sha.update(salt);
+                final byte[] digest = sha.digest();
+    
+                ByteRef all = new ByteRef(digest).append(new ByteRef(salt));
+    
+                value = "{SSHA}" + new String(Mime.encode(all.toByteArray()), 0);
+            }
             xml.setString(key + "userpassword", "name", value);
 
             saveXmlFile();
@@ -530,14 +548,15 @@ public class LdapProtocol extends Protocol {
         final Iterator<Asn1> seq = content.children();
         ByteRef searchBaseDn = seq.next().asByteRef();
 
-        boolean forbidden = true;
+        boolean access = false;
         for (final String rp : currentReadPermissions) {
             if (searchBaseDn.endsWith(rp)) {
-                forbidden = false;
+                access = true;
                 break;
             }
         }
-        if (forbidden) {
+        boolean selfAccess = access ? false : searchBaseDn.endsWith(currentUser);
+        if (!access && !selfAccess) {
             logFile.writeDate("search: " + currentUser + " has NO ACCESS to " + searchBaseDn);
             sendSearchError();
             return;
@@ -554,9 +573,8 @@ public class LdapProtocol extends Protocol {
 
         Asn1 attributeDescriptionList = seq.next();
 
-        logFile.writeDate("search: ldap:///" + searchBaseDn + "?" + printableAttrs(attributeDescriptionList) + "?" 
-        + (scope == 0 ? "base" : scope == 1 ? "one" : "sub") + "?"
-                + search + "?");
+        logFile.writeDate("search: ldap:///" + searchBaseDn + "?" + printableAttrs(attributeDescriptionList) + "?"
+                + (scope == 0 ? "base" : scope == 1 ? "one" : "sub") + "?" + search + "?");
 
         final ByteRef cacheKey = currentUser.append(content.asByteRef()).append(LdapFactory.getXmlFileDate());
 
@@ -607,6 +625,15 @@ public class LdapProtocol extends Protocol {
         return sb.toString();
     }
 
+    private void sendModifyError() throws IOException {
+        // create response
+        byte result[] = RESPONSE_MODIFY;
+        result = Asn1.addTo(result, ERROR_INSUFFICIENT_ACCESS_RIGHTS);
+        result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
+        result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
+        writeResponse(result);
+    }
+
     private void sendSearchError() throws IOException {
         // create response
         byte result[] = RESPONSE_SEARCH_DONE;
@@ -627,8 +654,7 @@ public class LdapProtocol extends Protocol {
      *            level / recursion
      * @throws IOException
      */
-    private void findRecursive(XmlFile xml, String key, Search search, Asn1 attributeDescriptionList, int scope)
-            throws IOException {
+    private void findRecursive(XmlFile xml, String key, Search search, Asn1 attributeDescriptionList, int scope) throws IOException {
         // search only if BASEOBJECT or WHOLESUBTREE
         if (scope != SINGLELEVEL) {
             int hit = search.match(xml, key);
@@ -653,8 +679,7 @@ public class LdapProtocol extends Protocol {
         }
     }
 
-    private void writeSearchResult(XmlFile xml, String key, Asn1 attributeDescriptionList, boolean appendAllAttributes)
-            throws IOException {
+    private void writeSearchResult(XmlFile xml, String key, Asn1 attributeDescriptionList, boolean appendAllAttributes) throws IOException {
         final String dn = key2Dn(xml, key);
 
         byte attrResult[] = Asn1.newSeq;
@@ -675,8 +700,7 @@ public class LdapProtocol extends Protocol {
                     attVal = Asn1.addTo(attVal, Asn1.makeASN1(dn, Asn1.OCTET_STRING));
                     attName = Asn1.addTo(attName, attVal);
                     attrResult = Asn1.addTo(attrResult, attName);
-                } else
-                if (sattr.equals("*"))
+                } else if (sattr.equals("*"))
                     appendAllAttributes = true;
             }
         }
@@ -702,8 +726,7 @@ public class LdapProtocol extends Protocol {
                 continue;
             }
 
-            String val = sattr.equals(last) ? xml.getString(key, "name", null) : xml.getString(key + sattr, "name",
-                    null);
+            String val = sattr.equals(last) ? xml.getString(key, "name", null) : xml.getString(key + sattr, "name", null);
 
             if (val == null && sattr.equalsIgnoreCase("ismemberof")) {
                 // support "isMemberOf"
