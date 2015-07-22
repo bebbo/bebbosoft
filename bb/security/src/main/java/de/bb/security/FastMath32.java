@@ -8,16 +8,17 @@
 package de.bb.security;
 
 /**
- * A small and fast implementation for BigInteger. Like the String class, all functions do not modify an existing
- * BigInteger, but return a new created BigInteger with the result.
+ * A small and fast implementation for BigInteger maths.
+ * Operates on int[] arrays and all 32 bits user per int.
  */
 final class FastMath32 {
-    static int[] ONE = {1};
+    static int[] ONE = { 1 };
 
     // static long start;
 
     static int[] oddModPow(int[] z, byte[] exp, int[] mod) {
-        long start = System.currentTimeMillis();
+        // long start = System.currentTimeMillis();
+
         // search highest bit of exponent
         int expLen = exp.length;
         int expi = 0;
@@ -71,7 +72,7 @@ final class FastMath32 {
         int[][] data = new int[16][];
         int[] t1 = new int[maxLen];
 
-        int n0 = modInverse32(mod[0]);
+        int n0 = modInverse32Odd(mod[0]);
         // since the highest bit is ONE, we start with Z and just transform it
         // t0 = z << (modLen * 32)
         int[] t0 = new int[z.length + modLen + 1];
@@ -88,10 +89,13 @@ final class FastMath32 {
          * 
          * if we hit 1 we fill a nibble an determine when to multiply
          * 
-         * 1000 : square mul*n - loop covers the squares -> n^2, n^3, n^6, n^12 1001 : square square square square
-         * mul*n^9 -> n^2, n^4, n^8 1010 : square square square mul*n^5 - lcts -> n^2, n^4, n^8 1011 : square square
-         * square square mul*n^11 -> n^2, n^4, n^8 1100 : square square mul*n^3 - lcts -> n^2, n^4, n^7 1101 ; square
-         * square square square mul*n^13 -> n^2, n^4, n^8 1110 ; square square square mul*n^7 - lcts -> n^2, n^4, n^8
+         * 1000 : square mul*n - loop covers the squares -> n^2, n^3, n^6, n^12
+         * 1001 : square square square square mul*n^9 -> n^2, n^4, n^8
+         * 1010 : square square square mul*n^5 - lcts -> n^2, n^4, n^8
+         * 1011 : square square square square mul*n^11 -> n^2, n^4, n^8
+         * 1100 : square square mul*n^3 - lcts -> n^2, n^4, n^7
+         * 1101 ; square square square square mul*n^13 -> n^2, n^4, n^8
+         * 1110 ; square square square mul*n^7 - lcts -> n^2, n^4, n^8
          * 1111 ; square square square square mul*n^15 -> n^2, n^4, n^8
          * 
          * thus the odd exponents are required since we might not need all of them, we do lazy evaluation using these
@@ -101,7 +105,6 @@ final class FastMath32 {
         t = new int[maxLen];
         int index = 1;
         while (expBitsLeft > 0) {
-            // System.out.println("t:" + new IntImpl(t0, maxLen, true).toHexString());
             // just square
             if (expBits > 0) {
                 square(t1, t0, muLen);
@@ -195,7 +198,8 @@ final class FastMath32 {
         // transform back
         montgomery(t0, mod, modLen, n0);
 
-        // System.out.println("rsa " + expLen*8 + ": " + (System.currentTimeMillis() - start) + "ms");
+        // System.out.println("rsa " + expLen*8 + ": " +
+        // (System.currentTimeMillis() - start) + "ms");
 
         return t0;
     }
@@ -203,99 +207,102 @@ final class FastMath32 {
     private static int[] fill(int nibble, int[][] data, int muLen, int[] mod, int modLen, int n0) {
         int[] x = new int[modLen + modLen + 1];
         int a[], b[];
-        /**
-         * n^3: n * n^2 n^5: n^2 * n^3 or n * n^4 n^7: n * n^6 or n^4 * n^3 [requires n^3] n^9: n * n^8 or n^2 * n^7 or
-         * n^3 * n^6 n^11: n^4 * n^7 or n^2 * n^9 [requires n^9] n^13: n * n^12 or n^4 * n^9 [requires n^9] n^15: n^3 *
-         * n^12 or n^2 * n^13 [requires n^13 --> n^9]
-         */
+        
+        // n^3: n * n^2
+        // n^5: n^2 * n^3 or n * n^4
+        // n^7: n * n^6 or n^4 * n^3 [requires n^3]
+        // n^9: n * n^8 or n^2 * n^7 or n^3 * n^6
+        // n^11: n^4 * n^7 or n^2 * n^9 [requires n^9]
+        // n^13: n * n^12 or n^4 * n^9 [requires n^9]
+        // n^15: n^3 * n^12 or n^2 * n^13 [requires n^13 --> n^9]
         switch (nibble) {
-            case 3:
+        case 3:
+            a = data[1];
+            b = data[2];
+            break;
+        case 4:
+            a = b = data[2];
+            break;
+        case 5:
+            if (data[4] != null) {
                 a = data[1];
-                b = data[2];
+                b = data[4];
                 break;
-            case 4:
-                a = b = data[2];
-                break;
-            case 5:
-                if (data[4] != null) {
-                    a = data[1];
-                    b = data[4];
-                    break;
-                }
-                if (data[3] == null)
-                    fill(3, data, muLen, mod, modLen, n0);
+            }
+            if (data[3] == null)
+                fill(3, data, muLen, mod, modLen, n0);
 
-                a = data[2];
-                b = data[3];
+            a = data[2];
+            b = data[3];
+            break;
+        case 7:
+            if (data[6] != null) {
+                a = data[6];
+                b = data[1];
                 break;
-            case 7:
-                if (data[6] != null) {
-                    a = data[6];
-                    b = data[1];
-                    break;
-                }
-                if (data[3] == null)
-                    fill(3, data, muLen, mod, modLen, n0);
+            }
+            if (data[3] == null)
+                fill(3, data, muLen, mod, modLen, n0);
 
-                a = data[4];
-                b = data[3];
+            a = data[4];
+            b = data[3];
+            break;
+        // * n^9: n * n^8 or n^2 * n^7 or n^3 * n^6
+        case 9:
+            if (data[8] != null) {
+                a = data[8];
+                b = data[1];
                 break;
-            // * n^9: n * n^8 or n^2 * n^7 or n^3 * n^6
-            case 9:
-                if (data[8] != null) {
-                    a = data[8];
-                    b = data[1];
-                    break;
-                }
-                if (data[6] != null && data[3] != null) {
-                    a = data[6];
-                    b = data[3];
-                }
-                if (data[7] == null)
-                    fill(7, data, muLen, mod, modLen, n0);
+            }
+            if (data[6] != null && data[3] != null) {
+                a = data[6];
+                b = data[3];
+            }
+            if (data[7] == null)
+                fill(7, data, muLen, mod, modLen, n0);
+            a = data[7];
+            b = data[2];
+            break;
+        // * n^11: n^4 * n^7 or n^2 * n^9 [requires n^9]
+        case 11:
+            if (data[7] != null && data[4] != null) {
                 a = data[7];
-                b = data[2];
+                b = data[4];
                 break;
-            // * n^11: n^4 * n^7 or n^2 * n^9 [requires n^9]
-            case 11:
-                if (data[7] != null && data[4] != null) {
-                    a = data[7];
-                    b = data[4];
-                    break;
-                }
-                if (data[9] == null)
-                    fill(9, data, muLen, mod, modLen, n0);
-                a = data[9];
-                b = data[2];
+            }
+            if (data[9] == null)
+                fill(9, data, muLen, mod, modLen, n0);
+            a = data[9];
+            b = data[2];
+            break;
+        // * n^13: n * n^12 or n^4 * n^9 [requires n^9]
+        case 13:
+            if (data[12] != null) {
+                a = data[12];
+                b = data[1];
                 break;
-            // * n^13: n * n^12 or n^4 * n^9 [requires n^9]
-            case 13:
-                if (data[12] != null) {
-                    a = data[12];
-                    b = data[1];
-                    break;
-                }
-                if (data[4] == null)
-                    fill(4, data, muLen, mod, modLen, n0);
-                if (data[9] == null)
-                    fill(9, data, muLen, mod, modLen, n0);
-                a = data[4];
-                b = data[9];
+            }
+            if (data[4] == null)
+                fill(4, data, muLen, mod, modLen, n0);
+            if (data[9] == null)
+                fill(9, data, muLen, mod, modLen, n0);
+            a = data[4];
+            b = data[9];
+            break;
+        // * n^15: n^3 * n^12 or n^2 * n^13 [requires n^13 --> n^9]
+        case 15:
+            if (data[3] != null && data[12] != null) {
+                a = data[3];
+                b = data[12];
                 break;
-            // * n^15: n^3 * n^12 or n^2 * n^13 [requires n^13 --> n^9]
-            case 15:
-                if (data[3] != null && data[12] != null) {
-                    a = data[3];
-                    b = data[12];
-                    break;
-                }
-                if (data[13] == null)
-                    fill(13, data, muLen, mod, modLen, n0);
-                a = data[2];
-                b = data[13];
-                break;
-            default:
-                a = b = null;
+            }
+            if (data[13] == null)
+                fill(13, data, muLen, mod, modLen, n0);
+            a = data[2];
+            b = data[13];
+            break;
+        default:
+            a = b = null;
         }
 
         mul(x, a, b, muLen);
@@ -331,8 +338,9 @@ final class FastMath32 {
     }
 
     /**
-     * Convert the byte array into an int array, also convert the order: byte[0] = high byte ... byte[n] = low byte
-     * int[0] = low int ... int[k] = high int The highest int has always the highest bit zero. To ensure this an
+     * Convert the byte array into an int array, also convert the order: byte[0]
+     * = high byte ... byte[n] = low byte int[0] = low int ... int[k] = high int
+     * The highest int has always the highest bit zero. To ensure this an
      * additional int is appended.
      * 
      * @param src
@@ -409,14 +417,20 @@ final class FastMath32 {
     }
 
     /**
+     * aIn = aIn mod bIn
+     * 
      * @param aIn
      * @param bIn
-     * @param c
-     * @param d
+     * @param temp1
+     *            a temp buffer to shift align aIn
+     * @param temp2
+     *            a temp buffer to shift align bIn
      * @param al
+     *            length of a
      * @param bl
+     *            length of b
      */
-    static void mod(int[] aIn, int[] bIn, int c[], int d[], int al, int bl) {
+    static void mod(int[] aIn, int[] bIn, int temp1[], int temp2[], int al, int bl) {
         int a[] = aIn;
         int b[] = bIn;
 
@@ -439,10 +453,10 @@ final class FastMath32 {
             }
 
             if (shift > 0) {
-                shiftLeft(c, bIn, bl, shift);
-                b = c;
-                shiftLeft(d, aIn, al, shift);
-                a = d;
+                shiftLeft(temp1, bIn, bl, shift);
+                b = temp1;
+                shiftLeft(temp2, aIn, al, shift);
+                a = temp2;
 
                 if (b[bl] != 0)
                     ++bl;
@@ -461,7 +475,8 @@ final class FastMath32 {
             long a01 = (a0 << 32) | (a[--al] & 0xffffffffL);
 
             // calculate: c0 = a0|a1 / b0
-            // long c0 = a0 == modMSW ? 0xffffffffL : (a01 / modMSW) & 0xffffffffL;
+            // long c0 = a0 == modMSW ? 0xffffffffL : (a01 / modMSW) &
+            // 0xffffffffL;
             long c0;
             if (a0 == modMSW) {
                 c0 = 0xffffffffL; // wirklich n???tig?
@@ -640,19 +655,14 @@ final class FastMath32 {
      *            lowest int of n.
      * @return A result where: x*result mod 2^16 = 1
      */
-    static int modInverse32(int _x) {
-        // int z = 0;
-        long x = _x & 0xffffffffL;
-        long y = 1;
-        long s = 2;
-        for (int i = 2; i <= 32; ++i) {
-            long ss = s << 1;
-            if (s < (x * y & (ss - 1)))
-                y += s;
-            s = ss;
-            // if ((x * y & s - 1) != 1) y /= z;
-        }
-        return -(int) y;
+    private static int modInverse32Odd(int val) {
+        // Newton's iteration!
+        int t = val;
+        t *= 2 - val * t;
+        t *= 2 - val * t;
+        t *= 2 - val * t;
+        t *= 2 - val * t;
+        return -t;
     }
 
     /**
@@ -663,8 +673,9 @@ final class FastMath32 {
      */
     static void montgomery(int[] t, int[] mod, int ml, int n0) {
         /**
-         * / short[] mods = new short[mod.length * 2]; short[] ts = new short[t.length * 2]; copyInt2Short(mods, mod);
-         * copyInt2Short(ts, t); montgomery(ts, mods, ml * 2, (short) n0); copyShort2Int(t, ts);
+         * / short[] mods = new short[mod.length * 2]; short[] ts = new
+         * short[t.length * 2]; copyInt2Short(mods, mod); copyInt2Short(ts, t);
+         * montgomery(ts, mods, ml * 2, (short) n0); copyShort2Int(t, ts);
          * 
          * /
          **/
@@ -697,19 +708,25 @@ final class FastMath32 {
 
         boolean sub = carry != 0;
         if (!sub) {
-            int i = ml - 1;
-            for (; i >= 0; --i) {
-                if (t[i] != mod[i])
-                    break;
-            }
-            sub = i < 0 || t[i] + 0x80000000 > mod[i] + 0x80000000;
+            sub = isGreater(mod, t, ml);
         }
         if (sub) {
             sub(t, t, mod, ml);
+            sub = isGreater(mod, t, ml);
         }
         /**/
     }
 
+    private static boolean isGreater(int[] mod, int[] t, int ml) {
+        int i = ml - 1;
+        for (; i >= 0; --i) {
+            if (t[i] != mod[i])
+                break;
+        }
+        boolean r = i < 0 || t[i] + 0x80000000 > mod[i] + 0x80000000;
+        return r;
+    }
+/*
     static void mulmont(int[] a, int x[], int y[], int[] m, int ms, int len) {
         if (x == y)
             square(a, x, len);
@@ -719,10 +736,6 @@ final class FastMath32 {
     }
 
     static void xmulmont(int[] a, int x[], int y[], int[] m, int ms, int len) {
-        /*
-         * IntImpl iix = new IntImpl(x, len, true); IntImpl iiy = new IntImpl(y, len, true); IntImpl iim = new
-         * IntImpl(m, len, true); IntImpl res = iix.multiply(iiy).montgomery(iim, ms);
-         */
 
         int y00 = y[0];
         long y0 = y00 & 0xffffffffL;
@@ -743,7 +756,8 @@ final class FastMath32 {
             else
                 carry >>>= 32;
             for (int j = 1; j <= len; ++j) {
-                // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) + ui * (m[j] & 0xffffffffL);
+                // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) +
+                // ui * (m[j] & 0xffffffffL);
                 t = x0 * (y[j] & 0xffffffffL);
                 carry += t + ui * (m[j] & 0xffffffffL);
                 a[j - 1] = (int) carry;
@@ -769,7 +783,8 @@ final class FastMath32 {
             else
                 carry >>>= 32;
             for (int j = 1; j <= len; ++j) {
-                // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) + ui * (m[j] & 0xffffffffL);
+                // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) +
+                // ui * (m[j] & 0xffffffffL);
                 t = xi * (y[j] & 0xffffffffL) + (a[j] & 0xffffffffL);
                 carry += t + ui * (m[j] & 0xffffffffL);
                 a[j - 1] = (int) carry;
@@ -792,10 +807,6 @@ final class FastMath32 {
         if (i < 0 || a[i] + 0x80000000 > m[i] + 0x80000000) {
             sub(a, a, m, len);
         }
-        /*
-         * IntImpl iia = new IntImpl(a, len, true); if (0 != iia.compareTo(res)) { System.out.println("= " +
-         * iia.toHexString()); System.out.println("! " + res.toHexString()); }
-         */
     }
-
+*/
 }
