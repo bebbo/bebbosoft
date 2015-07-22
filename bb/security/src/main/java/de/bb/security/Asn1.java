@@ -223,14 +223,19 @@ public class Asn1 implements Iterator<Asn1> {
                     sb.append("INT " + Integer.toHexString(0xff & b[off]) + " (" + len + ")\t");
                     sb.append(Misc.bytes2Hex(d)).append("\r\n");
                     break;
-                case BIT_STRING:
+                case BIT_STRING: {
                     sb.append("BIT " + Integer.toHexString(0xff & b[off]) + " (" + len + ")\t");
-                    sb.append(Misc.bytes2Hex(d)).append("\r\n");
-                    byte x[] = new byte[d.length - 1];
-                    System.arraycopy(d, 1, x, 0, x.length);
-                    if (probe(x))
-                        sb.append(dump(indent + 2, x, 0, len, dumpData));
+                    sb.append(Misc.bytes2Hex(d));
+                    ByteRef sub = new ByteRef(d);
+                    if (dumpData)
+                        sb.append("[" + sub + "]");
+                    sb.append("\r\n");
+                    if (!probe(sub.toByteArray()))
+                    sub = sub.substring(1);
+                    if (probe(sub.toByteArray()))
+                        sb.append(dump(indent + 2, sub.toByteArray(), 0, len - 1, dumpData));
                     break;
+                }
                 case OCTET_STRING:
                     sb.append("OCT " + Integer.toHexString(0xff & b[off]) + " (" + len + ")\t");
                     sb.append(Misc.bytes2Hex(d));
