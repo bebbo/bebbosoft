@@ -73,10 +73,10 @@ public class Version {
     private final static String shortVersion;
     private final static String version;
     static {
-        String s = "$Revision: 6.2 $";
+        String s = "$Revision: 6.3 $";
         no = "1." + s.substring(11, s.length() - 1);
         shortVersion = "BEJY V" + no;
-        version = shortVersion + " (c) 2000-2014 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        version = shortVersion + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     /**
