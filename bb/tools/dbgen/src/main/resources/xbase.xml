@@ -1,0 +1,230 @@
+<dbgen>
+  <mapping name="VARCHAR" value="XB_WCHAR_FLD" kind="typedef" />
+  <mapping name="VARCHAR2" value="XB_WCHAR_FLD" kind="typedef" />
+  <mapping name="CHAR" value="XB_WCHAR_FLD" kind="typedef" />
+  <mapping name="INTEGER" value="XB_NUMERIC_FLD" kind="typedef" />
+  <mapping name="INTEGER" value="9" kind="defaultLen" />
+  <mapping name="INTEGER" value="int" kind="ctype" />
+  <mapping name="INT" value="XB_NUMERIC_FLD" kind="typedef" />
+  <mapping name="INT" value="9" kind="defaultLen" />
+  <mapping name="INT" value="int" kind="ctype" />
+  <mapping name="BIT" value="1" kind="defaultLen" />
+  <mapping name="BIT" value="XB_NUMERIC_FLD" kind="typedef" />
+  <mapping name="BIT" value="bool" kind="ctype" />
+  <mapping name="DATETIME" value="XB_NUMERIC_FLD" kind="typedef" />
+  <mapping name="DATETIME" value="9" kind="defaultLen" />
+  <mapping name="DATETIME" value="int" kind="ctype" />
+
+  <mapping name="NUMERIC" value="XB_NUMERIC_FLD" kind="typedef" />
+
+  <mapping name="VARCHAR" value="mstl::bstring" kind="ctype" />
+  <mapping name="VARCHAR2" value="mstl::bstring" kind="ctype" />
+  <mapping name="CHAR" value="mstl::bstring" kind="ctype" />
+  <mapping name="NUMERIC" value="mstl::bstring" kind="ctype" />
+  <file>
+
+    <!-- 
+    header file to include all other headers
+    -->
+    <global fileName="h/db/xbAll.h">
+<![CDATA[#ifndef __DB_XB_ALL_H
+#define __DB_XB_ALL_H
+]]>
+    </global>
+    <table fileName="h/db/xbAll.h">
+<![CDATA[#include <db/xb${tableName}.h>
+]]>
+    </table>
+    <global fileName="h/db/xbAll.h">
+<![CDATA[#endif
+]]>
+    </global>
+
+    <!-- 
+    header file per table
+    -->
+
+    <table fileName="h/db/xb${tableName}.h">
+<![CDATA[#ifndef __DB_${TABLENAME}_H__
+#define __DB_${TABLENAME}_H__
+
+#ifndef __BTYPES_H__
+#include <btypes.h>
+#endif
+
+#ifndef __MINISTL__STRING_H__
+#include <ministl/string.h>
+#endif
+namespace db {
+  struct ${tableName} {]]>
+    </table>
+    <field fileName="h/db/xb${tableName}.h">
+<![CDATA[
+    ${rowType:ctype} ${refName};]]>
+    </field>
+    <table fileName="h/db/xb${tableName}.h">
+<![CDATA[
+    inline ${tableName}() ]]>
+    </table>
+    <field fileName="h/db/xb${tableName}.h">
+<![CDATA[${CTDELI} ${refName}()]]>
+    </field>
+    <table fileName="h/db/xb${tableName}.h">
+<![CDATA[
+    {}
+  };
+};
+#endif
+]]>
+    </table>
+    <table fileName="source/xb${tableName}.cpp">
+<![CDATA[#include <btypes.h>
+#include <xbase64/xbase64.h>
+#include <db/xb${tableName}.h>
+
+xbSchema ${tableName}Schema[] = {]]>
+    </table>
+    <field fileName="source/xb${tableName}.cpp">
+<![CDATA[
+    { "${REFNAME10}", ${rowType:typedef}, ${rowLen}, ${rowLen2} },]]>
+    </field>
+    <table fileName="source/xb${tableName}.cpp">
+<![CDATA[
+    { "", 0, 0, 0 }
+};
+enum {]]>
+    </table>
+    <field fileName="source/xb${tableName}.cpp">
+<![CDATA[
+    ${TABLENAME}_${REFNAME10},]]>
+    </field>
+    <table fileName="source/xb${tableName}.cpp"><![CDATA[};
+    ]]></table>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+#include <btypes.h>
+#include <model.h>
+#include <xbase64/xbase64.h>
+#include <database.h>
+#include <xbdatabase.h>]]>
+    </global>
+    <table fileName="source/xbDatabase.cpp">
+<![CDATA[
+#include <db/xb${tableName}.h>]]>
+    </table>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+using namespace mstl;
+using namespace db;
+]]>
+    </global>
+    <table fileName="source/xbDatabase.cpp">
+<![CDATA[
+extern xbSchema ${tableName}Schema[];]]>
+    </table>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+
+class XBase: public XbDatabase {
+    DONOTCOPY(XBase);
+
+    xbXBase xBase;
+]]>
+    </global>
+    <table fileName="source/xbDatabase.cpp">
+<![CDATA[
+    xbDbf dbf${tableName};]]>
+    </table>
+    <index fileName="source/xbDatabase.cpp">
+<![CDATA[
+    xbNdx idx${IndexName};]]>
+    </index>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+  public:
+    XBase(bstring const &amp; path);
+    ~XBase();  
+]]>
+    </global>
+    <table fileName="source/xbDatabase.cpp">
+<![CDATA[
+    virtual bool persist${tableName}(${tableName} &amp; a${tableName});
+    virtual bool load${tableName}ById(int id, ${tableName} &amp; a${tableName});
+    virtual bool remove${tableName}ById(int id);
+]]>
+    </table>
+    <index fileName="source/xbDatabase.cpp">
+<![CDATA[
+    virtual bool find${tableName}By${indexFields}(${tableName} &amp; a${tableName}, ${indexCParams});]]>
+    </index>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+};
+
+XBase::XBase(mstl::bstring const &amp; path) : XbDatabase(), xBase()
+]]>
+    </global>
+    <table fileName="source/xbDatabase.cpp">
+<![CDATA[, dbf${tableName}(&amp;xBase)]]>
+    </table>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+]]>
+    </global>
+    <index fileName="source/xbDatabase.cpp">
+<![CDATA[, idx${IndexName}(&amp;dbf${tableName})]]>
+    </index>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+{]]>
+    </global>
+    <table fileName="source/xbDatabase.cpp">
+<![CDATA[
+  openDB(dbf${tableName}, path + bstring(BCHAR("\\..\\${tableName}.dbf")), ${tableName}Schema);]]>
+    </table>
+    <index fileName="source/xbDatabase.cpp">
+<![CDATA[
+  openIndex(idx${IndexName}, path + bstring(BCHAR("\\..\\idx${IndexName}.ndx")), BCHAR("${INDEXFIELDS/([^ ]*) /%1}"), true);]]>
+    </index>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+}
+
+XBase::~XBase() {]]>
+    </global>
+    <table fileName="source/xbDatabase.cpp">
+<![CDATA[
+  dbf${tableName}.CloseDatabase();]]>
+    </table>
+    <global fileName="source/xbDatabase.cpp">
+<![CDATA[
+}
+
+Database * Database::createDB(mstl::bstring const &amp; path) {
+  return new XBase(path);
+}
+]]>
+    </global>
+    <table fileName="source/xb${tableName}.cpp">
+<![CDATA[
+bool XBase::persist${tableName}(${tableName} &amp; a${tableName}) {
+  dbf${tableName}.BlankRecord();
+]]>
+    </table>
+    <field fileName="source/xb${tableName}.cpp">
+<![CDATA[dbf${tableName}.PutField(${tableName}Schema[${TABLENAME}_${REFNAME10}].FieldName, a${tableName}.${refName});
+]]></field>
+    <table fileName="source/xb${tableName}.cpp">
+  <![CDATA[int r;
+  if (a${tableName}.id) {
+    r = dbf${tableName}.PutRecord(a${tableName}.id);
+  } else {
+    r = dbf${tableName}.AppendRecord();
+    a${tableName}.id = dbf${tableName}.GetCurRecNo();
+  }
+  return r == XB_NO_ERROR;
+}
+]]>
+    </table>
+  </file>
+</dbgen>

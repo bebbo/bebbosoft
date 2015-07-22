@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title>bb_mug</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta name="GENERATOR" content="Bebbozilla/0.1 [de] [BebboSoft]" />
+  <meta name="Title" content="bb_mug - a simple, tiny and fast Java class obfuscator">
+  <meta name="Author" content="BebboSoft">
+  <meta name="Publisher" content="Stefan Bebbo Franke">
+  <meta name="Copyright" content="BebboSoft 2002-2005">
+  <meta name="Revisit after" content="14 days">
+  <meta name="Keywords" content="Java class obfuscate obfuscator shrink protect mangle">
+  <meta name="Description" content="bb_mug - a simple, tiny and fast Java class obfuscator">
+  <meta name="Abstract" content="bb_mug - a simple, tiny and fast Java class obfuscator">
+  <meta name="Robots" content="INDEX,FOLLOW">
+  <meta name="Language" content="Englisch, en">
+
+</head>
+<body>
+<h1>bb_mug Overview</h1>
+<p>bb_mug is a simple, tiny and fast Java class obfuscator.
+</p><p><b>
+  This software is published under our <a href="http://www.bebbosoft.de/tools/license.txt" target="_blank">NON COMMERCIAL LICENSE</a>.
+  If you plan to use any of this software in a commercial product,
+  contact the <a href="mailto:s.franke@bebbosoft.de">author</a> for conditions and permissions.
+</b>
+<p>
+Read, understand and accept the <a href="#disclaimer">disclaimer</a> before using bb_mug.
+</p>
+<ul><li>It is simple since there are no options</li>
+<li>It is tiny because it was coded smart</li>
+<li>It is fast due to efficient algorithms</li></ul>
+<h1>What does it do?</h1>
+<ul><li>Where applicable bb_mug replaces class, method and field names with shorter names.
+</li><li>It removes all informations which are not required for execution.
+</li></ul>
+This means that you MUST apply tools like a verifier to the classes created by bb_mug.
+<h1>How does it work?</h1>
+bb_mug requires 2 arguments
+<ul><li>&lt;inpath&gt; the input path, to read the classes to obfuscate
+</li><li>&lt;outpath&gt; the output path, to write the obfuscated classes to
+</li></ul>
+There are no options since it follows the default visibility paradigm:
+<ul><li>public elements are not obfuscated
+</li><li>protected elements are not obfuscated, if they might be visible to external derived classes
+</li><li>package local and pricate members are always obfuscated
+</li></ul>
+If you believe that a public method should be obfuscated you should reconsider why it is public.
+<h1>Usage from command line</h1>
+My command line looks like
+<pre>java -jar /tools/bb_mug.jar &lt;inpath&gt; &lt;outpath&gt;</pre>
+<h1>Usage from ANT</h1>
+My ANT targets look like
+<pre>    &lt;target name="mug" depends="init" &gt;
+        &lt;mkdir dir="${class.final}"/&gt;
+        &lt;java classname="de.bb.mug.Main" fork="yes"&gt;
+          &lt;arg value="${class.src}"/&gt;
+          &lt;arg value="${class.final}"/&gt;
+          &lt;classpath&gt;
+            &lt;pathelement path="${java.class.path}"/&gt;
+            &lt;pathelement location="tools/bb_mug.jar" /&gt;
+          &lt;/classpath&gt;
+        &lt;/java&gt;
+    &lt;/target&gt;
+</pre>
+<h1>legal info</h1>
+<p id="disclaimer"><b><font size="+1">Disclaimer of Warranty</font></b></p>
+<p><b>Software is provided &quot;AS IS,&quot; without a warranty of any
+kind. You may use it on your own risk.</b></p>
+<p><b><font size="+1">Limitation of Liability</font></b></p>
+
+<p><b>I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD
+PARTY AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I
+BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT,
+SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED
+AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
+INABILITY TO USE SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.</b></p>
+<p><b><font size="+1">Copyright</font></b></p>
+
+<p><b>(c) 2002-2005 by BebboSoft, Stefan &quot;Bebbo&quot; Franke, all rights reserved</b></p>
+</body>
+</html>
