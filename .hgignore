@@ -1,0 +1,8 @@
+syntax: regexp
+\.project$
+\.classpath$
+^.*/target$
+^.*/build\.properties$
+^.*/webapps$
+^.*/work$
+^.*/.settings$
