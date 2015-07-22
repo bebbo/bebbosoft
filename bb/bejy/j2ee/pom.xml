@@ -13,21 +13,28 @@
     <dependency>
       <artifactId>server</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.3-SNAPSHOT</version>
+      <version>1.6.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>http</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.2</version>
+      <version>1.6.4</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
+<!--     <dependency>
       <artifactId>javaee</artifactId>
       <groupId>javax</groupId>
       <version>5.0</version>
       <scope>compile</scope>
     </dependency>
+ -->
+             <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>7.0</version>
+                <scope>provided</scope>
+            </dependency>    
     <dependency>
       <artifactId>ws</artifactId>
       <groupId>de.bb</groupId>
