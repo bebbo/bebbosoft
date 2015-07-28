@@ -293,7 +293,7 @@ public class LdapProtocol extends Protocol {
                 // apply the attributes
                 for (final Iterator<Asn1> i = data.children(); i.hasNext();) {
                     final Iterator<Asn1> j = i.next().children();
-                    final ByteRef attr = j.next().asByteRef();
+                    final ByteRef attr = j.next().asByteRef().toLowerCase();
                     final Iterator<Asn1> values = j.next().children();
 
                     // update own entry
@@ -376,7 +376,7 @@ public class LdapProtocol extends Protocol {
                 final ByteRef attr = attrTypeAndValue.next().asByteRef().toLowerCase();
                 
                 if (selfAccess) {
-                    if (attr.equalsIgnoreCase("readpermission") || attr.equalsIgnoreCase("writepermission")) {
+                    if (attr.equals("readpermission") || attr.equals("writepermission")) {
                         logFile.writeDate("search: " + currentUser + " has NO WRITE ACCESS to readpermission/writepermission at " + modifyBaseDn);
                         sendModifyError();
                         return;
@@ -726,9 +726,7 @@ public class LdapProtocol extends Protocol {
                 continue;
             }
 
-            String val = sattr.equals(last) ? xml.getString(key, "name", null) : xml.getString(key + sattr, "name", null);
-
-            if (val == null && sattr.equalsIgnoreCase("ismemberof")) {
+            if (sattr.equalsIgnoreCase("ismemberof")) {
                 // support "isMemberOf"
                 byte attVal[] = memberOfSearch(xml, NEWSET, "/ldap/", dn);
 
@@ -741,21 +739,32 @@ public class LdapProtocol extends Protocol {
                 continue;
             }
 
-            if (val != null) {
-                byte attName[] = Asn1.newSeq;
-                attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
-
-                byte attVal[] = NEWSET;
-                if (sattr.equals(last)) {
+            // main attribute => self key
+            if (sattr.equals(last)) {
+                String val = xml.getString(key, "name", null);
+                if (val != null) {
+                    byte attName[] = Asn1.newSeq;
+                    attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
+                    byte attVal[] = NEWSET;
                     attVal = Asn1.addTo(attVal, Asn1.makeASN1(val, Asn1.OCTET_STRING));
-                } else {
-                    for (Iterator<String> j = xml.sections(key + sattr); j.hasNext();) {
-                        val = xml.getString(j.next(), "name", null);
-                        if (val != null) {
-                            attVal = Asn1.addTo(attVal, Asn1.makeASN1(val, Asn1.OCTET_STRING));
-                        }
-                    }
+                    attName = Asn1.addTo(attName, attVal);
+                    attrResult = Asn1.addTo(attrResult, attName);
                 }
+                continue;
+            }
+            
+            boolean hasAttr = false;
+            byte attName[] = Asn1.newSeq;
+            attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
+            byte attVal[] = NEWSET;
+            for (Iterator<String> j = xml.sections(key + sattr); j.hasNext();) {
+                String val = xml.getString(j.next(), "name", null);
+                if (val != null) {
+                    hasAttr = true;
+                    attVal = Asn1.addTo(attVal, Asn1.makeASN1(val, Asn1.OCTET_STRING));
+                }
+            }
+            if (hasAttr) {
                 attName = Asn1.addTo(attName, attVal);
                 attrResult = Asn1.addTo(attrResult, attName);
             }
