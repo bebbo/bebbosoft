@@ -195,7 +195,7 @@ public class HttpProtocol extends Protocol {
             if (alive) {
                 try {
                     // we dont know whether the Servlet has read the POST parameters, so skip all available data
-                    if (request.method.equals("POST")) {
+                    if (request.method.equals("POST") && request.sis != null) {
                         request.sis.skip(((SIStream) request.sis).avail);
                     }
                 } catch (Throwable t) {
