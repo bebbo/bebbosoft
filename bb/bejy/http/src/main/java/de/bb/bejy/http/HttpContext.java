@@ -69,15 +69,11 @@ import de.bb.util.ZipClassLoader;
  * 
  * @author bebbo
  */
-public class HttpContext extends Configurable implements
-        javax.servlet.ServletContext, javax.servlet.http.HttpSessionContext {
+public class HttpContext extends Configurable implements javax.servlet.ServletContext, javax.servlet.http.HttpSessionContext {
     private final static boolean DEBUG = HttpProtocol.DEBUG;
 
-    private final static String PROPERTIES[][] = {
-            { "path", "the local path" },
-            { "urlPath", "the URL context path" },
-            { "group", "optional name of a user group to restrict access" },
-            { "realm", "a descriptive name for this realm" }, };
+    private final static String PROPERTIES[][] = { { "path", "the local path" }, { "urlPath", "the URL context path" },
+            { "group", "optional name of a user group to restrict access" }, { "realm", "a descriptive name for this realm" }, };
 
     private static final ArrayList<String> EMPTYLIST = new ArrayList<String>();
 
@@ -140,9 +136,9 @@ public class HttpContext extends Configurable implements
 
     ArrayList<MappingData> requestFilterVector = new ArrayList<MappingData>();
 
-    ArrayList<MappingData>includeFilterVector = new ArrayList<MappingData>();
+    ArrayList<MappingData> includeFilterVector = new ArrayList<MappingData>();
 
-    ArrayList<MappingData>forwardFilterVector = new ArrayList<MappingData>();
+    ArrayList<MappingData> forwardFilterVector = new ArrayList<MappingData>();
 
     ArrayList<MappingData> errorFilterVector = new ArrayList<MappingData>();
 
@@ -152,11 +148,9 @@ public class HttpContext extends Configurable implements
 
     HashMap<String, String> mimeTypes = new HashMap<String, String>();
 
-    MultiMap<String, SecurityConstraint> constraints = new MultiMap<String, SecurityConstraint>(
-            SLC.instance);
+    MultiMap<String, SecurityConstraint> constraints = new MultiMap<String, SecurityConstraint>(SLC.instance);
 
-    SessionManager<String, HttpSession> sessionManager = new SessionManager<String, HttpSession>(
-            15 * 60 * 1000L);
+    SessionManager<String, HttpSession> sessionManager = new SessionManager<String, HttpSession>(15 * 60 * 1000L);
 
     long loadTime;
 
@@ -179,10 +173,8 @@ public class HttpContext extends Configurable implements
         sessionManager.put(r, hs);
         hs.sessionId = r;
         if (hslv != null) {
-            javax.servlet.http.HttpSessionEvent hse = new javax.servlet.http.HttpSessionEvent(
-                    hs);
-            for (Iterator<javax.servlet.http.HttpSessionListener> e = hslv
-                    .iterator(); e.hasNext();) {
+            javax.servlet.http.HttpSessionEvent hse = new javax.servlet.http.HttpSessionEvent(hs);
+            for (Iterator<javax.servlet.http.HttpSessionListener> e = hslv.iterator(); e.hasNext();) {
                 javax.servlet.http.HttpSessionListener hsl = e.next();
                 hsl.sessionCreated(hse);
             }
@@ -193,29 +185,35 @@ public class HttpContext extends Configurable implements
     void removeSession(HttpSession hs) {
         sessionManager.remove(hs.sessionId);
         if (hslv != null) {
-            javax.servlet.http.HttpSessionEvent hse = new javax.servlet.http.HttpSessionEvent(
-                    hs);
-            for (Iterator<javax.servlet.http.HttpSessionListener> e = hslv
-                    .iterator(); e.hasNext();) {
+            javax.servlet.http.HttpSessionEvent hse = new javax.servlet.http.HttpSessionEvent(hs);
+            for (Iterator<javax.servlet.http.HttpSessionListener> e = hslv.iterator(); e.hasNext();) {
                 javax.servlet.http.HttpSessionListener hsl = e.next();
                 hsl.sessionDestroyed(hse);
             }
         }
     }
 
-    HttpServletRequest checkAccess(String method, String localPath,
-            HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    HttpServletRequest checkAccess(String method, String localPath, HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (verify == null) {
             return request;
         }
         if (constraints.isEmpty())
             return request;
         // find longest pattern which also matches the used method
-        SecurityConstraint sc = lookupConstraint(method, localPath);
+        final HashSet<SecurityConstraint> scs = lookupConstraint(method, localPath);
         // System.out.println(method + " " + localPath + "=" + sc);
-        if (sc == null)
+        if (scs.isEmpty())
             return request;
+
+        // search if the resource is global allowed
+        for (final SecurityConstraint sc : scs) {
+            StringTokenizer r = sc.roles();
+            if (r.hasMoreElements()) {
+                if ("*".equals(r.nextElement())) {
+                    return request;
+                }
+            }
+        }
 
         final HttpRequest r = RequestDispatcher.dereference(request);
         Collection<String> roles = null;
@@ -224,13 +222,12 @@ public class HttpContext extends Configurable implements
             String remoteUser = (String) session.getAttribute("j_username");
             if (remoteUser == null) {
                 final FormVerification fv = (FormVerification) verify;
-                if (localPath.equals("/" + fv.loginPage)
-                        || localPath.equals("/" + fv.loginErrorPage)
-                        || sc.isAllowAll())
+                if (localPath.equals("/" + fv.loginPage) || localPath.equals("/" + fv.loginErrorPage))
                     return request;
 
                 if (!localPath.endsWith("/j_security_check")) {
-                    session.setAttribute("j_redirect", request.getRequestURI());
+                    if (session.getAttribute("j_redirect") == null)
+                        session.setAttribute("j_redirect", request.getRequestURI());
                     response.sendRedirect(this.sContext + "/" + fv.loginPage);
                     return null;
                 }
@@ -246,8 +243,7 @@ public class HttpContext extends Configurable implements
             r.remoteUser = remoteUser;
         } else {
             if (r.remoteUser == null || r.remotePass == null) {
-                response.addHeader("WWW-Authenticate", "Basic realm=\""
-                        + aRealm + "\"");
+                response.addHeader("WWW-Authenticate", "Basic realm=\"" + aRealm + "\"");
                 response.setStatus(401);
                 return null;
             }
@@ -257,24 +253,26 @@ public class HttpContext extends Configurable implements
         if (roles != null) {
             final HashSet<String> roleLookup = new HashSet<String>();
             roleLookup.addAll(roles);
-            final StringTokenizer st = sc.roles();
-            for (; st.hasMoreElements();) {
-                String role = st.nextToken();
-                // System.out.println("usergroup: " + vfy);
-                if ("*".equals(role) || roleLookup.contains(role)) {
-                    final HttpSession session = (HttpSession) request
-                            .getSession(true);
-                    session.setAttribute("j_user_roles", roleLookup);
-                    if (verify instanceof FormVerification) {
-                        final String previousUri = (String) session
-                                .getAttribute("j_redirect");
-                        if (previousUri != null) {
-                            session.removeAttribute("j_redirect");
-                            response.sendRedirect(previousUri);
-                            return null;
+            for (SecurityConstraint sc : scs) {
+                final StringTokenizer st = sc.roles();
+                for (; st.hasMoreElements();) {
+                    String role = st.nextToken();
+                    // System.out.println("usergroup: " + vfy);
+                    if (roleLookup.contains(role)) {
+                        final HttpSession session = (HttpSession) request.getSession(true);
+                        session.setAttribute("j_user_roles", roleLookup);
+                        if (verify instanceof FormVerification) {
+                            String previousUri = (String) session.getAttribute("j_redirect");
+                            if (previousUri != null) {
+                                session.removeAttribute("j_redirect");
+                                if (previousUri.endsWith("/j_security_check"))
+                                    previousUri = previousUri.substring(0, previousUri.length() - 16);
+                                response.sendRedirect(previousUri);
+                                return null;
+                            }
                         }
+                        return request;
                     }
-                    return request;
                 }
             }
         }
@@ -295,30 +293,34 @@ public class HttpContext extends Configurable implements
      * @param localPath
      * @return
      */
-    private SecurityConstraint lookupConstraint(String method, String localPath) {
+    private HashSet<SecurityConstraint> lookupConstraint(String method, String localPath) {
+        HashSet<SecurityConstraint> result = new HashSet<SecurityConstraint>();
+
         // start search with longest pattern, till we find a match
-        SecurityConstraint longestScConstraint = null;
-        int longestPl = 0;
         for (Iterator<String> i = constraints.keySet().iterator(); i.hasNext();) {
             String pattern = i.next();
 
-            // System.out.println(pattern);
+            if (pattern.charAt(0) == '*') {
+                if (localPath.endsWith(pattern.substring(1))) {
+                    SecurityConstraint sc = constraints.get(pattern);
+                    if (sc.containsMethod(method)) {
+                        result.add(sc);
+                    }
+                }
+                continue;
+            }
 
             int pl = pattern.length() - 1;
-            if (localPath.equals(pattern) || (pattern.charAt(pl) == '*')
-                    && localPath.startsWith(pattern.substring(0, pl))) {
+            if (localPath.equals(pattern) || ((pattern.charAt(pl) == '*') && localPath.startsWith(pattern.substring(0, pl)))) {
                 // found a matching pattern, no check all configured SCs for
                 // method
                 SecurityConstraint sc = constraints.get(pattern);
                 if (sc.containsMethod(method)) {
-                    if (longestScConstraint == null || pl > longestPl) {
-                        longestScConstraint = sc;
-                        longestPl = pl;
-                    }
+                    result.add(sc);
                 }
             }
         }
-        return longestScConstraint;
+        return result;
     }
 
     /**
@@ -329,8 +331,7 @@ public class HttpContext extends Configurable implements
     }
 
     public String getName() {
-        String name = sContext == null || sContext.length() == 0 ? "/"
-                : sContext;
+        String name = sContext == null || sContext.length() == 0 ? "/" : sContext;
         return name;
     }
 
@@ -361,8 +362,7 @@ public class HttpContext extends Configurable implements
             aRealm = null;
         }
 
-        for (int idx = sPath.indexOf('\\'); idx >= 0; idx = sPath.indexOf('\\',
-                idx)) {
+        for (int idx = sPath.indexOf('\\'); idx >= 0; idx = sPath.indexOf('\\', idx)) {
             sPath = sPath.substring(0, idx) + '/' + sPath.substring(idx + 1);
         }
 
@@ -371,28 +371,22 @@ public class HttpContext extends Configurable implements
 
             final String loginJsp = getRealPath("loginPage.jsp");
             if (new File(loginJsp).exists()) {
-                verify = new FormVerification("loginPage.jsp",
-                        "loginErrorPage.jsp", new ServletHandler() {
-                            @Override
-                            public void service(ServletRequest in,
-                                    ServletResponse out) throws IOException,
-                                    ServletException {
-                                final String userName = in
-                                        .getParameter("j_username");
-                                final String password = in
-                                        .getParameter("j_password");
-                                final Collection<String> permissions = vfy
-                                        .verifyUserGroup(userName, password);
-                                final HttpServletRequest hsr = (HttpServletRequest) in;
-                                final javax.servlet.http.HttpSession session = hsr
-                                        .getSession(true);
-                                if (permissions != null) {
-                                    session.setAttribute("j_username", userName);
-                                    session.setAttribute("j_user_roles",
-                                            permissions);
-                                }
-                            }
-                        });
+                verify = new FormVerification("loginPage.jsp", "loginErrorPage.jsp", new ServletHandler() {
+                    @Override
+                    public void service(ServletRequest in, ServletResponse out) throws IOException, ServletException {
+                        if (vfy == null)
+                            return;
+                        final String userName = in.getParameter("j_username");
+                        final String password = in.getParameter("j_password");
+                        final Collection<String> permissions = vfy.verifyUserGroup(userName, password);
+                        final HttpServletRequest hsr = (HttpServletRequest) in;
+                        final javax.servlet.http.HttpSession session = hsr.getSession(true);
+                        if (permissions != null) {
+                            session.setAttribute("j_username", userName);
+                            session.setAttribute("j_user_roles", permissions);
+                        }
+                    }
+                });
             } else {
                 verify = vfy;
             }
@@ -431,15 +425,13 @@ public class HttpContext extends Configurable implements
                 h.activate(logFile);
                 String mask = o.getProperty("mask", "*");
                 addHandler(mask, h);
-                logFile.writeDate("added:     handler: " + mask + ": "
-                        + h.getName());
+                logFile.writeDate("added:     handler: " + mask + ": " + h.getName());
             }
         }
     }
 
-    public javax.servlet.RequestDispatcher getRequestDispatcher(
-            java.lang.String path) // from
-                                   // javax.servlet.ServletContext
+    public javax.servlet.RequestDispatcher getRequestDispatcher(java.lang.String path) // from
+                                                                                       // javax.servlet.ServletContext
     {
         if (DEBUG) {
             System.out.println("getReqDisp:" + path);
@@ -455,8 +447,7 @@ public class HttpContext extends Configurable implements
         }
 
         // remove all "../" parts from path
-        for (int ppp = path.indexOf("/../"); ppp > 0; ppp = path
-                .indexOf("/../")) {
+        for (int ppp = path.indexOf("/../"); ppp > 0; ppp = path.indexOf("/../")) {
             int ldir = path.lastIndexOf("/", ppp - 1);
             if (ldir < 0) {
                 ldir = path.lastIndexOf("\\", ppp - 1);
@@ -502,8 +493,7 @@ public class HttpContext extends Configurable implements
             }
         }
 
-        RequestDispatcher rd = new RequestDispatcher(this, path, pathInfo,
-                query, handler);
+        RequestDispatcher rd = new RequestDispatcher(this, path, pathInfo, query, handler);
 
         if (DEBUG) {
             System.out.println(rd);
@@ -581,10 +571,8 @@ public class HttpContext extends Configurable implements
     public void removeAttribute(java.lang.String name) {
         Object o = attributes.remove(name);
         if (null != o && scalv.size() > 0) {
-            javax.servlet.ServletContextAttributeEvent scae = new javax.servlet.ServletContextAttributeEvent(
-                    this, name, o);
-            for (Iterator<javax.servlet.ServletContextAttributeListener> e = scalv
-                    .iterator(); e.hasNext();) {
+            javax.servlet.ServletContextAttributeEvent scae = new javax.servlet.ServletContextAttributeEvent(this, name, o);
+            for (Iterator<javax.servlet.ServletContextAttributeListener> e = scalv.iterator(); e.hasNext();) {
                 javax.servlet.ServletContextAttributeListener scal = e.next();
                 scal.attributeRemoved(scae);
             }
@@ -608,21 +596,15 @@ public class HttpContext extends Configurable implements
         Object old = attributes.put(name, o);
         if (scalv.size() > 0) {
             if (old == null) {
-                javax.servlet.ServletContextAttributeEvent scae = new javax.servlet.ServletContextAttributeEvent(
-                        this, name, o);
-                for (Iterator<javax.servlet.ServletContextAttributeListener> e = scalv
-                        .iterator(); e.hasNext();) {
-                    javax.servlet.ServletContextAttributeListener scal = e
-                            .next();
+                javax.servlet.ServletContextAttributeEvent scae = new javax.servlet.ServletContextAttributeEvent(this, name, o);
+                for (Iterator<javax.servlet.ServletContextAttributeListener> e = scalv.iterator(); e.hasNext();) {
+                    javax.servlet.ServletContextAttributeListener scal = e.next();
                     scal.attributeAdded(scae);
                 }
             } else {
-                javax.servlet.ServletContextAttributeEvent scae = new javax.servlet.ServletContextAttributeEvent(
-                        this, name, old);
-                for (Iterator<javax.servlet.ServletContextAttributeListener> e = scalv
-                        .iterator(); e.hasNext();) {
-                    javax.servlet.ServletContextAttributeListener scal = e
-                            .next();
+                javax.servlet.ServletContextAttributeEvent scae = new javax.servlet.ServletContextAttributeEvent(this, name, old);
+                for (Iterator<javax.servlet.ServletContextAttributeListener> e = scalv.iterator(); e.hasNext();) {
+                    javax.servlet.ServletContextAttributeListener scal = e.next();
                     scal.attributeReplaced(scae);
                 }
             }
@@ -738,9 +720,8 @@ public class HttpContext extends Configurable implements
 
     // get a dispatcher for the supplied servlet name
 
-    public javax.servlet.RequestDispatcher getNamedDispatcher(
-            java.lang.String dispatcherName) // from
-                                             // javax.servlet.ServletContext
+    public javax.servlet.RequestDispatcher getNamedDispatcher(java.lang.String dispatcherName) // from
+                                                                                               // javax.servlet.ServletContext
     {
         HttpHandler h = handlerByName.get(dispatcherName);
         RequestDispatcher rd = new RequestDispatcher(this, null, null, null, h);
@@ -757,8 +738,7 @@ public class HttpContext extends Configurable implements
                 server = "__default__";
             }
             Configurable p = hServer.getParent().getParent();
-            name = p.getName() + "-" + p.getProperty("port") + "/" + server
-                    + name;
+            name = p.getName() + "-" + p.getProperty("port") + "/" + server + name;
         }
         return name;
     }
@@ -845,8 +825,7 @@ public class HttpContext extends Configurable implements
         for (final Iterator<String> i = sessionManager.keys(); i.hasNext();) {
             final HttpSession hs = (HttpSession) sessionManager.get(i.next());
             if (hs.context == this) {
-                final HttpSessionEvent paramHttpSessionEvent = new HttpSessionEvent(
-                        hs);
+                final HttpSessionEvent paramHttpSessionEvent = new HttpSessionEvent(hs);
                 for (final HttpSessionListener hsl : hslv) {
                     try {
                         hsl.sessionDestroyed(paramHttpSessionEvent);
@@ -926,18 +905,15 @@ public class HttpContext extends Configurable implements
 
     private void killDrivers() {
         try {
-            List<?> drivers = (List<?>) getMember(null, DriverManager.class,
-                    "registeredDrivers");
+            List<?> drivers = (List<?>) getMember(null, DriverManager.class, "registeredDrivers");
             for (Object driverInfo : new ArrayList<Object>(drivers)) {
                 final Driver driver = (Driver) getMember(driverInfo, "driver");
                 if (refersToMe(driver.getClass().getClassLoader())) {
                     try {
-                        log("ERROR JDBC driver not deregistered: " + driver
-                                + " trying to deregister");
+                        log("ERROR JDBC driver not deregistered: " + driver + " trying to deregister");
                         drivers.remove(driverInfo);
                     } catch (Exception e) {
-                        log("ERROR while deregistering: " + driver + ": "
-                                + e.getMessage());
+                        log("ERROR while deregistering: " + driver + ": " + e.getMessage());
                     }
                 }
             }
@@ -985,8 +961,7 @@ public class HttpContext extends Configurable implements
                 log("ERROR Thread " + t + " still running - trying to kill");
                 t.interrupt();
                 try {
-                    ScheduledThreadPoolExecutor stpe = (ScheduledThreadPoolExecutor) getMember(
-                            t, "target.this$0");
+                    ScheduledThreadPoolExecutor stpe = (ScheduledThreadPoolExecutor) getMember(t, "target.this$0");
                     stpe.shutdown();
                 } catch (Throwable tw) {
                     try {
@@ -1071,10 +1046,8 @@ public class HttpContext extends Configurable implements
 
     private static Object getMember(Object reference, String memberName) {
         try {
-            for (StringTokenizer st = new StringTokenizer(memberName, "."); st
-                    .hasMoreTokens();) {
-                reference = getMember(reference, reference.getClass(),
-                        st.nextToken());
+            for (StringTokenizer st = new StringTokenizer(memberName, "."); st.hasMoreTokens();) {
+                reference = getMember(reference, reference.getClass(), st.nextToken());
             }
             return reference;
         } catch (Exception ex) {
@@ -1082,9 +1055,7 @@ public class HttpContext extends Configurable implements
         return null;
     }
 
-    private static Object getMember(Object reference, Class<?> clazz,
-            String memberName) throws NoSuchFieldException,
-            IllegalAccessException {
+    private static Object getMember(Object reference, Class<?> clazz, String memberName) throws NoSuchFieldException, IllegalAccessException {
         try {
             final Field memberField = clazz.getDeclaredField(memberName);
             memberField.setAccessible(true);
@@ -1099,20 +1070,17 @@ public class HttpContext extends Configurable implements
 
     // since 3.0 / 3.1
 
-    public javax.servlet.FilterRegistration.Dynamic addFilter(
-            String filterName, String filterClassName) {
+    public javax.servlet.FilterRegistration.Dynamic addFilter(String filterName, String filterClassName) {
         try {
             @SuppressWarnings("unchecked")
-            Class<? extends Filter> clazz = (Class<Filter>) zcl
-                    .loadClass(filterClassName);
+            Class<? extends Filter> clazz = (Class<Filter>) zcl.loadClass(filterClassName);
             return addFilter(filterName, clazz);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public javax.servlet.FilterRegistration.Dynamic addFilter(
-            String filterName, Class<? extends Filter> filterClass) {
+    public javax.servlet.FilterRegistration.Dynamic addFilter(String filterName, Class<? extends Filter> filterClass) {
         try {
             final Filter filter = createFilter(filterClass);
             return addFilter(filterName, filter);
@@ -1121,55 +1089,46 @@ public class HttpContext extends Configurable implements
         }
     }
 
-    public javax.servlet.FilterRegistration.Dynamic addFilter(
-            String filterName, Filter filter) {
+    public javax.servlet.FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
         if (initialized)
             throw new IllegalStateException("context already initialized");
         if (filterName == null)
             throw new IllegalArgumentException("filterName must not be null");
 
-        FilterRegistration.Dynamic filterRegistration = filterRegistrations
-                .get(filterName);
+        FilterRegistration.Dynamic filterRegistration = filterRegistrations.get(filterName);
         if (filterRegistration == null) {
-            filterRegistration = new de.bb.bejy.http.FilterRegistration.Dynamic(
-                    this, filterName, filter);
+            filterRegistration = new de.bb.bejy.http.FilterRegistration.Dynamic(this, filterName, filter);
             filterRegistrations.put(filterName, filterRegistration);
         }
         return filterRegistration;
     }
 
-    public javax.servlet.ServletRegistration.Dynamic addServlet(
-            String servletName, String servletClassName) {
+    public javax.servlet.ServletRegistration.Dynamic addServlet(String servletName, String servletClassName) {
         try {
             ClassLoader cl = zcl == null ? Thread.currentThread().getContextClassLoader() : zcl;
             @SuppressWarnings("unchecked")
-            Class<? extends Servlet> clazz = (Class<Servlet>) cl
-                    .loadClass(servletClassName);
+            Class<? extends Servlet> clazz = (Class<Servlet>) cl.loadClass(servletClassName);
             return addServlet(servletName, clazz);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public javax.servlet.ServletRegistration.Dynamic addServlet(
-            String servletName, Servlet servlet) {
+    public javax.servlet.ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
         if (initialized)
             throw new IllegalStateException("context already initialized");
         if (servletName == null)
             throw new IllegalArgumentException("filterName must not be null");
 
-        ServletRegistration.Dynamic servletRegistration = servletRegistrations
-                .get(servletName);
+        ServletRegistration.Dynamic servletRegistration = servletRegistrations.get(servletName);
         if (servletRegistration == null) {
-            servletRegistration = new de.bb.bejy.http.ServletRegistration.Dynamic(
-                    this, servletName, servlet);
+            servletRegistration = new de.bb.bejy.http.ServletRegistration.Dynamic(this, servletName, servlet);
             servletRegistrations.put(servletName, servletRegistration);
         }
         return servletRegistration;
     }
 
-    public javax.servlet.ServletRegistration.Dynamic addServlet(
-            String servletName, Class<? extends Servlet> servletClass) {
+    public javax.servlet.ServletRegistration.Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
         try {
             return addServlet(servletName, createServlet(servletClass));
         } catch (ServletException e) {
@@ -1177,8 +1136,7 @@ public class HttpContext extends Configurable implements
         }
     }
 
-    public <T extends Filter> T createFilter(Class<T> filterClass)
-            throws ServletException {
+    public <T extends Filter> T createFilter(Class<T> filterClass) throws ServletException {
         try {
             T filter = filterClass.newInstance();
             if (injector != null)
@@ -1189,8 +1147,7 @@ public class HttpContext extends Configurable implements
         }
     }
 
-    public <T extends EventListener> T createListener(Class<T> listenerClass)
-            throws ServletException {
+    public <T extends EventListener> T createListener(Class<T> listenerClass) throws ServletException {
         try {
             T listener = listenerClass.newInstance();
             if (injector != null)
@@ -1201,8 +1158,7 @@ public class HttpContext extends Configurable implements
         }
     }
 
-    public <T extends Servlet> T createServlet(Class<T> servletClass)
-            throws ServletException {
+    public <T extends Servlet> T createServlet(Class<T> servletClass) throws ServletException {
         try {
             T servlet = servletClass.newInstance();
             if (injector != null)
@@ -1302,8 +1258,7 @@ public class HttpContext extends Configurable implements
 
     }
 
-    public Set<String> addSecurity4Mappings(
-            ServletSecurityElement servletSecurityElement, Set<String> keySet) {
+    public Set<String> addSecurity4Mappings(ServletSecurityElement servletSecurityElement, Set<String> keySet) {
         // TODO Auto-generated method stub
         return null;
     }

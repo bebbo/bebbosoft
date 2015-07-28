@@ -27,7 +27,8 @@ import de.bb.util.LogFile;
 import de.bb.util.SessionManager;
 
 /**
- * This class implements the UserGroupDbi which performs a check against a LDAP server.
+ * This class implements the UserGroupDbi which performs a check against a LDAP
+ * server.
  * 
  * @author bebbo
  * @version $Revision: 1.12 $
@@ -41,7 +42,11 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
 
     private String ldapLoginQuery;
 
+    private String ldapRolesQuery;
+
     private String ldapBaseDN;
+
+    private String ldapRolesBaseDN;
 
     private String ldapUser;
 
@@ -49,13 +54,16 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
 
     private String securityProtocol;
 
-    private final static String[][] PROPERTIES = {{"name", "group name"},
-            {"ldapBase", "base definition", "dc=example,dc=xyz"},
-            {"ldapClass", "ldap factory class name", "com.sun.jndi.ldap.LdapCtxFactory"},
-            {"ldapQuery", "the LDAP search to yield the user", "(&(objectClass=inetOrgPerson)(uid={u}))"},
-            {"ldapUser", "the LDAP user"}, {"ldapPassword", "password for LDAP user"},
-            {"ldapUrl", "url for LDAP connection"}, {"ldapSecurity", "use SSL if set", ""},
-            {"cacheTimeout", "timeout for ldap response cache"}};
+    private final static String[][] PROPERTIES = {
+            { "name", "group name" },
+            { "ldapBase", "base definition", "ou=people,dc=example,dc=xyz" },
+            { "ldapClass", "ldap factory class name", "com.sun.jndi.ldap.LdapCtxFactory" },
+            { "ldapQuery", "the LDAP search to yield the user",
+                    "(&(objectClass=inetOrgPerson)(uid={u})(ismemberof=cn=user,ou=some,ou=groups,dc=example,dc=xyz))" },
+            { "ldapQueryRoles", "the LDAP search to get the users roles", "((objectClass=groupOfUniqueNames)(uniqueMember={U}))" },
+            { "ldapRolesBase", "roles base to search for groups", "ou=some,ou=groups,dc=example,dc=xyz" },
+            { "ldapUser", "the LDAP user" }, { "ldapPassword", "password for LDAP user" }, { "ldapUrl", "url for LDAP connection" },
+            { "ldapSecurity", "use SSL if set", "" }, { "cacheTimeout", "timeout for ldap response cache", "5" } };
 
     private static final Collection<String> DEFAULT = new ArrayList<String>();
     {
@@ -85,7 +93,8 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
      *            a String containing the password
      * @param group
      *            a String containing the group name
-     * @return true if that user/password/group combination exists, false either.
+     * @return true if that user/password/group combination exists, false
+     *         either.
      */
     public synchronized Collection<String> verifyUserGroup(String userName, String pass) {
         if (userName == null || pass == null)
@@ -93,7 +102,7 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
 
         Collection<String> roles = sessionMan.get(userName);
         if (roles != null)
-            return roles; 
+            return roles;
 
         DirContext ctx = null;
         try {
@@ -138,17 +147,35 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
             }
 
             SearchResult sres = (SearchResult) ne.next();
-            String userDn = sres.getName() + "," + this.ldapBaseDN;
+            String userDn = sres.getNameInNamespace();
 
             ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, userDn);
             ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, pass);
 
-            ne = ldapQuery(ctx, query, this.ldapBaseDN);
+            ne = ldapQuery(ctx, query, userDn);
             if (ne.hasMore()) {
+                roles = new ArrayList<String>();
+                roles.addAll(DEFAULT);
+                // read roles from LDAP
+                if (ldapRolesQuery.length() > 0) {
+                    ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, ldapUser);
+                    ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, ldapPassword);
+                    
+                    final String rolesQuery = ldapRolesQuery.replace("{%U}", userDn);
+
+                    try {
+                        ne = ldapQuery(ctx, rolesQuery, this.ldapRolesBaseDN);
+                        while(ne.hasMore()) {
+                            SearchResult rres = (SearchResult) ne.next();
+                            roles.add(rres.getName().substring(3).toUpperCase());
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                }
                 // add to SessionManager
-                // TODO read roles from LDAP
-                sessionMan.put(userName, DEFAULT);
-                return DEFAULT;
+                sessionMan.put(userName, roles);
+                return roles;
             }
 
             System.out.println("invalid password for ldap user: " + userName);
@@ -196,7 +223,9 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
         this.ldapUser = getProperty("ldapUser");
         this.ldapPassword = getProperty("ldapPassword");
         this.ldapLoginQuery = getProperty("ldapQuery");
+        this.ldapRolesQuery = getProperty("ldapQueryRoles");
         this.ldapBaseDN = getProperty("ldapBase");
+        this.ldapRolesBaseDN = getProperty("ldapRolesBase");
         this.securityProtocol = getProperty("ldapSecurity");
 
         super.activate(logFile);
@@ -211,7 +240,8 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
     }
 
     /**
-     * Returns the id of the Configurator. The config group extends a "de.bb.bejy.group".
+     * Returns the id of the Configurator. The config group extends a
+     * "de.bb.bejy.group".
      * 
      * @return the id of the Configurator.
      */
@@ -222,20 +252,20 @@ public class LDAPUserGroup extends Configurable implements UserGroupDbi, Loadabl
     public boolean hashPassword() {
         return false; // we need the password
     }
-    
-    
+
 }
 /******************************************************************************
- * $Log: LDAPUserGroup.java,v $
- * Revision 1.12  2014/06/23 19:02:58  bebbo
+ * $Log: LDAPUserGroup.java,v $ Revision 1.12 2014/06/23 19:02:58 bebbo
+ * 
  * @N added support for startTLS: ssl info is not immediately used
- * @R passwords which are not needed in clear text are now stored via PKDBF2 with SHA256
+ * @R passwords which are not needed in clear text are now stored via PKDBF2
+ *    with SHA256
  * @R added support for groups/roles in groups / dbis
  *
- * Revision 1.11  2012/11/13 06:39:33  bebbo
+ *    Revision 1.11 2012/11/13 06:39:33 bebbo
  * @I code cleanup
- * @R property changed to support better LDAP queries.
- * Revision 1.10 2006/03/17 11:29:09 bebbo
+ * @R property changed to support better LDAP queries. Revision 1.10 2006/03/17
+ *    11:29:09 bebbo
  * 
  * @I activate is now synchronized
  * 
