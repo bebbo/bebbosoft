@@ -149,7 +149,7 @@ public class WebAppContext extends HttpContext {
             if (getProperty("workDir") != null) {
                 parameter.put(ServletContext.TEMPDIR, getProperty("workDir"));
             }
-            addJspHandler();
+            addJspHandler(logFile);
 
             final MultiMap<String, String> pattern2Class = MiniClass
                     .findRelatedClasses(zcl,
@@ -273,6 +273,9 @@ public class WebAppContext extends HttpContext {
                     String pattern = f.nextElement();
                     constraints.put(xf.getContent(pattern), sc);
                 }
+                
+                if (!sc.roles().hasMoreElements())
+                    sc.addRole("*");
             }
         }
     }
@@ -507,18 +510,19 @@ public class WebAppContext extends HttpContext {
         return name2servletHandler;
     }
 
-    private void addJspHandler() throws ServletException {
+    private void addJspHandler(LogFile logFile) throws ServletException {
         // add a handler for JSP pages
         {
-            ServletHandler h = new ServletHandler();
-            h.setClassLoader(zcl);
-            h.setName("jsp");
-            h.setContext(this);
+            ServletHandler jspHandler = new ServletHandler();
+            jspHandler.setClassLoader(zcl);
+            jspHandler.setName("jsp");
+            jspHandler.setContext(this);
             de.bb.jsp.JspServlet sjs = new de.bb.jsp.JspServlet();
             sjs.setZipClassLoader(zcl);
-            h.setServlet(sjs);
-            addHandler("*.jsp", h);
-            addHandler("*.jspx", h);
+            jspHandler.setServlet(sjs);
+            addHandler("*.jsp", jspHandler);
+            addHandler("*.jspx", jspHandler);
+            sjs.init(new de.bb.bejy.http.ServletRegistration.Dynamic(this, "jsp", sjs));
 
             String workDir = getProperty("workDir");
             if (workDir != null) {
