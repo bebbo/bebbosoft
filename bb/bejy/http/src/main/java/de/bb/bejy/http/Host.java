@@ -25,9 +25,8 @@ import de.bb.bejy.Configurable;
 import de.bb.util.LogFile;
 
 public class Host extends Configurable {
-    private final static String PROPERTIES[][] = {{"name", "a list of domain names, ip addresses or *", "*"},
-            {"logFile", "file and path for http log file or * for stdout", "*"},
-            {"logFileDateFormat", "the format log file format", "yyyyMMdd"}};
+    private final static String PROPERTIES[][] = { { "name", "a list of domain names, ip addresses or *", "*" },
+            { "logFile", "file and path for http log file or * for stdout", "*" }, { "logFileDateFormat", "the format log file format", "yyyyMMdd" } };
 
     LogFile httpLog;
 
@@ -46,13 +45,17 @@ public class Host extends Configurable {
 
         for (Iterator<Configurable> i = children(); i.hasNext();) {
             Configurable o = i.next();
-            if (o instanceof HttpContext) {
-                activateContext(logFile, (HttpContext) o);
-                continue;
+            try {
+                if (o instanceof HttpContext) {
+                    activateContext(logFile, (HttpContext) o);
+                    continue;
+                }
+                WebAppsCfg web = (WebAppsCfg) o;
+                web.vhost = this;
+                web.activate(logFile);
+            } catch (Exception e) {
+                logFile.writeDate(o.toString() + "not loaded: " + e.getMessage());
             }
-            WebAppsCfg web = (WebAppsCfg) o;
-            web.vhost = this;
-            web.activate(logFile);
         }
     }
 
@@ -77,12 +80,12 @@ public class Host extends Configurable {
     }
 
     HttpContext getContext(String path) {
-        //    System.out.println(path);
-        //    System.out.println(contexts);
+        // System.out.println(path);
+        // System.out.println(contexts);
         while (path.length() > 1) {
             HttpContext hc = contexts.get(path);
             if (hc != null) {
-                //        System.out.println(path);
+                // System.out.println(path);
                 return hc;
             }
             int slash = path.lastIndexOf('/');
