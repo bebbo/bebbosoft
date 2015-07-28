@@ -67,7 +67,8 @@ class RRProtocol extends Protocol {
     private final static ByteRef CONNECTION = new ByteRef("CONNECTION");
 
     private final static ByteRef TRANSFER_ENCODING = new ByteRef("TRANSFER-ENCODING");
-
+    private final static ByteRef SET_COOKIE = new ByteRef("SET-COOKIE");
+    private final static ByteRef COOKIE_PATH = new ByteRef("PATH=");
     private final static ByteRef LOCATION = new ByteRef("LOCATION");
     private final static ByteRef CS = new ByteRef(": ");
 
@@ -308,15 +309,6 @@ class RRProtocol extends Protocol {
                     // buffer for the response
                     FastByteArrayOutputStream bos = new FastByteArrayOutputStream();
 
-                    //                    // send redirect for the folder if path does not end with /
-                    //                    if (path.equals(orgPath)) {
-                    //                        ByteUtil.writeString("HTTP/1.0 302 location found\r\nLocation: ", bos);
-                    //                        path.writeTo(bos);
-                    //                        ByteUtil.writeString("/\r\n\r\n", bos);
-                    //                        os.write(bos.toByteArray());
-                    //                        break;
-                    //                    }
-
                     mappedPath = new ByteRef(forwardUrl);
                     if (slash < 0) {
                         mappedPath = ROOT;
@@ -414,16 +406,14 @@ class RRProtocol extends Protocol {
         return false;
     }
 
-    private void writeHeader(FastByteArrayOutputStream bos, HashMap<ByteRef, ByteRef> requestHeader) throws IOException {
+    /**
+     * Write the requestHeader to the output stream.
+     * @param bos the OutputStream.
+     * @param requestHeader the map containing the name value pairs.
+     * @throws IOException
+     */
+    private void writeHeader(OutputStream bos, HashMap<ByteRef, ByteRef> requestHeader) throws IOException {
         for (Entry<ByteRef, ByteRef> e : requestHeader.entrySet()) {
-            //            if (HOST.equals(e.getKey())) {
-            //                HOST.writeTo(bos);
-            //                bos.write(':');
-            //                bos.write(' ');
-            //                ByteUtil.writeString(forwardHost, bos);
-            //                bos.write(CRLF);
-            //                continue;
-            //            }
             e.getKey().writeTo(bos);
             bos.write(':');
             bos.write(' ');
@@ -850,7 +840,6 @@ class RRProtocol extends Protocol {
                 if (key.equals(CONTENTLENGTH)) {
                     outContentLength = val.toLong();
                 } else if (key.equals(CONNECTION)) {
-                    // connection = val;
                     keepAlive &= !CLOSE.equalsIgnoreCase(val);
                 } else if (key.equals(TRANSFER_ENCODING)) {
                     chunked = CHUNKED.equalsIgnoreCase(val);
@@ -859,6 +848,38 @@ class RRProtocol extends Protocol {
                     ByteRef location = translateLocation(val, orgPath, mappedPath);
                     if (location != null)
                         line = LOCATION.append(CS).append(location);
+                } else if (key.equals(SET_COOKIE)) {
+                    ByteRef v2 = new ByteRef(val.toByteArray()).toUpperCase();
+                    int pathPos = v2.indexOf(COOKIE_PATH);
+                    while (pathPos > 0 && !v2.substring(0, pathPos).trim().endsWith(";")) {
+                        pathPos = v2.indexOf(COOKIE_PATH, pathPos + 5);
+                    }
+                    // either patch the path
+                    if (pathPos > 0) {
+                        pathPos += COOKIE_PATH.length();
+                        int end = val.indexOf(';', pathPos);
+                        if (end < 0)
+                            end = val.length();
+                        ByteRef path = val.substring(pathPos, end);
+                        if (path.startsWith(mappedPath)) {
+                            // replace mapped path
+                            line = key.append(CS)
+                                    .append(val.substring(0, pathPos))
+                                    .append(orgPath)
+                                    .append(path.substring(mappedPath.length()))
+                                    .append(val.substring(end));
+                        } else {
+                            //prepend mapped path
+                            line = key.append(CS)
+                                    .append(val.substring(0, pathPos))
+                                    .append(orgPath)
+                                    .append(path)
+                                    .append(val.substring(end));
+                        }
+                    } else {
+                    // or add a path
+                        line = key.append(CS).append(val).append(";Path=").append(orgPath);
+                    }
                 }
             }
 
