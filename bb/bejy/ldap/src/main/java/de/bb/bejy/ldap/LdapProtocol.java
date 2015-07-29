@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
 import de.bb.bejy.Protocol;
 import de.bb.bejy.Version;
@@ -50,6 +51,8 @@ public class LdapProtocol extends Protocol {
     private final static byte ERROR_INVALID_CREDENTIALS[] = { 0x0A, 0x01, 49 };
 
     private final static byte ERROR_INSUFFICIENT_ACCESS_RIGHTS[] = { 0x0A, 0x01, 50 };
+
+    private final static byte ERROR_ENTRY_ALREADY_EXISTS[] = { 0x0A, 0x01, 68 };
 
     private final static byte NEWSET[] = { 0x31, 0x00 };
 
@@ -286,35 +289,55 @@ public class LdapProtocol extends Protocol {
             final String parentKey = insertKey.substring(0, insertKey.length() - lastSegment.length() - 1);
 
             synchronized (factory) {
-                final XmlFile xml = getXmlFile();
-
-                final String createdKey = xml.createSection(parentKey + last);
-
-                // apply the attributes
+                // find inserted name
+                String newName = null;
                 for (final Iterator<Asn1> i = data.children(); i.hasNext();) {
                     final Iterator<Asn1> j = i.next().children();
                     final ByteRef attr = j.next().asByteRef().toLowerCase();
                     final Iterator<Asn1> values = j.next().children();
-
-                    // update own entry
                     if (attr.equals(last)) {
-                        // final String val = values.hasNext() ?
-                        // values.next().asByteRef().toString() : "";
-                        final String val = lastSegment.length() > last.length() + 2 ? lastSegment.substring(last.length() + 2) : values.hasNext() ? values
-                                .next().asByteRef().toString() : "";
-                        xml.setString(createdKey, "name", val);
-                    } else {
-
-                        // create child entries per attribute value
-                        while (values.hasNext()) {
-                            final String val = values.next().asByteRef().toString();
-                            final String vkey = xml.createSection(createdKey + attr);
-                            xml.setString(vkey, "name", val);
-                        }
+                        newName = lastSegment.length() > last.length() + 2 ? lastSegment.substring(last.length() + 2) : values.hasNext() ? values.next()
+                                .asByteRef().toString() : "";
+                        break;
                     }
-                    resultVal = RESULT_SUCCESS;
                 }
-                saveXmlFile();
+
+                if (newName == null) {
+                    resultVal = ERROR_NO_SUCH_OBJECT;
+                } else {
+                    final XmlFile xml = getXmlFile();
+
+                    // check if object already exists
+                    Map<String, String> existingAttrs = xml.getAttributes(parentKey + "\\" + last + "\\" + newName);
+                    if (existingAttrs != null) {
+                        resultVal = ERROR_ENTRY_ALREADY_EXISTS;
+                    } else {
+                        final String createdKey = xml.createSection(parentKey + last);
+                        // apply the attributes
+                        for (final Iterator<Asn1> i = data.children(); i.hasNext();) {
+                            final Iterator<Asn1> j = i.next().children();
+                            final ByteRef attr = j.next().asByteRef().toLowerCase();
+                            final Iterator<Asn1> values = j.next().children();
+
+                            // update own entry
+                            if (attr.equals(last)) {
+                                final String val = lastSegment.length() > last.length() + 2 ? lastSegment.substring(last.length() + 2)
+                                        : values.hasNext() ? values.next().asByteRef().toString() : "";
+                                xml.setString(createdKey, "name", val);
+                            } else {
+
+                                // create child entries per attribute value
+                                while (values.hasNext()) {
+                                    final String val = values.next().asByteRef().toString();
+                                    final String vkey = xml.createSection(createdKey + attr);
+                                    xml.setString(vkey, "name", val);
+                                }
+                            }
+                            resultVal = RESULT_SUCCESS;
+                        }
+                        saveXmlFile();
+                    }
+                }
             }
         }
 
@@ -368,13 +391,12 @@ public class LdapProtocol extends Protocol {
             final XmlFile xml = getXmlFile();
 
             // apply the incoming changes
-            final String last = base(getLastSegment(modifyKey));
             for (Iterator<Asn1> i = modifications.children(); i.hasNext();) {
                 final Iterator<Asn1> mod = i.next().children();
                 final int operation = mod.next().asInt();
                 final Iterator<Asn1> attrTypeAndValue = mod.next().children();
                 final ByteRef attr = attrTypeAndValue.next().asByteRef().toLowerCase();
-                
+
                 if (selfAccess) {
                     if (attr.equals("readpermission") || attr.equals("writepermission")) {
                         logFile.writeDate("search: " + currentUser + " has NO WRITE ACCESS to readpermission/writepermission at " + modifyBaseDn);
@@ -382,7 +404,7 @@ public class LdapProtocol extends Protocol {
                         return;
                     }
                 }
-                
+
                 final Iterator<Asn1> vals = attrTypeAndValue.next().children();
                 switch (operation) {
                 case 0: // add
@@ -497,18 +519,18 @@ public class LdapProtocol extends Protocol {
             // clear the manual password
             xml.setString(key, "auth", null);
 
-            String value = newPassword.toString();
+            String value = newPassword.toString("utf-8");
             if (!value.startsWith("{SSHA}")) {
                 byte salt[] = new byte[16];
                 SecureRandom.getInstance().nextBytes(salt);
-    
+
                 SHA sha = new SHA();
                 sha.update(newPassword.toByteArray());
                 sha.update(salt);
                 final byte[] digest = sha.digest();
-    
+
                 ByteRef all = new ByteRef(digest).append(new ByteRef(salt));
-    
+
                 value = "{SSHA}" + new String(Mime.encode(all.toByteArray()), 0);
             }
             xml.setString(key + "userpassword", "name", value);
@@ -752,7 +774,7 @@ public class LdapProtocol extends Protocol {
                 }
                 continue;
             }
-            
+
             boolean hasAttr = false;
             byte attName[] = Asn1.newSeq;
             attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
