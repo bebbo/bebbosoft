@@ -163,7 +163,7 @@ final class Smtp extends de.bb.bejy.Protocol {
     protected boolean doit() throws Exception {
         String userId = null;
 
-        String resolvedDomain = MailCfg.dns.getDomainFromIp(remoteAddress);
+        String resolvedDomain = MailCfg.getDNS().getDomainFromIp(remoteAddress);
         logFile.writeDate(tx() + "connect from [" + remoteAddress + "=" + resolvedDomain + "]");
         recipients.clear();
 
@@ -404,7 +404,7 @@ final class Smtp extends de.bb.bejy.Protocol {
 
                                 fromDomain = resolvedDomain;
                                 // allow to step out one level
-                                if (MailCfg.dns.getRealMXfromDomain(fromDomain).size() == 0) {
+                                if (MailCfg.getDNS().getRealMXfromDomain(fromDomain).size() == 0) {
                                     int dot = fromDomain.indexOf('.');
                                     fromDomain = fromDomain.substring(dot + 1);
                                 }
@@ -530,7 +530,7 @@ final class Smtp extends de.bb.bejy.Protocol {
                             if (localOnly && mDbi.useGuessPermission(sToDomain)) {
 
                                 //                            // check for self hosted domains and deny those!
-                                //                            if (null == MailCfg.dns.getExtendedSpf(fromDomain) && !validateDns(resolvedDomain)) {
+                                //                            if (null == MailCfg.getDNS().getExtendedSpf(fromDomain) && !validateDns(resolvedDomain)) {
                                 //                                logFile.writeDate(t() + "BLOCKED: " + clientHelo + "[" + remoteAddress + "=" + resolvedDomain
                                 //                                        + "] for domain:" + fromDomain);
                                 //                                error = new ByteRef("555-sending server is brown listed\r\n550 server: " + clientHelo
@@ -784,7 +784,7 @@ final class Smtp extends de.bb.bejy.Protocol {
     //        Iterator<String> i = null;
     //        for (;;) {
     //            HashMap<String, String> map = new HashMap<String, String>();
-    //            i = MailCfg.dns.getNsFromDomain(domain);
+    //            i = MailCfg.getDNS().getNsFromDomain(domain);
     //            if (i.hasNext()) {
     //                int dot = domain.indexOf('.');
     //                if (dot == domain.lastIndexOf('.')) {
@@ -792,7 +792,7 @@ final class Smtp extends de.bb.bejy.Protocol {
     //                    while (i.hasNext()) {
     //                        set.add(i.next());
     //                    }
-    //                    i = MailCfg.dns.getNsFromDomain(domain.substring(dot + 1));
+    //                    i = MailCfg.getDNS().getNsFromDomain(domain.substring(dot + 1));
     //                    while (i.hasNext()) {
     //                        set.remove(i.next());
     //                    }
@@ -804,7 +804,7 @@ final class Smtp extends de.bb.bejy.Protocol {
     //                    // System.out.println("NS = " + nsName);
     //                    if (nsName == null)
     //                        continue;
-    //                    String ip = MailCfg.dns.getIpFromDomain(nsName);
+    //                    String ip = MailCfg.getDNS().getIpFromDomain(nsName);
     //                    // System.out.println("IP = " + ip);
     //                    if (ip == null)
     //                        continue;
@@ -847,14 +847,14 @@ final class Smtp extends de.bb.bejy.Protocol {
 //            String fromDomain) {
 //        // ips contains all allowed senders
 //        HashSet<String> ips = new HashSet<String>();
-//        String ipForDomain = MailCfg.dns.getIpFromDomain(fromDomain);
+//        String ipForDomain = MailCfg.getDNS().getIpFromDomain(fromDomain);
 //        if (ipForDomain != null)
 //            ips.add(ipForDomain);
 //
 //        // add all mail servers for fromDomain
-//        for (Iterator<String> i = MailCfg.dns.getMXfromDomain(fromDomain).iterator(); i.hasNext();) {
+//        for (Iterator<String> i = MailCfg.getDNS().getMXfromDomain(fromDomain).iterator(); i.hasNext();) {
 //            String mxName = i.next();
-//            String ip = MailCfg.dns.getIpFromDomain(mxName);
+//            String ip = MailCfg.getDNS().getIpFromDomain(mxName);
 //            if (ip != null)
 //                ips.add(ip);
 //        }
@@ -875,7 +875,7 @@ final class Smtp extends de.bb.bejy.Protocol {
 //            List<String> list = null;
 //            if (resolvedDomain != null)
 //                for (;;) {
-//                    list = MailCfg.dns.getMXfromDomain(resolvedDomain);
+//                    list = MailCfg.getDNS().getMXfromDomain(resolvedDomain);
 //                    if (list != null)
 //                        break;
 //                    int dot = resolvedDomain.indexOf('.');
@@ -887,7 +887,7 @@ final class Smtp extends de.bb.bejy.Protocol {
 //                for (Iterator<String> i = list.iterator(); i.hasNext();) {
 //                    String ip = i.next();
 //                    if (ip != null)
-//                        ip = MailCfg.dns.getIpFromDomain(ip);
+//                        ip = MailCfg.getDNS().getIpFromDomain(ip);
 //                    if (ip != null) {
 //                        int dot2 = ip.indexOf('.') + 1;
 //                        dot2 = ip.indexOf('.', dot2) + 1;
@@ -971,7 +971,7 @@ final class Smtp extends de.bb.bejy.Protocol {
     //            return true;
     //
     //        // check all SOAs for the MX of the fromDomain
-    //        for (Iterator<String> i = MailCfg.dns.getMXfromDomain(fromDomain).iterator(); i.hasNext();) {
+    //        for (Iterator<String> i = MailCfg.getDNS().getMXfromDomain(fromDomain).iterator(); i.hasNext();) {
     //            String mxName = i.next();
     //
     //            String soa = getSoa(mxName);
@@ -984,7 +984,7 @@ final class Smtp extends de.bb.bejy.Protocol {
 
     //    private static String getSoa(String mxName) {
     //        for (;;) {
-    //            String soa = MailCfg.dns.getSoaFromDomain(mxName);
+    //            String soa = MailCfg.getDNS().getSoaFromDomain(mxName);
     //            if (soa != null) {
     //                return soa;
     //            }
@@ -1006,8 +1006,8 @@ final class Smtp extends de.bb.bejy.Protocol {
      * @return true if at least one test was succesful.
      */
     private boolean validateServer(ByteRef domain, String remoteAddress) {
-        String addr = MailCfg.dns.getIpFromDomain(domain.toString());
-        String name = MailCfg.dns.getDomainFromIp(remoteAddress);
+        String addr = MailCfg.getDNS().getIpFromDomain(domain.toString());
+        String name = MailCfg.getDNS().getDomainFromIp(remoteAddress);
         boolean res = domain.equalsIgnoreCase(name) || remoteAddress.equals(addr);
         logFile.writeDate(tx() + "validate server: " + domain + " [" + remoteAddress + "] == " + name + " [" + addr + "] : "
                 + res);

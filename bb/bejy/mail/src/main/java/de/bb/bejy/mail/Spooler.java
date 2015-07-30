@@ -362,7 +362,7 @@ class Spooler extends Thread {
                 try {
                     if (DEBUG)
                         logFile.writeDate("try to resolve domain: " + se.toDomain);
-                    List<String> mailServer = MailCfg.dns.getMXfromDomain(se.toDomain);
+                    List<String> mailServer = MailCfg.getDNS().getMXfromDomain(se.toDomain);
                     if (DEBUG)
                         logFile.writeDate("got " + mailServer + " for domain: " + se.toDomain);
 
@@ -370,7 +370,7 @@ class Spooler extends Thread {
                     if (mailServer == null) {
                         reason = new ByteRef("499 could not resolve domain: " + se.toDomain);
                     } else {
-                        String localIp = MailCfg.dns.getIpFromDomain(se.fromDomain);
+                        String localIp = MailCfg.getDNS().getIpFromDomain(se.fromDomain);
                         InetAddress localAddr = InetAddress.getByName(localIp);
 
                         Socket socket = null;
@@ -541,7 +541,7 @@ class Spooler extends Thread {
 
                             // remove from MX Cache
                             if (error != 0) {
-                                MailCfg.dns.removeMx(se.toDomain);
+                                MailCfg.getDNS().removeMx(se.toDomain);
                             }
 
                             if (mailServerDomain == null)

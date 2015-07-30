@@ -50,8 +50,6 @@ public class MailCfg extends Configurable implements Configurator {
                             "12"}, {"maxRetries", "the max count of delivery retries", "60"},
                     {"logFile", "name of an own log file"},};
 
-    static Dns dns;
-
     private Spooler spooler;
 
     private Cleanup cleanup;
@@ -180,7 +178,7 @@ public class MailCfg extends Configurable implements Configurator {
             throw new Exception("cannot load mailDbi: " + iName);
         }
 
-        dns = (Dns) Config.getInstance().getChild("dns");
+        Dns dns = getDNS();
         if (dns == null)
             throw new Exception("module de.bb.bejy.dns is not available");
 
@@ -252,6 +250,12 @@ public class MailCfg extends Configurable implements Configurator {
                 Config.getCron().runEvery("e-mail garbage collector", cleanup, /*24 * 60 * 60 */1000L, 24 * 60 * 60 * 1000L);
             }
         }
+    }
+
+    public static Dns getDNS() {
+        if (xdns == null)
+            xdns = (Dns) Config.getInstance().getChild("dns");
+        return xdns;
     }
 
     /**
