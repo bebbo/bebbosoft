@@ -120,7 +120,7 @@ class RRProtocol extends Protocol {
     private ByteRef host;
 
     RREntry lastDestination;
-    java.net.Socket socket;
+    java.net.Socket forwardSocket;
     InputStream is2Forward;
     OutputStream os2Forward;
     private ByteRef lookupPath;
@@ -138,7 +138,7 @@ class RRProtocol extends Protocol {
      */
     protected boolean doit() throws Exception {
         responseBuffer = new ByteRef();
-
+        forwardSocket = null;
         try {
 
             // get request line
@@ -156,6 +156,7 @@ class RRProtocol extends Protocol {
                 return false;
             }
 
+            long lastRequestAt = 0;
             for (;;) {
 
                 host = null;
@@ -163,13 +164,22 @@ class RRProtocol extends Protocol {
                 forwardUrl = null;
 
                 // read the http request
-                if (!readRequestLine())
+                requestLine = readLine(requestBuffer);
+                if (requestLine == null)
                     return false;
+                if (DEBUG)
+                    System.out.println("<" + requestLine + ">");
 
                 // check for proxy CONNECT
                 if (requestLine.startsWith("CONNECT")) {
                     return proxyConnect(requestLine, requestBuffer);
                 }
+
+                long now = System.currentTimeMillis();
+                if (now - 3141 > lastRequestAt) {
+                    closeForwardSocket();
+                }
+                lastRequestAt = now;
 
                 // read the header
                 final MultiMap<ByteRef, ByteRef> requestHeaders = new MultiMap<ByteRef, ByteRef>();
@@ -193,7 +203,7 @@ class RRProtocol extends Protocol {
                 forwardUrl = factory.getUri(remoteAddress, destination);
                 if (forwardUrl == null) {
                     send404();
-                    break;
+                    return false;
                 }
 
                 setupPaths(destination, forwardUrl);
@@ -226,7 +236,6 @@ class RRProtocol extends Protocol {
                         contentType = accept.nextWord(',');
                 }
 
-                
                 final String[] attrs = getPatchedAttributes(destination);
                 final boolean copyData = attrs == null;
 
@@ -284,36 +293,20 @@ class RRProtocol extends Protocol {
                 os.flush();
 
                 // exit loop if necessary
-                if (!keepAlive)
+                if (!keepAlive) {
+                    closeForwardSocket();
                     break;
+                }
             }
         } catch (IOException ioe) {
             if (DEBUG)
                 ioe.printStackTrace();
-            logFile.writeDate("404\t" + getRemoteAddress() + "\t" + host + "\t" + ioe.getMessage() + lookupPath);
-            send404();
+            logFile.writeDate("500\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t" + ioe.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try {
-                os.flush();
-                os.close();
-            } catch (Exception e1) {
-            }
-            try {
-                is.close();
-            } catch (Exception e1) {
-            }
-            try {
-                if (socket != null)
-                    socket.close();
-            } catch (Exception e1) {
-            }
-            socket = null;
+            closeForwardSocket();
         }
-        if (DEBUG)
-            System.out.println("closed");
-
         return false;
     }
 
@@ -395,7 +388,6 @@ class RRProtocol extends Protocol {
                     continue;
                 if (sizeLine.length() > 0)
                     break;
-                os.write(CRLF);
             }
 
             if (copy) {
@@ -403,23 +395,19 @@ class RRProtocol extends Protocol {
                 os.write(CRLF);
             }
 
-            int len = Integer.parseInt(sizeLine.toString(), 16);
-            if (len == 0) {
-                if (copy)
-                    responseBuffer.writeTo(os);
-                responseBuffer = new ByteRef();
-                break;
-            }
+            int len = Integer.parseInt(sizeLine.toString(), 16) + 2;
 
             while (responseBuffer.length() < len) {
                 responseBuffer.update(is2Forward);
             }
-            ByteRef chunk = responseBuffer.splitLeft(len + 2);
+            ByteRef chunk = responseBuffer.splitLeft(len);
             if (copy) {
                 chunk.writeTo(os);
             } else {
                 output = output.append(chunk.substring(0, chunk.length() - 2));
             }
+            if (len == 2)
+                break;
         }
         return output;
     }
@@ -447,13 +435,13 @@ class RRProtocol extends Protocol {
     }
 
     private boolean forwardRequest(Map<ByteRef, ByteRef> requestHeader) throws IOException {
-        // buffer for the response
 
         // change the url
         ByteRef rewriteRequestLine = rewriteRequestLine(requestLine);
         if (DEBUG) {
             System.out.println(requestLine + " => " + rewriteRequestLine);
         }
+
         rewriteRequestLine.writeTo(os2Forward);
 
         // add information to suggest the hidden instance the port
@@ -483,7 +471,8 @@ class RRProtocol extends Protocol {
                 }
                 if (inContentLength > 0) {
                     int sz = inContentLength > requestBuffer.length() ? requestBuffer.length() : (int) inContentLength;
-                    requestBuffer.splitLeft(sz).writeTo(os2Forward);
+                    ByteRef dat = requestBuffer.splitLeft(sz);
+                    dat.writeTo(os2Forward);
                     inContentLength -= sz;
                 }
             }
@@ -496,15 +485,22 @@ class RRProtocol extends Protocol {
     private void connect() throws IOException {
         int dp = forwardHost.indexOf(':');
         // open new connection if necessary
-        if (socket == null) {
+        if (forwardSocket != null && forwardSocket.isClosed()) {
+            closeForwardSocket();
+        }
+        if (forwardSocket == null) {
+            if (DEBUG)
+                System.out.println("new Socket -> " + forwardHost);
             currentDest = forwardHost.substring(0, dp);
             currentDestPort = Integer.parseInt(forwardHost.substring(dp + 1));
-            socket = new java.net.Socket(currentDest, currentDestPort);
+            forwardSocket = new java.net.Socket(currentDest, currentDestPort);
             int timeout = server.getTimeout();
-            socket.setSoTimeout(timeout);
+            forwardSocket.setSoTimeout(timeout);
             // get other streams
-            is2Forward = new FastBufferedInputStream(socket.getInputStream(), 1412);
-            os2Forward = new FastBufferedOutputStream(socket.getOutputStream(), 1412);
+            is2Forward = new FastBufferedInputStream(forwardSocket.getInputStream(), 1412);
+            // is2Forward = forwardSocket.getInputStream();
+            os2Forward = new FastBufferedOutputStream(forwardSocket.getOutputStream(), 1412);
+            // os2Forward = forwardSocket.getOutputStream();
         }
     }
 
@@ -531,19 +527,24 @@ class RRProtocol extends Protocol {
     private void checkForDestinationSwitch(RREntry destination) {
         // did the destination change?
         if (lastDestination != destination) {
-            if (DEBUG)
-                System.out.println("closing socket");
-            // close old
-            try {
-                if (socket != null)
-                    socket.close();
-            } catch (IOException ex) {
-            }
-            os2Forward = null;
-            is2Forward = null;
-            socket = null;
+            closeForwardSocket();
         }
         lastDestination = destination;
+    }
+
+    private void closeForwardSocket() {
+        // close old
+        try {
+            if (forwardSocket != null) {
+                if (DEBUG)
+                    System.out.println("closing forward socket");
+                forwardSocket.close();
+            }
+        } catch (IOException ex) {
+        }
+        os2Forward = null;
+        is2Forward = null;
+        forwardSocket = null;
     }
 
     private boolean checkAccess(final RREntry destination, final Map<ByteRef, ByteRef> requestHeader) throws IOException {
@@ -647,24 +648,17 @@ class RRProtocol extends Protocol {
         return destination;
     }
 
-    private boolean readRequestLine() {
-        requestLine = readLine(requestBuffer);
-        if (DEBUG)
-            System.out.println("<" + requestLine + ">");
-        return requestLine != null;
-    }
-
     /**
      * Write the requestHeader to the output stream.
      * 
      * @param bos
      *            the OutputStream.
-     * @param requestHeader
+     * @param headers
      *            the map containing the name value pairs.
      * @throws IOException
      */
-    private void writeHeaders(OutputStream bos, Map<ByteRef, ByteRef> requestHeader) throws IOException {
-        for (Entry<ByteRef, ByteRef> e : requestHeader.entrySet()) {
+    private void writeHeaders(OutputStream bos, Map<ByteRef, ByteRef> headers) throws IOException {
+        for (Entry<ByteRef, ByteRef> e : headers.entrySet()) {
             e.getKey().writeTo(bos);
             bos.write(COLON_SPACE);
             e.getValue().writeTo(bos);
@@ -1020,6 +1014,7 @@ class RRProtocol extends Protocol {
     private boolean readRequestHeaders(ByteRef br, Map<ByteRef, ByteRef> requestHeader) throws IOException {
         host = null;
         inContentLength = -1;
+        keepAlive = false;
         // connection = null;
         for (;;) {
             ByteRef line = readLine(br);
@@ -1175,21 +1170,24 @@ class RRProtocol extends Protocol {
 
         if (DEBUG)
             System.out.println(host + " " + useHttps + " -> " + location + " " + this.server.usesSsl() + " " + port + "=" + currentDestPort);
-        if (useHttps) {
-            location = HTTPS.append(host).append(ROOT).append(location);
-        } else {
-            location = HTTP.append(host).append(ROOT).append(location);
-        }
-        if (DEBUG)
-            System.out.println("location:" + location);
 
-        return location;
+        ByteRef translated = useHttps ? HTTPS : HTTP;
+
+        translated = translated.append(host);
+        if ((!useHttps && port != 80) || (useHttps && port != 443))
+            translated = translated.append(":" + port);
+        translated = translated.append(ROOT).append(location);
+
+        if (DEBUG)
+            System.out.println("location: " + translated);
+
+        return translated;
     }
 
     private ByteRef copyResponseLine() throws IOException {
         ByteRef response = ByteRef.readLine(responseBuffer, is2Forward);
         if (response == null || response.length() == 0)
-            throw new IOException("no response in: " + responseBuffer);
+            return null;
 
         if (DEBUG)
             System.out.println(response);
