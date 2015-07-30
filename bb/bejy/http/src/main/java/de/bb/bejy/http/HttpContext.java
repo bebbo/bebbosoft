@@ -874,9 +874,9 @@ public class HttpContext extends Configurable implements javax.servlet.ServletCo
         scalv.clear();
         hslv.clear();
         hsalv.clear();
-        requestFilterVector = null;
-        includeFilterVector = null;
-        forwardFilterVector = null;
+        requestFilterVector.clear();
+        includeFilterVector.clear();
+        forwardFilterVector.clear();
 
         exceptionMap.clear();
         mimeTypes.clear();
@@ -962,7 +962,8 @@ public class HttpContext extends Configurable implements javax.servlet.ServletCo
                 t.interrupt();
                 try {
                     ScheduledThreadPoolExecutor stpe = (ScheduledThreadPoolExecutor) getMember(t, "target.this$0");
-                    stpe.shutdown();
+                    if (stpe != null)
+                        stpe.shutdown();
                 } catch (Throwable tw) {
                     try {
                         t.stop();
@@ -1047,6 +1048,8 @@ public class HttpContext extends Configurable implements javax.servlet.ServletCo
     private static Object getMember(Object reference, String memberName) {
         try {
             for (StringTokenizer st = new StringTokenizer(memberName, "."); st.hasMoreTokens();) {
+                if (reference == null)
+                    return null;
                 reference = getMember(reference, reference.getClass(), st.nextToken());
             }
             return reference;
