@@ -40,7 +40,7 @@ import java.io.*;
  * 
  * @author Stefan Franke
  */
-public class ByteRef implements Cloneable {
+public class ByteRef implements Cloneable, Comparable<ByteRef> {
     private final static byte[] nul = new byte[0];
     private byte[] data;
     private int begin;
