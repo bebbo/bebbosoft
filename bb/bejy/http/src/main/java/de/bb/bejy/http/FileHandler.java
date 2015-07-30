@@ -27,7 +27,9 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.StringTokenizer;
+import java.util.zip.DeflaterInputStream;
 import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -373,6 +375,32 @@ public class FileHandler extends HttpHandler {
         }
         dos.finish();
         dos.close();
+    }
+
+    /**
+     * compress the data from is of the given length.
+     * 
+     * @param gzip
+     *            if true use gzip otherwise use zip.
+     * @param toRead
+     *            bytes to read
+     * @param is
+     *            the input stream
+     * @param os
+     *            the output stream
+     * @throws IOException
+     */
+    public static void decompress(boolean gzip, long toRead, InputStream is, OutputStream os) throws IOException {
+        InputStream dis = gzip ? new GZIPInputStream(is) : new DeflaterInputStream(is);
+        byte b[] = new byte[0x2000];
+        for(;;) {
+            int read = (int) (toRead > b.length ? b.length : toRead);
+            read = dis.read(b, 0, read);
+            if (read <= 0)
+                break;
+            os.write(b, 0, read);
+        }
+        dis.close();
     }
 
     /**
