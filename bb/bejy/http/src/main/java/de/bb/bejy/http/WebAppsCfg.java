@@ -227,6 +227,7 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
     private static long checkForUpdate(Configurable c, File folder, long last) {
         long t = last;
         String files[] = folder.list();
+        if (files != null)
         for (int i = 0; i < files.length; ++i) {
             String webAppName = files[i];
             File f = new File(folder, files[i]);
