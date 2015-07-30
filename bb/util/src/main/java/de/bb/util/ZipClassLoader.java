@@ -212,7 +212,7 @@ public class ZipClassLoader extends ClassLoader {
             add = stack.pop();
             File d = new File(f, add);
             String files[] = d.list();
-
+            if (files != null)
             for (int j = 0; j < files.length; ++j) {
                 String cur = files[j];
                 String x = add + cur;
