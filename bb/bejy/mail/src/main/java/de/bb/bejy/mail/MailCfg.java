@@ -50,6 +50,8 @@ public class MailCfg extends Configurable implements Configurator {
                             "12"}, {"maxRetries", "the max count of delivery retries", "60"},
                     {"logFile", "name of an own log file"},};
 
+    private static Dns xdns;
+
     private Spooler spooler;
 
     private Cleanup cleanup;
