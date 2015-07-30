@@ -1080,7 +1080,7 @@ public class HttpRequest extends HttpRequestBase implements javax.servlet.http.H
                         sral.requestDestroyed(srae);
                     }
                 }
-                if (oldCl != null) {
+                if (oldCl != null && curThread != null) {
                     curThread.setContextClassLoader(oldCl);
                 }
             }
