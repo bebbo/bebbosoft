@@ -23,12 +23,13 @@ import de.bb.bejy.Configurator;
 /**
  * @author bebbo
  */
-public class DestinationCfg extends Configurable implements Configurator {
+public class VDestinationCfg extends Configurable implements Configurator {
     private final static String PROPERTIES[][] =
             {{"uri",
-                    "the destination, must be a domain:port combination, e.g. www.aaa.bx:80. Context remapping is partially supported."},};
+                    "the destination, must be a domain:port combination, e.g. www.aaa.bx:80. Context remapping is supported."},
+                    };
 
-    public DestinationCfg() {
+    public VDestinationCfg() {
         init("destination", PROPERTIES);
     }
 
@@ -36,7 +37,7 @@ public class DestinationCfg extends Configurable implements Configurator {
      * @see de.bb.bejy.Configurator#create()
      */
     public Configurable create() {
-        return new DestinationCfg();
+        return new VDestinationCfg();
     }
 
     /* (non-Javadoc)
@@ -64,7 +65,7 @@ public class DestinationCfg extends Configurable implements Configurator {
      * @see de.bb.bejy.Configurator#getName()
      */
     public String getName() {
-        return "dest " + getProperty("uri");
+        return "uri: " + getProperty("uri");
     }
 
     /* (non-Javadoc)

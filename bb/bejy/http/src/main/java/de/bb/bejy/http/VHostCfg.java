@@ -63,9 +63,7 @@ public class VHostCfg extends Configurable implements Configurator {
      */
     public String getName() {
         String host = getProperty("host");
-        if (host == null)
-            return "fwd";
-        return host;
+        return "host: " + host;
     }
 
     /* (non-Javadoc)

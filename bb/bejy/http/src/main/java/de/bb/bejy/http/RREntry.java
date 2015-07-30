@@ -18,6 +18,7 @@
 package de.bb.bejy.http;
 
 import java.util.*;
+
 import de.bb.util.*;
 
 class RREntry {
@@ -26,6 +27,8 @@ class RREntry {
     LinkedList<String> ll;
     String group;
     String userHeader;
+    HashMap<String, String[]> extension2Attrs = new HashMap<String, String[]>();
+    HashMap<String, String[]> type2Attrs = new HashMap<String, String[]>();
 
     RREntry(String p) {
         if (p.endsWith("/"))
@@ -48,5 +51,26 @@ class RREntry {
 
     public String toString() {
         return "RR: " + path + " (" + group + "->" + userHeader + ") " + ll;
+    }
+
+    void setReverseByExt(String property) {
+        parse(property, extension2Attrs);
+    }
+
+    private void parse(String property, HashMap<String, String[]> map) {
+        for (final StringTokenizer st = new StringTokenizer(property, "|"); st.hasMoreElements();) {
+            final String reverseByExt = st.nextToken().trim();
+            final String split[] = reverseByExt.split(":");
+            if (split.length != 2)
+                continue;
+            
+            final String extension = split[0];
+            final String attrs[] = split[1].split(",");
+            map.put(extension, attrs);
+        }
+    }
+
+    void setReverseByType(String property) {
+        parse(property, type2Attrs);
     }
 }

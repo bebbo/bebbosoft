@@ -35,10 +35,8 @@ public class RRFactory extends de.bb.bejy.Factory {
 
     private final static String version;
     static {
-        String s = "$Revision: 1.19 $";
-        no = "1.0." + s.substring(11, s.length() - 1);
-        version =
-                "bejy round robin V" + no + " (c) 2000-2012 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        no = "1.0.20";
+        version = "bejy round robin V" + no + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     public static String getVersion() {
@@ -106,35 +104,38 @@ public class RRFactory extends de.bb.bejy.Factory {
                 continue;
             }
             VHostCfg hostCfg = (VHostCfg) o;
-            String host = hostCfg.getProperty("host");
-            if (host != null) {
-                ArrayList<RREntry> rrEntryList = new ArrayList<RREntry>();
-                for (Iterator<?> j = hostCfg.children(); j.hasNext();) {
-                    VPathCfg pathCfg = (VPathCfg) j.next();
-                    String path = pathCfg.getProperty("path");
-                    if (path != null) {
-                        RREntry rr = new RREntry(path);
-                        rr.group = pathCfg.getProperty("group", "");
-                        rr.userHeader = pathCfg.getProperty("userHeader", "");
-                        for (Iterator<?> k = pathCfg.children(); k.hasNext();) {
-                            DestinationCfg destCfg = (DestinationCfg) k.next();
-                            String dest = destCfg.getProperty("uri");
-                            if (dest != null) {
-                                rr.ll.addLast(dest);
-                            }
-                        }
-                        rrEntryList.add(rr);
-                    }
-                }
-                // add each forwarder using the rrEntryList
-                for (Enumeration<?> e = new StringTokenizer(host, " ,\r\n\f\t"); e.hasMoreElements();) {
-                    String hn = (String) e.nextElement();
-                    Object old = forwarders.put(hn, rrEntryList);
-                    if (old != null)
-                        System.out.println("WARNING: redirection for " + old + " is configured twice");
-                }
+            final String hostNames = hostCfg.getProperty("host");
+            if (hostNames == null)
+                continue;
 
+            ArrayList<RREntry> rrEntryList = new ArrayList<RREntry>();
+            for (Iterator<?> j = hostCfg.children(); j.hasNext();) {
+                VPathCfg pathCfg = (VPathCfg) j.next();
+                String path = pathCfg.getProperty("path");
+                if (path != null) {
+                    RREntry rr = new RREntry(path);
+                    rr.group = pathCfg.getProperty("group", "");
+                    rr.userHeader = pathCfg.getProperty("userHeader", "");
+                    rr.setReverseByExt(pathCfg.getProperty("reverseByExt", ""));
+                    rr.setReverseByType(pathCfg.getProperty("reverseByType", ""));
+                    for (Iterator<?> k = pathCfg.children(); k.hasNext();) {
+                        VDestinationCfg destCfg = (VDestinationCfg) k.next();
+                        String dest = destCfg.getProperty("uri");
+                        if (dest != null) {
+                            rr.ll.addLast(dest);
+                        }
+                    }
+                    rrEntryList.add(rr);
+                }
             }
+            // add each forwarder using the rrEntryList
+            for (Enumeration<?> e = new StringTokenizer(hostNames, " ,\r\n\f\t"); e.hasMoreElements();) {
+                String hn = (String) e.nextElement();
+                Object old = forwarders.put(hn, rrEntryList);
+                if (old != null)
+                    System.out.println("WARNING: redirection for " + old + " is configured twice");
+            }
+
         }
     }
 

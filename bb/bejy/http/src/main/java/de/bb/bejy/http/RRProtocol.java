@@ -21,10 +21,8 @@ package de.bb.bejy.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ConnectException;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import de.bb.bejy.Config;
@@ -32,88 +30,66 @@ import de.bb.bejy.IOPipeThread;
 import de.bb.bejy.Protocol;
 import de.bb.bejy.UserGroupDbi;
 import de.bb.bejy.Version;
+import de.bb.io.FastBufferedInputStream;
 import de.bb.io.FastBufferedOutputStream;
+import de.bb.io.FastByteArrayInputStream;
 import de.bb.io.FastByteArrayOutputStream;
 import de.bb.util.ByteRef;
 import de.bb.util.ByteUtil;
 import de.bb.util.LogFile;
 import de.bb.util.Mime;
 import de.bb.util.Misc;
+import de.bb.util.MultiMap;
 
+/**
+ * A request response redirector. Incoming requests are modified and forwarded
+ * to the configured destination. The response is also modified according to the
+ * configuration.
+ * 
+ * @author bebbo
+ *
+ */
 class RRProtocol extends Protocol {
-    private ByteRef responseBuffer;
 
-    private long outContentLength;
-
-    // private ByteRef connection;
-    private boolean keepAlive;
-
-    private boolean chunked;
-
-    private long inContentLength;
-
-    private ByteRef host;
-
-    private boolean DEBUG;
-
-    // private LogFile logFile;
-    RRFactory factory;
-
-    private final static ByteRef HOST = new ByteRef("HOST");
-
-    private final static ByteRef CONTENTLENGTH = new ByteRef("CONTENT-LENGTH");
-
-    // private final static ByteRef LOCATION = new ByteRef("LOCATION");
+    private final static ByteRef ACCEPT = new ByteRef("ACCEPT");
+    private final static ByteRef AUTHORIZATION = new ByteRef("AUTHORIZATION");
+    private final static ByteRef CHUNKED = new ByteRef("CHUNKED");
     private final static ByteRef CONNECTION = new ByteRef("CONNECTION");
-
-    private final static ByteRef TRANSFER_ENCODING = new ByteRef("TRANSFER-ENCODING");
-    private final static ByteRef SET_COOKIE = new ByteRef("SET-COOKIE");
+    private final static ByteRef CLOSE = new ByteRef("close");
+    private final static ByteRef CONTENT_ENCODING = new ByteRef("CONTENT-ENCODING");
+    private final static ByteRef CONTENT_LENGTH = new ByteRef("CONTENT-LENGTH");
+    private final static ByteRef CONTENT_TYPE = new ByteRef("CONTENT-TYPE");
     private final static ByteRef COOKIE_PATH = new ByteRef("PATH=");
+    private final static ByteRef HOST = new ByteRef("HOST");
+    private final static ByteRef KEEPALIVE = new ByteRef("KEEP-ALIVE");
     private final static ByteRef LOCATION = new ByteRef("LOCATION");
-    private final static ByteRef CS = new ByteRef(": ");
+    private final static ByteRef SET_COOKIE = new ByteRef("SET-COOKIE");
+    private final static ByteRef TRANSFER_ENCODING = new ByteRef("TRANSFER-ENCODING");
 
     private final static ByteRef HTTP = new ByteRef("http://");
     private final static ByteRef HTTPS = new ByteRef("https://");
     private final static ByteRef SHTTP = new ByteRef("/http:/");
     private final static ByteRef SHTTPS = new ByteRef("/https:/");
-
-    private final static ByteRef KEEPALIVE = new ByteRef("KEEP-ALIVE");
-
-    private final static ByteRef CLOSE = new ByteRef("CLOSE");
-
-    private final static ByteRef CHUNKED = new ByteRef("CHUNKED");
-
     private final static ByteRef HTTP10 = new ByteRef("HTTP/1.0");
 
+    private final static ByteRef GZIP = new ByteRef("GZIP");
+
     private final static ByteRef ROOT = new ByteRef("/");
-
-    private final static byte[] CONNECTION_CLOSE = "CONNECTION: close\r\n".getBytes();
-
-    private final static ByteRef XML = new ByteRef("<?xml");
-
-    private final static ByteRef STREAM = new ByteRef("<stream:");
-
-    private final static byte[] CRLF = {0xd, 0xa};
-
-    private static final ByteRef AUTHORIZATION = new ByteRef("AUTHORIZATION");
-
     private static final ByteRef SPACE = new ByteRef(" ");
 
-    final byte b[] = new byte[8192];
+    private final static byte[] CRLF = { 0xd, 0xa };
+    private final static byte[] COLON_SPACE = { ':', ' ' };
 
-    // java.io.ByteArrayOutputStream bos;
+    private final static ByteRef XML = new ByteRef("<?xml");
+    private final static ByteRef STREAM = new ByteRef("<stream:");
 
-    RRProtocol(RRFactory hf, LogFile _logFile) {
-        super(hf);
-        factory = hf;
-        DEBUG = hf.getBooleanProperty("verbose", false);
-        // logFile = _logFile;
-        // bos = new java.io.ByteArrayOutputStream();
-    }
+    private boolean DEBUG;
 
-    InputStream is;
+    private RRFactory factory;
 
-    OutputStream os;
+    private LogFile logFile;
+
+    private ByteRef requestBuffer;
 
     private String currentDest;
 
@@ -127,261 +103,195 @@ class RRProtocol extends Protocol {
 
     private ByteRef requestLine;
 
-    public boolean trigger() throws Exception {
-        is = getIs();
-        os = new FastBufferedOutputStream(getOs(), 1400);
-        return super.trigger();
+    private ByteRef responseBuffer;
+
+    private long outContentLength;
+
+    private boolean keepAlive;
+
+    private boolean chunked;
+
+    ByteRef contentType;
+
+    ByteRef contentEncoding;
+
+    private long inContentLength;
+
+    private ByteRef host;
+
+    RREntry lastDestination;
+    java.net.Socket socket;
+    InputStream is2Forward;
+    OutputStream os2Forward;
+    private ByteRef lookupPath;
+    private String forwardUrl;
+
+    RRProtocol(RRFactory hf, LogFile _logFile) {
+        super(hf);
+        factory = hf;
+        DEBUG = hf.getBooleanProperty("verbose", false);
+        logFile = hf.getLogFile();
     }
 
     /**
      * handle incoming data first byte is already read read the rest
      */
-
     protected boolean doit() throws Exception {
-        RREntry lastDestination = null;
-        java.net.Socket socket = null;
-        InputStream is2 = null;
-        OutputStream os2 = null;
-
         responseBuffer = new ByteRef();
 
         try {
 
             // get request line
-            ByteRef requestBuffer = readFirst();
+            requestBuffer = readFirst();
 
+            // check for an incoming SOCKS5 start packet
             if (factory.socks5Group != null && requestBuffer.charAt(0) == 5) {
                 socks5Connect(requestBuffer);
                 return false;
             }
 
+            // check for an incoming JABBER packet
             if (factory.jabberPort != 0 && (requestBuffer.startsWith(XML) || requestBuffer.startsWith(STREAM))) {
                 jabberConnect(requestBuffer);
                 return false;
             }
 
             for (;;) {
-                if (DEBUG) {
-                    System.out.println("=================" + this);
-                }
-                requestLine = readLine(requestBuffer);
-                while (requestLine == null || requestLine.length() == 0) {
-                    requestBuffer = requestBuffer.update(is);
-                    if (requestBuffer == null)
-                        return false;
-                    requestLine = readLine(requestBuffer);
-                }
 
-                // check for proy CONNECT
+                host = null;
+                lookupPath = null;
+                forwardUrl = null;
+
+                // read the http request
+                if (!readRequestLine())
+                    return false;
+
+                // check for proxy CONNECT
                 if (requestLine.startsWith("CONNECT")) {
-                    if (!proxyConnect(requestLine, requestBuffer))
-                        return false;
+                    return proxyConnect(requestLine, requestBuffer);
+                }
 
+                // read the header
+                final MultiMap<ByteRef, ByteRef> requestHeaders = new MultiMap<ByteRef, ByteRef>();
+                if (!readRequestHeaders(requestBuffer, requestHeaders))
+                    break;
+
+                final RREntry destination = lookupDestination();
+                if (destination == null) {
+                    send404();
+                    return false;
+                }
+
+                if (!checkAccess(destination, requestHeaders)) {
+                    send401(destination);
                     continue;
                 }
 
-                if (DEBUG)
-                    System.out.println("<" + requestLine + ">");
-
-                HashMap<ByteRef, ByteRef> requestHeader = new HashMap<ByteRef, ByteRef>();
-                if (!copyRequestHeader(requestBuffer, requestHeader))
-                    break;
-
-                ByteRef path = extractPath();
-                if (DEBUG)
-                    System.out.println("lookup for PATH=" + path);
-
-                if (host == null) {
-                    // get the host name from the path
-                    int sp = path.indexOf('/');
-                    if (sp > 0) {
-                        sp += 2;
-                        int ep = path.indexOf('/', sp);
-                        host = path.substring(sp, ep);
-                        path = path.substring(ep);
-                    }
-                    if (host == null)
-                        break;
-                    sp = host.indexOf(':');
-                    if (sp > 0)
-                        host = host.substring(0, sp);
-                }
-
-                if (DEBUG)
-                    System.out.println("lookup for HOST=" + host);
-
-                if (host == null)
-                    break; // no host -> error
-
-                // get the forward entry
-                RREntry destination = factory.getRREntry(host, path);
-                if (destination == null)
-                    break;
-
-                UserGroupDbi group = Config.getGroup(destination.group);
-                if (group != null) {
-
-                    String user = null;
-                    String pass = null;
-
-                    ByteRef auth = (ByteRef) requestHeader.remove(AUTHORIZATION);
-                    if (auth != null) {
-                        ByteRef basic = auth.nextWord();
-                        if (basic.equalsIgnoreCase("basic")) {
-                            //parse the auth and use the group to verify
-                            byte b[] = Mime.decode(auth.toByteArray(), 0, auth.length());
-                            if (b != null) {
-                                ByteRef line = new ByteRef(b);
-                                user = line.nextWord(':').toString();
-                                pass = line.toString();
-                            }
-                        }
-                    }
-
-                    if (user == null || pass == null || group.verifyUserGroup(user, pass) != null) {
-                        // send 401
-                        FastByteArrayOutputStream bos = new FastByteArrayOutputStream();
-                        ByteUtil.writeString("HTTP/1.0 401 Unauthorized\r\n", bos);
-                        ByteUtil.writeString("WWW-Authenticate: Basic realm=\"" + destination.group + "\"\r\n", bos);
-                        ByteUtil.writeString("Content-Length: 0\r\n", bos);
-                        ByteUtil.writeString("Connection: close, close\r\n\r\n", bos);
-                        os.write(bos.toByteArray());
-                        os.flush();
-                        break;
-                    }
-
-                    if (destination.userHeader != null && destination.userHeader.length() > 0)
-                        requestHeader.put(new ByteRef(destination.userHeader), new ByteRef(user));
-                }
-
-                // did the destination change?
-                if (lastDestination != destination) {
-                    if (DEBUG)
-                        System.out.println("closing socket");
-                    // close old
-                    try {
-                        if (socket != null)
-                            socket.close();
-                    } catch (IOException ex) {
-                    }
-                    os2 = null;
-                    is2 = null;
-                    socket = null;
-                    lastDestination = destination;
-                }
-
-                if (DEBUG)
-                    System.out.println("got destination: " + destination);
+                checkForDestinationSwitch(destination);
 
                 // get the URI to forward to
-                String forwardUrl = factory.getUri(remoteAddress, destination);
-                if (forwardUrl == null)
+                forwardUrl = factory.getUri(remoteAddress, destination);
+                if (forwardUrl == null) {
+                    send404();
                     break;
+                }
 
-                try {
-                    int slash = forwardUrl.indexOf('/');
-                    if (slash == -1)
-                        slash = forwardUrl.length();
+                setupPaths(destination, forwardUrl);
 
-                    forwardHost = forwardUrl.substring(0, slash);
+                connect();
 
-                    if (DEBUG)
-                        System.out.println("redirect to:" + forwardHost);
+                if (!forwardRequest(requestHeaders)) {
+                    send408();
+                    return false;
+                }
 
-                    int dp = forwardHost.indexOf(':');
+                final ByteRef responseLine = copyResponseLine();
+                if (responseLine == null) {
+                    send502();
+                    return false;
+                }
 
-                    // open new connection if necessary
-                    if (socket == null) {
-                        currentDest = forwardHost.substring(0, dp);
-                        currentDestPort = Integer.parseInt(forwardHost.substring(dp + 1));
-                        socket = new java.net.Socket(currentDest, currentDestPort);
-                        int timeout = server.getTimeout();
-                        socket.setSoTimeout(timeout);
-                        // get other streams
-                        is2 = socket.getInputStream();
-                        os2 = socket.getOutputStream();
-                    }
+                // no data to handle on 304
+                responseLine.nextWord();
+                ByteRef rc = responseLine.nextWord();
+                int rcode = rc.toInteger();
 
-                    orgPath = destination.path;
-                    if (orgPath.endsWith(ROOT))
-                        orgPath = orgPath.substring(orgPath.length() - 1);
+                logFile.writeDate(rcode + "\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t" + forwardUrl);
 
-                    // buffer for the response
-                    FastByteArrayOutputStream bos = new FastByteArrayOutputStream();
+                final MultiMap<ByteRef, ByteRef> responseHeaders = readResponseHeaders(responseBuffer, is2Forward, os);
 
-                    mappedPath = new ByteRef(forwardUrl);
-                    if (slash < 0) {
-                        mappedPath = ROOT;
+                if (contentType == null) {
+                    final ByteRef accept = requestHeaders.get(ACCEPT);
+                    if (accept != null)
+                        contentType = accept.nextWord(',');
+                }
+
+                
+                final String[] attrs = getPatchedAttributes(destination);
+                final boolean copyData = attrs == null;
+
+                // if there is nothing to patch, write the headers now.
+                if (copyData || rcode == 304 || chunked)
+                    writeHeaders(os, responseHeaders);
+
+                if (rcode != 304) {
+                    ByteRef output;
+                    if (chunked) {
+                        output = copyOrReadChunkedData(copyData);
+                    } else if (outContentLength < 0) {
+                        output = copyOrReadUntilEOF(copyData);
                     } else {
-                        mappedPath = mappedPath.substring(slash);
-                        if (mappedPath.endsWith(ROOT))
-                            mappedPath = mappedPath.substring(0, mappedPath.length() - 1);
+                        output = copyOrReadBySize(copyData);
                     }
 
-                    // change the url
-                    ByteRef rewriteRequestLine = rewriteRequestLine(requestLine);
-                    if (DEBUG) {
-                        System.out.println(requestLine + " => " + rewriteRequestLine);
-                    }
-                    rewriteRequestLine.writeTo(bos);
+                    // data to patch was collected in output - now patch it
+                    if (!copyData) {
 
-                    // add information to suggest the hidden instance the port and
-                    // remote host.
-                    bos.write(CRLF);
-                    bos.write(("B-REMOTEHOST: " + remoteAddress).getBytes());
-                    bos.write(CRLF);
-                    bos.write(("B-SERVERPORT: " + server.getPort()).getBytes());
-                    bos.write(CRLF);
-                    if (server.usesSsl()) {
-                        bos.write("B-SECURE: true".getBytes());
-                        bos.write(CRLF);
-                    }
+                        if (contentEncoding != null) {
+                            // decompress
+                            final FastByteArrayInputStream bis = new FastByteArrayInputStream(output.toByteArray());
+                            final FastByteArrayOutputStream bos = new FastByteArrayOutputStream();
+                            FileHandler.decompress(GZIP.equalsIgnoreCase(contentEncoding), output.length(), bis, bos);
+                            output = new ByteRef(bos.toByteArray());
+                        }
 
-                    writeHeader(bos, requestHeader);
+                        for (final String attr : attrs) {
+                            output = doPatchXML(output, attr + "=");
+                        }
 
-                    // send header to forwarded server
-                    os2.write(bos.toByteArray());
+                        if (contentEncoding != null) {
+                            // compress again
+                            final FastByteArrayInputStream bis = new FastByteArrayInputStream(output.toByteArray());
+                            final FastByteArrayOutputStream bos = new FastByteArrayOutputStream();
+                            FileHandler.compress(GZIP.equalsIgnoreCase(contentEncoding), output.length(), bis, bos);
+                            output = new ByteRef(bos.toByteArray());
+                        }
 
-                    // send content Data, if any
-                    if (inContentLength > 0) {
-                        if (DEBUG)
-                            System.out.println("request content: " + inContentLength);
-                        while (inContentLength > 0) {
-                            while (requestBuffer.length() == 0) {
-                                requestBuffer = requestBuffer.update(is);
-                                if (requestBuffer == null)
-                                    return false;
-                            }
-                            if (inContentLength > 0) {
-                                int sz = inContentLength > requestBuffer.length() ? requestBuffer.length() : (int)inContentLength;
-                                requestBuffer.substring(0, sz).writeTo(os2);
-                                requestBuffer = requestBuffer.substring(sz);
-                                inContentLength -= sz;
-                            }
+                        responseHeaders.remove(CONTENT_LENGTH);
+                        if (chunked) {
+                            writeOutputChunked(output);
+                        } else {
+                            responseHeaders.put(CONTENT_LENGTH, new ByteRef(Integer.toString(output.length())));
+                            writeHeaders(os, responseHeaders);
+                            output.writeTo(os);
                         }
                     }
-
-                    os2.flush();
-
-                    // read the response
-                    int lspace = requestLine.lastIndexOf(' ');
-                    boolean patchWSDL = requestLine.substring(0, lspace).toLowerCase().endsWith("?wsdl");
-                    sendResponse(is2, os, patchWSDL);
-                    os.flush();
-
-                    // exit loop if necessary
-                    if (!keepAlive)
-                        break;
-                } catch (ConnectException ce) {
-                    factory.getLogFile().writeDate("failed to connect to: " + forwardUrl);
                 }
+
+                if (DEBUG)
+                    System.out.println("done");
+
+                os.flush();
+
+                // exit loop if necessary
+                if (!keepAlive)
+                    break;
             }
-        } catch (SocketException se) {
-            // ignore
         } catch (IOException ioe) {
             if (DEBUG)
                 ioe.printStackTrace();
-            factory.getLogFile().writeDate("IO Exception: " + ioe.getMessage());
+            logFile.writeDate("404\t" + getRemoteAddress() + "\t" + host + "\t" + ioe.getMessage() + lookupPath);
+            send404();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -399,6 +309,7 @@ class RRProtocol extends Protocol {
                     socket.close();
             } catch (Exception e1) {
             }
+            socket = null;
         }
         if (DEBUG)
             System.out.println("closed");
@@ -406,17 +317,356 @@ class RRProtocol extends Protocol {
         return false;
     }
 
+    private void writeOutputChunked(ByteRef output) throws IOException {
+        // write the patched data chunked
+        for (;;) {
+            int len = output.length() > 8192 ? 8192 : output.length();
+            String hex = Integer.toHexString(len);
+            while (hex.length() < 4) {
+                hex = "0" + hex;
+            }
+            ByteUtil.writeString(hex, os);
+            os.write(CRLF);
+            if (len == 0)
+                break;
+
+            ByteRef chunk = output.splitLeft(len);
+            chunk.writeTo(os);
+            os.write(CRLF);
+        }
+        os.write(CRLF);
+    }
+
+    private ByteRef copyOrReadBySize(boolean copy) throws IOException {
+        ByteRef output = new ByteRef();
+        while (outContentLength > 0) {
+            if (DEBUG)
+                System.out.println("needed: " + outContentLength);
+
+            while (responseBuffer != null && responseBuffer.length() == 0) {
+                responseBuffer = responseBuffer.update(is2Forward);
+            }
+
+            if (responseBuffer == null)
+                throw new IOException("not enough data");
+
+            int sz = outContentLength > responseBuffer.length() ? responseBuffer.length() : (int) outContentLength;
+
+            if (DEBUG)
+                System.out.println("copy: " + sz);
+
+            if (copy) {
+                responseBuffer.splitLeft(sz).writeTo(os);
+            } else {
+                output = output.append(responseBuffer.splitLeft(sz));
+            }
+            outContentLength -= sz;
+        }
+        return output;
+    }
+
+    private ByteRef copyOrReadUntilEOF(boolean copy) throws IOException {
+        ByteRef output = new ByteRef();
+        if (DEBUG)
+            System.out.println("copy to EOF: ");
+        while (responseBuffer != null) {
+            if (responseBuffer.length() > 0) {
+                if (copy) {
+                    responseBuffer.writeTo(os);
+                } else {
+                    output = output.append(responseBuffer);
+                }
+                responseBuffer = new ByteRef();
+            }
+            responseBuffer = responseBuffer.update(is2Forward);
+        }
+        return output;
+    }
+
+    private ByteRef copyOrReadChunkedData(boolean copy) throws IOException {
+        ByteRef output = new ByteRef();
+        for (;;) {
+            ByteRef sizeLine;
+            for (;;) {
+                sizeLine = responseBuffer.nextLineCRLF();
+                if (sizeLine == null)
+                    responseBuffer.update(is2Forward);
+                if (sizeLine == null)
+                    continue;
+                if (sizeLine.length() > 0)
+                    break;
+                os.write(CRLF);
+            }
+
+            if (copy) {
+                sizeLine.writeTo(os);
+                os.write(CRLF);
+            }
+
+            int len = Integer.parseInt(sizeLine.toString(), 16);
+            if (len == 0) {
+                if (copy)
+                    responseBuffer.writeTo(os);
+                responseBuffer = new ByteRef();
+                break;
+            }
+
+            while (responseBuffer.length() < len) {
+                responseBuffer.update(is2Forward);
+            }
+            ByteRef chunk = responseBuffer.splitLeft(len + 2);
+            if (copy) {
+                chunk.writeTo(os);
+            } else {
+                output = output.append(chunk.substring(0, chunk.length() - 2));
+            }
+        }
+        return output;
+    }
+
+    private String[] getPatchedAttributes(RREntry destination) {
+        String[] attrs = null;
+        if (!destination.extension2Attrs.isEmpty()) {
+            // read the response and check if patch is needed
+            int lspace = requestLine.lastIndexOf(' ');
+            ByteRef ending = requestLine.substring(0, lspace);
+
+            // search extensions
+            for (Entry<String, String[]> e : destination.extension2Attrs.entrySet()) {
+                if (ending.endsWith(e.getKey())) {
+                    attrs = e.getValue();
+                    break;
+                }
+            }
+        }
+        if (attrs == null && contentType != null && !destination.type2Attrs.isEmpty()) {
+            contentType = contentType.nextWord(';').trim();
+            attrs = destination.type2Attrs.get(contentType.toString());
+        }
+        return attrs;
+    }
+
+    private boolean forwardRequest(Map<ByteRef, ByteRef> requestHeader) throws IOException {
+        // buffer for the response
+
+        // change the url
+        ByteRef rewriteRequestLine = rewriteRequestLine(requestLine);
+        if (DEBUG) {
+            System.out.println(requestLine + " => " + rewriteRequestLine);
+        }
+        rewriteRequestLine.writeTo(os2Forward);
+
+        // add information to suggest the hidden instance the port
+        // and
+        // remote host.
+        os2Forward.write(CRLF);
+        os2Forward.write(("B-REMOTEHOST: " + remoteAddress).getBytes());
+        os2Forward.write(CRLF);
+        os2Forward.write(("B-SERVERPORT: " + server.getPort()).getBytes());
+        os2Forward.write(CRLF);
+        if (server.usesSsl()) {
+            os2Forward.write("B-SECURE: true".getBytes());
+            os2Forward.write(CRLF);
+        }
+
+        writeHeaders(os2Forward, requestHeader);
+
+        // send content Data, if any
+        if (inContentLength > 0) {
+            if (DEBUG)
+                System.out.println("request content: " + inContentLength);
+            while (inContentLength > 0) {
+                while (requestBuffer.length() == 0) {
+                    requestBuffer = requestBuffer.update(is);
+                    if (requestBuffer == null)
+                        return false;
+                }
+                if (inContentLength > 0) {
+                    int sz = inContentLength > requestBuffer.length() ? requestBuffer.length() : (int) inContentLength;
+                    requestBuffer.splitLeft(sz).writeTo(os2Forward);
+                    inContentLength -= sz;
+                }
+            }
+        }
+
+        os2Forward.flush();
+        return true;
+    }
+
+    private void connect() throws IOException {
+        int dp = forwardHost.indexOf(':');
+        // open new connection if necessary
+        if (socket == null) {
+            currentDest = forwardHost.substring(0, dp);
+            currentDestPort = Integer.parseInt(forwardHost.substring(dp + 1));
+            socket = new java.net.Socket(currentDest, currentDestPort);
+            int timeout = server.getTimeout();
+            socket.setSoTimeout(timeout);
+            // get other streams
+            is2Forward = new FastBufferedInputStream(socket.getInputStream(), 1412);
+            os2Forward = new FastBufferedOutputStream(socket.getOutputStream(), 1412);
+        }
+    }
+
+    private void setupPaths(final RREntry destination, final String forwardUrl) {
+        int slash = forwardUrl.indexOf('/');
+        if (slash == -1)
+            slash = forwardUrl.length();
+
+        forwardHost = forwardUrl.substring(0, slash);
+
+        mappedPath = new ByteRef(forwardUrl);
+        mappedPath = mappedPath.substring(slash);
+        if (mappedPath.endsWith(ROOT))
+            mappedPath = mappedPath.substring(0, mappedPath.length() - 1);
+
+        if (DEBUG)
+            System.out.println("redirect to:" + forwardHost);
+
+        orgPath = destination.path;
+        if (orgPath.endsWith(ROOT))
+            orgPath = orgPath.substring(orgPath.length() - 1);
+    }
+
+    private void checkForDestinationSwitch(RREntry destination) {
+        // did the destination change?
+        if (lastDestination != destination) {
+            if (DEBUG)
+                System.out.println("closing socket");
+            // close old
+            try {
+                if (socket != null)
+                    socket.close();
+            } catch (IOException ex) {
+            }
+            os2Forward = null;
+            is2Forward = null;
+            socket = null;
+        }
+        lastDestination = destination;
+    }
+
+    private boolean checkAccess(final RREntry destination, final Map<ByteRef, ByteRef> requestHeader) throws IOException {
+        UserGroupDbi group = Config.getGroup(destination.group);
+        if (group != null) {
+
+            String user = null;
+            String pass = null;
+
+            ByteRef auth = (ByteRef) requestHeader.remove(AUTHORIZATION);
+            if (auth != null) {
+                ByteRef basic = auth.nextWord();
+                if (basic.equalsIgnoreCase("basic")) {
+                    // parse the auth and use the group to verify
+                    byte b[] = Mime.decode(auth.toByteArray(), 0, auth.length());
+                    if (b != null) {
+                        ByteRef line = new ByteRef(b);
+                        user = line.nextWord(':').toString();
+                        pass = line.toString();
+                    }
+                }
+            }
+
+            if (user == null || pass == null || group.verifyUserGroup(user, pass) != null) {
+                return false;
+            }
+
+            if (destination.userHeader != null && destination.userHeader.length() > 0)
+                requestHeader.put(new ByteRef(destination.userHeader), new ByteRef(user));
+        }
+
+        return true;
+    }
+
+    private void send401(final RREntry destination) throws IOException {
+        ByteUtil.writeString("HTTP/1.0 401 Unauthorized\r\n", os);
+        ByteUtil.writeString("WWW-Authenticate: Basic realm=\"" + destination.group + "\"\r\n", os);
+        ByteUtil.writeString("Content-Length: 0\r\n", os);
+        ByteUtil.writeString("Connection: close, close\r\n\r\n", os);
+        os.flush();
+    }
+
+    private void send404() throws IOException {
+        logFile.writeDate("404\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t" + forwardUrl);
+        ByteUtil.writeString("HTTP/1.0 404 Not Found\r\n", os);
+        ByteUtil.writeString("Content-Length: 0\r\n", os);
+        ByteUtil.writeString("Connection: close, close\r\n\r\n", os);
+        os.flush();
+    }
+
+    private void send408() throws IOException {
+        logFile.writeDate("408\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t" + forwardUrl);
+        ByteUtil.writeString("HTTP/1.0 408 Request Timeout\r\n", os);
+        ByteUtil.writeString("Content-Length: 0\r\n", os);
+        ByteUtil.writeString("Connection: close, close\r\n\r\n", os);
+        os.flush();
+    }
+
+    private void send502() throws IOException {
+        logFile.writeDate("502\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t" + forwardUrl);
+        ByteUtil.writeString("HTTP/1.0 502 Bad Gateway\r\n", os);
+        ByteUtil.writeString("Content-Length: 0\r\n", os);
+        ByteUtil.writeString("Connection: close, close\r\n\r\n", os);
+        os.flush();
+    }
+
+    private RREntry lookupDestination() {
+        lookupPath = extractPath();
+        if (DEBUG)
+            System.out.println("lookup for PATH=" + lookupPath);
+
+        if (host == null) {
+            // get the host name from the path
+            int sp = lookupPath.indexOf('/');
+            if (sp > 0) {
+                sp += 2;
+                int ep = lookupPath.indexOf('/', sp);
+                host = lookupPath.substring(sp, ep);
+                lookupPath = lookupPath.substring(ep);
+            }
+            if (host == null)
+                return null;
+        }
+
+        // lookup with host only - no port
+        final int colon = host.indexOf(':');
+        if (colon > 0)
+            host = host.substring(0, colon);
+
+        if (DEBUG)
+            System.out.println("lookup for HOST=" + host);
+
+        if (host == null)
+            return null; // no host -> error
+
+        // get the forward entry
+        final RREntry destination = factory.getRREntry(host, lookupPath);
+        if (DEBUG)
+            System.out.println("got destination: " + destination);
+
+        return destination;
+    }
+
+    private boolean readRequestLine() {
+        requestLine = readLine(requestBuffer);
+        if (DEBUG)
+            System.out.println("<" + requestLine + ">");
+        return requestLine != null;
+    }
+
     /**
      * Write the requestHeader to the output stream.
-     * @param bos the OutputStream.
-     * @param requestHeader the map containing the name value pairs.
+     * 
+     * @param bos
+     *            the OutputStream.
+     * @param requestHeader
+     *            the map containing the name value pairs.
      * @throws IOException
      */
-    private void writeHeader(OutputStream bos, HashMap<ByteRef, ByteRef> requestHeader) throws IOException {
+    private void writeHeaders(OutputStream bos, Map<ByteRef, ByteRef> requestHeader) throws IOException {
         for (Entry<ByteRef, ByteRef> e : requestHeader.entrySet()) {
             e.getKey().writeTo(bos);
-            bos.write(':');
-            bos.write(' ');
+            bos.write(COLON_SPACE);
             e.getValue().writeTo(bos);
             bos.write(CRLF);
         }
@@ -516,33 +766,26 @@ class RRProtocol extends Protocol {
         requestBuffer = requestBuffer.substring(4);
         String dest = null;
         switch (type) {
-            case 1:
-                requestBuffer = readAtLeast(requestBuffer, 4);
-                dest =
-                        requestBuffer.charAt(0) + "." + requestBuffer.charAt(1) + "." + requestBuffer.charAt(2) + "."
-                                + requestBuffer.charAt(3);
-                requestBuffer = requestBuffer.substring(4);
-                break;
-            case 3:
-                requestBuffer = readAtLeast(requestBuffer, 1);
-                nameLen = requestBuffer.charAt(0);
-                requestBuffer = requestBuffer.substring(1);
-                requestBuffer = readAtLeast(requestBuffer, nameLen);
-                dest = requestBuffer.splitLeft(nameLen).toString();
-                break;
-            case 4:
-                requestBuffer = readAtLeast(requestBuffer, 16);
-                dest =
-                        hb(requestBuffer.charAt(0), requestBuffer.charAt(1)) + ":"
-                                + hb(requestBuffer.charAt(2), requestBuffer.charAt(3)) + ":"
-                                + hb(requestBuffer.charAt(4), requestBuffer.charAt(5)) + ":"
-                                + hb(requestBuffer.charAt(6), requestBuffer.charAt(7)) + ":"
-                                + hb(requestBuffer.charAt(8), requestBuffer.charAt(9)) + ":"
-                                + hb(requestBuffer.charAt(10), requestBuffer.charAt(11)) + ":"
-                                + hb(requestBuffer.charAt(12), requestBuffer.charAt(13)) + ":"
-                                + hb(requestBuffer.charAt(14), requestBuffer.charAt(15));
-                requestBuffer = requestBuffer.substring(16);
-                break;
+        case 1:
+            requestBuffer = readAtLeast(requestBuffer, 4);
+            dest = requestBuffer.charAt(0) + "." + requestBuffer.charAt(1) + "." + requestBuffer.charAt(2) + "." + requestBuffer.charAt(3);
+            requestBuffer = requestBuffer.substring(4);
+            break;
+        case 3:
+            requestBuffer = readAtLeast(requestBuffer, 1);
+            nameLen = requestBuffer.charAt(0);
+            requestBuffer = requestBuffer.substring(1);
+            requestBuffer = readAtLeast(requestBuffer, nameLen);
+            dest = requestBuffer.splitLeft(nameLen).toString();
+            break;
+        case 4:
+            requestBuffer = readAtLeast(requestBuffer, 16);
+            dest = hb(requestBuffer.charAt(0), requestBuffer.charAt(1)) + ":" + hb(requestBuffer.charAt(2), requestBuffer.charAt(3)) + ":"
+                    + hb(requestBuffer.charAt(4), requestBuffer.charAt(5)) + ":" + hb(requestBuffer.charAt(6), requestBuffer.charAt(7)) + ":"
+                    + hb(requestBuffer.charAt(8), requestBuffer.charAt(9)) + ":" + hb(requestBuffer.charAt(10), requestBuffer.charAt(11)) + ":"
+                    + hb(requestBuffer.charAt(12), requestBuffer.charAt(13)) + ":" + hb(requestBuffer.charAt(14), requestBuffer.charAt(15));
+            requestBuffer = requestBuffer.substring(16);
+            break;
         }
 
         if (dest == null) {
@@ -707,7 +950,8 @@ class RRProtocol extends Protocol {
     }
 
     /**
-     * Parse request line and retrieve the request path stripped from optional request parameters.
+     * Parse request line and retrieve the request path stripped from optional
+     * request parameters.
      * 
      * @param requestLine
      * @return the path
@@ -765,15 +1009,15 @@ class RRProtocol extends Protocol {
     }
 
     /**
-     * copy the request header and get the HOST: if specified.
+     * read the request header and get the HOST: if specified.
      * 
      * @param br
      *            input buffer
      * @param requestHeader
-     *            output stream
+     *            a HashMap to keep the values
      * @return true on success
      */
-    private boolean copyRequestHeader(ByteRef br, HashMap<ByteRef, ByteRef> requestHeader) throws IOException {
+    private boolean readRequestHeaders(ByteRef br, Map<ByteRef, ByteRef> requestHeader) throws IOException {
         host = null;
         inContentLength = -1;
         // connection = null;
@@ -795,7 +1039,7 @@ class RRProtocol extends Protocol {
                     System.out.println(key + ": " + val);
                 if (key.equals(HOST)) {
                     host = val;
-                } else if (key.equals(CONTENTLENGTH)) {
+                } else if (key.equals(CONTENT_LENGTH)) {
                     inContentLength = val.toLong();
                 } else if (key.equals(CONNECTION)) {
                     // connection = val;
@@ -818,13 +1062,17 @@ class RRProtocol extends Protocol {
      *            output buffer
      * @return true on success
      */
-    private boolean copyResponseHeader(ByteRef br, InputStream in, OutputStream out) throws IOException {
+    private MultiMap<ByteRef, ByteRef> readResponseHeaders(ByteRef br, InputStream in, OutputStream out) throws IOException {
         outContentLength = -1;
         chunked = false;
+        contentType = null;
+        contentEncoding = null;
+        final MultiMap<ByteRef, ByteRef> headers = new MultiMap<ByteRef, ByteRef>();
+
         for (;;) {
-            ByteRef line = ByteRef.readLine(br, in);
+            final ByteRef line = ByteRef.readLine(br, in);
             if (line == null)
-                return false;
+                return null;
             if (line.length() == 0)
                 break;
 
@@ -833,21 +1081,26 @@ class RRProtocol extends Protocol {
 
             // handle it
             if (dp > 0) {
+                // it's ok to uppercase all the headers
                 ByteRef key = line.substring(0, dp).toUpperCase();
                 ByteRef val = line.substring(dp + 2); // skip ': '
                 if (DEBUG)
                     System.out.println(key + ": " + val);
-                if (key.equals(CONTENTLENGTH)) {
+                if (key.equals(CONTENT_LENGTH)) {
                     outContentLength = val.toLong();
                 } else if (key.equals(CONNECTION)) {
                     keepAlive &= !CLOSE.equalsIgnoreCase(val);
                 } else if (key.equals(TRANSFER_ENCODING)) {
                     chunked = CHUNKED.equalsIgnoreCase(val);
+                } else if (key.equals(CONTENT_TYPE)) {
+                    contentType = val;
+                } else if (key.equals(CONTENT_ENCODING)) {
+                    contentEncoding = val;
                 } else if (key.equals(LOCATION)) {
                     // try to translate the location
                     ByteRef location = translateLocation(val, orgPath, mappedPath);
                     if (location != null)
-                        line = LOCATION.append(CS).append(location);
+                        val = location;
                 } else if (key.equals(SET_COOKIE)) {
                     ByteRef v2 = new ByteRef(val.toByteArray()).toUpperCase();
                     int pathPos = v2.indexOf(COOKIE_PATH);
@@ -863,36 +1116,24 @@ class RRProtocol extends Protocol {
                         ByteRef path = val.substring(pathPos, end);
                         if (path.startsWith(mappedPath)) {
                             // replace mapped path
-                            line = key.append(CS)
-                                    .append(val.substring(0, pathPos))
-                                    .append(orgPath)
-                                    .append(path.substring(mappedPath.length()))
-                                    .append(val.substring(end));
+                            val = val.substring(0, pathPos).append(orgPath).append(path.substring(mappedPath.length())).append(val.substring(end));
                         } else {
-                            //prepend mapped path
-                            line = key.append(CS)
-                                    .append(val.substring(0, pathPos))
-                                    .append(orgPath)
-                                    .append(path)
-                                    .append(val.substring(end));
+                            // prepend mapped path
+                            val = val.substring(0, pathPos).append(orgPath).append(path).append(val.substring(end));
                         }
                     } else {
-                    // or add a path
-                        line = key.append(CS).append(val).append(";Path=").append(orgPath);
+                        // or add a path
+                        val = val.append(";Path=").append(orgPath);
                     }
                 }
+                headers.put(key, val);
             }
-
-            line.writeTo(out);
-            out.write(CRLF);
-
         }
-        if (!keepAlive)
-            out.write(CONNECTION_CLOSE);
 
-        // this is the emtpy line behind header
-        out.write(CRLF);
-        return true;
+        if (!keepAlive)
+            headers.put(CONNECTION, CLOSE);
+
+        return headers;
     }
 
     private ByteRef translateLocation(ByteRef location, ByteRef orgPath, ByteRef mappedPath) {
@@ -902,6 +1143,12 @@ class RRProtocol extends Protocol {
         } else if (location.startsWith(HTTPS)) {
             location = location.substring(HTTPS.length());
             useHttps = true;
+        } else {
+            // location without host
+            if (!location.startsWith(mappedPath))
+                return null;
+
+            return orgPath.append(location.substring(mappedPath.length()));
         }
 
         if (DEBUG) {
@@ -927,8 +1174,7 @@ class RRProtocol extends Protocol {
             location = location.substring(1);
 
         if (DEBUG)
-            System.out.println(host + " " + useHttps + " -> " + location + " " + this.server.usesSsl() + " " + port
-                    + "=" + currentDestPort);
+            System.out.println(host + " " + useHttps + " -> " + location + " " + this.server.usesSsl() + " " + port + "=" + currentDestPort);
         if (useHttps) {
             location = HTTPS.append(host).append(ROOT).append(location);
         } else {
@@ -940,22 +1186,8 @@ class RRProtocol extends Protocol {
         return location;
     }
 
-    /**
-     * Deliver the reply.
-     * 
-     * @param in
-     *            the InputStream, reading from the forwarded server
-     * @param out
-     *            the OutputStream, writing to the client
-     * @param orgPath
-     *            the path used by the client
-     * @param mappedPath
-     *            the path used to redirect
-     * @param c
-     */
-    private void sendResponse(InputStream in, OutputStream out, boolean patchWSDL) throws IOException {
-
-        ByteRef response = ByteRef.readLine(responseBuffer, in);
+    private ByteRef copyResponseLine() throws IOException {
+        ByteRef response = ByteRef.readLine(responseBuffer, is2Forward);
         if (response == null || response.length() == 0)
             throw new IOException("no response in: " + responseBuffer);
 
@@ -963,115 +1195,9 @@ class RRProtocol extends Protocol {
             System.out.println(response);
         if (response.startsWith(HTTP10))
             keepAlive = false;
-        response.writeTo(out);
-        out.write(CRLF);
-
-        copyResponseHeader(responseBuffer, in, out);
-
-        response.nextWord();
-        ByteRef rc = response.nextWord();
-        int rcode = rc.toInteger();
-
-        if (rcode != 304) {
-            if (chunked) {
-                // if WSDL needs a patch, collect the data and don't write em
-                ByteRef output = new ByteRef();
-                for (;;) {
-                    ByteRef sizeLine;
-                    for (;;) {
-                        sizeLine = responseBuffer.nextLineCRLF();
-                        if (sizeLine == null)
-                            responseBuffer.update(in);
-                        if (sizeLine == null)
-                            continue;
-                        if (sizeLine.length() > 0)
-                            break;
-                        out.write(CRLF);
-                    }
-
-                    if (!patchWSDL) {
-                        sizeLine.writeTo(out);
-                        out.write(CRLF);
-                    }
-
-                    int len = Integer.parseInt(sizeLine.toString(), 16);
-                    if (len == 0) {
-                        if (!patchWSDL)
-                            responseBuffer.writeTo(out);
-                        responseBuffer = new ByteRef();
-                        break;
-                    }
-
-                    while (responseBuffer.length() < len) {
-                        responseBuffer.update(in);
-                    }
-                    ByteRef chunk = responseBuffer.splitLeft(len + 2);
-                    if (patchWSDL) {
-                        output = output.append(chunk.substring(0, chunk.length() - 2));
-                    } else {
-                        chunk.writeTo(out);
-                    }
-                }
-
-                // data to patch was collected in output - now patch it
-                if (patchWSDL) {
-                    output = doPatchWSDL(output, "schemaLocation=");
-                    output = doPatchWSDL(output, "location=");
-
-                    // write the patched data chunked
-                    for (;;) {
-                        int len = output.length() > 8192 ? 8192 : output.length();
-                        String hex = Integer.toHexString(len);
-                        while (hex.length() < 4) {
-                            hex = "0" + hex;
-                        }
-                        ByteUtil.writeString(hex, out);
-                        out.write(CRLF);
-                        if (len == 0)
-                            break;
-
-                        ByteRef chunk = output.splitLeft(len);
-                        chunk.writeTo(out);
-                        out.write(CRLF);
-                    }
-                    out.write(CRLF);
-                }
-
-            } else if (outContentLength < 0) {
-                if (DEBUG)
-                    System.out.println("copy to EOF: ");
-                while (responseBuffer != null) {
-                    if (responseBuffer.length() > 0) {
-                        responseBuffer.writeTo(out);
-                        responseBuffer = new ByteRef();
-                    }
-                    responseBuffer = responseBuffer.update(in);
-                }
-            } else {
-                while (outContentLength > 0) {
-                    if (DEBUG)
-                        System.out.println("needed: " + outContentLength);
-
-                    while (responseBuffer != null && responseBuffer.length() == 0) {
-                        responseBuffer = responseBuffer.update(in);
-                    }
-
-                    if (responseBuffer == null)
-                        throw new IOException("not enough data");
-
-                    int sz = outContentLength > responseBuffer.length() ? responseBuffer.length() : (int)outContentLength;
-
-                    if (DEBUG)
-                        System.out.println("copy: " + sz);
-
-                    responseBuffer.substring(0, sz).writeTo(out);
-                    responseBuffer = responseBuffer.substring(sz);
-                    outContentLength -= sz;
-                }
-            }
-        }
-        if (DEBUG)
-            System.out.println("done");
+        response.writeTo(os);
+        os.write(CRLF);
+        return response;
     }
 
     /**
@@ -1085,7 +1211,7 @@ class RRProtocol extends Protocol {
      * @param orgPath
      * @return the patched data
      */
-    private ByteRef doPatchWSDL(ByteRef data, String sKeyWord) {
+    private ByteRef doPatchXML(ByteRef data, String sKeyWord) {
         ByteRef keyWord = new ByteRef(sKeyWord);
 
         for (int pos = data.indexOf(keyWord); pos > 0; pos = data.indexOf(keyWord, pos)) {

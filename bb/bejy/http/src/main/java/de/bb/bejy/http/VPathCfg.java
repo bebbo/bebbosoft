@@ -26,7 +26,10 @@ import de.bb.bejy.Configurator;
 public class VPathCfg extends Configurable implements Configurator {
     private final static String PROPERTIES[][] = {{"path", "the forwarded base path"},
             {"group", "a group to add access protection."},
-            {"userHeader", "the header to set with the user name if authenticated."}};
+            {"userHeader", "the header to set with the user name if authenticated."},
+            {"reverseByExt", "A list of extension:attributelist, e.g. .html:src|href,?WSDL:src|..."},
+            {"reverseByType", "A list of type:attributelist, e.g. text/html:src|href,text/xml:src,location|..."},
+            };
 
     public VPathCfg() {
         init("forwarded path", PROPERTIES);
@@ -64,7 +67,7 @@ public class VPathCfg extends Configurable implements Configurator {
      * @see de.bb.bejy.Configurator#getName()
      */
     public String getName() {
-        return "fwd path: " + getProperty("path");
+        return "path: " + getProperty("path");
     }
 
     /* (non-Javadoc)
