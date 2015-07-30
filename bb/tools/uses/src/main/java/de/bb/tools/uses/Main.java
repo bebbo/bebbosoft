@@ -117,9 +117,10 @@ public class Main extends FileBrowser {
             args = m.doOptions(args);
             m.doit(args);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            if (ex.getMessage().length() == 0)
+            if (ex.getMessage() != null && ex.getMessage().length() == 0)
                 showUsage();
+            else
+                ex.printStackTrace();
         }
     }
 
