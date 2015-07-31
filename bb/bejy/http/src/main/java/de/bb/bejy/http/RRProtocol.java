@@ -156,7 +156,6 @@ class RRProtocol extends Protocol {
                 return false;
             }
 
-            long lastRequestAt = 0;
             for (;;) {
 
                 host = null;
@@ -174,12 +173,6 @@ class RRProtocol extends Protocol {
                 if (requestLine.startsWith("CONNECT")) {
                     return proxyConnect(requestLine, requestBuffer);
                 }
-
-                long now = System.currentTimeMillis();
-                if (now - 3141 > lastRequestAt) {
-                    closeForwardSocket();
-                }
-                lastRequestAt = now;
 
                 // read the header
                 final MultiMap<ByteRef, ByteRef> requestHeaders = new MultiMap<ByteRef, ByteRef>();
@@ -1036,9 +1029,6 @@ class RRProtocol extends Protocol {
                     host = val;
                 } else if (key.equals(CONTENT_LENGTH)) {
                     inContentLength = val.toLong();
-                } else if (key.equals(CONNECTION)) {
-                    // connection = val;
-                    keepAlive = KEEPALIVE.equalsIgnoreCase(val);
                 }
                 requestHeader.put(key, val);
             }
@@ -1084,7 +1074,7 @@ class RRProtocol extends Protocol {
                 if (key.equals(CONTENT_LENGTH)) {
                     outContentLength = val.toLong();
                 } else if (key.equals(CONNECTION)) {
-                    keepAlive &= !CLOSE.equalsIgnoreCase(val);
+                    keepAlive = KEEPALIVE.equalsIgnoreCase(val);
                 } else if (key.equals(TRANSFER_ENCODING)) {
                     chunked = CHUNKED.equalsIgnoreCase(val);
                 } else if (key.equals(CONTENT_TYPE)) {
@@ -1125,8 +1115,10 @@ class RRProtocol extends Protocol {
             }
         }
 
-        if (!keepAlive)
+        if (!keepAlive) {
+            headers.remove(CONNECTION);
             headers.put(CONNECTION, CLOSE);
+        }
 
         return headers;
     }
