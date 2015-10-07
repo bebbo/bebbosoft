@@ -520,6 +520,8 @@ public class LdapProtocol extends Protocol {
             xml.setString(key, "auth", null);
 
             String value = newPassword.toString("utf-8");
+            if (value.startsWith("{ssha}"))
+                value = "{SSHA}" + value.substring(6);
             if (!value.startsWith("{SSHA}")) {
                 byte salt[] = new byte[16];
                 SecureRandom.getInstance().nextBytes(salt);
@@ -619,7 +621,7 @@ public class LdapProtocol extends Protocol {
             final XmlFile xmlFile = getXmlFile();
             if (xmlFile.sections(searchRoot).hasNext()) {
                 findRecursive(xmlFile, searchRoot, search, attributeDescriptionList, scope);
-                // CACHE.put(cacheKey, currentResponses);
+                CACHE.put(cacheKey, currentResponses);
             } else {
                 notFound = false; // true;
             }
@@ -870,7 +872,7 @@ public class LdapProtocol extends Protocol {
         ByteRef searchBaseDn = (ByteRef) dn.clone();
         String dnKey = "";
         for (ByteRef part = searchBaseDn.nextWord(','); part != null; part = searchBaseDn.nextWord(',')) {
-            ByteRef key = part.nextWord('=');
+            ByteRef key = part.nextWord('=').toLowerCase();
             dnKey = "\\" + key.toLowerCase() + "\\" + part.trim('"') + "/" + dnKey;
         }
         return dnKey;
