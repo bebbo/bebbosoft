@@ -375,8 +375,10 @@ class RRProtocol extends Protocol {
             ByteRef sizeLine;
             for (;;) {
                 sizeLine = responseBuffer.nextLineCRLF();
-                if (sizeLine == null)
-                    responseBuffer.update(is2Forward);
+                if (sizeLine == null) {
+                    if (responseBuffer.update(is2Forward) == null)
+                        return output; // abort on error
+                }
                 if (sizeLine == null)
                     continue;
                 if (sizeLine.length() > 0)
@@ -390,8 +392,12 @@ class RRProtocol extends Protocol {
 
             int len = Integer.parseInt(sizeLine.toString(), 16) + 2;
 
+            boolean ok = true;
             while (responseBuffer.length() < len) {
-                responseBuffer.update(is2Forward);
+                if (responseBuffer.update(is2Forward) == null) {
+                    ok = false;
+                    break;
+                }
             }
             ByteRef chunk = responseBuffer.splitLeft(len);
             if (copy) {
@@ -399,7 +405,7 @@ class RRProtocol extends Protocol {
             } else {
                 output = output.append(chunk.substring(0, chunk.length() - 2));
             }
-            if (len == 2)
+            if (!ok || len == 2)
                 break;
         }
         return output;
@@ -421,8 +427,8 @@ class RRProtocol extends Protocol {
             }
         }
         if (attrs == null && contentType != null && !destination.type2Attrs.isEmpty()) {
-            contentType = contentType.nextWord(';').trim();
-            attrs = destination.type2Attrs.get(contentType.toString());
+            String  scontentType = contentType.clone().nextWord(';').trim().toString();
+            attrs = destination.type2Attrs.get(scontentType);
         }
         return attrs;
     }
@@ -860,7 +866,8 @@ class RRProtocol extends Protocol {
         br = request.parseHeader(br);
         if (br == null)
             return false;
-        request.parseRequestLine(requestLine);
+        //request.parseRequestLine(requestLine);
+        request.fullhost = requestLine.substring(8).nextWordAsString(' ');
 
         LogFile logFile = factory.getLogFile();
         if (factory.proxyGroup != null) {
