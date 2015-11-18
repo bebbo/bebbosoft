@@ -149,9 +149,14 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
                                 age = lf.lastModified();
 
                             if (spath.equals(sfolder)) {
-                                long ageWebXml = new File(sfolder, "WEB-INF/this.xml").lastModified();
-                                if (ageWebXml > age)
-                                    age = ageWebXml;
+                                File webinfFiles[] = new File(sfolder, "WEB-INF").listFiles();
+                                if (webinfFiles != null) {
+                                    for (final File wf : webinfFiles) {
+                                        long ft = wf.lastModified();
+                                        if (ft > age)
+                                            age = ft;
+                                    }
+                                }
                             }
 
 
@@ -176,6 +181,7 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
                                     vhost.contexts.put(name, oldContext);
                                     continue;
                                 }
+                                oldContext.deactivate(logFile);
                                 this.remove(oo);
                             }
 
@@ -214,7 +220,7 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
     }
 
     public synchronized void run() {
-        last = checkForUpdate(getParent(), webAppsDir, last);
+        last = checkForUpdate(this, webAppsDir, last);
 
         nextRun = System.currentTimeMillis() + checkFrequency;
         Config.getCron().runIn("check " + this.getName(), this, checkFrequency);
@@ -253,13 +259,14 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
                     }
                 }
             }
-            File wf = new File(f, "WEB-INF/web.xml");
-            if (!wf.exists())
-                wf = f;
-
-            long ft = wf.lastModified();
-            if (ft > t)
-                t = ft;
+            File webinfFiles[] = new File(f, "WEB-INF").listFiles();
+            if (webinfFiles != null) {
+                for (final File wf : webinfFiles) {
+                    long ft = wf.lastModified();
+                    if (ft > t)
+                        t = ft;
+                }
+            }
         }
         try {
             if (t > last)
