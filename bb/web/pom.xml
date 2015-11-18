@@ -13,5 +13,8 @@
   <modules>
     <module>taglib</module>
     <module>wiki</module>
+    <module>user</module>
+    <module>fmt</module>
+    <module>board</module>
   </modules>
 </project>
