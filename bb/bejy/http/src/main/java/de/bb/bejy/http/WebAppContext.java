@@ -480,6 +480,8 @@ public class WebAppContext extends HttpContext {
                     continue;
                 }
 
+                loadInitParams(xf, section, servletRegistration);
+                
                 String loadOnStartup = xf.getContent(section
                         + "load-on-startup");
                 if (loadOnStartup != null) {
@@ -508,6 +510,19 @@ public class WebAppContext extends HttpContext {
             }
         }
         return name2servletHandler;
+    }
+
+    private static void loadInitParams(XmlFile xf, String section, Registration registration) {
+        // load init-params
+        for (Enumeration<String> f = xf.getSections(section + "init-param")
+                .elements(); f.hasMoreElements();) {
+            String in = f.nextElement();
+            String pn = xf.getContent(in + "param-name");
+            String pv = xf.getContent(in + "param-value");
+            if (pn != null && pv != null) {
+                registration.setInitParameter(pn, pv);
+            }
+        }
     }
 
     private void addJspHandler(LogFile logFile) throws ServletException {
@@ -641,21 +656,10 @@ public class WebAppContext extends HttpContext {
             String filterName = xf.getContent(s + "filter-name");
             String filterClass = xf.getContent(s + "filter-class");
             try {
-
                 FilterRegistration.Dynamic filterRegistration = (Dynamic) addFilter(
                         filterName, filterClass);
                 filterRegistrations.put(filterName, filterRegistration);
-
-                // load init-params
-                for (Enumeration<String> f = xf.getSections(s + "init-param")
-                        .elements(); f.hasMoreElements();) {
-                    String in = f.nextElement();
-                    String pn = xf.getContent(in + "param-name");
-                    String pv = xf.getContent(in + "param-value");
-                    if (pn != null && pv != null) {
-                        filterRegistration.setInitParameter(pn, pv);
-                    }
-                }
+                loadInitParams(xf, s, filterRegistration);
             } catch (Exception ex) {
                 logFile.writeDate(ex.getMessage());
             }
