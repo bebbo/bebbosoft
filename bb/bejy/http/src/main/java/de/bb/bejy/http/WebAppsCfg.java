@@ -219,6 +219,11 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
         super.deactivate(logFile);
     }
 
+    @Override
+    public void update(LogFile logFile) throws Exception {
+        activate(logFile);
+    }
+
     public synchronized void run() {
         last = checkForUpdate(this, webAppsDir, last);
 
