@@ -32,7 +32,14 @@ public class FastBufferedInputStream extends InputStream {
       return;
 
     buffer[0] = (byte) b0;
-    end = 1 + is.read(buffer, 1, buffer.length - 1);
+    int canRead = buffer.length - 1;
+    final int av = is.available();
+    if (av < canRead)
+        canRead = av;
+    if (canRead > 0)
+        end = 1 + is.read(buffer, 1, canRead);
+    else
+        end = 1;
     pos = 0;
   }
 
