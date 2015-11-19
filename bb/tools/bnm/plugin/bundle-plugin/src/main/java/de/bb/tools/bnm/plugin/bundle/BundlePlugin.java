@@ -31,78 +31,93 @@ import de.bb.tools.bnm.model.Id;
 import de.bb.tools.bnm.plugin.jar.AbstractJarPlugin;
 
 public class BundlePlugin extends AbstractJarPlugin {
-  @Property("${project.build.outputDirectory}")
-  private File classesDirectory;
+    @Property("${project.build.outputDirectory}")
+    private File classesDirectory;
 
-  private CpHelper cpHelper = new CpHelper();
-  
-  @Config("instructions")
-  private Map<String, String> instructions;
+    @Config("classesDirectory")
+    File cfgClassesDirectory;
 
-  /**
-   * @return type of the generated artifact
-   */
-  protected String getType() {
-    return "jar";
-  }
+    private CpHelper cpHelper = new CpHelper();
 
-  /**
-   * Return the main classes directory, so it's used as the root of the jar.
-   */
-  protected File getClassesDirectory() {
-    return classesDirectory;
-  }
+    @Config("instructions")
+    private Map<String, String> instructions;
 
-  @Override
-  public void execute() throws Exception {
-    
-    getLog().info("THE BUNDLE PLUGIN IS JUST FAKING A JAR!");
-    
-    this.collectFiles();
-        
-    // do the bundle stuff and extend the META-INF/MANIFEST.MF
-    // TODO
-        
-    File jarFile = new File(finalName);
-    long minDate = jarFile.lastModified();
-    long maxDate = 0;
-    
-    // check for modifications
-    List<String> cp = cpHelper.getClasspathElements(project, classesDirectory, classesDirectory, false);
-    for (String fileName : cp) {
-      File f = new File(fileName);
-      long date = f.lastModified();
-      if (date > maxDate)
-        maxDate = date;
-      if (maxDate > minDate)
-        break;
+    /**
+     * @return type of the generated artifact
+     */
+    protected String getType() {
+        return "jar";
     }
-    File meta = new File(classesDirectory, "META-INF");
-    if (!meta.exists()) meta.mkdirs();
-    File mani = new File(meta, "MANIFEST.MF");
-    FileOutputStream fos = new FileOutputStream(mani);
-    fos.close();
-    files.put("META-INF/MANIFEST.MF", mani);
-    
-    String embed = instructions.get("Embed-Dependency");
-    if (embed != null) {
-      ArrayList<Id> ar = project.getCompileDependencies();
-      for (Id id : ar) {
-        File ef = project.getLoader().findFile(id, "jar");
-        files.put(ef.getName(), ef);
-      }
+
+    /**
+     * Return the main classes directory, so it's used as the root of the jar.
+     */
+    protected File getClassesDirectory() {
+        return classesDirectory;
     }
-    // embed
-    if (maxDate > minDate) {
-      for (String fileName : cp) {
-        File f = new File(fileName);
-        if (!f.isFile())
-          continue;
-      }
+
+    @Override
+    public void execute() throws Exception {
+
+        getLog().info("THE BUNDLE PLUGIN IS JUST FAKING A JAR!");
+
+        this.collectFiles();
+
+        // do the bundle stuff and extend the META-INF/MANIFEST.MF
+        // TODO
+
+        File jarFile = new File(finalName);
+        long minDate = jarFile.lastModified();
+        long maxDate = 0;
+
+        // check for modifications
+        List<String> cp = cpHelper.getClasspathElements(project, classesDirectory, classesDirectory, false);
+        for (String fileName : cp) {
+            File f = new File(fileName);
+            long date = f.lastModified();
+            if (date > maxDate)
+                maxDate = date;
+            if (maxDate > minDate)
+                break;
+        }
+        File meta = new File(classesDirectory, "META-INF");
+        if (!meta.exists())
+            meta.mkdirs();
+        File mani = new File(meta, "MANIFEST.MF");
+        FileOutputStream fos = new FileOutputStream(mani);
+        fos.close();
+        files.put("META-INF/MANIFEST.MF", mani);
+
+        String embed = instructions.get("Embed-Dependency");
+        if (embed != null) {
+            ArrayList<Id> ar = project.getCompileDependencies();
+            for (Id id : ar) {
+                File ef = project.getLoader().findFile(id, "jar");
+                files.put(ef.getName(), ef);
+            }
+        }
+        // embed
+        if (maxDate > minDate) {
+            for (String fileName : cp) {
+                File f = new File(fileName);
+                if (!f.isFile())
+                    continue;
+            }
+        }
+
+        forceCreation = true;
+        this.createJar();
     }
-    
-    forceCreation = true;    
-    this.createJar();
-  }
+
+    /**
+     * Return the main classes directory, so it's used as the root of the jar.
+     * 
+     * @throws Exception
+     */
+    protected File getContentDirectory() throws Exception {
+        if (cfgClassesDirectory != null)
+            return cfgClassesDirectory;
+        return classesDirectory;
+    }
 
 }

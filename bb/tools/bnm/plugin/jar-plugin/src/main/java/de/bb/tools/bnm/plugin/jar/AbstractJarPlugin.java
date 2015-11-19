@@ -35,6 +35,7 @@ import de.bb.tools.bnm.AbstractPlugin;
 import de.bb.tools.bnm.Log;
 import de.bb.tools.bnm.annotiation.Config;
 import de.bb.tools.bnm.annotiation.Property;
+import de.bb.tools.bnm.model.Project;
 import de.bb.util.FileBrowser;
 import de.bb.util.SingleMap;
 import de.bb.util.XmlFile;
@@ -75,8 +76,6 @@ public abstract class AbstractJarPlugin extends AbstractPlugin {
      * @throws Exception
      */
     protected abstract File getContentDirectory() throws Exception;
-
-    protected abstract String getType();
 
     public void execute() throws Exception {
         maxDate = 0;
@@ -229,6 +228,21 @@ public abstract class AbstractJarPlugin extends AbstractPlugin {
 
     }
 
-    protected abstract void makeName() throws Exception;
+    protected void makeName() throws Exception {
+        if (finalName == null) {
+            Project pom = project.getEffectivePom();
+            finalName = pom.build.finalName;
+            if (classifier != null)
+                finalName += "-" + classifier;
+            finalName += "." + getType();
+        }
+        
+    }
 
+    /**
+     * @return type of the generated artifact
+     */
+    protected String getType() {
+        return "jar";
+    }
 }

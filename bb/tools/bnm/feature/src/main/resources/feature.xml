@@ -2,7 +2,7 @@
 <feature
       id="de.bb.tool.bnm.feature"
       label="BNM integration"
-      version="0.1.1"
+      version="0.1.3"
       provider-name="BebboSoft">
 
    <description url="http://www.bebbosoft.de/java/bnm">
@@ -864,17 +864,23 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="de.bb.tools.bnm.core"
-         version="0.1.1"
+         download-size="0"
+         install-size="0"
+         version="0.1.3"
          unpack="false"/>
 
    <plugin
          id="de.bb.tools.bnm.eclipse"
-         version="0.1.1"
+         download-size="0"
+         install-size="0"
+         version="0.1.3"
          unpack="false"/>
 
    <plugin
          id="de.bb.util"
-         version="1.0.13"
+         download-size="0"
+         install-size="0"
+         version="1.0.15"
          unpack="false"/>
 
 </feature>

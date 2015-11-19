@@ -102,8 +102,6 @@ public class Pom {
 
     private HashMap<String, String> pluginVersions;
 
-    private static LRUCache<String, PluginInfo> pluginInfos = new LRUCache<String, PluginInfo>();
-
     private HashMap<String, String> resolvedVars;
 
     private MultiMap<String, String> phaseMap;
@@ -848,11 +846,11 @@ public class Pom {
     }
 
     private PluginInfo obtainPluginInfo(Id id) throws Exception, IOException {
-        PluginInfo pi = pluginInfos.get(id.getId());
+        PluginInfo pi = bnm.pluginInfos.get(id.getId());
         if (pi == null) {
             Log log = Log.getLog();
-            synchronized (pluginInfos) {
-                pi = pluginInfos.get(id.getId());
+            synchronized (bnm.pluginInfos) {
+                pi = bnm.pluginInfos.get(id.getId());
                 if (pi == null) {
                     InputStream is = loader.findInputStream(id, "jar",
                             "META-INF/maven/plugin.xml");
@@ -869,7 +867,7 @@ public class Pom {
                             .getRuntimeDependencies();
                     URL urlClasspath[] = id2url(classpath);
                     pi.newClassLoader(urlClasspath);
-                    pluginInfos.put(id.getId(), pi);
+                    bnm.pluginInfos.put(id.getId(), pi);
                     log.debug("new plugin: " + pluginPom.getId() + " using ");
                     for (URL u : urlClasspath) {
                         log.debug(u.toString());
@@ -1274,10 +1272,6 @@ public class Pom {
         if (effectivePom == null)
             return pom.name + pom.artifactId;
         return effectivePom.groupId + "." + effectivePom.artifactId;
-    }
-
-    public static String stats() {
-        return pluginInfos.toString();
     }
 
     /**

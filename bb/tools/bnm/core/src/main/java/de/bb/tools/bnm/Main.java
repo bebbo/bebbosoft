@@ -112,7 +112,7 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         int max = (int) (rt.totalMemory() >>> 20);
         int used = (int) (rt.totalMemory() - rt.freeMemory() >>> 20);
-        log.info(Pom.stats());
+        log.info(bnm.stats());
         log.info("Memory: " + used + "M/" + max + "M");
         log.info(Bnm.LINE);
         log.flush();

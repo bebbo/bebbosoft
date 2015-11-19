@@ -33,7 +33,9 @@ import java.util.Stack;
 
 import de.bb.tools.bnm.model.Id;
 import de.bb.tools.bnm.model.Project;
+import de.bb.tools.bnm.plugin.PluginInfo;
 import de.bb.util.DateFormat;
+import de.bb.util.LRUCache;
 import de.bb.util.ThreadManager;
 import de.bb.util.ThreadManager.Factory;
 import de.bb.util.XmlFile;
@@ -46,6 +48,8 @@ import de.bb.util.XmlFile;
  */
 public class Bnm {
 
+    LRUCache<String, PluginInfo> pluginInfos = new LRUCache<String, PluginInfo>();
+
     private final class ProcessorFactory implements Factory {
         /** list of all used Poms. */
         private final ArrayList<Pom> poms;
@@ -53,8 +57,7 @@ public class Bnm {
         private final ArrayList<Processor> threads;
         int index = 0;
 
-        ProcessorFactory(ArrayList<Pom> poms, String[] args,
-                ArrayList<Processor> thread) {
+        ProcessorFactory(ArrayList<Pom> poms, String[] args, ArrayList<Processor> thread) {
             this.poms = poms;
             this.args = args;
             this.threads = thread;
@@ -71,11 +74,11 @@ public class Bnm {
             if (tm.getMaxCount() > n)
                 tm.setMaxCount(n);
             Processor t = new Processor(tm, threads, args, tm, pom);
+            t.start();
             synchronized (threads) {
                 threads.add(t);
                 threads.notify();
             }
-            t.start();
         }
     }
 
@@ -88,8 +91,7 @@ public class Bnm {
         Exception myException;
         private Log myLog;
 
-        Processor(ThreadManager tm, ArrayList<Processor> threads,
-                String[] args, ThreadManager tm2, Pom pom) {
+        Processor(ThreadManager tm, ArrayList<Processor> threads, String[] args, ThreadManager tm2, Pom pom) {
             super(tm);
             this.threads = threads;
             this.args = args;
@@ -118,22 +120,20 @@ public class Bnm {
                 synchronized (threads) {
                     threads.notifyAll();
                 }
+            } finally {
+                myLog.info(LINE);
+                showResult(myLog);
+                myLog.close();
+                // terminate smooth
+                this.requestDie();
+                this.mustDie();
             }
-            myLog.info(LINE);
-            showResult(myLog);
-            myLog.close();
-            // terminate smooth
-            this.requestDie();
-            this.mustDie();
-            // free the output for another thread
         }
 
         void showResult(Log log) {
             String id = pom.getId();
-            log.info(id + " "
-                    + (id.length() < 56 ? DOTS.substring(id.length(), 56) : "")
-                    + (myException == null ? " SUCCESS" : " ERROR  ")
-                    + DF.format(diff));
+            log.info(id + " " + (id.length() < 56 ? DOTS.substring(id.length(), 56) : "")
+                    + (myException == null ? " SUCCESS" : " ERROR  ") + DF.format(diff));
         }
     }
 
@@ -173,7 +173,7 @@ public class Bnm {
             // Log.getLog().flush();
         }
     }
-    
+
     public void loadRecursive(File path) throws Exception {
         try {
             // start loading this one and all children
@@ -223,11 +223,9 @@ public class Bnm {
      */
     Project loadDefaultPom() throws Exception {
         // TODO Auto-generated method stub
-        InputStream is = getClass().getClassLoader().getResourceAsStream(
-                "pom.xml");
+        InputStream is = getClass().getClassLoader().getResourceAsStream("pom.xml");
         if (is == null)
-            throw new Exception(
-                    "builtin root pom.xml is missing - get a correct JAR");
+            throw new Exception("builtin root pom.xml is missing - get a correct JAR");
         Project project = loadProject(is);
         Pom root = new RootPom(this, project);
         id2pom.put(new Id().getId(), root);
@@ -276,7 +274,8 @@ public class Bnm {
     }
 
     public Stack<ArrayList<Pom>> getSorted() {
-        if (verbose) log.info("build order (grouped):");
+        if (verbose)
+            log.info("build order (grouped):");
         sorted = getBuildOrder();
         for (int i = sorted.size() - 1; i >= 0; --i) {
             ArrayList<Pom> bnml = sorted.get(i);
@@ -324,8 +323,7 @@ public class Bnm {
                     found.add(e.getKey());
             }
             if (found.size() == 0)
-                throw new RuntimeException("cyclic dependencies in: "
-                        + pomDepMap.keySet());
+                throw new RuntimeException("cyclic dependencies in: " + pomDepMap.keySet());
 
             ArrayList<Pom> pass = new ArrayList<Pom>();
             for (String sid : found) {
@@ -411,8 +409,7 @@ public class Bnm {
      * @param localSorted
      * @throws Exception
      */
-    public boolean process(final String[] args,
-            Stack<ArrayList<Pom>> localSorted) throws Exception {
+    public boolean process(final String[] args, Stack<ArrayList<Pom>> localSorted) throws Exception {
         try {
             errorException = null;
             log.flush();
@@ -435,11 +432,11 @@ public class Bnm {
                 tm.setMaxCount(threadCount);
                 tm.setWaitCount(threadCount);
                 int idx = 0;
-                while ((errorException == null && idx < poms.size())
+                while ((errorException == null && idx < poms.size() && tm.getRunning() > 0 && tm.getMaxCount() > 0)
                         || idx < threads.size()) {
                     if (idx == threads.size()) {
                         synchronized (threads) {
-                            threads.wait();
+                            threads.wait(1000L);
                         }
                         continue;
                     }
@@ -477,6 +474,8 @@ public class Bnm {
             }
         } finally {
             Log.getLog().flush();
+            Log.clear();
+            pluginInfos.clear();
         }
         return true;
     }
@@ -507,8 +506,7 @@ public class Bnm {
         }
     }
 
-    public synchronized Pom loadPom(Loader loader, File file, Id id)
-            throws Exception {
+    public synchronized Pom loadPom(Loader loader, File file, Id id) throws Exception {
         if (id == null)
             return id2pom.get(new Id().getId());
         Pom cachedPom = id2pom.get(id.getId());
@@ -554,4 +552,9 @@ public class Bnm {
     public boolean hasError() {
         return errorException != null;
     }
+
+    public String stats() {
+        return pluginInfos.toString();
+    }
+
 }

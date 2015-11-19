@@ -22,25 +22,15 @@ import java.io.File;
 
 import de.bb.tools.bnm.annotiation.Config;
 import de.bb.tools.bnm.annotiation.Property;
-import de.bb.tools.bnm.model.Project;
 
 /**
  * 
  */
 public class JarPlugin extends AbstractJarPlugin {
-    @Property("${project.build.outputDirectory}")
-    private File classesDirectory;
+    @Property("${project.build.outputDirectory}") File classesDirectory;
 
-    @Config("classesDirectory")
-    private File cfgClassesDirectory;
+    @Config("classesDirectory") File cfgClassesDirectory;
     
-    /**
-     * @return type of the generated artifact
-     */
-    protected String getType() {
-        return "jar";
-    }
-
     /**
      * Return the main classes directory, so it's used as the root of the jar.
      * @throws Exception 
@@ -51,15 +41,4 @@ public class JarPlugin extends AbstractJarPlugin {
         return classesDirectory;
     }
 
-    @Override
-    protected void makeName() throws Exception {
-        if (finalName == null) {
-            Project pom = project.getEffectivePom();
-            finalName = pom.build.finalName;
-            if (classifier != null)
-                finalName += "-" + classifier;
-            finalName += "." + getType();
-        }
-        
-    }
 }

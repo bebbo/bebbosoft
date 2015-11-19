@@ -22,14 +22,15 @@ package de.bb.tools.bnm;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.Map.Entry;
 
 import de.bb.util.LRUCache;
 
 public class Log {
     private static PrintStream out = System.out;
-    private static Map<Thread, Log> LOGS = new LRUCache<Thread, Log>();
+    private static LRUCache<Thread, Log> LOGS = new LRUCache<Thread, Log>();
     private static LinkedList<Log> LOCK = new LinkedList<Log>();
     private volatile static Thread thread;
     public static boolean DEBUG;
@@ -119,7 +120,6 @@ public class Log {
         }
     }
 
-    
     public static Log getLog() {
         synchronized (LOCK) {
             Thread t = Thread.currentThread();
@@ -152,7 +152,14 @@ public class Log {
     }
 
     public static void clear() {
-        LOGS.clear();
+        synchronized (LOGS) {
+            for (Iterator<Entry<Thread, Log>> i = LOGS.entrySet().iterator(); i.hasNext();) {
+                Entry<Thread, Log> e = i.next();
+                e.getValue().close();
+                i.remove();
+            }
+            LOGS.clear();
+        }
     }
 
 }
