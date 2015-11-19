@@ -4,7 +4,8 @@
   <artifactId>bb</artifactId>
   <packaging>pom</packaging>
   <version>1.0.3</version>
-<!-- <name>${groupId}.${artifactId}</name> -->  <description>All BebboSoft projects</description>
+  <!-- <name>${groupId}.${artifactId}</name> -->
+  <description>All BebboSoft projects</description>
   <url>http://www.bebbosoft.de/java/</url>
   <organization>
     <name>BebboSoft</name>
@@ -32,8 +33,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
-    <finalName>
-${project.groupId}.${project.artifactId}-${project.version}    </finalName>
+    <finalName>${project.groupId}.${project.artifactId}-${project.version}</finalName>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -60,7 +60,8 @@ ${project.groupId}.${project.artifactId}-${project.version}    </finalName>
     </pluginManagement>
     <resources>
       <resource>
-<!-- <id>pluginStuff</id> -->        <directory>.</directory>
+        <!-- <id>pluginStuff</id> -->
+        <directory>.</directory>
         <includes>
           <include>COPYING</include>
           <include>plugin.xml</include>
@@ -73,12 +74,14 @@ ${project.groupId}.${project.artifactId}-${project.version}    </finalName>
       </resource>
       <resource>
         <directory>.</directory>
-<!-- <id>GPLv3</id> -->        <includes>
+        <!-- <id>GPLv3</id> -->
+        <includes>
           <include>COPYING</include>
         </includes>
       </resource>
       <resource>
-<!-- <id>sources</id> -->        <directory>src/main/java</directory>
+        <!-- <id>sources</id> -->
+        <directory>src/main/java</directory>
         <includes>
           <include>**</include>
         </includes>
@@ -129,6 +132,8 @@ ${project.groupId}.${project.artifactId}-${project.version}    </finalName>
     <module>io</module>
     <module>log</module>
     <module>benchmark</module>
+    <module>mejb</module>
+    <module>rmi</module>
   </modules>
   <distributionManagement>
     <repository>

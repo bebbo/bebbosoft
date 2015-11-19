@@ -7,34 +7,15 @@
 		<version>0.0.1</version>
 	</parent>
 	<groupId>de.bb.product</groupId>
-	<artifactId>bejy</artifactId>
-	<version>1.6.4</version>
+	<artifactId>bb_log</artifactId>
+	<version>0.0.2</version>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
-			<artifactId>http</artifactId>
-			<groupId>de.bb.bejy</groupId>
-			<version>1.6.4</version>
-			<scope>compile</scope>
+			<groupId>de.bb</groupId>
+			<artifactId>log</artifactId>
+			<version>0.0.1</version>
 		</dependency>
-		<dependency>
-			<artifactId>mail</artifactId>
-			<groupId>de.bb.bejy</groupId>
-			<version>1.6.4</version>
-			<scope>compile</scope>
-		</dependency>
-        <dependency>
-            <artifactId>j2ee</artifactId>
-            <groupId>de.bb.bejy</groupId>
-            <version>0.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-       <dependency>
-            <artifactId>ldap</artifactId>
-            <groupId>de.bb.bejy</groupId>
-            <version>0.0.3</version>
-            <scope>compile</scope>
-        </dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -42,9 +23,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>copyUnpackDeps</id>
+						<id>copyDeps</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>copy-dependencies</goal>
@@ -53,23 +38,12 @@
 							<includeGroupIds>de.bb</includeGroupIds>
 						</configuration>
 					</execution>
-					<execution>
-						<id>copyJavaxDeps</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeGroupIds>javax.servlet</includeGroupIds>
-							<outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-exec-plugin</artifactId>
@@ -77,7 +51,7 @@
 					<dependency>
 						<groupId>de.bb.tools</groupId>
 						<artifactId>uses</artifactId>
-						<version>1.5.0</version>
+                        <version>1.5.0</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -93,12 +67,7 @@
 								<argument>${project.build.directory}/uses.log</argument>
 								<argument>${project.build.directory}/unjared</argument>
 								<argument>${project.build.directory}/used</argument>
-								<argument>de.bb.bejy.*</argument>
-								<argument>de.bb.bejy.http.*</argument>
-								<argument>de.bb.bejy.mail.*</argument>
-								<argument>de.bb.bejy.ldap.*</argument>
-								<argument>de.bb.jsp.*</argument>
-								<argument>de.bb.unix.*</argument>
+								<argument>de.bb.log.Logger</argument>
 							</arguments>
 							<includePluginDependencies>true</includePluginDependencies>
 							<includeProjectDependencies>false</includeProjectDependencies>
@@ -107,7 +76,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-exec-plugin</artifactId>
@@ -129,30 +97,16 @@
 							<arguments>
 								<argument>-l</argument>
 								<argument>${project.build.directory}/mug.log</argument>
+								<argument>-p</argument>
+								<argument>de.bb.util=de.bb.log.u</argument>
+                                <argument>-p</argument>
+                                <argument>de.bb.io=de.bb.log.i</argument>
 								<argument>${project.build.directory}/used</argument>
-								<argument>${project.build.directory}/mugged</argument>
+								<argument>${project.build.directory}/classes</argument>
 							</arguments>
 							<includePluginDependencies>true</includePluginDependencies>
 							<includeProjectDependencies>false</includeProjectDependencies>
 							<mainClass>de.bb.tools.mug.Main</mainClass>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			-->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<classesDirectory>${project.build.directory}/used</classesDirectory>
-							<outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
-							<finalName>bejy.jar</finalName>
 						</configuration>
 					</execution>
 				</executions>

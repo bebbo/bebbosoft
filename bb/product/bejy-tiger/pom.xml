@@ -8,13 +8,13 @@
     </parent>
     <groupId>de.bb.product</groupId>
     <artifactId>bejy-tiger</artifactId>
-    <version>1.6.2</version>
+    <version>1.6.4</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <artifactId>http</artifactId>
             <groupId>de.bb.bejy</groupId>
-            <version>1.6.2</version>
+            <version>1.6.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
