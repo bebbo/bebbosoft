@@ -43,10 +43,9 @@
     Iterator j = current.children();
     boolean hasNext = i.hasNext();
     boolean hasChildren = j.hasNext();
-    String name = ct.getName();
-    if (!ct.getName().equals(current.getName()))
-    {
-      name += " " + current.getName();
+    String name = current.getName();
+    if (!ct.getClass().equals(current.getClass())) {
+      name = ct.getName() + " " + name;
     }
     %>$m(<%=hasChildren%>,<%=hasNext || n==0%>,"<%=name%>","main.jsp?item=<%=n%>", "main");
 <%

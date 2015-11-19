@@ -59,7 +59,8 @@ function $a(o) {
   }
   return false;
 }
-function $t(im) { 
+function $t(im) {
+  if (!im) return;
   if (im.src.substring(im.src.length - 8) == 'last.gif') return;
   var y = window.pageYOffset;
   if (!y) y = document.body.scrollTop;

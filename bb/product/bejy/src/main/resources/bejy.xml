@@ -4,7 +4,7 @@
   <group class="de.bb.bejy.ConfigGroup" name="admins">
     <user name="admin" password="{P5SHA256}DUTxXNq4SsxXd2N0Z6oBuEITC30PH3BgPvvM6WDXX3QH84FvXhPwNGo7PAJbN2ErlFs=" roles="ADMIN"/>
   </group>
-  <mail jdbcDriver="org.postgresql.Driver" jdbcUrl="jdbc:postgresql://localhost/mail?user=bejymail&amp;password=secret" mailDbi="de.bb.bejy.mail.PostgreSQLDbi" />
+  <mail jdbcDriver="org.postgresql.Driver" jdbcUrl="jdbc:postgresql://localhost/mail?user=bejymail&amp;password=secret" mailDbi="de.bb.bejy.mail.PostgreSQLDbi"/>
   <mime-types>
     <mime-type extension="gif" type="image/gif"/>
     <mime-type extension="exe" type="application/executable"/>
@@ -23,7 +23,7 @@
     <protocol class="de.bb.bejy.http.HttpFactory">
       <host>
         <context path="mail" realm="BEJY mail user" urlPath="/mail">
-          <handler class="de.bb.bejy.http.ServletHandler" mask="*.jsp" servlet="de.bb.bejy.http.jsp.JspServlet"/>
+          <handler class="de.bb.bejy.http.ServletHandler" mask="*.jsp" servlet="de.bb.jsp.JspServlet"/>
           <handler class="de.bb.bejy.http.FileHandler" mask="*"/>
         </context>
         <war alias="/" path="htdocs" realm="BEJY information" urlPath="/"/>
@@ -54,6 +54,15 @@
   </server>
   <server name="IMAP4" port="143">
     <protocol class="de.bb.bejy.mail.ImapFactory"/>
+  </server>
+  <server bindAddr="" name="RR" port="8888">
+    <protocol class="de.bb.bejy.http.RRFactory">
+      <vhost host="*">
+        <vpath group="" path="" reverseByExt="" reverseByType="" userHeader="">
+          <destination uri="franke.ms:80/"/>
+        </vpath>
+      </vhost>
+    </protocol>
   </server>
   <ssl certFile="ssl/localhost.cer.b64" keyFile="ssl/localhost.key.b64" name="localhost"/>
 </bejy>
