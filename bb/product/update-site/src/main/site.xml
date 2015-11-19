@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="BebboSoft's Eclipse update site" url="http://www.bebbosoft.de/plugins">
+      This site delivers plugins for eclipse integration.
+   </description>
+   <feature url="features/de.bb.tool.bnm.feature_0.0.4.jar" id="de.bb.tool.bnm.feature" version="0.0.4">
+      <category name="de.bb.tools"/>
+   </feature>
+   <feature url="features/de.bb.tool.bnm.feature_0.0.5.jar" id="de.bb.tool.bnm.feature" version="0.0.5">
+      <category name="de.bb.tools"/>
+   </feature>
+   <feature url="features/de.bb.tool.bnm.feature_0.1.0.jar" id="de.bb.tool.bnm.feature" version="0.1.0">
+      <category name="de.bb.tools"/>
+   </feature>
+   <category-def name="de.bb.tools" label="BebboSoft Tools">
+      <description>
+         tools to enhance eclipse
+      </description>
+   </category-def>
+</site>
