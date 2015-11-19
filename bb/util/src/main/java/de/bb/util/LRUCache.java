@@ -224,7 +224,10 @@ public class LRUCache<K, V> implements Map<K, V> {
      * Clears the cache.
      */
     public synchronized void clear() {
-        // Java likes this: create new objects and let GC do the rest!
+        for (Node<K, V> n : hashMap.values()) {
+            n.hardValueRef = null;
+            n.remove();
+        }
         hashMap = new HashMap<K, Node<K, V>>();
     }
 
