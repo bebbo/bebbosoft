@@ -1,0 +1,18 @@
+<project default="build" name="makeApp">
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+	<target name="build">
+		<echo message="start building bejy-ldap" />
+
+		<foreach target="extract" param="jarname">	
+            <fileset dir="${project.build.directory}/dependency">
+                <include name="*.jar" />
+            </fileset>
+		</foreach>
+	</target>
+
+	<target name="extract">
+		<dirname file="${jarname}" property="destDir"/>
+		<unjar src="${jarname}" dest="${destDir}/../unjared" overwrite="true" />
+	</target>
+		
+</project>
