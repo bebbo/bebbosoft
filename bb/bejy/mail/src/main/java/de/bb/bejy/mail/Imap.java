@@ -1862,6 +1862,13 @@ final class Imap extends de.bb.bejy.Protocol {
             val.nextWord(':');
             val = stripCRLF(val);
             
+            res = appendEscaped(res, val);
+            
+            res = res.append(SPACE);
+            return res;
+        }
+
+        private ByteRef appendEscaped(ByteRef res, ByteRef val) {
             // escape the value
             res = res.append(QUOTE);
 
@@ -1875,8 +1882,7 @@ final class Imap extends de.bb.bejy.Protocol {
                 buf[j++] = (byte) b;
             }
 
-            res = res.append(new ByteRef(buf, 0, j)).append(QUOTESPACE);
-
+            res = res.append(new ByteRef(buf, 0, j)).append(QUOTE);
             return res;
         }
 
@@ -2020,11 +2026,48 @@ final class Imap extends de.bb.bejy.Protocol {
             // body encoding
             res = addValue(res, "content-transfer-encoding");
 
-            res = res.append(s1[2]);
+            res = res.append(s1[2]); // length
 
             if (isText) {
-                res = res.append(" " + s1[3]);
+                res = res.append(" " + s1[3]); // number of lines 
             }
+            
+            ByteRef contentDisposition = header.get("content-disposition");
+            if (contentDisposition != null) {
+                contentDisposition.nextWord(':');
+                contentDisposition = stripCRLF(contentDisposition);
+                if (contentDisposition.length() == 0)
+                    contentDisposition = null;
+            }
+            if (contentDisposition != null) {
+                // extension data
+                res = res.append(" NIL"); // md5
+                res = res.append(" (\"").append(contentDisposition.nextWord(';').trim()).append(QUOTESPACE);
+                contentDisposition = contentDisposition.trim();
+                if (contentDisposition.length() == 0) {
+                    res = res.append("NIL");
+                } else {
+                    res = res.append("(");
+                    for(;;) {
+                        // FIXME - detect also ';' inside of a value
+                        ByteRef nameVal = contentDisposition.nextWord(';');
+                        ByteRef name = nameVal.nextWord('=');
+                        res = res.append(QUOTE).append(name).append(QUOTESPACE);
+                        if (nameVal.charAt(0) == '"') {
+                            res = res.append(nameVal);
+                        } else {
+                            res = appendEscaped(res, nameVal);
+                        }
+                        contentDisposition = contentDisposition.trim();
+                        if (contentDisposition.length() == 0)
+                            break;
+                        res = res.append(SPACE);
+                    }
+                    res = res.append(")");
+                }
+                res = res.append(")");
+            }
+            
             res = res.append(")");
             return res2.append(res);
         }
