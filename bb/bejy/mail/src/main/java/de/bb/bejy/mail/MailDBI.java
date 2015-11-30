@@ -747,7 +747,7 @@ public abstract class MailDBI {
      */
     public int getNextIdFromImapData() throws SQLException {
         checkConnection();
-        String q = "SELECT * FROM imap_data ORDER BY ID DESC";
+        String q = "SELECT MAX(id) FROM imap_data";
         ResultSet rs = stmt2.executeQuery(q);
         try {
             if (!rs.next())
@@ -1717,8 +1717,7 @@ public abstract class MailDBI {
      */
     public ResultSet selectFromImapFolder(String unitId, String mailbox) throws SQLException {
         checkConnection();
-        String q = "SELECT * FROM imap_folder WHERE imap_unit_id=" + unitId + " AND path='" + mailbox
-                + "' ORDER BY path";
+        String q = "SELECT * FROM imap_folder WHERE imap_unit_id=" + unitId + " AND path='" + mailbox + "'";
 
         return stmt.executeQuery(q);
     }
