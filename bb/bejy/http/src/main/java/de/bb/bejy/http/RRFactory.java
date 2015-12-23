@@ -51,7 +51,7 @@ public class RRFactory extends de.bb.bejy.Factory {
 
     private SessionManager<String, String> sMan = new SessionManager<String, String>(1000 * 60 * 60L);
 
-    String proxyGroup;
+    String proxyGroup = "not configured";
 
     String jabberHost;
     int jabberPort;
