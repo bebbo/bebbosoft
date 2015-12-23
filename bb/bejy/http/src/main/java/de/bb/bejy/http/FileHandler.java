@@ -247,7 +247,7 @@ public class FileHandler extends HttpHandler {
                     final Pair<Long, Long> p = rangeList.get(0);
                     final long start = p.getFirst();
                     final long stop = p.getSecond();
-                    sr.setHeader("Content-Range", "bytes " + start + "-" + (stop - 1) + "/" + flen + "\r\n");
+                    sr.setHeader("Content-Range", "bytes " + start + "-" + (stop - 1) + "/" + flen);
                     if (DEBUG)
                         System.out.println("Content-Range: bytes " + start + "-" + (stop - 1) + "/" + flen);
                     response.setContentLength((int) total);
