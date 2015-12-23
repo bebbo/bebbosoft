@@ -21,7 +21,7 @@ public class FastBufferedInputStream extends InputStream {
   }
 
   public int available() throws IOException {
-    if (pos == end)
+    if (pos == end && is.available() > 0)
       fill();
     return end - pos;
   }
