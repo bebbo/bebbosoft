@@ -202,7 +202,10 @@ public class CgiHandler extends HttpHandler {
         }
         v.add("SCRIPT_NAME=" + s);
 
-        v.add("REQUEST_URI=" + urlEscape(hp0.getRequestURI()));
+        if (queryString.length() > 0)
+            v.add("REQUEST_URI=" + urlEscape(hp0.getRequestURI()) + "?" + queryString);
+        else
+            v.add("REQUEST_URI=" + urlEscape(hp0.getRequestURI()));
         v.add("SERVER_NAME=" + hreq.getServerName());
         v.add("SERVER_PORT=" + hreq.getServerPort());
         v.add("SERVER_PROTOCOL=" + hreq.getProtocol());
