@@ -20,10 +20,7 @@
 package de.bb.tools.bnm.plugin.install;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -31,7 +28,6 @@ import de.bb.tools.bnm.AbstractPlugin;
 import de.bb.tools.bnm.annotiation.Config;
 import de.bb.tools.bnm.annotiation.Property;
 import de.bb.tools.bnm.model.Id;
-import de.bb.util.Misc;
 
 public abstract class AbstractInstallPlugin extends AbstractPlugin {
   /**
@@ -115,20 +111,6 @@ public abstract class AbstractInstallPlugin extends AbstractPlugin {
     FileOutputStream fos = new FileOutputStream(absolutePath);
     fos.write(checksum.getBytes(charSetName));
     fos.close();
-  }
-
-  private String calc(MessageDigest digest, File originalFile) throws IOException {
-    InputStream is = new FileInputStream(originalFile);
-    byte b[] = new byte[8192];
-    for (;;) {
-      int len = is.read(b, 0, b.length);
-      if (len <= 0)
-        break;
-      digest.update(b, 0, len);
-    }
-    b = digest.digest();
-    is.close();
-    return Misc.bytes2Hex(b);
   }
 
 }

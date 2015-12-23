@@ -24,5 +24,6 @@
     <module>exec-plugin</module>
     <module>noop-plugin</module>
     <module>flex-plugin</module>
+    <module>eclipse-plugin</module>
   </modules>
 </project>

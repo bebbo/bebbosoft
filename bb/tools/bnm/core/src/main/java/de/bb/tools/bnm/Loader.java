@@ -21,6 +21,7 @@ package de.bb.tools.bnm;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -151,7 +152,8 @@ public class Loader {
         // check local repository
         String folderPart = id.toPath();
         File file = new File(folderPart, id.artifactId + "/" + id.version);
-        file = new File(file, id.artifactId + "-" + id.version + (classifier != null ? "-" + classifier : "") + "." + ext);
+        file = new File(file, id.artifactId + "-" + id.version + (classifier != null ? "-" + classifier : "") + "."
+                + ext);
         File repoFile = new File(repoPath, file.toString());
 
         if (mustExist) {
@@ -171,8 +173,12 @@ public class Loader {
     }
 
     public InputStream findInputStream(Id id, String ext, String inside) throws Exception {
-        URL url = findURL(id, ext, inside);
-        return url.openStream();
+        try {
+            URL url = findURL(id, ext, inside);
+            return url.openStream();
+        } catch (Exception ex) {
+            throw new IOException("can't load: " + id + "." + "ext" + ":" + inside, ex);
+        }
     }
 
     private void updateFile(File file, File repoFile) {

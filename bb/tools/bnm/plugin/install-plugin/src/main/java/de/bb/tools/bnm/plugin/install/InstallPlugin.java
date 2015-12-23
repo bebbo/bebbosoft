@@ -20,9 +20,6 @@
 package de.bb.tools.bnm.plugin.install;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import de.bb.tools.bnm.Loader;
 import de.bb.tools.bnm.Log;
@@ -30,7 +27,6 @@ import de.bb.tools.bnm.annotiation.Config;
 import de.bb.tools.bnm.annotiation.Property;
 import de.bb.tools.bnm.model.Id;
 import de.bb.util.T2;
-import de.bb.util.T3;
 
 /**
  * Installs project's main artifact in the local repository.
@@ -86,25 +82,8 @@ public class InstallPlugin extends AbstractInstallPlugin {
             log.info("file is up to date: " + f);
             return;
         }
-        copyFile(file, f);
+        copyFile(getLog(), file, f);
         installChecksums(f);
-    }
-
-    public static void copyFile(File from, File to) throws IOException {
-        File path = to.getParentFile();
-        if (!path.exists())
-            path.mkdirs();
-        FileInputStream fis = new FileInputStream(from);
-        FileOutputStream fos = new FileOutputStream(to);
-        byte buf[] = new byte[0x10000];
-        for (;;) {
-            int len = fis.read(buf, 0, buf.length);
-            if (len <= 0)
-                break;
-            fos.write(buf, 0, len);
-        }
-        fis.close();
-        fos.close();
     }
 
 }

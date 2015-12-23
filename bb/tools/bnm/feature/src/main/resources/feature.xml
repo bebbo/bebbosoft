@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.bb.tool.bnm.feature"
       label="BNM integration"
-      version="0.1.3"
       provider-name="BebboSoft">
 
    <description url="http://www.bebbosoft.de/java/bnm">
@@ -12,8 +10,8 @@ you a real integration of BNM projects into Eclipse.
    </description>
 
    <copyright url="http://www.bebbosoft.de">
-      (c) 2009 by BebboSoft, F.Fischell &amp; S.Franke GbR
-(c) 2009 by Stefan &quot;Bebbo&quot; Franke
+      (c) 2009-2015 by BebboSoft, F.Fischell &amp; S.Franke GbR
+(c) 2009-2015 by Stefan &quot;Bebbo&quot; Franke
    </copyright>
 
    <license url="http://www.gnu.org/licenses/">
@@ -861,26 +859,5 @@ General
 Public License instead of this License.  But first, please read
 &lt;http://www.gnu.org/philosophy/why-not-lgpl.html&gt;.
    </license>
-
-   <plugin
-         id="de.bb.tools.bnm.core"
-         download-size="0"
-         install-size="0"
-         version="0.1.3"
-         unpack="false"/>
-
-   <plugin
-         id="de.bb.tools.bnm.eclipse"
-         download-size="0"
-         install-size="0"
-         version="0.1.3"
-         unpack="false"/>
-
-   <plugin
-         id="de.bb.util"
-         download-size="0"
-         install-size="0"
-         version="1.0.15"
-         unpack="false"/>
 
 </feature>

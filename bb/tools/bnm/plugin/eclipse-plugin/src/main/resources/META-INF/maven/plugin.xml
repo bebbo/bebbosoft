@@ -1,0 +1,12 @@
+<plugin>
+  <mojos>
+    <mojo>
+      <goal>feature</goal>
+      <implementation>de.bb.tools.bnm.plugin.eclipse.FeaturePlugin</implementation>
+    </mojo>
+    <mojo>
+      <goal>updatesite</goal>
+      <implementation>de.bb.tools.bnm.plugin.eclipse.UpdatesitePlugin</implementation>
+    </mojo>
+  </mojos>
+</plugin>

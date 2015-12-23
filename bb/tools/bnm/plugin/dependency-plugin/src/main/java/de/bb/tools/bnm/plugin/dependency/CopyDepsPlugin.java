@@ -1,10 +1,6 @@
 package de.bb.tools.bnm.plugin.dependency;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -90,21 +86,5 @@ public class CopyDepsPlugin extends AbstractPlugin {
             return;
         
         copyFile(log, cpElement, outFile);
-    }
-
-    public static void copyFile(Log log, File inFile, File outFile) throws FileNotFoundException, IOException {
-        log.info("copy " + inFile + " -> " + outFile);
-        FileInputStream fis = new FileInputStream(inFile);
-        outFile.getParentFile().mkdirs();
-        FileOutputStream fos = new FileOutputStream(outFile);
-        byte buffer[] = new byte[0x8000];
-        for (;;) {
-            int read = fis.read(buffer, 0, buffer.length);
-            if (read <= 0)
-                break;
-            fos.write(buffer, 0, read);
-        }
-        fos.close();
-        fis.close();
     }
 }
