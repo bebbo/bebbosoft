@@ -93,7 +93,7 @@ final class Imap extends de.bb.bejy.Protocol {
             NO = new ByteRef(" NO "),
             //    FAILURE = new ByteRef(" failure: "),
             CAPABILITY = new ByteRef("CAPABILITY"), CAPABILITY_MSG = new ByteRef(
-                    "* CAPABILITY IMAP4rev1 AUTH=PLAIN QUOTA IDLE"), NOOP = new ByteRef("NOOP"), CHECK = new ByteRef(
+                    "* CAPABILITY IMAP4rev1 AUTH=PLAIN QUOTA IDLE MOVE"), NOOP = new ByteRef("NOOP"), CHECK = new ByteRef(
                     "CHECK"), LOGOUT = new ByteRef("LOGOUT"), LOGOUT_MSG = new ByteRef(
                     "* BYE IMAP4rev1 Server logging out"), LOGIN = new ByteRef("LOGIN"), AUTHENTICATE = new ByteRef(
                     "AUTHENTICATE"), PLAIN = new ByteRef("PLAIN"), CONTINUE = new ByteRef("+ \"\"\r\n"),
@@ -104,7 +104,7 @@ final class Imap extends de.bb.bejy.Protocol {
             LSUB_MSG = new ByteRef("* LSUB "),
             //    LSUB_MSG2  = new ByteRef("* LSUB (\\Noselect) \"/\" "),
             CREATE = new ByteRef("CREATE"), RENAME = new ByteRef("RENAME"), DELETE = new ByteRef("DELETE"),
-            COPY = new ByteRef("COPY"), EXPUNGE = new ByteRef("EXPUNGE"), CLOSE = new ByteRef("CLOSE"),
+            COPY = new ByteRef("COPY"), MOVE = new ByteRef("MOVE"), EXPUNGE = new ByteRef("EXPUNGE"), CLOSE = new ByteRef("CLOSE"),
             STATUS = new ByteRef("STATUS"), SUBSCRIBE = new ByteRef("SUBSCRIBE"),
             UNSUBSCRIBE = new ByteRef("UNSUBSCRIBE"),
             EXAMINE = new ByteRef("EXAMINE"),
@@ -736,7 +736,19 @@ final class Imap extends de.bb.bejy.Protocol {
                                     }
                                     ByteRef messages = line.nextWord();
                                     ByteRef destBox = nextAString().trim('/');
-                                    ret = copy(unitId, mbId, messages.toString(), uid, destBox.toString()) ? 0 : 1;
+                                    ret = copyMove(unitId, mbId, messages.toString(), uid, destBox.toString(), false) ? 0 : 1;
+                                    break command;
+                                }
+
+                                if (cmd.equals(MOVE)) {
+                                    if (readOnly) {
+                                        ret = 1;
+                                        retVal = READONLY;
+                                        break command;
+                                    }
+                                    ByteRef messages = line.nextWord();
+                                    ByteRef destBox = nextAString().trim('/');
+                                    ret = copyMove(unitId, mbId, messages.toString(), uid, destBox.toString(), true) ? 0 : 1;
                                     break command;
                                 }
 
@@ -2711,7 +2723,7 @@ final class Imap extends de.bb.bejy.Protocol {
         }
     }
 
-    boolean copy(String unitId, String mbId, String messages, boolean uid, String destBox) throws Exception {
+    boolean copyMove(String unitId, String mbId, String messages, boolean uid, String destBox, boolean isMove) throws Exception {
         if (DEBUG) {
             logFile.writeln("copy(" + unitId + ", " + mbId + ", " + messages + ", " + uid + ", " + destBox + ")");
         }
@@ -2721,6 +2733,7 @@ final class Imap extends de.bb.bejy.Protocol {
             return false;
         }
 
+        SubCopy subCopy = new SubCopy(isMove);
         boolean r = handleMessages(mbId, messages, uid, destId, subCopy);
 
         String fc = mDbi.selectCountFromImapData(destId);
@@ -2731,9 +2744,14 @@ final class Imap extends de.bb.bejy.Protocol {
         return r;
     }
 
-    private SubCopy subCopy = new SubCopy();
 
     class SubCopy implements MsgHandler {
+        private boolean isMove;
+
+        public SubCopy(boolean isMove) {
+            this.isMove = isMove;
+        }
+
         /**
          * (non-Javadoc)
          * 
@@ -2749,6 +2767,19 @@ final class Imap extends de.bb.bejy.Protocol {
                     String filename = rs.getString(3);
                     mDbi.insertIntoImapData(destId, filename, rs.getTimestamp(4).getTime(), rs.getBoolean(5),
                             rs.getBoolean(6), rs.getBoolean(7), rs.getBoolean(8), rs.getBoolean(9), rs.getString(10));
+                    
+                    if (isMove) {
+                        if (mDbi.deleteFromImapData(uid) > 0) {
+                            // on change notify all
+                            updateStatus(mbId, "* " + pos + " EXPUNGE");
+                        } else {
+                            // otherwise notify only current connection
+                            updateStatus("* " + pos + " EXPUNGE");
+                        }
+                        if (DEBUG) {
+                            logFile.writeln("* " + pos + " EXPUNGE");
+                        }
+                    }
 
                 }
                 rs.close();
