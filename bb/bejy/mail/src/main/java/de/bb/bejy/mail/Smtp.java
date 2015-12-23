@@ -352,7 +352,8 @@ final class Smtp extends de.bb.bejy.Protocol {
                                     }
                                     MailDBI.handleLoginFailure(user.toString(), domain.toString(), remoteAddress);
                                 }
-                                logFile.writeDate(tx() + "with invalid password");
+                                logFile.writeDate(tx() + "login FAILURE for " + user + "@" + domain + " from "
+                                        + remoteAddress);
                             }
                             break;
                         }

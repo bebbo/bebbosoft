@@ -204,6 +204,8 @@ final class Pop3 extends de.bb.bejy.Protocol {
 
                             if (userId == null) {
                                 MailDBI.handleLoginFailure(user.toString(), domain.toString(), remoteAddress);
+                                logFile.writeDate("login FAILURE for " + user + "@" + domain + " from "
+                                        + remoteAddress);
                                 break;
                             }
                             // collect the mail information
