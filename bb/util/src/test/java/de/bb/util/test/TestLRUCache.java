@@ -1,5 +1,7 @@
 package de.bb.util.test;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import de.bb.util.LRUCache;
 
@@ -8,6 +10,7 @@ public class TestLRUCache extends TestCase {
 
     //  private static PersistantTimedLRUCache CACHE = new PersistantTimedLRUCache("cache", 15*60*1000);
 
+    @Test
     public void testCache1() {
         for (int i = 0; i < 100; ++i) {
             CACHE.put(new Integer(i), "cached value " + i);

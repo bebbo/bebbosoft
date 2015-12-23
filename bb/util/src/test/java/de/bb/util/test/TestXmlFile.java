@@ -1,10 +1,8 @@
 package de.bb.util.test;
 
-import java.io.InputStream;
-import java.util.Iterator;
+import org.junit.Test;
 
 import junit.framework.TestCase;
-
 import de.bb.util.XmlFile;
 
 public class TestXmlFile extends TestCase {
@@ -28,6 +26,7 @@ public class TestXmlFile extends TestCase {
 //
 //    }
 
+    @Test
     public void testContent1() {
         String content = "<a> le<![CDATA[<>]]>er\r\n<!-- -->space </a>";
         XmlFile xml = new XmlFile();

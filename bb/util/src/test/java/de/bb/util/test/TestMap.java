@@ -4,12 +4,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import de.bb.util.MultiMap;
 import de.bb.util.SingleMap;
 
 public class TestMap extends TestCase {
 
+    @Test
     public void testMultiMap() {
         MultiMap<Integer, Integer> multi = new MultiMap<Integer, Integer>();
 
@@ -30,6 +33,7 @@ public class TestMap extends TestCase {
         assertEquals(51, N);
     }
 
+    @Test
     public void testMultiHeadMap() {
         MultiMap<Integer, Integer> multi = new MultiMap<Integer, Integer>();
 
@@ -51,6 +55,7 @@ public class TestMap extends TestCase {
         assertEquals(21, N);
     }
 
+    @Test
     public void testMultiTailMap() {
         MultiMap<Integer, Integer> multi = new MultiMap<Integer, Integer>();
 
@@ -72,6 +77,7 @@ public class TestMap extends TestCase {
         assertEquals(30, N);
     }
 
+    @Test
     public void testMultiSubMap() {
         MultiMap<Integer, Integer> multi = new MultiMap<Integer, Integer>();
 
@@ -94,6 +100,7 @@ public class TestMap extends TestCase {
         assertEquals(27, N);
     }
 
+    @Test
     public void testSingleMap() {
         SingleMap<Integer, Integer> single = new SingleMap<Integer, Integer>();
 
@@ -112,6 +119,7 @@ public class TestMap extends TestCase {
         assertEquals(11, N);
     }
 
+    @Test
     public void testSingleHeadMap() {
         SingleMap<Integer, Integer> single = new SingleMap<Integer, Integer>();
 
@@ -131,6 +139,7 @@ public class TestMap extends TestCase {
         assertEquals(6, N);
     }
 
+    @Test
     public void testSingleTailMap() {
         SingleMap<Integer, Integer> single = new SingleMap<Integer, Integer>();
 
@@ -150,6 +159,7 @@ public class TestMap extends TestCase {
         assertEquals(6, N);
     }
 
+    @Test
     public void testSingleTailMapEmpty() {
         SingleMap<Integer, Integer> single = new SingleMap<Integer, Integer>();
 
@@ -169,6 +179,7 @@ public class TestMap extends TestCase {
         assertEquals(0, N);
     }
 
+    @Test
     public void testSingleSubMap() {
         SingleMap<Integer, Integer> single = new SingleMap<Integer, Integer>();
 
@@ -189,6 +200,7 @@ public class TestMap extends TestCase {
         assertEquals(5, N);
     }
 
+    @Test
     public void testMultiMap_bug_1() {
         MultiMap<String, String> multi = new MultiMap<String, String>();
         multi.put("esp", "1");

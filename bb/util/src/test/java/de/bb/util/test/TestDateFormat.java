@@ -69,6 +69,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import de.bb.util.DateFormat;
 
 /**
@@ -76,6 +79,7 @@ import de.bb.util.DateFormat;
  */
 public class TestDateFormat extends TestCase {
 
+    @Test
     public void testFormat1() {
         DateFormat df = new DateFormat("m:ss.S");
         String ms1 = df.format(1);
@@ -142,17 +146,15 @@ public class TestDateFormat extends TestCase {
         System.out.println(l1 + " == " + l2);
     }
 
+    @Test
     public void test1() throws ParseException {
         main(null);
     }
 }
 
 /******************************************************************************
- * Log: $Log: TestDateFormat.java,v $
- * Log: Revision 1.1  2011/01/01 13:30:21  bebbo
- * Log: @N added to new CVS repo
- * Log: Log: Revision 1.1 2008/03/15 18:28:08 bebbo Log: @N just a check in Log: Log:
- * Revision 1.3 2004/12/13 15:41:25 bebbo Log: @B further changes in DateFormat - more testing required Log: Log:
- * Revision 1.2 2004/12/08 14:56:31 bebbo Log: @R better test Log: Log: Revision 1.1 2004/01/03 18:54:27 bebbo Log: @N
- * simple main to test date format Log:
+ * Log: $Log: TestDateFormat.java,v $ Log: Revision 1.1 2011/01/01 13:30:21 bebbo Log: @N added to new CVS repo Log:
+ * Log: Revision 1.1 2008/03/15 18:28:08 bebbo Log: @N just a check in Log: Log: Revision 1.3 2004/12/13 15:41:25 bebbo
+ * Log: @B further changes in DateFormat - more testing required Log: Log: Revision 1.2 2004/12/08 14:56:31 bebbo Log: @R
+ * better test Log: Log: Revision 1.1 2004/01/03 18:54:27 bebbo Log: @N simple main to test date format Log:
  ******************************************************************************/
