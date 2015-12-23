@@ -195,7 +195,7 @@ public class UpdatesitePlugin extends JarPlugin {
             addRequired(xml, mainKey, ga + ".group", artifact.version);
 
             String key = xml.createSection("/repository/units/unit");
-            xml.setString(key, "id", ga + ".jar");
+            xml.setString(key, "id", ga + ".feature.jar");
             xml.setString(key, "version", artifact.version);
 
             addProperty(xml, key, "org.eclipse.equinox.p2.name", label);
@@ -205,7 +205,7 @@ public class UpdatesitePlugin extends JarPlugin {
             addPropertySize(xml, key);
 
             addProvides(xml, key, "org.eclipse.equinox.p2.eclipse.type", "feature", "1.0.0");
-            addProvides(xml, key, "org.eclipse.equinox.p2.iu", ga + ".jar", artifact.version);
+            addProvides(xml, key, "org.eclipse.equinox.p2.iu", ga + ".feature.jar", artifact.version);
             addProvides(xml, key, "org.eclipse.update.feature", ga, artifact.version);
             addProvidesSize(xml, key);
 
@@ -239,11 +239,11 @@ public class UpdatesitePlugin extends JarPlugin {
 
             // add group
             key = xml.createSection("/repository/units/unit");
-            xml.setString(key, "id", ga + ".group");
+            xml.setString(key, "id", ga + ".feature.group");
             xml.setString(key, "version", artifact.version);
             xml.setString(key, "singleton", "false");
 
-            xml.setString(key + "update", "id", ga + ".group");
+            xml.setString(key + "update", "id", ga + ".feature.group");
             xml.setString(key + "update", "severity", "0");
             xml.setString(key + "update", "range", "[0.0.0," + artifact.version + "]");
             
@@ -254,10 +254,10 @@ public class UpdatesitePlugin extends JarPlugin {
             addProperty(xml, key, "org.eclipse.equinox.p2.type.group", "true");
             addPropertySize(xml, key);
 
-            addProvides(xml, key, "org.eclipse.equinox.p2.iu", ga + ".group", artifact.version);
+            addProvides(xml, key, "org.eclipse.equinox.p2.iu", ga + ".feature.group", artifact.version);
             addProvidesSize(xml, key);
 
-            final String subkey = addRequired(xml, key, ga + ".jar", artifact.version);
+            final String subkey = addRequired(xml, key, ga + ".feature.jar", artifact.version);
             xml.setContent(subkey + "filter", "(org.eclipse.update.install.features=true)");
             Pom artifactPom = bnm.getPom(artifact.getId());
             if (artifactPom == null) {
