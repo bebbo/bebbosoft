@@ -1,5 +1,0 @@
-<project default="build" name="makeApp">
-	<target name="build">
-		<echo message="start building update-site" />
-	</target>
-</project>
