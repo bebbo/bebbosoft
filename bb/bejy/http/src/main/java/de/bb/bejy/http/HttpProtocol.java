@@ -174,6 +174,10 @@ public class HttpProtocol extends Protocol {
                 request.sis = createSIS(request);
             }
 
+            boolean alive = keepAlive(request);
+            if (alive)
+                response.addHeader("Connection", "keep-alive");
+
             request.handle(hs, response);
 
             try {
@@ -191,10 +195,9 @@ public class HttpProtocol extends Protocol {
                 //      LogThread.add(hs.httpLog, request, response, requestLine, remoteAddress);
             }
 
-            boolean alive = keepAlive(request, response);
-            if (alive) {
+            if (alive && !response.closed) {
                 try {
-                    // we dont know whether the Servlet has read the POST parameters, so skip all available data
+                    // we don't know whether the Servlet has read the POST parameters, so skip all available data
                     if (request.method.equals("POST") && request.sis != null) {
                         request.sis.skip(((SIStream) request.sis).avail);
                     }
@@ -215,7 +218,7 @@ public class HttpProtocol extends Protocol {
         return new SIStream(br, request.getContentLength(), fis);
     }
 
-    protected static boolean keepAlive(HttpRequestBase request, HttpResponse response) {
+    protected static boolean keepAlive(HttpRequestBase request) {
         if (request.protocol.equals(RTSP10))
             return true;
         if (!request.protocol.equals(HTTP11))

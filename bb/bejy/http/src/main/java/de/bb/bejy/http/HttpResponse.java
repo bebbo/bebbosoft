@@ -115,6 +115,8 @@ class HttpResponse implements javax.servlet.http.HttpServletResponse {
     // mark whether header is already written
     boolean headerWritten;
 
+    boolean closed;
+
     HttpResponse(HttpRequest request) {
         this.request = request;
         bufferSize = 0x2000;
@@ -161,6 +163,9 @@ class HttpResponse implements javax.servlet.http.HttpServletResponse {
         if (contentLength >= 0) {
             bos.write(CONTENTLENGTH);
             ByteUtil.writeLong(contentLength, bos);
+        } else {
+            closed = true;
+            outHeaders.put("Connection", "close");
         }
         // write content header
         if (outLocale != null) {

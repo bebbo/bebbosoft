@@ -42,9 +42,8 @@ import de.bb.util.Misc;
 import de.bb.util.MultiMap;
 
 /**
- * A request response redirector. Incoming requests are modified and forwarded
- * to the configured destination. The response is also modified according to the
- * configuration.
+ * A request response redirector. Incoming requests are modified and forwarded to the configured destination. The
+ * response is also modified according to the configuration.
  * 
  * @author bebbo
  *
@@ -61,7 +60,7 @@ class RRProtocol extends Protocol {
     private final static ByteRef CONTENT_TYPE = new ByteRef("CONTENT-TYPE");
     private final static ByteRef COOKIE_PATH = new ByteRef("PATH=");
     private final static ByteRef HOST = new ByteRef("HOST");
-    private final static ByteRef KEEPALIVE = new ByteRef("KEEP-ALIVE");
+    //    private final static ByteRef KEEPALIVE = new ByteRef("KEEP-ALIVE");
     private final static ByteRef LOCATION = new ByteRef("LOCATION");
     private final static ByteRef SET_COOKIE = new ByteRef("SET-COOKIE");
     private final static ByteRef TRANSFER_ENCODING = new ByteRef("TRANSFER-ENCODING");
@@ -125,6 +124,7 @@ class RRProtocol extends Protocol {
     OutputStream os2Forward;
     private ByteRef lookupPath;
     private String forwardUrl;
+    private long validUntil;
 
     RRProtocol(RRFactory hf, LogFile _logFile) {
         super(hf);
@@ -201,25 +201,36 @@ class RRProtocol extends Protocol {
 
                 setupPaths(destination, forwardUrl);
 
-                connect();
+                ByteRef responseLine = null;
+                for (int pass = 0; pass < 2; ++pass) {
+                    connect();
 
-                if (!forwardRequest(requestHeaders)) {
-                    send408();
-                    return false;
+                    ByteRef postData = forwardRequest(requestHeaders);
+                    if (postData == null) {
+                        send408();
+                        return false;
+                    }
+
+                    responseLine = copyResponseLine();
+                    if (responseLine != null)
+                        break;
+                    
+                    // retry
+                    closeForwardSocket();
+                    requestBuffer = postData.append(requestBuffer);
                 }
-
-                final ByteRef responseLine = copyResponseLine();
                 if (responseLine == null) {
                     send502();
                     return false;
                 }
-
+                
                 // no data to handle on 304
                 responseLine.nextWord();
                 ByteRef rc = responseLine.nextWord();
                 int rcode = rc.toInteger();
 
-                logFile.writeDate(rcode + "\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t" + forwardUrl);
+                logFile.writeDate(rcode + "\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t"
+                        + forwardUrl);
 
                 final MultiMap<ByteRef, ByteRef> responseHeaders = readResponseHeaders(responseBuffer, is2Forward, os);
 
@@ -236,7 +247,7 @@ class RRProtocol extends Protocol {
                 if (copyData || rcode == 304 || chunked)
                     writeHeaders(os, responseHeaders);
 
-                if (rcode != 304) {
+                if (rcode != 304 && !requestLine.startsWith("HEAD")) {
                     ByteRef output;
                     if (chunked) {
                         output = copyOrReadChunkedData(copyData);
@@ -284,6 +295,7 @@ class RRProtocol extends Protocol {
                     System.out.println("done");
 
                 os.flush();
+                validUntil = System.currentTimeMillis() * 3000;
 
                 // exit loop if necessary
                 if (!keepAlive) {
@@ -427,13 +439,13 @@ class RRProtocol extends Protocol {
             }
         }
         if (attrs == null && contentType != null && !destination.type2Attrs.isEmpty()) {
-            String  scontentType = contentType.clone().nextWord(';').trim().toString();
+            String scontentType = contentType.clone().nextWord(';').trim().toString();
             attrs = destination.type2Attrs.get(scontentType);
         }
         return attrs;
     }
 
-    private boolean forwardRequest(Map<ByteRef, ByteRef> requestHeader) throws IOException {
+    private ByteRef forwardRequest(Map<ByteRef, ByteRef> requestHeader) throws IOException {
 
         // change the url
         ByteRef rewriteRequestLine = rewriteRequestLine(requestLine);
@@ -458,6 +470,7 @@ class RRProtocol extends Protocol {
 
         writeHeaders(os2Forward, requestHeader);
 
+        ByteRef postData = new ByteRef();
         // send content Data, if any
         if (inContentLength > 0) {
             if (DEBUG)
@@ -466,25 +479,28 @@ class RRProtocol extends Protocol {
                 while (requestBuffer.length() == 0) {
                     requestBuffer = requestBuffer.update(is);
                     if (requestBuffer == null)
-                        return false;
+                        return null;
                 }
                 if (inContentLength > 0) {
                     int sz = inContentLength > requestBuffer.length() ? requestBuffer.length() : (int) inContentLength;
                     ByteRef dat = requestBuffer.splitLeft(sz);
                     dat.writeTo(os2Forward);
+                    postData = postData.append(dat);
                     inContentLength -= sz;
+                    if (DEBUG)
+                        System.out.println(dat);
                 }
             }
         }
 
         os2Forward.flush();
-        return true;
+        return postData;
     }
 
     private void connect() throws IOException {
         int dp = forwardHost.indexOf(':');
         // open new connection if necessary
-        if (forwardSocket != null && forwardSocket.isClosed()) {
+        if (forwardSocket != null && (forwardSocket.isClosed() || validUntil < System.currentTimeMillis())) {
             closeForwardSocket();
         }
         if (forwardSocket == null) {
@@ -493,12 +509,13 @@ class RRProtocol extends Protocol {
             currentDest = forwardHost.substring(0, dp);
             currentDestPort = Integer.parseInt(forwardHost.substring(dp + 1));
             forwardSocket = new java.net.Socket(currentDest, currentDestPort);
+            forwardSocket.setKeepAlive(true);
             int timeout = server.getTimeout();
             forwardSocket.setSoTimeout(timeout);
             // get other streams
-            is2Forward = new FastBufferedInputStream(forwardSocket.getInputStream(), 1412);
+            is2Forward = new FastBufferedInputStream(forwardSocket.getInputStream(), 0x4000);
             // is2Forward = forwardSocket.getInputStream();
-            os2Forward = new FastBufferedOutputStream(forwardSocket.getOutputStream(), 1412);
+            os2Forward = new FastBufferedOutputStream(forwardSocket.getOutputStream(), 0x4000);
             // os2Forward = forwardSocket.getOutputStream();
         }
     }
@@ -546,7 +563,8 @@ class RRProtocol extends Protocol {
         forwardSocket = null;
     }
 
-    private boolean checkAccess(final RREntry destination, final Map<ByteRef, ByteRef> requestHeader) throws IOException {
+    private boolean checkAccess(final RREntry destination, final Map<ByteRef, ByteRef> requestHeader)
+            throws IOException {
         UserGroupDbi group = Config.getGroup(destination.group);
         if (group != null) {
 
@@ -761,7 +779,8 @@ class RRProtocol extends Protocol {
         switch (type) {
         case 1:
             requestBuffer = readAtLeast(requestBuffer, 4);
-            dest = requestBuffer.charAt(0) + "." + requestBuffer.charAt(1) + "." + requestBuffer.charAt(2) + "." + requestBuffer.charAt(3);
+            dest = requestBuffer.charAt(0) + "." + requestBuffer.charAt(1) + "." + requestBuffer.charAt(2) + "."
+                    + requestBuffer.charAt(3);
             requestBuffer = requestBuffer.substring(4);
             break;
         case 3:
@@ -773,10 +792,14 @@ class RRProtocol extends Protocol {
             break;
         case 4:
             requestBuffer = readAtLeast(requestBuffer, 16);
-            dest = hb(requestBuffer.charAt(0), requestBuffer.charAt(1)) + ":" + hb(requestBuffer.charAt(2), requestBuffer.charAt(3)) + ":"
-                    + hb(requestBuffer.charAt(4), requestBuffer.charAt(5)) + ":" + hb(requestBuffer.charAt(6), requestBuffer.charAt(7)) + ":"
-                    + hb(requestBuffer.charAt(8), requestBuffer.charAt(9)) + ":" + hb(requestBuffer.charAt(10), requestBuffer.charAt(11)) + ":"
-                    + hb(requestBuffer.charAt(12), requestBuffer.charAt(13)) + ":" + hb(requestBuffer.charAt(14), requestBuffer.charAt(15));
+            dest = hb(requestBuffer.charAt(0), requestBuffer.charAt(1)) + ":"
+                    + hb(requestBuffer.charAt(2), requestBuffer.charAt(3)) + ":"
+                    + hb(requestBuffer.charAt(4), requestBuffer.charAt(5)) + ":"
+                    + hb(requestBuffer.charAt(6), requestBuffer.charAt(7)) + ":"
+                    + hb(requestBuffer.charAt(8), requestBuffer.charAt(9)) + ":"
+                    + hb(requestBuffer.charAt(10), requestBuffer.charAt(11)) + ":"
+                    + hb(requestBuffer.charAt(12), requestBuffer.charAt(13)) + ":"
+                    + hb(requestBuffer.charAt(14), requestBuffer.charAt(15));
             requestBuffer = requestBuffer.substring(16);
             break;
         }
@@ -873,8 +896,9 @@ class RRProtocol extends Protocol {
         if (factory.proxyGroup != null) {
             UserGroupDbi userDbi = Config.getGroup(factory.proxyGroup);
             if (userDbi == null) {
-                logFile.writeDate("cannot find configured group: " + factory.proxyGroup);
-                os.write((request.protocol + " 500 proxy is not configure\r\n\r\n").getBytes());
+                logFile.writeDate("500\t" + getRemoteAddress() + "\tproxy is not configured - group: "
+                        + factory.proxyGroup);
+                os.write((request.protocol + " 500 proxy is not configured\r\n\r\n").getBytes());
                 return false;
             }
 
@@ -912,7 +936,7 @@ class RRProtocol extends Protocol {
 
         Socket socket = new Socket(host, Integer.parseInt(sport));
         String msg = request.protocol + " 200 Connection established\r\nProxy-Agent: " + Version.getShort();
-        if (request.protocol.equals("HTTP/1.1"))
+        if (request.protocol != null && request.protocol.equals("HTTP/1.1"))
             msg += "\r\nProxy-Connection: keep-alive";
         msg += "\r\n\r\n";
         msg = "HTTP/1.0 200 Connection established\r\n\r\n";
@@ -944,8 +968,7 @@ class RRProtocol extends Protocol {
     }
 
     /**
-     * Parse request line and retrieve the request path stripped from optional
-     * request parameters.
+     * Parse request line and retrieve the request path stripped from optional request parameters.
      * 
      * @param requestLine
      * @return the path
@@ -1014,7 +1037,6 @@ class RRProtocol extends Protocol {
     private boolean readRequestHeaders(ByteRef br, Map<ByteRef, ByteRef> requestHeader) throws IOException {
         host = null;
         inContentLength = -1;
-        keepAlive = false;
         // connection = null;
         for (;;) {
             ByteRef line = readLine(br);
@@ -1054,7 +1076,8 @@ class RRProtocol extends Protocol {
      *            output buffer
      * @return true on success
      */
-    private MultiMap<ByteRef, ByteRef> readResponseHeaders(ByteRef br, InputStream in, OutputStream out) throws IOException {
+    private MultiMap<ByteRef, ByteRef> readResponseHeaders(ByteRef br, InputStream in, OutputStream out)
+            throws IOException {
         outContentLength = -1;
         chunked = false;
         contentType = null;
@@ -1081,7 +1104,7 @@ class RRProtocol extends Protocol {
                 if (key.equals(CONTENT_LENGTH)) {
                     outContentLength = val.toLong();
                 } else if (key.equals(CONNECTION)) {
-                    keepAlive = KEEPALIVE.equalsIgnoreCase(val);
+                    keepAlive = !CLOSE.equalsIgnoreCase(val);
                 } else if (key.equals(TRANSFER_ENCODING)) {
                     chunked = CHUNKED.equalsIgnoreCase(val);
                 } else if (key.equals(CONTENT_TYPE)) {
@@ -1108,7 +1131,8 @@ class RRProtocol extends Protocol {
                         ByteRef path = val.substring(pathPos, end);
                         if (path.startsWith(mappedPath)) {
                             // replace mapped path
-                            val = val.substring(0, pathPos).append(orgPath).append(path.substring(mappedPath.length())).append(val.substring(end));
+                            val = val.substring(0, pathPos).append(orgPath).append(path.substring(mappedPath.length()))
+                                    .append(val.substring(end));
                         } else {
                             // prepend mapped path
                             val = val.substring(0, pathPos).append(orgPath).append(path).append(val.substring(end));
@@ -1168,7 +1192,8 @@ class RRProtocol extends Protocol {
             location = location.substring(1);
 
         if (DEBUG)
-            System.out.println(host + " " + useHttps + " -> " + location + " " + this.server.usesSsl() + " " + port + "=" + currentDestPort);
+            System.out.println(host + " " + useHttps + " -> " + location + " " + this.server.usesSsl() + " " + port
+                    + "=" + currentDestPort);
 
         ByteRef translated = useHttps ? HTTPS : HTTP;
 
@@ -1190,8 +1215,7 @@ class RRProtocol extends Protocol {
 
         if (DEBUG)
             System.out.println(response);
-        if (response.startsWith(HTTP10))
-            keepAlive = false;
+        keepAlive = !response.startsWith(HTTP10);
         response.writeTo(os);
         os.write(CRLF);
         return response;
