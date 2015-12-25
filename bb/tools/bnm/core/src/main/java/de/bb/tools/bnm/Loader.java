@@ -177,7 +177,7 @@ public class Loader {
             URL url = findURL(id, ext, inside);
             return url.openStream();
         } catch (Exception ex) {
-            throw new IOException("can't load: " + id + "." + "ext" + ":" + inside, ex);
+            throw new IOException("can't load: " + id + "." + ext + ":" + inside, ex);
         }
     }
 

@@ -584,7 +584,9 @@ public class Pom {
     }
 
     public String getId() {
-        return effectivePom.getId();
+        if (effectivePom != null)
+            return effectivePom.getId();
+        return pom.getId();
     }
 
     public ArrayList<Id> getAllDependencies() {
