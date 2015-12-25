@@ -37,8 +37,8 @@ public class KeyGen {
         int klen = 1024;
         if (args.length == 2)
             klen = Integer.parseInt(args[1]);
-        if (args.length < 1 || args.length > 2 || klen < 512 || klen > 4096) {
-            writeln("usage: KeyGen <filename> [<512 <= bitlen <= 4096>]");
+        if (args.length < 1 || args.length > 2 || klen < 32 ) {
+            writeln("usage: KeyGen <filename> [<32 <= bitlen>]");
             return;
         }
         try {
