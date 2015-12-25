@@ -63,6 +63,10 @@ public abstract class VersionPage extends UserInputWizardPage implements Listene
 	private ArrayList<TableColumn> cols;
 	private TableColumn lastSort;
 	private TV tv;
+	
+	private String noteText = "Note that modified version SHOULD end with -SNAPSHOT\r\n"
+            + "All references are updated accordingly\r\n"
+            + "If a referenced module is not yet a SNAPSHOT version, the version gets promoted to the next SNAPSHOT.";
 
 	public VersionPage(VI[] data, String name, String description) {
 		super(name);
@@ -81,9 +85,7 @@ public abstract class VersionPage extends UserInputWizardPage implements Listene
 	
 	    Label label = new Label(client, SWT.NONE);
 	    label
-	        .setText("Note that modified version MUST end with -SNAPSHOT\r\n"
-	            + "All references are updated accordingly\r\n"
-	            + "If a referenced module is not yet a SNAPSHOT version, the version gets promoted to the next SNAPSHOT.");
+	        .setText(noteText);
 	    label.setLayoutData(new GridData());
 	
 	    table = new Table(client, SWT.BORDER | SWT.FULL_SELECTION);
@@ -211,4 +213,10 @@ public abstract class VersionPage extends UserInputWizardPage implements Listene
         table.setSortColumn(column);
         table.setSortDirection(dir);
 	}
+
+    public void setNoteText(String noteText) {
+        this.noteText = noteText;
+    }
+	
+	
 }

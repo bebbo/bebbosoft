@@ -50,9 +50,8 @@ public abstract class VersionRefactoring extends Refactoring {
         this.snapshot = snapshot;
     }
 
-    
-    public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
-            throws CoreException, OperationCanceledException {
+    public RefactoringStatus checkInitialConditions(IProgressMonitor pm) throws CoreException,
+            OperationCanceledException {
         try {
             // collect the data
             IResourceVisitor visitor = new IResourceVisitor() {
@@ -92,8 +91,7 @@ public abstract class VersionRefactoring extends Refactoring {
                 vi.id = pInfo.getId();
                 vi.origVersion = vi.version = pInfo.getVersion();
                 vi.bundleId = pInfo.getBundleId();
-                vi.origBundleVersion = vi.bundleVersion = pInfo
-                        .getBundleVersion();
+                vi.origBundleVersion = vi.bundleVersion = pInfo.getBundleVersion();
                 data.add(vi);
                 ++index;
                 spm.worked(1);
@@ -104,37 +102,31 @@ public abstract class VersionRefactoring extends Refactoring {
         } catch (CoreException ce) {
             throw ce;
         } catch (Exception e) {
-            throw new CoreException(new Status(IStatus.ERROR, Plugin.PLUGIN_ID,
-                    e.getMessage()));
+            throw new CoreException(new Status(IStatus.ERROR, Plugin.PLUGIN_ID, e.getMessage()));
         }
     }
 
-    
-    public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
-            throws CoreException, OperationCanceledException {
+    public RefactoringStatus checkFinalConditions(IProgressMonitor pm) throws CoreException, OperationCanceledException {
         // nada
         return new RefactoringStatus();
     }
 
-    
-    public Change createChange(IProgressMonitor pm) throws CoreException,
-            OperationCanceledException {
+    public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
 
         if (data == null)
             return new NullChange();
         CompositeChange change = new CompositeChange("version changes");
-        pm.beginTask("calculating changes", 2);
+        pm.beginTask("calculating changes", 1);
         SubProgressMonitor sm = new SubProgressMonitor(pm, 1);
         ArrayList<String> manifests = addPomChanges(change, sm);
         sm.done();
-        sm = new SubProgressMonitor(pm, 1);
-        addManifestChanges(change, sm, manifests);
-        sm.done();
+//        sm = new SubProgressMonitor(pm, 1);
+//        addManifestChanges(change, sm, manifests);
+//        sm.done();
 
         return change;
     }
 
-    
     public String getName() {
         return "bnm version refactoring";
     }
@@ -143,8 +135,7 @@ public abstract class VersionRefactoring extends Refactoring {
         return data.toArray(VI0);
     }
 
-    protected ArrayList<String> addPomChanges(CompositeChange change,
-            SubProgressMonitor pm) {
+    protected ArrayList<String> addPomChanges(CompositeChange change, SubProgressMonitor pm) {
         SortedMap<String, String> pomDeps = Util.newTypedMultiMap();
 
         pm.beginTask("refactoring pom.xml files", 4);
@@ -183,52 +174,74 @@ public abstract class VersionRefactoring extends Refactoring {
 
         int removeCount = currentProject.getLocation().segmentCount();
         HashMap<String, TextEdit> pom2TextEdit = new HashMap<String, TextEdit>();
-        for (String id : touched) {
-            for (String pomId : pomDeps.subMap(id, id + "\u0000").values()) {
-                PomInfo pi = id2Pom.get(pomId);
-                TextEdit te = pom2TextEdit.get(pomId);
-                if (te == null) {
-                    if (pi.getBundleId() != null)
-                        manifests.add(pi.getBundleId());
-                    te = new MultiTextEdit();
-                    pom2TextEdit.put(pomId, te);
-                    IPath loc = pom2Loc.get(pi)
-                            .removeFirstSegments(removeCount);
-                    IFile f = (IFile) this.currentProject.findMember(loc);
-                    TextFileChange tfc = new TextFileChange("pom.xml : " + id,
-                            f);
-                    tfc.setEdit(te);
-                    change.add(tfc);
-                }
-                for (String mod : modifiedIds) {
-                    ArrayList<Pos> positions = pi.getPositions(mod);
-                    if (positions != null) {
-                        String nv = id2newVersion.get(mod);
-                        for (Pos pos : positions) {
-                            TextEdit re;
-                            if (pos.getLength() > 0) {
-                                 re = new ReplaceEdit(pos.getOffset(),
-                                        pos.getLength(), nv);
-                            } else {
-                                re = new ReplaceEdit(pos.getOffset(),
-                                        pos.getLength(), "\r\n<version>" + nv
-                                                + "</version>");
-                            }
-                            try {
-                                te.addChild(re);
-                            } catch (MalformedTreeException mte) {}
+        for (String pomId : touched) {
+            PomInfo pi = id2Pom.get(pomId);
+            if (pi == null)
+                continue;
+            TextEdit te = pom2TextEdit.get(pomId);
+            if (te == null) {
+                if (pi.getBundleId() != null)
+                    manifests.add(pi.getBundleId());
+                te = new MultiTextEdit();
+                pom2TextEdit.put(pomId, te);
+                IPath loc = pom2Loc.get(pi).removeFirstSegments(removeCount);
+                IFile f = (IFile) this.currentProject.findMember(loc);
+                TextFileChange tfc = new TextFileChange("pom.xml : " + pomId, f);
+                tfc.setEdit(te);
+                change.add(tfc);
+            }
+            for (String mod : modifiedIds) {
+                ArrayList<Pos> positions = pi.getPositions(mod);
+                if (positions != null) {
+                    String nv = id2newVersion.get(mod);
+                    for (Pos pos : positions) {
+                        TextEdit re;
+                        if (pos.getLength() > 0) {
+                            re = new ReplaceEdit(pos.getOffset(), pos.getLength(), nv);
+                        } else {
+                            re = new ReplaceEdit(pos.getOffset(), pos.getLength(), "\r\n<version>" + nv + "</version>");
+                        }
+                        try {
+                            te.addChild(re);
+                        } catch (MalformedTreeException mte) {
                         }
                     }
                 }
             }
+            
+            String bundleId = pi.getBundleId();
+            if (bundleId == null)
+                continue;
+
+            te = new MultiTextEdit();
+            for (String mod : modifiedIds) {
+                String nv = id2newVersion.get(mod);
+                if (nv.endsWith("-SNAPSHOT")) {
+                    nv = nv.substring(0, nv.length() - 9);
+                }
+                Pos pos = pi.getBundlePositions(mod);
+                if (pos != null) {
+                    if (pos.getLength() == 0) {
+                        te.addChild(new ReplaceEdit(pos.getOffset(), pos.getLength(), ";bundle-version=\"" + nv + "\""));
+                    } else {
+                        te.addChild(new ReplaceEdit(pos.getOffset(), pos.getLength(), nv));
+                    }
+                }
+            }
+            IPath loc = pom2Loc.get(pi).removeFirstSegments(removeCount);
+            loc = loc.removeLastSegments(1).append("META-INF").append("MANIFEST.MF");
+            IFile f = (IFile) this.currentProject.findMember(loc);
+            TextFileChange tfc = new TextFileChange("MANIFEST.MF : " + pomId, f);
+            tfc.setEdit(te);
+            change.add(tfc);
+
         }
         pm.worked(1);
 
         return manifests;
     }
 
-    protected void addManifestChanges(CompositeChange change,
-            SubProgressMonitor pm, ArrayList<String> manifests) {
+    protected void addManifestChanges(CompositeChange change, SubProgressMonitor pm, ArrayList<String> manifests) {
         SortedMap<String, String> maniDeps = Util.newTypedMultiMap();
 
         pm.beginTask("refactoring MANIFEST.MF files", 4);
@@ -252,8 +265,7 @@ public abstract class VersionRefactoring extends Refactoring {
             String orgV = vi.origBundleVersion;
             String newV = vi.bundleVersion;
             if (orgV != null) {
-                if (orgV.equals(newV) && manifests.contains(vi.version)
-                        && !orgV.endsWith("SNAPSHOT")) {
+                if (orgV.equals(newV) && manifests.contains(vi.version) && !orgV.endsWith("SNAPSHOT")) {
                     newV = Util.toOsgiVersion(vi.id);
                 }
                 if (!orgV.equals(newV)) {
@@ -266,8 +278,7 @@ public abstract class VersionRefactoring extends Refactoring {
         }
         pm.worked(1);
 
-        extendManifestChanges(maniDeps, modifiedIds, id2newVersion, touched,
-                ".SNAPSHOT");
+        extendManifestChanges(maniDeps, modifiedIds, id2newVersion, touched, ".SNAPSHOT");
         pm.worked(1);
 
         // now all elements to modify are known.
@@ -286,17 +297,14 @@ public abstract class VersionRefactoring extends Refactoring {
                 Pos pos = pi.getBundlePositions(mod);
                 if (pos != null) {
                     if (pos.getLength() == 0) {
-                        te.addChild(new ReplaceEdit(pos.getOffset(), pos
-                                .getLength(), ";bundle-version=\"" + nv + "\""));
+                        te.addChild(new ReplaceEdit(pos.getOffset(), pos.getLength(), ";bundle-version=\"" + nv + "\""));
                     } else {
-                        te.addChild(new ReplaceEdit(pos.getOffset(), pos
-                                .getLength(), nv));
+                        te.addChild(new ReplaceEdit(pos.getOffset(), pos.getLength(), nv));
                     }
                 }
             }
             IPath loc = pom2Loc.get(pi).removeFirstSegments(removeCount);
-            loc = loc.removeLastSegments(1).append("META-INF")
-                    .append("MANIFEST.MF");
+            loc = loc.removeLastSegments(1).append("META-INF").append("MANIFEST.MF");
             IFile f = (IFile) this.currentProject.findMember(loc);
             TextFileChange tfc = new TextFileChange("MANIFEST.MF : " + id, f);
             tfc.setEdit(te);
@@ -305,9 +313,8 @@ public abstract class VersionRefactoring extends Refactoring {
         pm.worked(1);
     }
 
-    protected void extendPomChanges(SortedMap<String, String> maniDeps,
-            HashSet<String> modifiedIds, HashMap<String, String> id2newVersion,
-            HashSet<String> touched, String snapshot) {
+    protected void extendPomChanges(SortedMap<String, String> maniDeps, HashSet<String> modifiedIds,
+            HashMap<String, String> id2newVersion, HashSet<String> touched, String snapshot) {
         // walk through all and promote changes
         Stack<String> stack = new Stack<String>();
         stack.addAll(modifiedIds);
@@ -333,9 +340,8 @@ public abstract class VersionRefactoring extends Refactoring {
         }
     }
 
-    protected void extendManifestChanges(SortedMap<String, String> maniDeps,
-            HashSet<String> modifiedIds, HashMap<String, String> id2newVersion,
-            HashSet<String> touched, String snapshot) {
+    protected void extendManifestChanges(SortedMap<String, String> maniDeps, HashSet<String> modifiedIds,
+            HashMap<String, String> id2newVersion, HashSet<String> touched, String snapshot) {
         // walk through all and promote changes
         Stack<String> stack = new Stack<String>();
         stack.addAll(modifiedIds);

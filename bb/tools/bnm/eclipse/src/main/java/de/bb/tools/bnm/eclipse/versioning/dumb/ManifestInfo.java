@@ -26,164 +26,194 @@ import java.util.StringTokenizer;
 
 public class ManifestInfo {
 
-	private String symbolicName;
-	private Pos symbolicNamePos;
-	private String version;
-	private Pos versionPos;
-	private HashMap<String, NameVersion> importMap;
-	private HashMap<String, Pos> exportMap;
-	private HashMap<String, NameVersion> bundleMap = new HashMap<String, NameVersion>();
-	private transient String importVersion;
+    private String symbolicName;
+    private Pos symbolicNamePos;
+    private String version;
+    private Pos versionPos;
+    private HashMap<String, NameVersion> importMap;
+    private HashMap<String, Pos> exportMap;
+    private HashMap<String, NameVersion> bundleMap = new HashMap<String, NameVersion>();
+    private transient String importVersion;
+    private DumbManifestSearcher dumbManifestSearcher;
+    private String fullSymbolicName;
 
-	public ManifestInfo(File maniFile) throws IOException {
-		DumbManifestSearcher dumbMani = new DumbManifestSearcher(maniFile);
-		Pos p = dumbMani.search("Bundle-SymbolicName");
-		String content = dumbMani.getContent(p);
-		symbolicName = content.trim();
-		int semi = symbolicName.indexOf(';');
-		if (semi >= 0) symbolicName = symbolicName.substring(0, semi);
-		symbolicNamePos = new Pos(
-				p.getOffset() + content.indexOf(symbolicName), symbolicName
-						.length());
-		// System.out.println("Bundle-SymbolicName: " + symbolicName);
+    public ManifestInfo(File maniFile) throws IOException {
+        init(new DumbManifestSearcher(maniFile));
 
-		p = dumbMani.search("Bundle-Version");
-		content = dumbMani.getContent(p);
-		version = content.trim();
-		versionPos = new Pos(p.getOffset() + content.indexOf(version), version
-				.length());
-		// System.out.println("Bundle-Version: " + version);
+    }
 
-		bundleMap.put(symbolicName, new NameVersion(symbolicName, symbolicNamePos, version, versionPos));
-		
-		p = dumbMani.search("Import-Package");
-		content = dumbMani.getContent(p);
-		importMap = new HashMap<String, NameVersion>();
-		if (content != null) {
-			int offset = -1;
-			for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st
-					.hasMoreTokens();) {
-				// the element
-				String e = st.nextToken();
-				offset = content.indexOf(e, offset + 1);
-				Pos ePos = new Pos(p.getOffset() + offset, e.length());
-				Pos vPos = null;
-				String ver = null;
-				int version = content.indexOf("version=\"", offset);
-				if (version > 0 && version - offset < e.length()) {
-					version += 9;
-					int end = content.indexOf('"', version);
-					if (end > 0) {
-						vPos = new Pos(p.getOffset() + version, end - version);
-						ver = dumbMani.getContent(vPos);
-					}
-				}
-				semi = e.indexOf(';');
-				if (semi > 0)
-					e = e.substring(0, semi);
+    public ManifestInfo(String content) {
+        init(new DumbManifestSearcher(content));
+    }
 
-				NameVersion imp = new NameVersion(e, ePos, ver, vPos);
-				importMap.put(e, imp);
-				// System.out.println("Import-Package: " + e + " - " + ePos + " - " + ver + " - " + vPos);
-			}
-		}
+    private void init(DumbManifestSearcher dumbMani) {
+        this.dumbManifestSearcher = dumbMani;
+        Pos p = dumbMani.search("Bundle-SymbolicName");
+        String content = dumbMani.getContent(p);
+        symbolicName = content.trim();
+        fullSymbolicName = symbolicName;
+        int semi = symbolicName.indexOf(';');
+        if (semi >= 0)
+            symbolicName = symbolicName.substring(0, semi);
+        symbolicNamePos = new Pos(p.getOffset() + content.indexOf(symbolicName), symbolicName.length());
+        // System.out.println("Bundle-SymbolicName: " + symbolicName);
 
-		p = dumbMani.search("Export-Package");
-		content = dumbMani.getContent(p);
-		exportMap = new HashMap<String, Pos>();
-		if (content != null) {
-			int offset = -1;
-			for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st
-					.hasMoreTokens();) {
-				String e = st.nextToken();
-				semi = e.indexOf(';');
-				if (semi > 0)
-					e = e.substring(0, semi);
-				offset = content.indexOf(e, offset + 1);
-				Pos ePos = new Pos(p.getOffset() + offset, e.length());
-				exportMap.put(e, ePos);
-				// System.out.println("Export-Package: " + e);
-			}
-		}
+        p = dumbMani.search("Bundle-Version");
+        content = dumbMani.getContent(p);
+        version = content.trim();
+        versionPos = new Pos(p.getOffset() + content.indexOf(version), version.length());
+        // System.out.println("Bundle-Version: " + version);
 
-		p = dumbMani.search("Require-Bundle");
-		content = dumbMani.getContent(p);		
-		if (content != null) {
-			int offset = -1;
-			for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st
-					.hasMoreTokens();) {
-				String e = st.nextToken();
-				offset = content.indexOf(e, offset + 1);
-				Pos ePos = new Pos(p.getOffset() + offset, e.length());
-				Pos vPos = null;
-				String ver = null;
-				int version = content.indexOf("bundle-version=\"", offset);
-				if (version > 0 && version - offset < e.length()) {
-					version += 16;
-					int end = content.indexOf('"', version);
-					if (end > 0) {
-						vPos = new Pos(p.getOffset() + version, end - version);
-						ver = dumbMani.getContent(vPos);
-					}
-				}
-				semi = e.indexOf(';');
-				if (semi > 0)
-					e = e.substring(0, semi);
+        bundleMap.put(symbolicName, new NameVersion(symbolicName, symbolicNamePos, version, versionPos));
 
-				NameVersion imp = new NameVersion(e, ePos, ver, vPos);
-				bundleMap.put(e, imp);
-				// System.out.println("Require-Bundle: " + e + " - " + ePos + " - " + ver + " - " + vPos);
-			}
-		}
-	}
+        p = dumbMani.search("Import-Package");
+        content = dumbMani.getContent(p);
+        importMap = new HashMap<String, NameVersion>();
+        if (content != null) {
+            int offset = -1;
+            for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st.hasMoreTokens();) {
+                // the element
+                String e = st.nextToken();
+                offset = content.indexOf(e, offset + 1);
+                Pos ePos = new Pos(p.getOffset() + offset, e.length());
+                Pos vPos = null;
+                String ver = null;
+                int version = content.indexOf("version=\"", offset);
+                if (version > 0 && version - offset < e.length()) {
+                    version += 9;
+                    int end = content.indexOf('"', version);
+                    if (end > 0) {
+                        vPos = new Pos(p.getOffset() + version, end - version);
+                        ver = dumbMani.getContent(vPos);
+                    }
+                }
+                semi = e.indexOf(';');
+                if (semi > 0)
+                    e = e.substring(0, semi);
 
-	public String getVersion() {
-		return version;
-	}
+                NameVersion imp = new NameVersion(e, ePos, ver, vPos);
+                importMap.put(e, imp);
+                // System.out.println("Import-Package: " + e + " - " + ePos + " - " + ver + " - " + vPos);
+            }
+        }
 
-	public String getImportVersion() {
-		if (importVersion != null)
-			return importVersion;
-		int lastDot = 0;
-		int i = 0;
-		for (; i < version.length(); ++i) {
-			char ch = version.charAt(i);
-			if (ch == '.') {
-				lastDot = i;
-			}
-			if (!Character.isDigit(ch))
-				break;
-		}
-		if (lastDot == 0)
-			lastDot = i;
-		importVersion = version.substring(0, lastDot);
-		return importVersion;
-	}
+        p = dumbMani.search("Export-Package");
+        content = dumbMani.getContent(p);
+        exportMap = new HashMap<String, Pos>();
+        if (content != null) {
+            int offset = -1;
+            for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st.hasMoreTokens();) {
+                String e = st.nextToken();
+                semi = e.indexOf(';');
+                if (semi > 0)
+                    e = e.substring(0, semi);
+                offset = content.indexOf(e, offset + 1);
+                Pos ePos = new Pos(p.getOffset() + offset, e.length());
+                exportMap.put(e, ePos);
+                // System.out.println("Export-Package: " + e);
+            }
+        }
 
-	public Pos getVersionPos() {
-		return versionPos;
-	}
+        p = dumbMani.search("Require-Bundle");
+        content = dumbMani.getContent(p);
+        if (content != null) {
+            int offset = -1;
+            for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st.hasMoreTokens();) {
+                String e = st.nextToken();
+                offset = content.indexOf(e, offset + 1);
+                Pos ePos = new Pos(p.getOffset() + offset, e.length());
+                Pos vPos = null;
+                String ver = null;
+                int version = content.indexOf("bundle-version=\"", offset);
+                if (version > 0 && version - offset < e.length()) {
+                    version += 16;
+                    int end = content.indexOf('"', version);
+                    if (end > 0) {
+                        vPos = new Pos(p.getOffset() + version, end - version);
+                        ver = dumbMani.getContent(vPos);
+                    }
+                }
+                semi = e.indexOf(';');
+                if (semi > 0)
+                    e = e.substring(0, semi);
 
-	public String getSymbolicName() {
-		return symbolicName;
-	}
+                NameVersion imp = new NameVersion(e, ePos, ver, vPos);
+                bundleMap.put(e, imp);
+                // System.out.println("Require-Bundle: " + e + " - " + ePos + " - " + ver + " - " + vPos);
+            }
+        }
+    }
 
-	public Pos getSymbolicNamePos() {
-		return symbolicNamePos;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-  public Set<String> getReferences() {
-    return this.bundleMap.keySet();
-  }
+    public String getImportVersion() {
+        if (importVersion != null)
+            return importVersion;
+        int lastDot = 0;
+        int i = 0;
+        for (; i < version.length(); ++i) {
+            char ch = version.charAt(i);
+            if (ch == '.') {
+                lastDot = i;
+            }
+            if (!Character.isDigit(ch))
+                break;
+        }
+        if (lastDot == 0)
+            lastDot = i;
+        importVersion = version.substring(0, lastDot);
+        return importVersion;
+    }
 
-  public Pos getPositions(String mod) {
-    NameVersion nv = bundleMap.get(mod);
-    if (nv == null)
-      return null;
-    Pos p = nv.getVersionPos();
-    if (p != null) return p;
-      
-    p = nv.getNamePos();
-    return new Pos(p.getEnd(), 0);
-  }
+    public Pos getVersionPos() {
+        return versionPos;
+    }
+
+    public String getSymbolicName() {
+        return symbolicName;
+    }
+
+    public String getFullSymbolicName() {
+        return fullSymbolicName;
+    }
+
+    public Pos getSymbolicNamePos() {
+        return symbolicNamePos;
+    }
+
+    public Set<String> getReferences() {
+        return this.bundleMap.keySet();
+    }
+
+    public Pos getPositions(String mod) {
+        NameVersion nv = bundleMap.get(mod);
+        if (nv == null)
+            return null;
+        Pos p = nv.getVersionPos();
+        if (p != null)
+            return p;
+
+        p = nv.getNamePos();
+        return new Pos(p.getEnd(), 0);
+    }
+
+    public String getBundleName() {
+        Pos p = dumbManifestSearcher.search("Bundle-Name");
+        if (p != null)
+            return dumbManifestSearcher.getContent(p).trim();
+        return symbolicName;
+    }
+
+    public String getBundleVendor() {
+        Pos p = dumbManifestSearcher.search("Bundle-Vendor");
+        if (p != null)
+            return dumbManifestSearcher.getContent(p).trim();
+        return "no vendor specified";
+    }
+
+    public HashMap<String, NameVersion> getBundleMap() {
+        return bundleMap;
+    }
 }
