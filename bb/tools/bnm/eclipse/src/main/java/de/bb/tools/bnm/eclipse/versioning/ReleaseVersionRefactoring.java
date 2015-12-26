@@ -32,6 +32,7 @@ public class ReleaseVersionRefactoring extends PromoteVersionRefactoring {
 
   public ReleaseVersionRefactoring(IProject currentProject) {
     super(currentProject);
+    promoteToSnapshot = false;
   }
 
   

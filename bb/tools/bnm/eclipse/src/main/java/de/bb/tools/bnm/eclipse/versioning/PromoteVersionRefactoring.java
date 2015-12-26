@@ -23,7 +23,6 @@ import org.eclipse.core.resources.IProject;
 public class PromoteVersionRefactoring extends VersionRefactoring {
 
     public PromoteVersionRefactoring(IProject currentProject) {
-        super("-SNAPSHOT");
         this.currentProject = currentProject;
     }
 

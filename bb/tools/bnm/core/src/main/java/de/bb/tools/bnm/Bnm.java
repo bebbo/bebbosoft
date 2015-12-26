@@ -28,6 +28,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Stack;
 
@@ -158,6 +159,7 @@ public class Bnm {
     Setting setting = new Setting();
     private boolean skipUnchanged;
     private boolean verbose;
+	private HashSet<String> relevantProjects;
 
     public Bnm(Loader loader) throws Exception {
         this(loader, true);
@@ -310,6 +312,7 @@ public class Bnm {
                 if (local.get(sid) != null)
                     pomDeps.add(sid);
             }
+            pomDeps.remove(pom.getId());
             pomDepMap.put(pom.getId(), pomDeps);
         }
 
@@ -416,7 +419,15 @@ public class Bnm {
 
             // clear the attached files
             for (ArrayList<Pom> l : localSorted) {
-                for (Pom p : l) {
+            	for (Iterator<Pom> i = l.iterator(); i.hasNext();) {
+            		Pom p = i.next();
+            		
+            		// remove irrelevant projects
+            		if (relevantProjects != null && !relevantProjects.contains(p.getName())) {
+            			i.remove();
+            			continue;
+            		}
+            		
                     p.reset();
                 }
             }
@@ -556,5 +567,9 @@ public class Bnm {
     public String stats() {
         return pluginInfos.toString();
     }
+
+	public void setBuildOnly(HashSet<String> relevantProjects) {
+		this.relevantProjects = relevantProjects;
+	}
 
 }

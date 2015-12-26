@@ -37,6 +37,7 @@ import de.bb.tools.bnm.Loader;
 import de.bb.tools.bnm.Log;
 import de.bb.tools.bnm.Pom;
 import de.bb.tools.bnm.eclipse.Plugin;
+import de.bb.tools.bnm.model.Id;
 
 public class BnmProject {
 
@@ -54,6 +55,7 @@ public class BnmProject {
     // needed during build
     private HashSet<String> slaves2build = new HashSet<String>();
     private Stack<ArrayList<Pom>> buildGroups = new Stack<ArrayList<Pom>>();
+	private ArrayList<Pom> projects;
 
     public BnmProject(IProject p) throws Exception {
         System.err.println("add master project: " + p);
@@ -67,11 +69,14 @@ public class BnmProject {
         bnm.setSkipUnchanged(true);
         File path = project.getLocation().toFile();
         bnm.loadRecursive(path);
-        ArrayList<Pom> projects = bnm.getProjectsInOrder();
+        projects = bnm.getProjectsInOrder();
         jar2Name = new HashMap<String, String>();
         name2Jar = new HashMap<String, String>();
         modName2modPath = new HashMap<String, String>();
         modPath2modName = new HashMap<String, String>();
+
+        // track only the relevant projects
+        HashSet<String> relevantProjects = new HashSet<String>();
         for (Pom pom : projects) {
             String name = pom.getName();
             Loader loader = pom.getLoader();
@@ -87,6 +92,12 @@ public class BnmProject {
                 name2Jar.put(name, jarName);
                 modName2modPath.put(name, pomDir);
                 modPath2modName.put(pomDir, name);
+                
+                if (slaves.containsKey(name)) {
+                	for (final Id id : pom.getAllDependencies())
+                		relevantProjects.add(pom.getName());
+                }
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -94,6 +105,7 @@ public class BnmProject {
         slaves2build.clear();
         // output build order once
         bnm.getSorted();
+        bnm.setBuildOnly(relevantProjects);
     }
 
     public boolean addSlave(IProject p) {
@@ -391,6 +403,7 @@ public class BnmProject {
         try {
             bnm = null;
             init();
+            bnm.setBuildOnly(null); // build all
             bnm.setSkipUnchanged(false);
             bnm.process(CLEAN);
         } catch (Exception e) {

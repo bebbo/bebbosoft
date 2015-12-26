@@ -43,15 +43,13 @@ public abstract class VersionRefactoring extends Refactoring {
     ArrayList<IPath> pomList = new ArrayList<IPath>();
     protected HashMap<PomInfo, IPath> pom2Loc = new HashMap<PomInfo, IPath>();
     protected HashMap<String, PomInfo> id2Pom = new HashMap<String, PomInfo>();
-    private String snapshot;
+	protected boolean promoteToSnapshot = true;
 
-    public VersionRefactoring(String snapshot) {
-        super();
-        this.snapshot = snapshot;
+    public VersionRefactoring() {
     }
 
-    public RefactoringStatus checkInitialConditions(IProgressMonitor pm) throws CoreException,
-            OperationCanceledException {
+    public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
+            throws CoreException, OperationCanceledException {
         try {
             // collect the data
             IResourceVisitor visitor = new IResourceVisitor() {
@@ -59,8 +57,11 @@ public abstract class VersionRefactoring extends Refactoring {
                     if (resource instanceof IFolder)
                         return true;
                     IPath loc = resource.getLocation();
-                    if ("pom.xml".equals(loc.lastSegment()))
-                        pomList.add(loc);
+                    if ("pom.xml".equals(loc.lastSegment())) {
+                    	IPath loc2 = loc.removeLastSegments(2);
+                    	if (!"target".equals(loc2.lastSegment()))
+                    		pomList.add(loc);
+                    }
                     return true;
                 }
             };
@@ -72,8 +73,11 @@ public abstract class VersionRefactoring extends Refactoring {
 
             SubProgressMonitor spm = new SubProgressMonitor(pm, 1);
             spm.beginTask("reading content", pomList.size());
-            // read the data and create the version
-            int index = 0;
+
+            // map ids to the first occured index.
+            HashMap<String, Integer> id2Index = new HashMap<String, Integer>();
+            HashMap<String, VI> entries = new HashMap<String, VI>();
+
             for (IPath pomLoc : pomList) {
                 PomInfo pInfo;
                 try {
@@ -87,13 +91,29 @@ public abstract class VersionRefactoring extends Refactoring {
                 if (bundleId != null) {
                     id2Pom.put(bundleId, pInfo);
                 }
-                VI vi = new VI();
-                vi.id = pInfo.getId();
-                vi.origVersion = vi.version = pInfo.getVersion();
-                vi.bundleId = pInfo.getBundleId();
-                vi.origBundleVersion = vi.bundleVersion = pInfo.getBundleVersion();
-                data.add(vi);
-                ++index;
+
+                for (String id : pInfo.getReferences()) {
+                    int colon = id.lastIndexOf(':');
+                    String ga = id.substring(0, colon);
+                    String ver = id.substring(colon + 1);
+
+                    // collect the data inside the array list
+                    VI vi = entries.get(ga);
+                    if (vi == null) {
+                        vi = new VI();
+                        vi.id = PomInfo.toId(id);
+                        vi.origVersion = vi.version = ver;
+                        if (vi.id.equals(pInfo.getId())) {
+                            vi.bundleId = pInfo.getBundleId();
+                            vi.origBundleVersion = vi.bundleVersion = pInfo
+                                    .getBundleVersion();
+                        }
+                        entries.put(ga, vi);
+                        data.add(vi);
+                    }
+
+                    vi.addVersion(ver);
+                }
                 spm.worked(1);
             }
             spm.done();
@@ -102,7 +122,8 @@ public abstract class VersionRefactoring extends Refactoring {
         } catch (CoreException ce) {
             throw ce;
         } catch (Exception e) {
-            throw new CoreException(new Status(IStatus.ERROR, Plugin.PLUGIN_ID, e.getMessage()));
+            throw new CoreException(new Status(IStatus.ERROR, Plugin.PLUGIN_ID,
+                    e.getMessage()));
         }
     }
 
@@ -164,7 +185,7 @@ public abstract class VersionRefactoring extends Refactoring {
         }
         pm.worked(1);
 
-        extendPomChanges(pomDeps, modifiedIds, id2newVersion, touched, this.snapshot);
+        extendPomChanges(pomDeps, modifiedIds, id2newVersion, touched);
         pm.worked(1);
 
         // now all elements to modify are known.
@@ -241,95 +262,24 @@ public abstract class VersionRefactoring extends Refactoring {
         return manifests;
     }
 
-    protected void addManifestChanges(CompositeChange change, SubProgressMonitor pm, ArrayList<String> manifests) {
-        SortedMap<String, String> maniDeps = Util.newTypedMultiMap();
-
-        pm.beginTask("refactoring MANIFEST.MF files", 4);
-        // build reference map
-        for (PomInfo pi : pom2Loc.keySet()) {
-            String id = pi.getBundleId();
-            if (id == null)
-                continue;
-            for (String ref : pi.getBundleReferences()) {
-                maniDeps.put(ref, PomInfo.toId(id));
-            }
-        }
-        pm.worked(1);
-
-        // modified contain modified versions
-        HashSet<String> modifiedIds = new HashSet<String>();
-        HashMap<String, String> id2newVersion = new HashMap<String, String>();
-        HashSet<String> touched = new HashSet<String>();
-        // find all changes
-        for (VI vi : data) {
-            String orgV = vi.origBundleVersion;
-            String newV = vi.bundleVersion;
-            if (orgV != null) {
-                if (orgV.equals(newV) && manifests.contains(vi.version) && !orgV.endsWith("SNAPSHOT")) {
-                    newV = Util.toOsgiVersion(vi.id);
-                }
-                if (!orgV.equals(newV)) {
-                    String mod = vi.id;
-                    modifiedIds.add(mod);
-                    id2newVersion.put(mod, newV);
-                    touched.add(mod);
-                }
-            }
-        }
-        pm.worked(1);
-
-        extendManifestChanges(maniDeps, modifiedIds, id2newVersion, touched, ".SNAPSHOT");
-        pm.worked(1);
-
-        // now all elements to modify are known.
-        if (modifiedIds.size() == 0)
-            return;
-
-        int removeCount = currentProject.getLocation().segmentCount();
-        for (String id : touched) {
-            PomInfo pi = id2Pom.get(id);
-            TextEdit te = new MultiTextEdit();
-            for (String mod : modifiedIds) {
-                String nv = id2newVersion.get(mod);
-                if (nv.endsWith(".SNAPSHOT")) {
-                    nv = nv.substring(0, nv.length() - 9);
-                }
-                Pos pos = pi.getBundlePositions(mod);
-                if (pos != null) {
-                    if (pos.getLength() == 0) {
-                        te.addChild(new ReplaceEdit(pos.getOffset(), pos.getLength(), ";bundle-version=\"" + nv + "\""));
-                    } else {
-                        te.addChild(new ReplaceEdit(pos.getOffset(), pos.getLength(), nv));
-                    }
-                }
-            }
-            IPath loc = pom2Loc.get(pi).removeFirstSegments(removeCount);
-            loc = loc.removeLastSegments(1).append("META-INF").append("MANIFEST.MF");
-            IFile f = (IFile) this.currentProject.findMember(loc);
-            TextFileChange tfc = new TextFileChange("MANIFEST.MF : " + id, f);
-            tfc.setEdit(te);
-            change.add(tfc);
-        }
-        pm.worked(1);
-    }
 
     protected void extendPomChanges(SortedMap<String, String> maniDeps, HashSet<String> modifiedIds,
-            HashMap<String, String> id2newVersion, HashSet<String> touched, String snapshot) {
+            HashMap<String, String> id2newVersion, HashSet<String> touched) {
         // walk through all and promote changes
         Stack<String> stack = new Stack<String>();
         stack.addAll(modifiedIds);
         while (stack.size() > 0) {
             String module = stack.pop();
             for (String ref : maniDeps.subMap(module, module + "\0").values()) {
-                if (touched.contains(ref))
-                    continue;
+//                if (touched.contains(ref))
+//                    continue;
                 touched.add(ref);
 
                 PomInfo pi = id2Pom.get(ref);
                 String version = id2newVersion.get(ref);
                 if (version == null)
                     version = pi.getVersion();
-                if (version == null || version.endsWith(snapshot))
+                if (version == null || promoteToSnapshot == version.endsWith("-SNAPSHOT"))
                     continue;
 
                 String newVersion = Util.nextSnapshots(version).get(0);
@@ -339,32 +289,4 @@ public abstract class VersionRefactoring extends Refactoring {
             }
         }
     }
-
-    protected void extendManifestChanges(SortedMap<String, String> maniDeps, HashSet<String> modifiedIds,
-            HashMap<String, String> id2newVersion, HashSet<String> touched, String snapshot) {
-        // walk through all and promote changes
-        Stack<String> stack = new Stack<String>();
-        stack.addAll(modifiedIds);
-        while (stack.size() > 0) {
-            String module = stack.pop();
-            for (String ref : maniDeps.subMap(module, module + "\0").values()) {
-                if (touched.contains(ref))
-                    continue;
-                touched.add(ref);
-
-                PomInfo pi = id2Pom.get(ref);
-                String version = id2newVersion.get(ref);
-                if (version == null)
-                    version = pi.getBundleVersion();
-                if (version == null || version.endsWith(snapshot))
-                    continue;
-
-                String newVersion = Util.nextSnapshots(pi.getVersion()).get(0);
-                newVersion = Util.toOsgiVersion(newVersion);
-                id2newVersion.put(ref, newVersion);
-                stack.push(ref);
-            }
-        }
-    }
-
 }

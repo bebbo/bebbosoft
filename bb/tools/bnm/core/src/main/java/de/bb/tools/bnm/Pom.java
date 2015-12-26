@@ -590,8 +590,14 @@ public class Pom {
     }
 
     public ArrayList<Id> getAllDependencies() {
-        ArrayList<Id> al = new ArrayList<Id>();
+        final ArrayList<Id> al = new ArrayList<Id>();
         al.addAll(effectivePom.getAllDependencies());
+        for (final String pluginIdGoal : pluginMap.keySet()){
+        	final int colon = pluginIdGoal.lastIndexOf(':');
+        	final String pluginId = pluginIdGoal.substring(0, colon);
+        	final String version = pluginVersions.get(pluginId);
+        	al.add(new Id(pluginId + ":" + version));
+        }
         return al;
     }
 
