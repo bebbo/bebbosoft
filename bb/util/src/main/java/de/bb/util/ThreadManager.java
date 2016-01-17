@@ -205,9 +205,12 @@ public class ThreadManager {
     }
 
     private int maxWaitCount = 1;
-    private int maxCount = 0;
-    private int waiting = 0;
-    private int running = 0;
+    private int maxCount;
+    private int waiting;
+    private int running;
+    private int idling;
+
+    private Object idle = new Object();
 
     // used to create threads
     private Factory factory;
@@ -222,9 +225,6 @@ public class ThreadManager {
 
     private long nextReduceTime;
     
-    Object idle = new Object();
-    int idling;
-
     /**
      * Create a ThreadManager object.
      * 
@@ -390,7 +390,7 @@ public class ThreadManager {
     private void check() {
         synchronized (lock) {
             // create needed threads
-            if (waiting >= maxWaitCount)
+            if (waiting + idling >= maxWaitCount)
                 return;
 
             // check whether threads are lost:
@@ -402,11 +402,12 @@ public class ThreadManager {
             nextReduceTime = System.currentTimeMillis() + 60 * 1000L;
             
             // create threads
+            int total = running + waiting + idling;
             int max = maxWaitCount - waiting - idling;
             if (max < 0)
                 max = 0;
-            if (running + waiting + max > maxCount)
-                max = maxCount - running - waiting;
+            if (total + max > maxCount)
+                max = maxCount - total;
             try {
                 while (max-- > 0) {
                     ++running;
