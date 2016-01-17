@@ -3,7 +3,7 @@
 	<groupId>&lt;root&gt;</groupId>
 	<artifactId>&lt;pom&gt;</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.5</version>
+	<version>0.1.6</version>
 	<properties>
 		<directory>${project.build.directory}</directory>
 		<finalName>${artifactId}-${version}</finalName>
@@ -31,7 +31,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>antrun-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-antrun-plugin</replace>
 					</replaces>
@@ -39,7 +39,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>exec-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-exec-plugin</replace>
                         <replace>org.codehaus.mojo:exec-maven-plugin</replace>
@@ -48,7 +48,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>clean-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-clean-plugin</replace>
 					</replaces>
@@ -56,7 +56,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>exec-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-exec-plugin</replace>
 					</replaces>
@@ -64,7 +64,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>install-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-install-plugin</replace>
 					</replaces>
@@ -72,7 +72,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>resources-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-resources-plugin
 						</replace>
@@ -81,7 +81,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>compiler-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-compiler-plugin</replace>
 					</replaces>
@@ -89,7 +89,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>surefire-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-surefire-plugin</replace>
 					</replaces>
@@ -97,7 +97,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>jar-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-jar-plugin</replace>
                         <replace>org.apache.maven.plugins:maven-ejb-plugin</replace>
@@ -134,7 +134,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>deploy-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-deploy-plugin</replace>
 					</replaces>
@@ -142,7 +142,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>dependency-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.maven.plugins:maven-dependency-plugin
 						</replace>
@@ -151,7 +151,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>noop-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.codehaus.mojo:buildnumber-maven-plugin</replace>
 						<replace>org.codehaus.mojo:build-helper-maven-plugin</replace>
@@ -160,7 +160,7 @@
 				<plugin>
 					<groupId>de.bb.tools.bnm.plugin</groupId>
 					<artifactId>bundle-plugin</artifactId>
-					<version>0.1.5</version>
+					<version>0.2.2</version>
 					<replaces>
 						<replace>org.apache.felix:maven-bundle-plugin</replace>
 					</replaces>
@@ -168,7 +168,7 @@
                 <plugin>
                     <groupId>de.bb.tools.bnm.plugin</groupId>
                     <artifactId>flex-plugin</artifactId>
-                    <version>0.1.5</version>
+                    <version>0.2.2</version>
                     <replaces>
                         <replace>org.sonatype.flexmojos:flexmojos-maven-plugin</replace>
                     </replaces>

@@ -596,7 +596,7 @@ public class Pom {
         	final int colon = pluginIdGoal.lastIndexOf(':');
         	final String pluginId = pluginIdGoal.substring(0, colon);
         	final String version = pluginVersions.get(pluginId);
-        	al.add(new Id(pluginId + ":" + version));
+        	al.add(new Dependency(pluginId + ":" + version));
         }
         return al;
     }
