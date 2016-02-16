@@ -7,31 +7,31 @@
   </parent>
   <groupId>de.bb.web</groupId>
   <artifactId>board</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.3</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>util</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.15</version>
+      <version>1.0.18</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>mejb</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.0.1</version>
+      <version>0.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>rmi</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.0.1</version>
+      <version>0.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>sql</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.3</version>
+      <version>1.0.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -43,7 +43,7 @@
     <dependency>
       <artifactId>user</artifactId>
       <groupId>de.bb.web</groupId>
-      <version>0.0.1</version>
+      <version>0.0.3</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

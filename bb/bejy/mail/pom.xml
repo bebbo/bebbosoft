@@ -7,31 +7,31 @@
   </parent>
   <groupId>de.bb.bejy</groupId>
   <artifactId>mail</artifactId>
-  <version>1.6.4</version>
+  <version>1.6.6</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>sql</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.3</version>
+      <version>1.0.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>bex2</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.7</version>
+      <version>1.0.9</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>util</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.15</version>
+      <version>1.0.18</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>server</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.4</version>
+      <version>1.6.6</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

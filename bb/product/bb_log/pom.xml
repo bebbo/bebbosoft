@@ -8,13 +8,13 @@
 	</parent>
 	<groupId>de.bb.product</groupId>
 	<artifactId>bb_log</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.4</version>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>de.bb</groupId>
 			<artifactId>log</artifactId>
-			<version>0.0.1</version>
+			<version>0.1.1</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -51,7 +51,7 @@
 					<dependency>
 						<groupId>de.bb.tools</groupId>
 						<artifactId>uses</artifactId>
-                        <version>1.5.0</version>
+                        <version>1.5.2</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -83,7 +83,7 @@
 					<dependency>
 						<groupId>de.bb.tools</groupId>
 						<artifactId>mug</artifactId>
-						<version>1.7.2</version>
+						<version>1.7.4</version>
 					</dependency>
 				</dependencies>
 				<executions>

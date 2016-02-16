@@ -134,6 +134,7 @@
     <module>benchmark</module>
     <module>mejb</module>
     <module>rmi</module>
+    <module>jpa</module>
   </modules>
   <distributionManagement>
     <repository>
