@@ -27,7 +27,7 @@ public class FastByteArrayOutputStream extends OutputStream {
     }
 
     public FastByteArrayOutputStream() {
-        this(4096);
+        this(32768);
     }
 
     public void write(int b) {
