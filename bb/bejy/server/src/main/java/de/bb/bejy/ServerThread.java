@@ -36,7 +36,7 @@ public class ServerThread extends de.bb.util.ThreadManager.Thread {
 	private static Logger LOG = Logger.getLogger(ServerThread.class);
 
 	static {
-//		LOG.setLevel(Logger.DEBUG);
+		LOG.setLevel(Logger.WARN);
 	}
 
 	Server server;
