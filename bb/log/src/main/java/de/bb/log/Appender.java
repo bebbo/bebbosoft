@@ -54,7 +54,7 @@ public class Appender implements IAppender, Callback {
         os = ps;
     }
 
-    @Override
+    
     public void setup(Map<String, String> attributes) {
         final String name = attributes.get("name");
         if (name != null)
@@ -78,13 +78,12 @@ public class Appender implements IAppender, Callback {
             } catch (Exception e) {
                 System.err.println(e);
             }
-        }
-
-        if (Logger.USE_ASYNC && now > nextFlush) {
-            Logger.FLUSHER.put(getKey(), this);
-            nextFlush = now + Logger.FLUSHER.getTimeout() / 2;
-        } else {
-            flush();
+            if (Logger.USE_ASYNC && now > nextFlush) {
+                Logger.FLUSHER.put(getKey(), this);
+                nextFlush = now + Logger.FLUSHER.getTimeout() / 2;
+            } else {
+                flush();
+            }
         }
     }
 
@@ -116,7 +115,7 @@ public class Appender implements IAppender, Callback {
     /**
      * Used to flush asynchronous if configured to.
      */
-    @Override
+    
     public boolean dontRemove(Object key) {
         flush();
         return false;

@@ -226,6 +226,8 @@ public class Formatter implements IFormatter {
      * @return the escaped text
      */
     public static String escape(final String text) {
+    	if (text == null)
+    		return "";
         final int l = text.length();
         for (int i = 0; i < l; ++i) {
             char ch = text.charAt(i);
