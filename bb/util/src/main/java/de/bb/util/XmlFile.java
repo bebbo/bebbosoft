@@ -132,7 +132,7 @@ public class XmlFile {
 
 	private final static byte SPACES[] = new byte[256];
 
-	private static final ByteRef XML = new ByteRef("<?xml");
+	private static final String XML = "<?xml";
 
 	private static final ByteRef ENCODING = new ByteRef("encoding");
 
@@ -877,10 +877,7 @@ public class XmlFile {
 		try {
 			File out = new File(file + ".$$$");
 			FileOutputStream fos = new FileOutputStream(out);
-			BufferedOutputStream bos = new BufferedOutputStream(fos, 0x8000);
-
-			write(bos);
-			bos.flush();
+			write(fos);
 			// close file
 			fos.close();
 
@@ -901,7 +898,9 @@ public class XmlFile {
 	 *             on error
 	 */
 	public void write(OutputStream os) throws IOException {
-		root.writeRoot(os, encoding);
+		BufferedOutputStream bos = new BufferedOutputStream(os, 0x8000);
+		root.writeRoot(bos, encoding);
+		bos.flush();
 	}
 
 	private Tag getTag(String path) {
@@ -950,6 +949,37 @@ public class XmlFile {
 	}
 
 	/**
+	 * Returns the normalized path if the path is valid. null otherwise.
+	 * Search expressions are replaced with the id of the corresponding element. E.g. "/bar/\foo\aaa" yields "/bar/foo#00004".
+	 * Using a normalized path is way faster than paths containing a search expression.
+	 * @param path the path to normalize.
+	 * @return Returns the normalized path if the path is valid. null otherwise.
+	 */
+	public String normalizeSection(String path) {
+		if (path.length() == 0 || path.charAt(0) != '/')
+			return null;
+		
+		Tag here = getTag(path);
+		if (here == null)
+			return null;
+		
+		return here.getPath();
+	}
+	
+	/**
+	 * Quick test if there a child sections.
+	 * @param path the path to test.
+	 * @return true if there are child sections. False if not or if the path is invalid.
+	 */
+	public boolean hasChildSections(String path) {
+		Tag here = getTag(path);
+		if (here == null)
+			return false;
+		return !here.tagsByName.isEmpty();
+	}
+
+	
+	/**
 	 * Get all sections for the given XML file, matching the path String. So
 	 * "/foo/a" would match "/foo/all" and "/foo/any" but not "/foo/be". A path
 	 * ending with '/' will return all contained elements.
@@ -962,7 +992,7 @@ public class XmlFile {
 		if (DEBUG)
 			System.out.println("getSections(" + path + ")");
 		Vector<String> v = new Vector<String>();
-		if (path.length() == 0 || path.charAt(0) != '/')
+		if (path == null || path.length() == 0 || path.charAt(0) != '/')
 			return v;
 		int sl = 1 + path.lastIndexOf('/');
 		String opath = path.substring(0, sl);
@@ -1344,8 +1374,8 @@ public class XmlFile {
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
-		if (root.allByOrder.size() > 0) {
-			ByteRef tag = (ByteRef) root.allByOrder.get(0);
+		if (!root.allByOrder.isEmpty()) {
+			String tag = root.allByOrder.get(0).toString();
 			if (tag.startsWith(XML))
 				root.allByOrder.remove(0);
 		}

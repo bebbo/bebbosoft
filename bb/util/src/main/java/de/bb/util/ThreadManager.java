@@ -143,12 +143,11 @@ public class ThreadManager {
          *            the ThreadManager object
          */
         public Thread(ThreadManager tm) {
-            super(tm.threadGroup, tm.mid + "-thread-" + (++tm.tid));
+            super(tm.threadGroup, tm.mid + "-thread-" + (tm.getNextNumber()));
             this.tm = tm;
-            busy = true;
         }
 
-        /**
+		/**
          * This function MUST be called from the threads main loop BEFORE the real work starts.
          */
         protected void setBusy() {
@@ -235,7 +234,11 @@ public class ThreadManager {
         this("bb_threadmanager-" + (++globalMid), f);
     }
 
-    /**
+    public synchronized int getNextNumber() {
+		return ++tid;
+	}
+
+	/**
      * Create a ThreadManager object.
      * 
      * @param name
@@ -334,7 +337,7 @@ public class ThreadManager {
 
             --running;
             if (die) {
-                wakeIdle();
+                wakeNIdle(1);
             } else {
                 ++waiting;
             }
@@ -366,7 +369,7 @@ public class ThreadManager {
                     waiting = 0;
             }
             
-            return running + waiting;
+            return running + waiting + idling;
         }
     }
 
@@ -410,14 +413,14 @@ public class ThreadManager {
                 max = maxCount - total;
             try {
                 while (max-- > 0) {
-                    ++running;
+                    ++waiting;
                     factory.create(this);
                     if (DEBUG)
                         System.out.println("creating thread - now: " + running + ":" + waiting);
-                    // Thread.yield();
+                    Thread.yield();
                 }
             } catch (Throwable t) {
-                --running;
+                --waiting;
                 t.printStackTrace();
             }
         }
@@ -436,6 +439,13 @@ public class ThreadManager {
     public void wakeIdle() {
         synchronized (idle) {
             idle.notifyAll();
+        }
+    }
+
+    public void wakeNIdle(int n) {
+        synchronized (idle) {
+        	while (n-- > 0)
+        		idle.notify();
         }
     }
 }
