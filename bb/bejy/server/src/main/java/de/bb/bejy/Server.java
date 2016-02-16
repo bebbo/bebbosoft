@@ -1,69 +1,22 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/server/src/main/java/de/bb/bejy/Server.java,v $
- * $Revision: 1.66 $
- * $Date: 2014/09/22 09:24:39 $
- * $Author: bebbo $
- * $Locker:  $#
- * $State: Exp $
+ * Server config of BEJY
  * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+ * Copyright (c) by Stefan Bebbo Franke 1999-2016.
  *
- * generell Server class
+  * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
-    NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-    1. Every product and solution using this software, must be free
-      of any charge. If the software is used by a client part, the
-      server part must also be free and vice versa.
-
-    2. Each redistribution must retain the copyright notice, and
-      this list of conditions and the following disclaimer.
-
-    3. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-
-    4. All advertising materials mentioning features or use of this
-      software must display the following acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
-    5. Redistributions of any form whatsoever must retain the following
-      acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
-  DISCLAIMER OF WARRANTY
-
-  Software is provided "AS IS," without a warranty of any kind.
-  You may use it on your own risk.
-
- ******************************************************************************
-  LIMITATION OF LIABILITY
-
-  I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
-  AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
-  FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
-  CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
-  OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
-  SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
-  COPYRIGHT
-
-  (c) 1994-2000 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
-
 package de.bb.bejy;
 
 import java.io.IOException;
@@ -110,7 +63,7 @@ public final class Server extends Configurable implements de.bb.util.ThreadManag
             { "timeout", "(ms) limits the maximal waiting time with blocking methods (e.g. read())", "120000" },
             { "bindAddr", "a specific address to bind to (e.g. 127.0.0.1), empty = 0.0.0.0" },
             { "maxThreads", "limits the maximal thread count handling this servers requests", "999" },
-            { "maxWait", "limits the maximal inactive threads (recommended: count of CPUs)", "1" },
+            { "maxWait", "limits the maximal inactive threads (recommended: count of CPUs)", "3" },
             { "fallback", "an optional fallback port, if SSL is used and the data does not match", "0" },
             { "startTLS", "the provided sslConfig is used by the protocol and a STARTTLS command", ""}};
 
@@ -162,7 +115,8 @@ public final class Server extends Configurable implements de.bb.util.ThreadManag
         if (timeout < 0)
             timeout = Integer.MAX_VALUE;
         int maxCount = getIntProperty("maxThreads", 99);
-        int waitCount = getIntProperty("maxWait", 1);
+        int waitCount = getIntProperty("maxWait", 3);
+        if (waitCount <= 0) waitCount = 1;
 
         String bindAddr = getProperty("bindAddr", "").trim();
 
@@ -305,208 +259,3 @@ public final class Server extends Configurable implements de.bb.util.ThreadManag
         return supportsTLS() && !"true".equals(getProperty("startTLS"));
     }
 }
-
-/******************************************************************************
- * $Log: Server.java,v $
- * Revision 1.66  2014/09/22 09:24:39  bebbo
- * @N added support for SSL host name, to choose certificate and key based on host name
- *
- * Revision 1.65  2014/06/23 19:02:58  bebbo
- * @N added support for startTLS: ssl info is not immediately used
- * @R passwords which are not needed in clear text are now stored via PKDBF2 with SHA256
- * @R added support for groups/roles in groups / dbis
- *
- * Revision 1.64  2014/03/23 22:07:32  bebbo
- * @B fixed termination of current waiting socket accept threads
- * Revision 1.63 2013/11/28 12:23:03 bebbo
- * 
- * @N SSL cipher types are configurable
- * @I using nio sockets Revision 1.62 2013/06/18 13:23:51 bebbo
- * 
- * @I preparations to use nio sockets
- * @V 1.5.1.68 Revision 1.61 2012/08/11 17:03:51 bebbo
- * 
- * @I typed collections Revision 1.60 2010/12/17 23:25:10 bebbo /FIXED: ssl config now supports multiple certificates
- *    Revision 1.59 2010/04/10 12:11:51 bebbo
- * 
- * @D disabled DEBUG output
- * 
- *    Revision 1.58 2009/11/18 08:04:35 bebbo
- * @B fixed a possible loop with a disconnected socket.
- * 
- *    Revision 1.57 2008/03/13 17:21:59 bebbo
- * @I disable TCP nodelay
- * 
- *    Revision 1.56 2007/08/09 16:06:54 bebbo
- * @I integrated new SSL implementation
- * 
- *    Revision 1.55 2007/04/21 19:13:22 bebbo
- * @R improved speed by using the chinese remainder theorem
- * 
- *    Revision 1.54 2007/01/18 21:43:10 bebbo
- * @D added a stacktrace in case of OOME
- * 
- *    Revision 1.53 2006/03/17 20:06:56 bebbo
- * @B fixed possible NPE
- * 
- *    Revision 1.52 2006/03/17 11:30:02 bebbo
- * @I removed double NPE check
- * 
- *    Revision 1.51 2006/02/06 09:13:40 bebbo
- * @I cleanup
- * 
- *    Revision 1.50 2005/11/11 18:52:00 bebbo
- * @N added stuff for verbosity
- * 
- *    Revision 1.49 2004/12/13 15:27:27 bebbo
- * @D added an logfile entry if a SSL configuration (key or cert) cannot be loaded
- * 
- *    Revision 1.48 2004/04/16 13:38:44 bebbo
- * @O removed unused variables
- * 
- *    Revision 1.47 2004/04/07 16:33:06 bebbo
- * @B fixed log message
- * 
- *    Revision 1.46 2004/01/25 12:43:47 bebbo
- * @B fixed handling of empty bind adress
- * 
- *    Revision 1.45 2003/11/26 09:56:15 bebbo
- * @B fixed NPEs
- * 
- *    Revision 1.44 2003/07/09 18:29:45 bebbo
- * @N added default values.
- * 
- *    Revision 1.43 2003/06/24 19:47:34 bebbo
- * @R updated build.xml and tools
- * @C better comments - less docheck mournings
- * 
- *    Revision 1.42 2003/06/24 09:37:36 bebbo
- * @B timeout setting is now used properly
- * 
- *    Revision 1.41 2003/06/20 09:09:32 bebbo
- * @N onine configuration seems to be complete for bejy and http
- * 
- *    Revision 1.40 2003/06/18 15:07:04 bebbo
- * @N added ssl configuration
- * 
- *    Revision 1.39 2003/06/18 13:44:18 bebbo
- * @R modified some descriptions
- * 
- *    Revision 1.38 2003/06/18 13:36:08 bebbo
- * @R almost complete on the fly update.
- * 
- *    Revision 1.37 2003/06/17 15:13:36 bebbo
- * @R more changes to enable on the fly config updates
- * 
- *    Revision 1.36 2003/06/17 10:18:10 bebbo
- * @N added Configurator and Configurable
- * @R redesign to utilize the new configuration scheme
- * 
- *    Revision 1.35 2003/05/13 15:42:07 bebbo
- * @N added config classes for future runtime configuration support
- * 
- *    Revision 1.34 2003/01/25 15:07:49 bebbo
- * @N added parameter backLog and bindAddress
- * 
- *    Revision 1.33 2002/12/19 16:32:11 bebbo
- * @B fixed/changed connect behaviour when SSL is used.
- * 
- *    Revision 1.32 2002/12/19 14:51:03 bebbo
- * @I prepared to read further ssl properties
- * 
- *    Revision 1.31 2002/12/17 14:02:30 bebbo
- * @R changed used logFile: if no own is specified the default is used
- * 
- *    Revision 1.30 2002/11/22 21:20:10 bebbo
- * @R added shutdown() method to Protocol and invokin it
- * 
- *    Revision 1.29 2002/11/06 09:41:07 bebbo
- * @I reorganized imports
- * @I removed unused variables
- * 
- *    Revision 1.28 2002/08/21 14:49:55 bebbo
- * @R further creation of UI
- * 
- *    Revision 1.27 2002/08/21 09:14:43 bebbo
- * @R changes for the admin UI
- * 
- *    Revision 1.26 2002/05/16 15:19:48 franke
- * @C CVS
- * 
- *    Revision 1.25 2002/01/22 08:54:04 franke
- * @I removed the setNoDelay(true) call
- * 
- *    Revision 1.24 2002/01/19 15:48:53 franke
- * @R Protocol.trigger() now returns true on success, false on error
- * @I enabled Nagels Algorithm again
- * 
- *    Revision 1.23 2001/11/20 17:36:17 bebbo
- * @D removed Exception stacktrace
- * 
- *    Revision 1.22 2001/10/09 08:03:52 bebbo
- * @I added setNoDelay(true) before close
- * 
- *    Revision 1.21 2001/10/08 22:05:13 bebbo
- * @L modified logging
- * 
- *    Revision 1.19 2001/09/15 10:38:53 bebbo
- * @D more logging
- * 
- *    Revision 1.18 2001/09/15 08:45:52 bebbo
- * @I using XmlFile instead of ConfigFile
- * @C added comments
- * 
- *    Revision 1.17 2001/05/07 08:59:06 bebbo
- * @B SSL was disabled since the config changed to XML
- * 
- *    Revision 1.16 2001/04/16 16:23:11 bebbo
- * @R changes for migration to XML configfile
- * 
- *    Revision 1.15 2001/04/16 13:43:26 bebbo
- * @I changed IniFile to XmlFile
- * 
- *    Revision 1.14 2001/03/30 17:27:15 bebbo
- * @R factory.load got an additional parameter
- * 
- *    Revision 1.13 2001/03/27 19:46:35 bebbo
- * @D removed DEBUG out
- * @I added internal loop calling trigger() and work() until socket is closed
- * 
- *    Revision 1.12 2001/03/27 09:51:52 franke
- * @R added function usesSsl()
- * 
- *    Revision 1.11 2001/03/20 18:32:34 bebbo
- * @R reusing connection until false returned
- * 
- *    Revision 1.10 2001/03/09 19:48:46 bebbo
- * @D disabled DEBUG messages
- * 
- *    Revision 1.9 2001/03/05 17:50:53 bebbo
- * @I added SSL server functionality
- * 
- *    Revision 1.8 2001/02/27 18:20:56 bebbo
- * @I disabled DEBUG messages
- * 
- *    Revision 1.7 2001/02/26 17:47:44 bebbo
- * @B local var hides member var
- * 
- *    Revision 1.6 2001/02/20 17:40:46 bebbo
- * @D added debug messages
- * 
- *    Revision 1.5 2001/02/19 19:55:43 bebbo
- * @I logFile is taken from server Entry
- * 
- *    Revision 1.4 2001/01/01 01:01:52 bebbo
- * @R passing logFile to Server CT
- * 
- *    Revision 1.3 2000/12/30 09:01:42 bebbo
- * @R protocols now are throwing Eceptions to indicate that a thread should end
- * 
- *    Revision 1.2 2000/12/28 20:53:24 bebbo
- * @I many changes
- * @I first working smtp and pop protocl
- * 
- *    Revision 1.1 2000/11/10 18:13:26 bebbo
- * @N new (uncomplete stuff)
- * 
- *****************************************************************************/

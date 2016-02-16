@@ -1,67 +1,21 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/bejy/server/src/main/java/de/bb/bejy/Configurable.java,v $
- * $Revision: 1.31 $
- * $Date: 2014/09/22 09:23:45 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
+ * config handling of BEJY
  * 
- * Copyright (c) by Stefan Bebbo Franke 1999-2000.
- * All rights reserved
+ * Copyright (c) by Stefan Bebbo Franke 1999-2016.
  *
- * config handling of bejy
+  * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- ******************************************************************************
-    NON COMMERCIAL PUBLIC LICENSE
- ******************************************************************************
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-    1. Every product and solution using this software, must be free
-      of any charge. If the software is used by a client part, the
-      server part must also be free and vice versa.
-
-    2. Each redistribution must retain the copyright notice, and
-      this list of conditions and the following disclaimer.
-
-    3. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-
-    4. All advertising materials mentioning features or use of this
-      software must display the following acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
-    5. Redistributions of any form whatsoever must retain the following
-      acknowledgment:
-        "This product includes software developed by BebboSoft,
-          written by Stefan Bebbo Franke. (http://www.bebbosoft.de)"
-
- ******************************************************************************
-  DISCLAIMER OF WARRANTY
-
-  Software is provided "AS IS," without a warranty of any kind.
-  You may use it on your own risk.
-
- ******************************************************************************
-  LIMITATION OF LIABILITY
-
-  I SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY YOU OR ANY THIRD PARTY
-  AS A RESULT OF USING OR DISTRIBUTING SOFTWARE. IN NO EVENT WILL I BE LIABLE
-  FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
-  CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS
-  OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE
-  SOFTWARE, EVEN IF I HAVE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
- *****************************************************************************
-  COPYRIGHT
-
-  (c) 1994-2003 by BebboSoft, Stefan "Bebbo" Franke, all rights reserved
-
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
  *****************************************************************************/
 package de.bb.bejy;
 
@@ -91,7 +45,7 @@ public abstract class Configurable {
     private String name;
     private Configurable parent;
 
-    private Map<String, Object> propertyNames = new SingleMap<String, Object>();
+	private Map<String, Object> propertyNames = new SingleMap<String, Object>();
     private Map<String, Object> propertyTypes = new SingleMap<String, Object>();
     private Map<String, Object> defaultValues = new SingleMap<String, Object>();
     private HashMap<String, String> properties = new HashMap<String, String>();
@@ -572,62 +526,4 @@ public abstract class Configurable {
     }
     */
 }
-/******************************************************************************
- * $Log: Configurable.java,v $
- * Revision 1.31  2014/09/22 09:23:45  bebbo
- * @R default parameters are no longer written to the config file bejy.xml - looks much nicer now
- *
- * Revision 1.30  2014/06/23 19:02:58  bebbo
- * @N added support for startTLS: ssl info is not immediately used
- * @R passwords which are not needed in clear text are now stored via PKDBF2 with SHA256
- * @R added support for groups/roles in groups / dbis
- * Revision 1.29 2014/03/23 22:06:44 bebbo
- * 
- * @B fixed shifting elements in web tree to last
- * 
- *    Revision 1.28 2013/06/18 13:23:24 bebbo
- * @I preparations to use nio sockets
- * @V 1.5.1.68 Revision 1.27 2012/11/13 06:37:46 bebbo
- * 
- * @R all properties containing "password" are supporting encryption Revision 1.26 2012/08/11 17:03:46 bebbo
- * 
- * @I typed collections Revision 1.25 2007/08/09 16:06:55 bebbo
- * 
- * @I integrated new SSL implementation
- * 
- *    Revision 1.24 2006/10/12 05:51:33 bebbo
- * @R default update = deactivate + activate. parent is no longer updated!
- * 
- *    Revision 1.23 2006/03/17 11:26:15 bebbo
- * @N added method children to get an Iterator for children with same key
- * 
- *    Revision 1.22 2006/02/06 09:12:13 bebbo
- * @I cleanup
- * 
- *    Revision 1.21 2005/11/11 18:49:55 bebbo
- * @R moved code to Config
- * 
- *    Revision 1.20 2004/12/13 15:26:25 bebbo
- * @B fixed class loading for JDK1.4.2_05 and later
- * 
- *    Revision 1.19 2004/04/07 16:33:23 bebbo
- * @I using new ClassLoader
- * 
- *    Revision 1.18 2004/03/23 11:07:52 bebbo
- * @I using new ZipClassLoader
- * @B catched an Exception in getPropertyClassNames()
- * 
- *    Revision 1.17 2003/10/01 12:01:51 bebbo
- * @C fixed all javadoc errors.
- * 
- *    Revision 1.16 2003/07/09 18:29:45 bebbo
- * @N added default values.
- * 
- *    Revision 1.15 2003/07/01 10:56:23 bebbo
- * @N added class browsing
- * 
- *    Revision 1.14 2003/06/24 19:47:34 bebbo
- * @R updated build.xml and tools
- * @C better comments - less docheck mournings
- * 
- *****************************************************************************/
+
