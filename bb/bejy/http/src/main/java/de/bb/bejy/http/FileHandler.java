@@ -147,6 +147,7 @@ public class FileHandler extends HttpHandler {
                 rLast = hp0.getDateHeader("if-modified-since");
             } catch (Exception ex) {
             }
+            sr.addHeader("cache-control",  "public, max-age=120, s-maxage=120");
             if (rLast != -1) {
                 if (DEBUG) {
                     System.out.println("request: " + hp0.getHeader("if-modified-since"));

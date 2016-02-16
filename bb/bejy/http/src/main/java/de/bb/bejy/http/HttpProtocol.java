@@ -69,10 +69,9 @@ public class HttpProtocol extends Protocol {
 
     private final static String version;
     static {
-        String s = "$Revision: 1.71 $";
-        no = "1.3." + s.substring(11, s.length() - 1);
+        no = "1.6.6";
         headerVersion = Version.getShort() + " HTTP " + no;
-        version = headerVersion + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        version = headerVersion + " (c) 2000-2016 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     public static String getVersion() {
@@ -110,7 +109,7 @@ public class HttpProtocol extends Protocol {
     }
 
     protected void setStreams(InputStream _is, OutputStream _os, String remote) {
-        super.setStreams(_is, new FastBufferedOutputStream(_os, 14120), remote);
+        super.setStreams(_is, new FastBufferedOutputStream(_os, 32768), remote);
         //    super.setStreams(_is, _os, remote);
     }
 
@@ -127,8 +126,12 @@ public class HttpProtocol extends Protocol {
             //    request.port = server.getPort();
 
             // parse incoming data and assemble a HttpRequestObject
+        	try {
             if (br == null || br.length() == 0)
                 br = readFirst();
+        	} catch (IOException ioe) {
+        		return false;
+        	}
 
             // get request line
             do {
@@ -221,8 +224,8 @@ public class HttpProtocol extends Protocol {
     protected static boolean keepAlive(HttpRequestBase request) {
         if (request.protocol.equals(RTSP10))
             return true;
-        if (!request.protocol.equals(HTTP11))
-            return false;
+        if (request.protocol.equals(HTTP11))
+            return true;
         String bAlive = request.inHeaders.get("CONNECTION");
         boolean alive = bAlive != null && bAlive.toUpperCase().equals("KEEP-ALIVE");
         return alive;

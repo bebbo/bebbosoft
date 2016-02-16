@@ -203,7 +203,7 @@ public class CgiHandler extends HttpHandler {
         v.add("SCRIPT_NAME=" + s);
 
         if (queryString.length() > 0)
-            v.add("REQUEST_URI=" + urlEscape(hp0.getRequestURI()) + "?" + queryString);
+            v.add("REQUEST_URI=" + urlEscape(hp0.getRequestURI() + "?" + queryString));
         else
             v.add("REQUEST_URI=" + urlEscape(hp0.getRequestURI()));
         v.add("SERVER_NAME=" + hreq.getServerName());
