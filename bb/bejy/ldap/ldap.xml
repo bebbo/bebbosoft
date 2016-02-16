@@ -1,15 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ldap>
   <objectclass name="top"/>
   <objectclass name="ds-root-dse"/>
   <subschemasubentry name="cn=schema"/>
   <supportedextension name="1.3.6.1.4.1.4203.1.11.1"/>
-  <cn name="Directory Manager" auth="x">
+  <cn name="directory manager" auth="x">
     <readpermission name=""/>
     <writepermission name="dc=de"/>
   </cn>
   <cn name="schema">
     <objectclass name="top"/>
-    <objectclass name="ldapSubentry"/>
+    <objectclass name="ldapsubentry" />
     <objectclass name="subschema"/>
     <attributetypes name="( 2.5.4.41 NAME 'name' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{32768} )"/>
     <attributetypes name="( 2.5.4.3 NAME ( 'cn' 'commonName' ) SUP name )"/>
@@ -67,8 +68,8 @@
     <objectclass name="top"/>
     <objectclass name="domain"/>
     <dc name="test">
-      <objectClass name="domain"/>
-      <objectClass name="top"/>
+      <objectclass name="domain"/>
+      <objectclass name="top"/>
     </dc>
   </dc>
 </ldap>

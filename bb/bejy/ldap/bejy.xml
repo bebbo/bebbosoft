@@ -1,0 +1,19 @@
+<bejy>
+	<group name="user" class="de.bb.bejy.ConfigGroup">
+		<user name="admin" />
+		<user name="bebbo"
+			password="{P5SHA256}DV2hGwIgwhi640m5ss2lrULtn1FLsOr5c8TjKSNP8ieJuqY0i3C4QGVsd3S5UgOhOQg=" />
+	</group>
+	<server name="ldaps" port="636" timeout="180000">
+		<protocol class="de.bb.bejy.ldap.LdapFactory" logFile="logs/ldaps">
+		</protocol>
+		<sslref ref="x" />
+	</server>
+    <server name="ldap" port="389" timeout="180000">
+        <protocol class="de.bb.bejy.ldap.LdapFactory" >
+        </protocol>
+    </server>
+	<ssl certFile="ssl/localhost.cer.b64" keyFile="ssl/localhost.key.b64" name="x" 
+	ciphers="TLS_RSA_WITH_RC4_128_SHA"
+	/>
+</bejy>
