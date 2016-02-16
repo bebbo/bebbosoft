@@ -5,6 +5,8 @@ syntax: regexp
 ^.*/build\.properties$
 ^.*/webapps$
 ^.*/webapps.*$
+^.*/entapps$
+^.*/entapps.*$
 ^.*/work$
 ^.*/.settings$
 syntax: regexp
