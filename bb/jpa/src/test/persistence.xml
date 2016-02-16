@@ -1,0 +1,8 @@
+<persistence>
+   <persistence-unit name="doh!">
+      <provider>de.bb.jpa.PP</provider>
+      <jta-data-source>java:/DefaultDS</jta-data-source>
+      <properties>
+      </properties>
+   </persistence-unit>
+</persistence>  
