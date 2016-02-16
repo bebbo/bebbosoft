@@ -28,6 +28,8 @@ import java.util.Stack;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.core.JavaModelManager;
@@ -56,6 +58,8 @@ public class BnmProject {
     private HashSet<String> slaves2build = new HashSet<String>();
     private Stack<ArrayList<Pom>> buildGroups = new Stack<ArrayList<Pom>>();
 	private ArrayList<Pom> projects;
+	
+	private HashMap<String, Long> lastBuilds = new HashMap<String, Long>();
 
     public BnmProject(IProject p) throws Exception {
         System.err.println("add master project: " + p);
@@ -263,7 +267,15 @@ public class BnmProject {
         if (bnm == null)
             return;
 
-        String module = slave.getName();
+        final String moduleName = slave.getName();
+
+        Long lastBuild = lastBuilds.get(moduleName);
+        long maxModificationDate = getmaxModificationDate(this.project);
+        if (lastBuild != null && maxModificationDate <= lastBuild)
+        	return;
+        
+        lastBuilds.put(moduleName, maxModificationDate);
+        
 
         // create a local build group until our module appears
         Stack<ArrayList<Pom>> local = new Stack<ArrayList<Pom>>();
@@ -272,7 +284,7 @@ public class BnmProject {
             // check whether our module is contained
             ArrayList<Pom> topGroup = buildGroups.peek();
             for (Pom pom : topGroup) {
-                if (module.equals(pom.getName())) {
+                if (moduleName.equals(pom.getName())) {
                     slavePom = pom;
                     topGroup.remove(pom);
                     topGroup = null;
@@ -326,7 +338,27 @@ public class BnmProject {
         Log.getLog().close();
     }
 
-    /**
+    private long getmaxModificationDate(IProject p) {
+    	final long max[] = {0};
+    	try {
+			p.accept(new IResourceVisitor() {
+				public boolean visit(IResource r) {
+					File f = r.getLocation().toFile();
+					if (f.getName().equals("target"))
+						return false;
+					
+					long l = f.lastModified();
+					if (l > max[0])
+						max[0] = l;
+					return true;
+				}
+			});
+		} catch (CoreException e) {
+		}
+		return max[0];
+	}
+
+	/**
      * Called after each project build.
      * 
      * @param slave
