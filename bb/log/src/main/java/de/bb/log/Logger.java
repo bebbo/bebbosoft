@@ -590,7 +590,8 @@ public class Logger {
 				rootLogger.warn("no file: 'bblog.xml' found");
 
 			final XmlFile xml = new XmlFile();
-			xml.read(is);
+			if (is != null)
+				xml.read(is);
 
 			final String stimeout = xml.getString("/log", "timeout", "100");
 			try {
