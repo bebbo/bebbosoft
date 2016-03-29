@@ -83,10 +83,6 @@ final class Smtp extends de.bb.bejy.Protocol {
 
     private ByteRef bServerName;
 
-    private InputStream is;
-
-    OutputStream os;
-
     protected Smtp(SmtpFactory sf, LogFile _logFile) {
         super(sf);
         logFile = _logFile;
@@ -150,8 +146,6 @@ final class Smtp extends de.bb.bejy.Protocol {
     // overwrite the trigger method, since clients expects a message first
     protected boolean trigger() throws Exception {
         try {
-            is = getIs();
-            os = new BufferedOutputStream(getOs(), 8192);
             lwrite(READY);
             os.flush();
         } catch (Exception e) {
@@ -228,8 +222,6 @@ final class Smtp extends de.bb.bejy.Protocol {
                     logFile.writeDate(tx() + "STARTTLS failed: " + ioe.getMessage());
                     throw ioe;
                 }
-                is = getIs();
-                os = new BufferedOutputStream(getOs());
 
                 logFile.writeDate(tx() + "STARTTLS using: " + s3.getCipherSuite());
                 NOSTARTTLS.remove(remoteAddress);

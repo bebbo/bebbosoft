@@ -90,10 +90,6 @@ final class Pop3 extends de.bb.bejy.Protocol {
     // id used for authentication init in trigger
     String authId;
 
-    //  InputStream is;
-
-    OutputStream os;
-
     protected Pop3(Pop3Factory pf, LogFile _logFile) {
         super(pf);
         logFile = _logFile;
@@ -105,9 +101,6 @@ final class Pop3 extends de.bb.bejy.Protocol {
     // overwrite the trigger method, since clients expects a message first
     protected boolean trigger() throws Exception {
         try {
-            //      is = getIs();
-            os = new BufferedOutputStream(getOs(), 1412);
-
             authId = "<" + SessionManager.newKey() + '@' + bServerName + '>';
             String msg = "+OK " + getFull() + " ready " + authId + CRLF;
             if (DEBUG)

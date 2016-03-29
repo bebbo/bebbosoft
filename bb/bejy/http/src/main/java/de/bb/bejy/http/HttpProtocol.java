@@ -69,7 +69,7 @@ public class HttpProtocol extends Protocol {
 
     private final static String version;
     static {
-        no = "1.6.6";
+        no = "1.6.7";
         headerVersion = Version.getShort() + " HTTP " + no;
         version = headerVersion + " (c) 2000-2016 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
@@ -106,11 +106,6 @@ public class HttpProtocol extends Protocol {
     protected HttpProtocol(HttpFactory hf, LogFile _logFile) {
         super(hf);
         factory = hf;
-    }
-
-    protected void setStreams(InputStream _is, OutputStream _os, String remote) {
-        super.setStreams(_is, new FastBufferedOutputStream(_os, 32768), remote);
-        //    super.setStreams(_is, _os, remote);
     }
 
     /**

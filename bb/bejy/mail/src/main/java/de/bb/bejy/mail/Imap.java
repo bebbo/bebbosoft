@@ -170,10 +170,6 @@ final class Imap extends de.bb.bejy.Protocol {
 
     static Hashtable<String, Object> mailBoxLock = new Hashtable<String, Object>();
 
-    OutputStream os;
-
-    InputStream is;
-
     protected Imap(ImapFactory pf, LogFile _logFile) {
         super(pf);
         logFile = _logFile;
@@ -187,15 +183,11 @@ final class Imap extends de.bb.bejy.Protocol {
     // overwrite the trigger method, since clients expects a message first
     protected boolean trigger() throws Exception {
         try {
-            os = new BufferedOutputStream(getOs(), 1412);
-            is = getIs();
-
             if (DEBUG) {
                 logFile.writeln(new String(welcomeBytes));
             }
             os.write(welcomeBytes);
             os.flush();
-
         } catch (Exception e) {
             return false;
         }
@@ -240,7 +232,7 @@ final class Imap extends de.bb.bejy.Protocol {
                 try {
                     imap.updateStatus(msg);
                 } catch (Exception ex) {
-                    mailBoxes.remove(mbId, imap);
+                	i.remove();
                     if (mailBoxes.get(mbId) == null) {
                         mailBoxLock.remove(mbId);
                     }

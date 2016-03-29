@@ -83,6 +83,7 @@ public class LdapProtocol extends Protocol {
 	private ArrayList<String> currentWritePermissions = new ArrayList<String>();
 	private ArrayList<byte[]> currentResponses;
 	private int sizeLimit;
+	private byte[] data;
 
 	public static String getVersion() {
 		return no;
@@ -111,101 +112,96 @@ public class LdapProtocol extends Protocol {
 	}
 
 	protected boolean doit() throws Exception {
-		currentUser = null;
-		currentReadPermissions.clear();
-		currentWritePermissions.clear();
-
 		if (br == null || br.length() == 0)
 			br = readFirst();
 
 		if (br == null)
 			return false;
 
-		byte data[] = new byte[0x400];
+		data = new byte[0x400];
 
+		// try to read a sequence
+		// first byte is the code for sequence 0x30
+		// then we need at least one positive byte
+		int sLen;
 		for (;;) {
-			// try to read a sequence
-			// first byte is the code for sequence 0x30
-			// then we need at least one positive byte
-			int sLen;
-			for (;;) {
-				int avail = br.length();
-				if (avail > 1) {
-					if (avail > data.length)
-						data = new byte[avail];
-					br.copy(data);
+			int avail = br.length();
+			if (avail > 1) {
+				if (avail > data.length)
+					data = new byte[avail];
+				br.copy(data);
 
-					sLen = Asn1.getLen(data);
-					if (sLen > 0 && sLen <= avail)
-						break;
-				}
-				ByteRef r = br.update(is);
-				if (r == null)
-					return false;
+				sLen = Asn1.getLen(data);
+				if (sLen > 0 && sLen <= avail)
+					break;
 			}
-
-			// remove read sequence from buffer
-			byte inc[] = br.substring(0, sLen).toByteArray();
-			br = br.substring(sLen);
-
-			Asn1 in = new Asn1(inc);
-			// System.out.println("< " + in);
-			// Misc.dump(System.out, inc);
-			// get the sequence data
-			Iterator<Asn1> seq = in.children();
-
-			msgId = seq.next().asInt();
-			Asn1 request = seq.next();
-
-			Asn1 control = null;
-			if (seq.hasNext())
-				control = seq.next();
-
-			Iterator<Asn1> content = request.children();
-			int requestType = request.getType() & 0x1f;
-			switch (requestType) {
-			case 0x0: // bind
-				bind(content);
-				break;
-			case 0x2: // unbind
-				logFile.writeDate("bye bye " + currentUser);
-				currentUser = null;
-				currentReadPermissions.clear();
-				currentWritePermissions.clear();
-				// no response
-				break;
-			case 0x3: // search
-				search(request);
-				break;
-			case 0x6: // modifyRequest
-				modify(content);
-				break;
-			case 0x8: // addRequest
-				insert(content);
-				break;
-			case 0xa: // delRequest
-				remove(request); // request directly contains the dn
-				break;
-			case 0xc: // modifyDN
-				modifyDn(content);
-				break;
-			case 0x10: // abandon
-				// TODO: once search is threaded, abort the search - for now:
-				// ignore
-				break;
-			case 0x17: // extended request
-				extendedOperation(content);
-				break;
-			default:
-				byte result[] = new byte[] { (byte) (requestType + 0x60), 0 };
-				result = Asn1.addTo(result, ERROR_UNSUPORTED_OPERATION);
-				ByteRef errorMsg = new ByteRef();
-				result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
-				result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
-
-				writeResponse(result);
-			}
+			ByteRef r = br.update(is);
+			if (r == null)
+				return false;
 		}
+
+		// remove read sequence from buffer
+		byte inc[] = br.substring(0, sLen).toByteArray();
+		br = br.substring(sLen);
+
+		Asn1 in = new Asn1(inc);
+		// System.out.println("< " + in);
+		// Misc.dump(System.out, inc);
+		// get the sequence data
+		Iterator<Asn1> seq = in.children();
+
+		msgId = seq.next().asInt();
+		Asn1 request = seq.next();
+
+		Asn1 control = null;
+		if (seq.hasNext())
+			control = seq.next();
+
+		Iterator<Asn1> content = request.children();
+		int requestType = request.getType() & 0x1f;
+		switch (requestType) {
+		case 0x0: // bind
+			bind(content);
+			break;
+		case 0x2: // unbind
+			logFile.writeDate("bye bye " + currentUser);
+			currentUser = null;
+			currentReadPermissions.clear();
+			currentWritePermissions.clear();
+			// no response
+			break;
+		case 0x3: // search
+			search(request);
+			break;
+		case 0x6: // modifyRequest
+			modify(content);
+			break;
+		case 0x8: // addRequest
+			insert(content);
+			break;
+		case 0xa: // delRequest
+			remove(request); // request directly contains the dn
+			break;
+		case 0xc: // modifyDN
+			modifyDn(content);
+			break;
+		case 0x10: // abandon
+			// TODO: once search is threaded, abort the search - for now:
+			// ignore
+			break;
+		case 0x17: // extended request
+			extendedOperation(content);
+			break;
+		default:
+			byte result[] = new byte[] { (byte) (requestType + 0x60), 0 };
+			result = Asn1.addTo(result, ERROR_UNSUPORTED_OPERATION);
+			ByteRef errorMsg = new ByteRef();
+			result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
+			result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
+
+			writeResponse(result);
+		}
+		return true;
 	}
 
 	private void modifyDn(Iterator<Asn1> content) throws IOException, SizeLimitExceededException {
@@ -691,17 +687,22 @@ public class LdapProtocol extends Protocol {
 					}
 				}
 
-				if (xmlFile.sections(searchRoot2).hasNext()) {
-					findRecursive(xmlFile, searchRoot2, search, attributeDescriptionList, scope);
+				if (searchRoot2 != null) {
+					if (xmlFile.sections(searchRoot2).hasNext()) {
+						findRecursive(xmlFile, searchRoot2, search, attributeDescriptionList, scope);
+					}
+				} else {
+					currentResponses = null;
 				}
 			}
 		} catch (SizeLimitExceededException slee) {
 		}
 
+		if (currentResponses != null)
 		CACHE.put(cacheKey, currentResponses);
-		
+
 		// create response
-		byte result[] = currentResponses.isEmpty() ? ERROR_NO_SUCH_OBJECT : RESPONSE_SEARCH_DONE;
+		byte result[] = currentResponses == null ? ERROR_NO_SUCH_OBJECT : RESPONSE_SEARCH_DONE;
 		result = Asn1.addTo(result, RESULT_SUCCESS);
 		result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
 		result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
@@ -1292,7 +1293,7 @@ public class LdapProtocol extends Protocol {
 			ByteRef v = i.next().asByteRef();
 			if (v.startsWith(what) && v.charAt(what.length()) == '=')
 				v.nextWord('=');
-			value = v.toString();
+			value = v.toString().toLowerCase();
 		}
 
 		/**
