@@ -119,7 +119,7 @@ public class SslRefCfg extends Configurable implements Configurator {
         if (config != null)
             return config;
 
-        final HashMap<String, SslCfg> scs = Config.getSslConfigs();
+        final HashMap<String, SslCfg> scs = Config.getConfigsByName(SslCfg.class);
 
         final String ref = getProperty("ref");
         final SslCfg sc = scs.get(ref);

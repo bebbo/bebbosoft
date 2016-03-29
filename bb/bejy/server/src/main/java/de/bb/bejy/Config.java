@@ -485,12 +485,12 @@ public class Config extends Configurable implements Configurator {
 		return null;
 	}
 
-	public static HashMap<String, SslCfg> getSslConfigs() {
-		HashMap<String, SslCfg> r = new HashMap<String, SslCfg>();
+	public static <T> HashMap<String, T> getConfigsByName(Class<T> clazz) {
+		HashMap<String, T> r = new HashMap<String, T>();
 		for (Iterator<Configurable> i = getInstance().children(); i.hasNext();) {
 			Configurable c = i.next();
-			if (c instanceof SslCfg)
-				r.put(c.getProperty("name"), (SslCfg) c);
+			if (clazz.isAssignableFrom(c.getClass()))
+				r.put(c.getProperty("name"), (T) c);
 		}
 		return r;
 	}
