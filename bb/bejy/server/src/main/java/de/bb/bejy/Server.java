@@ -244,7 +244,7 @@ public final class Server extends Configurable implements de.bb.util.ThreadManag
     }
 
     public boolean supportsTLS() {
-        return sslRef != null;
+        return sslRef != null && sslRef.getSsl3Config() != null;
     }
     
     public Ssl3Server getTLSServer() throws IOException {
