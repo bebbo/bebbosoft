@@ -37,7 +37,7 @@ class ForwardRequest extends HttpServletRequestWrapper {
         hsr = request;
         
         // read post data only if no external program is called
-        if (!(rd.sHandler instanceof CgiHandler || rd.sHandler instanceof FastCgiHandler))
+        if (!(rd.sHandler instanceof CgiHandler))
                 parameters.putAll(request.getParameterMap());
         if (rd.query != null)
             HttpRequest.extractParameters(parameters, new ByteRef(rd.query), null);
