@@ -227,6 +227,10 @@ class RRProtocol extends Protocol {
                 // no data to handle on 304
                 responseLine.nextWord();
                 ByteRef rc = responseLine.nextWord();
+                if (rc == null) {
+                    send502();
+                    return false;
+                }
                 int rcode = rc.toInteger();
 
                 logFile.writeDate(rcode + "\t" + getRemoteAddress() + "\t" + host + "\t" + lookupPath + "\t"
@@ -295,7 +299,7 @@ class RRProtocol extends Protocol {
                     System.out.println("done");
 
                 os.flush();
-                validUntil = System.currentTimeMillis() * 3000;
+                validUntil = System.currentTimeMillis() + 3000;
 
                 // exit loop if necessary
                 if (!keepAlive) {
