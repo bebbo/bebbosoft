@@ -7,13 +7,13 @@
   </parent>
   <groupId>de.bb</groupId>
   <artifactId>security_tools</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>security</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.9</version>
+      <version>1.0.10</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -25,13 +25,13 @@
     <dependency>
       <artifactId>bwt</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.0.4</version>
+      <version>0.0.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>security</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.9</version>
+      <version>1.0.10</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

@@ -377,7 +377,7 @@ public abstract class Ssl3 {
                     --len;
                     readBufferLength = len - readBuffer[len] - hashLen;
 
-                    if (readBufferLength < 0 || readBufferLength >= len)
+                    if (readBufferLength < rpos || readBufferLength >= len)
                         readBufferLength = len - hashLen; // no exception here - let the hash check throw it
                 } else {
                     readBufferLength = len - hashLen;
@@ -1016,25 +1016,8 @@ public abstract class Ssl3 {
         return true;
     }
 
-    /**
-     * perform a RSA encryption.
-     * 
-     * @param z
-     *            the data to encrypt/decrypt
-     * @param n
-     *            the modulo
-     * @param e
-     *            the exponent
-     * @return a new allocated byte array with the result of (z**e)mod n / final static byte[] doRSA(byte z[], byte e[],
-     *         byte n[]) { /* BigInteger bn = new BigInteger(n); BigInteger bf = new BigInteger(e); byte b[] = new
-     *         byte[z.length + 1]; System.arraycopy(z, 0, b, 1, z.length); BigInteger zz = new BigInteger(b); zz =
-     *         zz.modPow(bf, bn); b = zz.toByteArray(); /
-     * 
-     *         byte b[] = FastMath32.oddModPow(z, e, n); return b; /* // really z.length ? why not n.length??? byte t[]
-     *         = new byte[z.length]; if (b.length > t.length) { System.arraycopy(b, b.length - t.length, t, 0,
-     *         t.length); } else { System.arraycopy(b, 0, t, t.length - b.length, b.length); } return t; / }
-     * 
-     *         /** Get some ASN.1 data from a sequence. The path contains the types of the elements When 0x80 is or'd to
+
+    /** Get some ASN.1 data from a sequence. The path contains the types of the elements When 0x80 is or'd to
      *         the type, it means, that the given element is entered some examples path = 0x10: the first sequence is
      *         searched and return with header it IS the complete sequence path = 0x90: the first sequence is searched
      *         and its content is returned it IS the competet content of the sequence WITHOUT header path = 0x10, 0x90,

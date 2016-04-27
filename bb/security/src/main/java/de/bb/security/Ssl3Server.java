@@ -229,23 +229,24 @@ public class Ssl3Server extends Ssl3 {
                 }
 
                 b = Pkcs6.doRSA(b, pkData);
-                /*
-                 * byte []test = FastMath32.oddModPow(b, kf, kn); if (!equals(b, 0, test, 0, b.length)) test = null;
-                 */
-                int i;
-                for (i = 2; i < b.length; ++i)
+                preMasterSecret = new byte[48];
+
+                int i = 2;
+                for (; i < b.length; ++i) {
                     if (b[i] == 0)
                         break;
-                if (b[0] != 0 || b[1] != 2 || b[i] != 0)
-                    throw new SslException(clientSessionId, "bad key exchange");
-                ++i;
-
-                if (versionMinor != 0) {
-                    if (b[i] != 3 || b[i + 1] != versionMinor)
-                        throw new SslException(clientSessionId, "bad key exchange");
                 }
-                preMasterSecret = new byte[48];
-                System.arraycopy(b, i, preMasterSecret, 0, preMasterSecret.length);
+                
+                boolean wrong = (b[0] != 0 || b[1] != 2 || b[i] != 0);
+
+                ++i;
+                if (versionMinor != 0) {
+                    wrong |= (b[i] != 3 || b[i + 1] != versionMinor);
+                }
+                
+                // copy only if it's ok - handshake check will fail, no exception here
+                if (!wrong)
+                	System.arraycopy(b, i, preMasterSecret, 0, preMasterSecret.length);
             }
 
             // get change cipherspec
