@@ -31,11 +31,15 @@ import de.bb.bejy.Dns;
 import de.bb.bex2.Context;
 import de.bb.bex2.ParseException;
 import de.bb.bex2.Scanner;
+import de.bb.log.Logger;
 
 /**
  * @author sfranke
  */
 public class SpfContext extends Context {
+	
+	private final static Logger LOG = Logger.getLogger(SpfContext.class);
+	
     private StringBuffer macro;
 
     private Scanner scanner;
@@ -280,6 +284,9 @@ public class SpfContext extends Context {
                 }
 
                 int ip = ip2Int(macro.toString());
+                if (ip == -1)
+                	return;
+                
                 bits = 32 - bits;
                 if (ip >>> bits == clientIpInt >>> bits)
                     throw new SpfException(prefix);
@@ -300,7 +307,7 @@ public class SpfContext extends Context {
         } catch (RuntimeException re) {
             // ignore.
         }
-        //System.out.println("mechanism: " + name + " " + macro + " " + mask);
+        LOG.debug("mechanism: " + name + " " + macro + " " + mask);
     }
 
     /**
@@ -313,6 +320,8 @@ public class SpfContext extends Context {
         for (; i.hasNext();) {
             String ip = i.next();
             int iip = ip2Int(ip);
+            if (iip < 0) // invalid String
+            	continue;
             if (iip >>> bits == clientIpInt >>> bits)
                 throw new SpfException(prefix);
         }
@@ -344,7 +353,7 @@ public class SpfContext extends Context {
 
             return n;
         } catch (Exception e) {
-            System.out.println("invalid numeric ip address: " + this.scanner.toString());
+            LOG.error("invalid numeric ip address for " + senderDomain + ": " + this.scanner.toString());
             return -1;
         }
     }
