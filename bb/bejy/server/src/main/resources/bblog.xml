@@ -1,0 +1,8 @@
+<log timeout="50">
+	<formatter name="f1" class="de.bb.log.Formatter" dateFormat="yyyy-MM-dd HH:mm:ss.SSS"
+		format="%d %p [%t] %C - %m" escape="false" />
+	<appender name="server" formatter="f1" class="de.bb.log.FileAppender"
+		append="false" bufferSize="8192" baseName="logs/server" dateFormat="_yyyyMMdd" 
+		appendDateAfterClose="true"/>
+	<logger name="" level="ERROR" appender="server" />
+</log>

@@ -155,8 +155,8 @@ public class NioSocket implements Socket {
 		if (!socketChannel.isOpen())
 			throw new IOException();
 
-		if (block && getInputStream().available() == 0)
-			is.fill();
+//		if (block && getInputStream().available() == 0)
+//			is.fill();
 
 		socketChannel.configureBlocking(block);
 

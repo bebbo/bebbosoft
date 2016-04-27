@@ -65,17 +65,17 @@
 
 package de.bb.bejy;
 
+import de.bb.bejy.server.V;
+
 /**
  * Version info for BEJY...
  */
 public class Version {
-    private final static String no;
     private final static String shortVersion;
     private final static String version;
     static {
-        no = "1.6.6";
-        shortVersion = "BEJY V" + no;
-        version = shortVersion + " (c) 2000-2016 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        shortVersion = "BEJY V" + V.V;
+        version = shortVersion + " (c) 2000-" + V.Y + " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     /**
@@ -84,7 +84,7 @@ public class Version {
      * @return the version number as String.
      */
     public static String getVersion() {
-        return no;
+        return V.V;
     }
 
     /**
