@@ -270,33 +270,6 @@ BEGIN
 END;
 /
 
-CREATE TABLE dbproperty (
-id INTEGER NOT NULL CONSTRAINT PK_dbproperty1 PRIMARY KEY,
-propname VARCHAR2(64) NOT NULL,
-propval VARCHAR2(128) NOT NULL,
-CONSTRAINT UC_dbproperty1 UNIQUE(id)
-);
-
-CREATE SEQUENCE dbproperty_id_SEQ
-increment by 1
-start with 0
-NOMAXVALUE
-minvalue 0
-nocycle
-nocache
-noorder;
-
-CREATE OR REPLACE TRIGGER SET_dbproperty_id
-BEFORE INSERT
-ON dbproperty
-FOR EACH ROW
-BEGIN
-  SELECT dbproperty_id_SEQ.NEXTVAL
-  INTO :NEW.id
-  FROM DUAL;
-END;
-/
-
 CREATE UNIQUE INDEX IDX_dbproperty_1 ON dbproperty (dbproperty);
 
 

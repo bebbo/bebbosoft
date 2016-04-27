@@ -121,12 +121,3 @@ response VARCHAR(255),
 FOREIGN KEY (mail_user_id) REFERENCES mail_user (id),
 PRIMARY KEY (id));
 
-CREATE TABLE dbproperty (
-  id serial,
-  propname VARCHAR(64) NOT NULL,
-  propval VARCHAR(128) NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT IDX_dbproperty_1 UNIQUE (propname)
-);
-
-INSERT INTO dbproperty (propname, propval) values ('version', '1.3');

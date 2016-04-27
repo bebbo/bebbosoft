@@ -122,12 +122,3 @@ id_mail_user INT NOT NULL,
 response VARCHAR(255),
 CONSTRAINT fk_response_1 FOREIGN KEY (id_mail_user) REFERENCES mail_user (id)
 );
-
-CREATE TABLE dbproperty (
-  id INT NOT NULL AUTO_INCREMENT,
-  propname VARCHAR(64) NOT NULL,
-  propval VARCHAR(128) NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE UC_id (id),
-  UNIQUE UC_propname (propname)
-);

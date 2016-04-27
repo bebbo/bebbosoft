@@ -22,13 +22,12 @@
       MailDBI dbi = mail.getDbi(this);
       String fromVersion = dbi.getPatchlevel();
       String toVersion = null;
-      String patch = null;
-      if (fromVersion != null) {
-           dot = fromVersion.lastIndexOf('.') + 1;
-           int next = Integer.parseInt(fromVersion.substring(dot)) + 1;
-           toVersion = fromVersion.substring(0, dot) + next;
-           patch = "patch" + fromVersion + "_to_" + toVersion + "_" + db.toLowerCase() + ".sql";
-      }
+      if (fromVersion == null) 
+          fromVersion = "1.3";
+      dot = fromVersion.lastIndexOf('.') + 1;
+      int next = Integer.parseInt(fromVersion.substring(dot)) + 1;
+      toVersion = fromVersion.substring(0, dot) + next;
+      String patch = "patch" + fromVersion + "_to_" + toVersion + "_" + db.toLowerCase() + ".sql";
     %><form action="w_mail.jsp" method="POST" >
       <input type="hidden" name="$step" value="2" />
       <table border="1" width="100%">
@@ -46,8 +45,11 @@
       df.getAbsolutePath()%> </font><% }
     %>
     <%
-      File pf = new File("sql", patch);
+    File pf = null;
+    if (patch != null) {
+      pf = new File("sql", patch);
       if (!pf.exists()) patch = null;
+    }
     %>
           </td></tr>
         <tr><td colspan="2">

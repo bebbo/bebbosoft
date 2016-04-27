@@ -1,4 +1,4 @@
-<bejy>
+<bejy nio="true">
   <dns defaultSpf="v=spf1 a mx ptr ?all" server="127.0.0.1"/>
   <global javac="javac -g" logFile="*"/>
   <group class="de.bb.bejy.ConfigGroup" name="admins">
@@ -12,13 +12,6 @@
     <mime-type extension="css" type="text/css"/>
     <mime-type extension="html" type="text/html"/>
   </mime-types>
-  <server name="admin" port="8081">
-    <protocol class="de.bb.bejy.http.HttpFactory" logFile="http-" logFileDateFormat="yyyy-MM-dd">
-      <host>
-        <war group="admins" path="admin" realm="BEJY admin" urlPath="/"/>
-      </host>
-    </protocol>
-  </server>
   <server name="http" port="80">
     <protocol class="de.bb.bejy.http.HttpFactory">
       <host>
@@ -27,6 +20,15 @@
           <handler class="de.bb.bejy.http.FileHandler" mask="*"/>
         </context>
         <war alias="/" path="htdocs" realm="BEJY information" urlPath="/"/>
+        <webapps path="webapps" urlPath="/" />
+      </host>
+    </protocol>
+  </server>
+
+  <server name="admin" port="8081">
+    <protocol class="de.bb.bejy.http.HttpFactory" logFile="http-" logFileDateFormat="yyyy-MM-dd">
+      <host>
+        <war group="admins" path="admin" realm="BEJY admin" urlPath="/"/>
       </host>
     </protocol>
   </server>
@@ -58,8 +60,8 @@
   <server bindAddr="" name="RR" port="8888">
     <protocol class="de.bb.bejy.http.RRFactory">
       <vhost host="*">
-        <vpath group="" path="" reverseByExt="" reverseByType="" userHeader="">
-          <destination uri="franke.ms:80/"/>
+        <vpath >
+          <destination uri="bejy.net:80/"/>
         </vpath>
       </vhost>
     </protocol>

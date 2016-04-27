@@ -116,15 +116,6 @@ response varchar(255) NULL,
 CONSTRAINT UC_response1 UNIQUE(id))
 ;
 
-CREATE TABLE dbproperty (
-  id int identity(1,1) NOT NULL CONSTRAINT PK_spool1 PRIMARY KEY,  
-  propname varchar(64) NOT NULL UNIQUE,
-  propval varchar(128) NOT NULL
-);
-
-CREATE UNIQUE INDEX IDX_dbproperties ON dbproperties (propname);
-
-
 ALTER TABLE spool
 ADD CONSTRAINT FK_spool_1 
 FOREIGN KEY (s_domain) REFERENCES mail_domain (mail_domain)

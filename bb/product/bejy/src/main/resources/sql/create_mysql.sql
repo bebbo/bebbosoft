@@ -118,10 +118,3 @@ FOREIGN KEY (id_mail_user) REFERENCES mail_user (id),
 PRIMARY KEY (id),
 UNIQUE UC_id (id));
 
-CREATE TABLE dbproperty (
-  id INT NOT NULL AUTO_INCREMENT,
-  propname VARCHAR(64) NOT NULL,
-  propval VARCHAR(128) NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE IDX_dbproperty_1 (propname)
-);
