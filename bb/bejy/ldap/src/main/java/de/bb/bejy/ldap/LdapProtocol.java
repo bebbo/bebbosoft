@@ -61,15 +61,12 @@ public class LdapProtocol extends Protocol {
 	private static final LRUCache<ByteRef, ArrayList<byte[]>> CACHE = new LRUCache<ByteRef, ArrayList<byte[]>>();
 
 	// version stuff
-	private final static String no;
 
 	private final static String version;
 
 	static {
-		String s = "$Revision: 1.18 $";
-		no = "1.3." + s.substring(11, s.length() - 1);
-		version = Version.getShort() + " LDAP " + no
-				+ " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+		version = Version.getShort() + " LDAP " + V.V
+				+ " (c) 2000-" + V.Y + " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
 	}
 
 	private LogFile logFile;
@@ -86,7 +83,7 @@ public class LdapProtocol extends Protocol {
 	private byte[] data;
 
 	public static String getVersion() {
-		return no;
+		return V.V;
 	}
 
 	public String getFullVersion() {

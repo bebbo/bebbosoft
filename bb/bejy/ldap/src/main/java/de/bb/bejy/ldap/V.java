@@ -1,0 +1,1 @@
+package de.bb.bejy.ldap; public interface V { public static final String V="0.1.1"; public static final String Y="2016";}
