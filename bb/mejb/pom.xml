@@ -7,13 +7,13 @@
 	</parent>
 	<groupId>de.bb</groupId>
 	<artifactId>mejb</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.5</version>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<artifactId>rmi</artifactId>
 			<groupId>de.bb</groupId>
-			<version>0.0.3</version>
+			<version>0.0.5</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
