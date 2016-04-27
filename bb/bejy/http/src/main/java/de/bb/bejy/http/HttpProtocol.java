@@ -63,19 +63,15 @@ public class HttpProtocol extends Protocol {
     HttpFactory factory;
 
     // version stuff
-    private final static String no;
-
     private final static String headerVersion;
-
     private final static String version;
     static {
-        no = "1.6.7";
-        headerVersion = Version.getShort() + " HTTP " + no;
-        version = headerVersion + " (c) 2000-2016 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        headerVersion = Version.getShort() + " HTTP " + V.V;
+        version = headerVersion + " (c) 2000-" + V.Y + " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     public static String getVersion() {
-        return no;
+        return V.V;
     }
 
     public static String getHeaderVersion() {
