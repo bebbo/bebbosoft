@@ -101,7 +101,7 @@ public class FastCGIHost extends Configurable {
 
 	public Socket obtain() throws Exception {
 		final Thread key = Thread.currentThread();
-		final Socket s = (Socket) pool.obtain(key);
+		final Socket s = (Socket) pool.obtain(key, 1000L*60);
 		LOG.debug("obtaining socket: " + s);
 		return s;
 	}
@@ -135,6 +135,7 @@ public class FastCGIHost extends Configurable {
 		if (pool != null) {
 			pool.setMaxCount(0);
 			pool.setKeepAlive(60000);
+			pool = null;
 		}
 
 		if (sCommand.length() > 0) {

@@ -386,10 +386,10 @@ public class CgiHandler extends HttpHandler {
 		int status = -1;
 		Socket socket = null;
 		try {
-			for (int i = 0; i < fastCgiHost.getMaxCount(); ++i) {
+			for (int i = 0; i <= fastCgiHost.getMaxCount(); ++i) {
 				try {
 					socket = fastCgiHost.obtain();
-					// socket.setSoTimeout((int) timeout);
+					socket.setSoTimeout((int) timeout);
 					fcgiis = new FastBufferedInputStream(socket.getInputStream(), 4096);
 					fcgios = new FastBufferedOutputStream(socket.getOutputStream(), 4096);
 
@@ -422,7 +422,9 @@ public class CgiHandler extends HttpHandler {
 
 				} catch (Exception ex) {
 					if (socket != null) {
+						try {
 						fastCgiHost.destroy(socket);
+						} catch (Exception ex3) {}
 						socket = null;
 					}
 					fcgiis = null;
