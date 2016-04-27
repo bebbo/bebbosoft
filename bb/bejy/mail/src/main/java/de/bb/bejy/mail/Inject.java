@@ -136,7 +136,6 @@ public class Inject {
             // create the required mailDBI
             String jdbcUrl = config.getString("/bejy/mail", "jdbcUrl", null);
             String mailFolder = config.getString("/bejy/mail", "mailFolder", "mail");
-            mDbi.setLogFile(logFile);
             mDbi.setMailPath(mailFolder);
             mDbi.setJdbcUrl(jdbcUrl);
             mDbi.checkConnection();

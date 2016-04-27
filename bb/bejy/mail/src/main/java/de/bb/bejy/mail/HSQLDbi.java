@@ -18,6 +18,10 @@
 
 package de.bb.bejy.mail;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * An implementation of the DB interface to use a MSSQL server.
  */
@@ -34,8 +38,11 @@ public class HSQLDbi extends MailDBI {
         dateFx = "CURRENT_TIMESTAMP";
     }
 
-    @Override
-    protected String getLastInsertQuery(String tableName, String idColumnName) {
-        return "SELECT value from SYSTEM_SESSIONINFO where key='IDENTITY'";
+    protected String getLastInsertId(String tableName) throws SQLException {
+        PreparedStatement ps = getPreparedStatement("SELECT value from SYSTEM_SESSIONINFO where key='IDENTITY'");
+        ResultSet rs = ps.executeQuery();
+        String id = rs.next() ? rs.getString(1) : null;
+        rs.close();
+        return id;
     }
 }

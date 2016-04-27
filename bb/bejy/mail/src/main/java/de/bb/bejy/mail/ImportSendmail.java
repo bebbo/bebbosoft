@@ -115,7 +115,6 @@ public class ImportSendmail {
             // create the required mailDBI 
             String jdbcUrl = config.getString("/bejy/mail", "jdbcUrl", null);
             String mailFolder = config.getString("/bejy/mail", "mailFolder", null);
-            mDbi.setLogFile(logFile);
             mDbi.setMailPath(mailFolder);
             mDbi.setJdbcUrl(jdbcUrl);
             mDbi.checkConnection();

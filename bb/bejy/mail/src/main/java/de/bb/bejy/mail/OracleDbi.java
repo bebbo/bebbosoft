@@ -18,6 +18,10 @@
 
 package de.bb.bejy.mail;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * An implementation of the DB interface to use a Oracle server.
  */
@@ -35,8 +39,12 @@ public class OracleDbi extends MailDBI {
     }
 
     @Override
-    protected String getLastInsertQuery(String tableName, String idColumnName) {
-        return "SELECT tableId = MAX(" + idColumnName + ")" + " FROM " + tableName; //** ben??tigt ein lock!!
+	protected String getLastInsertId(String tableName) throws SQLException {
+        PreparedStatement ps = getPreparedStatement("SELECT tableId = MAX(id)" + " FROM " + tableName);
+        ResultSet rs = ps.executeQuery();
+        String id = rs.next() ? rs.getString(1) : null;
+        rs.close();
+        return id;
     }
 }
 

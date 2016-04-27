@@ -18,6 +18,10 @@
 
 package de.bb.bejy.mail;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * An implementation of the DB interface to use a MSSQL server.
  */
@@ -35,7 +39,11 @@ public class MySQLDbi extends MailDBI {
     }
 
     @Override
-    protected String getLastInsertQuery(String tableName, String idColumnName) {
-        return "SELECT LAST_INSERT_ID()";
+	protected String getLastInsertId(String tableName) throws SQLException {
+        PreparedStatement ps = getPreparedStatement("SELECT LAST_INSERT_ID()");
+        ResultSet rs = ps.executeQuery();
+        String id = rs.next() ? rs.getString(1) : null;
+        rs.close();
+        return id;
     }
 }

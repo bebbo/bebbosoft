@@ -48,6 +48,7 @@ public class MailCfg extends Configurable implements Configurator {
                             "intervallSwitch",
                             "the count of delivery retries until intervall switches and a 2nd mail notification is sent",
                             "12"}, {"maxRetries", "the max count of delivery retries", "60"},
+                    {"dnsbl", "a dns black list provider"},
                     {"logFile", "name of an own log file"},};
 
     private static Dns xdns;
@@ -67,6 +68,8 @@ public class MailCfg extends Configurable implements Configurator {
     LogFile logFile;
 
     private Pool pool;
+
+	private String dnsbl;
 
     /**
    * 
@@ -163,6 +166,7 @@ public class MailCfg extends Configurable implements Configurator {
         jdbcUrl = getProperty("jdbcUrl");
         mailFolder = getProperty("mailFolder");
         mainDomain = getProperty("mainDomain");
+        dnsbl = getProperty("dnsbl");
 
         String dName = getProperty("jdbcDriver");
         try {
@@ -192,13 +196,10 @@ public class MailCfg extends Configurable implements Configurator {
             pool = new Pool(new Pool.Factory() {
                 public Object create() throws Exception {
                     MailDBI dbi = (MailDBI) clazz.newInstance();
-                    dbi.setLogFile(MailCfg.this.logFile);
                     dbi.setJdbcUrl(jdbcUrl);
                     dbi.setMailPath(mailFolder);
                     dbi.checkConnection();
 
-                    if (getBooleanProperty("debug", false))
-                        dbi.DEBUG = true;
                     return dbi;
                 }
 
@@ -351,4 +352,8 @@ public class MailCfg extends Configurable implements Configurator {
         Recover recoverThread = new Recover(logFile, this, createUsers, createDomains);
         Config.getCron().runIn("recover e-mail", recoverThread, 0);
     }
+
+	public String getDnsbl() {
+		return dnsbl;
+	}
 }

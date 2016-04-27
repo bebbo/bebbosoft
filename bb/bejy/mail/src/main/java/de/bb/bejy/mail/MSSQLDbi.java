@@ -18,25 +18,32 @@
 
 package de.bb.bejy.mail;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * An implementation of the DB interface to use a MSSQL server.
  */
 public class MSSQLDbi extends MailDBI {
-    /**
-     * ct for a MSSQL implementation of the DBI interface.
-     */
-    public MSSQLDbi() {
-        passwdFx1 = "";
-        passwdFx2 = "";
-        concat1 = "(";
-        concat2 = " + ";
-        concat3 = ")";
-        dateFx = "getdate()";
-    }
+	/**
+	 * ct for a MSSQL implementation of the DBI interface.
+	 */
+	public MSSQLDbi() {
+		passwdFx1 = "";
+		passwdFx2 = "";
+		concat1 = "(";
+		concat2 = " + ";
+		concat3 = ")";
+		dateFx = "getdate()";
+	}
 
-    @Override
-    protected String getLastInsertQuery(String tableName, String idColumnName) {
-        return "SELECT @@identity";
-    }
+	@Override
+	protected String getLastInsertId(String tableName) throws SQLException {
+		PreparedStatement ps = getPreparedStatement("SELECT @@identity");
+		ResultSet rs = ps.executeQuery();
+		String id = rs.next() ? rs.getString(1) : null;
+		rs.close();
+		return id;
+	}
 }
-

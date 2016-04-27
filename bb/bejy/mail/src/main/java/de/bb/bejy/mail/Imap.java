@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) by Stefan Bebbo Franke 1999-2015.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2016.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,11 @@
 
 package de.bb.bejy.mail;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.net.SocketException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -41,6 +40,7 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import de.bb.bejy.Version;
+import de.bb.log.Logger;
 import de.bb.util.ByteRef;
 import de.bb.util.DateFormat;
 import de.bb.util.LogFile;
@@ -49,20 +49,18 @@ import de.bb.util.MultiMap;
 import de.bb.util.Pair;
 
 final class Imap extends de.bb.bejy.Protocol {
-    private final static boolean DEBUG = false;
+	private final static Logger LOG = Logger.getLogger(Imap.class);
+	
+	private final static boolean DEBUG = false;
 
     boolean VERBOSE = DEBUG;
 
     // version stuff
-    // version stuff
-    private final static String no;
 
     private final static String version;
     static {
-        String s = "$Revision: 6.4 $";
-        no = "1." + s.substring(11, s.length() - 1);
-        version = Version.getShort() + " IMAP " + no
-                + " (c) 2000-2015 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        version = Version.getShort() + " IMAP " + V.V
+                + " (c) 2000-" + V.Y + " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     /**
@@ -71,7 +69,7 @@ final class Imap extends de.bb.bejy.Protocol {
      * @return
      */
     public static String getVersion() {
-        return no;
+        return V.V;
     }
 
     /**
@@ -781,15 +779,14 @@ final class Imap extends de.bb.bejy.Protocol {
                         ret = 1;
                     } // command:
                 } catch (Exception e) {
-                    if (DEBUG)
-                        e.printStackTrace();
+            		LOG.debug(e.getMessage(), e);
                     if (e instanceof NullPointerException) {
                         retVal = MISSINGPARAMETER;
                     } else if (e instanceof NumberFormatException) {
                         retVal = MISSINGNUMBER;
                     } else {
-                        logFile.writeln("Exception in IMAP:");
-                        e.printStackTrace();
+                    	if (!(e instanceof IOException))
+                    		LOG.error(e.getMessage(), e);
                         retVal = INTERNALERROR;
                     }
                     ret = 1;
@@ -849,9 +846,10 @@ final class Imap extends de.bb.bejy.Protocol {
                 }
             }
             os.flush();
-        } catch (Exception e) {
-            //      e.printStackTrace();
-            throw e;
+        } catch (Exception ex) {
+			if (!(ex instanceof SocketException))
+				LOG.error(ex.getMessage(), ex);
+            throw ex;
         } finally {
             selectMailbox(null);
         }
@@ -2596,7 +2594,7 @@ final class Imap extends de.bb.bejy.Protocol {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+    		LOG.error(e.getMessage(), e);
         }
         return false;
     }

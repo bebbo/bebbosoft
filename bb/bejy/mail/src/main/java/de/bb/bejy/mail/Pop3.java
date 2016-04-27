@@ -18,31 +18,29 @@
 
 package de.bb.bejy.mail;
 
-import java.io.BufferedOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.SocketException;
 import java.sql.ResultSet;
 import java.util.Enumeration;
 
 import de.bb.bejy.Version;
+import de.bb.log.Logger;
 import de.bb.util.ByteRef;
 import de.bb.util.LogFile;
 import de.bb.util.SessionManager;
 
 final class Pop3 extends de.bb.bejy.Protocol {
+	private final static Logger LOG = Logger.getLogger(Pop3.class);
+	
     private final static boolean DEBUG = false;
 
     private boolean VERBOSE = DEBUG;
 
     // version stuff
-    private final static String no;
-
     private final static String version;
     static {
-        String s = "$Revision: 6.2 $";
-        no = "1." + s.substring(11, s.length() - 1);
-        version = Version.getShort() + " POP3 " + no
-                + " (c) 2000-2014 by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+        version = Version.getShort() + " POP3 " + V.V
+                + " (c) 2000-" + V.Y + " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
     }
 
     /**
@@ -51,7 +49,7 @@ final class Pop3 extends de.bb.bejy.Protocol {
      * @return
      */
     public String getVersion() {
-        return no;
+        return V.V;
     }
 
     /**
@@ -419,8 +417,10 @@ final class Pop3 extends de.bb.bejy.Protocol {
                 mails.update();
                 mails = null;
             }
-        } catch (Exception e) {
-            logFile.writeDate(e.getMessage());
+        } catch (Exception ex) {
+			if (!(ex instanceof SocketException))
+				LOG.debug(ex.getMessage(), ex);
+            throw ex;
         } finally {
             if (mails != null) {
                 // ensure that the counter goes down again!

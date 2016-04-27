@@ -1,0 +1,1 @@
+package de.bb.bejy.mail; public interface V { public static final String V="1.6.8"; public static final String Y="2016";}

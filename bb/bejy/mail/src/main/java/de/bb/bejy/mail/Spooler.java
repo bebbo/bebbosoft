@@ -239,6 +239,7 @@ class Spooler extends Thread {
                 return tNext;
             }
         } catch (Exception e) {
+        	e.printStackTrace();
             if (DEBUG)
                 logFile.writeDate(e.toString());
         } finally {
@@ -283,9 +284,7 @@ class Spooler extends Thread {
                     return se;
                 }
             } finally {
-                Statement stmt = rs.getStatement();
                 rs.close();
-                stmt.close();
             }
         }
         if (DEBUG)

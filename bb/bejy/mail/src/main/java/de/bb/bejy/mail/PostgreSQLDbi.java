@@ -18,6 +18,10 @@
 
 package de.bb.bejy.mail;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * An implementation of the DB interface to use a MSSQL server.
  */
@@ -35,8 +39,12 @@ public class PostgreSQLDbi extends MailDBI {
         deleteEnd = ")";
     }
 
-    protected String getLastInsertQuery(String tableName, String idColumnName) {
-        return "SELECT CURRVAL(pg_get_serial_sequence('" + tableName + "','" + idColumnName + "'))";
+    protected String getLastInsertId(String tableName) throws SQLException {
+        PreparedStatement ps = getPreparedStatement("SELECT CURRVAL(pg_get_serial_sequence('" + tableName + "','id'))");
+        ResultSet rs = ps.executeQuery();
+        String id = rs.next() ? Long.toString(rs.getLong(1)) : null;
+        rs.close();
+        return id;
     }
 
     protected String makeDelete(final String tableName) {

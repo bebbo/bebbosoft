@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) by Stefan Bebbo Franke 1999-2015.
+ * Copyright (c) by Stefan Bebbo Franke 1999-2016.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
