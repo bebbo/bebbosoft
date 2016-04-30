@@ -779,13 +779,14 @@ final class Imap extends de.bb.bejy.Protocol {
                         ret = 1;
                     } // command:
                 } catch (Exception e) {
-            		LOG.debug(e.getMessage(), e);
                     if (e instanceof NullPointerException) {
                         retVal = MISSINGPARAMETER;
                     } else if (e instanceof NumberFormatException) {
                         retVal = MISSINGNUMBER;
                     } else {
-                    	if (!(e instanceof IOException))
+                    	if (e instanceof IOException)
+                    		LOG.debug(e.getMessage(), e);
+                    	else
                     		LOG.error(e.getMessage(), e);
                         retVal = INTERNALERROR;
                     }
@@ -847,7 +848,7 @@ final class Imap extends de.bb.bejy.Protocol {
             }
             os.flush();
         } catch (Exception ex) {
-			if (!(ex instanceof SocketException))
+			if (!(ex instanceof IOException))
 				LOG.error(ex.getMessage(), ex);
             throw ex;
         } finally {
@@ -2594,7 +2595,10 @@ final class Imap extends de.bb.bejy.Protocol {
             }
             return true;
         } catch (Exception e) {
-    		LOG.error(e.getMessage(), e);
+        	if ((e instanceof IOException))
+        		LOG.debug(e.getMessage(), e);
+        	else
+        		LOG.error(e.getMessage(), e);
         }
         return false;
     }
