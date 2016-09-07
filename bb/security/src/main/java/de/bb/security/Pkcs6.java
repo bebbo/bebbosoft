@@ -85,11 +85,12 @@ public class Pkcs6 {
     public static byte[] createCertificate(byte issuer[], byte date[], byte owner[], byte pubN[], byte pubE[]) {
         // Kennung f???r RSA_with_SHA1
         byte t[] = Asn1.addTo(newSeq, Asn1.makeASN1(sha256WithRSAEncryption, 6)); // OID
+//        byte t[] = Asn1.addTo(newSeq, Asn1.makeASN1(sha1withRSAEncryption, 6)); // OID
         byte mdx[] = Asn1.addTo(t, nul); // null
 
-        // macht daraus ein Zertifikat "Version 3"
-        byte ver[] = Asn1.addTo(newSeq, Asn1.makeASN1(2, 2));
-        ver[0] = (byte) 0xa0;
+//        // macht daraus ein Zertifikat "Version 3"
+//        byte ver[] = Asn1.addTo(newSeq, Asn1.makeASN1(2, 2));
+//        ver[0] = (byte) 0xa0;
 
         // Zufallszahl
         t = new byte[16];
@@ -109,7 +110,7 @@ public class Pkcs6 {
 
         // alles zusammen setzen
         t = newSeq;
-        t = Asn1.addTo(t, ver);
+//        t = Asn1.addTo(t, ver);
         t = Asn1.addTo(t, nr);
         t = Asn1.addTo(t, mdx);
         t = Asn1.addTo(t, issuer);
@@ -184,11 +185,13 @@ public class Pkcs6 {
      */
     public static byte[] sign(final byte sign[], final byte privN[], final byte privF[]) {
         byte[] t = prepareSignedContent(sign, "SHA256", privN.length - (privN[0] == 0 ? 1 : 0));
+//        byte[] t = prepareSignedContent(sign, "SHA", privN.length - (privN[0] == 0 ? 1 : 0));
 
         // rsa ausrechnen
         final byte[] signedData = doRSA(t, privN, privF);
 
         t = Asn1.addTo(newSeq, Asn1.makeASN1(sha256WithRSAEncryption, 6)); // OID
+//        t = Asn1.addTo(newSeq, Asn1.makeASN1(sha1withRSAEncryption, 6)); // OID
         byte[] mdx = Asn1.addTo(t, nul); // null
 
         t = Asn1.addTo(newSeq, sign);
@@ -295,15 +298,16 @@ public class Pkcs6 {
 
                 // // System.out.println("<" + key + "> = '" + value + "'");
 
-                int type = Asn1.PrintableString;
+                int type = Asn1.UTF8String;
                 byte oid[] = null;
                 if (key.equalsIgnoreCase("commonName")) {
                     oid = id_at_commonName;
-                    type = Asn1.T61String;
                 } else if (key.equalsIgnoreCase("surName"))
                     oid = id_at_surname;
-                else if (key.equalsIgnoreCase("countryName"))
+                else if (key.equalsIgnoreCase("countryName")) {
                     oid = id_at_countryName;
+                    type = Asn1.PrintableString;
+                }
                 else if (key.equalsIgnoreCase("localityName"))
                     oid = id_at_localityName;
                 else if (key.equalsIgnoreCase("stateOrProvinceName"))
@@ -343,32 +347,32 @@ public class Pkcs6 {
     public static byte[] makeInfo(String name, String orgName, String url, String country, String state, String location) {
         byte s[], set[], t[];
         t = Asn1.addTo(newSeq, Asn1.makeASN1(id_at_organizationName, 6));
-        t = Asn1.addTo(t, Asn1.makeASN1(name, 19));
+        t = Asn1.addTo(t, Asn1.makeASN1(name, Asn1.UTF8String));
         set = Asn1.addTo(newSet, t);
         s = Asn1.addTo(newSeq, set);
 
         t = Asn1.addTo(newSeq, Asn1.makeASN1(id_at_organizationalUnitName, 6));
-        t = Asn1.addTo(t, Asn1.makeASN1(orgName, 19));
+        t = Asn1.addTo(t, Asn1.makeASN1(orgName, Asn1.UTF8String));
         set = Asn1.addTo(newSet, t);
         s = Asn1.addTo(s, set);
 
         t = Asn1.addTo(newSeq, Asn1.makeASN1(id_at_commonName, 6));
-        t = Asn1.addTo(t, Asn1.makeASN1(url, 19));
+        t = Asn1.addTo(t, Asn1.makeASN1(url, Asn1.UTF8String));
         set = Asn1.addTo(newSet, t);
         s = Asn1.addTo(s, set);
 
         t = Asn1.addTo(newSeq, Asn1.makeASN1(id_at_countryName, 6));
-        t = Asn1.addTo(t, Asn1.makeASN1(country, 19));
+        t = Asn1.addTo(t, Asn1.makeASN1(country, Asn1.PrintableString));
         set = Asn1.addTo(newSet, t);
         s = Asn1.addTo(s, set);
 
         t = Asn1.addTo(newSeq, Asn1.makeASN1(id_at_stateOrProvinceName, 6));
-        t = Asn1.addTo(t, Asn1.makeASN1(state, 19));
+        t = Asn1.addTo(t, Asn1.makeASN1(state, Asn1.UTF8String));
         set = Asn1.addTo(newSet, t);
         s = Asn1.addTo(s, set);
 
         t = Asn1.addTo(newSeq, Asn1.makeASN1(id_at_localityName, 6));
-        t = Asn1.addTo(t, Asn1.makeASN1(location, 19));
+        t = Asn1.addTo(t, Asn1.makeASN1(location, Asn1.UTF8String));
         set = Asn1.addTo(newSet, t);
         s = Asn1.addTo(s, set);
 
