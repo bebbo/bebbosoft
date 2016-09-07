@@ -10,9 +10,12 @@ import javax.persistence.spi.ProviderUtil;
 
 public class PP implements PersistenceProvider {
 
+	private final static Map<String, String> cast(Map m) {
+		return m;
+	}
 
 	public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo pui, Map argumentMap) {
-		return new EMF(pui, argumentMap);
+		return new EMF(pui, cast(argumentMap));
 	}
 
 	public EntityManagerFactory createEntityManagerFactory(String id, Map argumentMap) {
