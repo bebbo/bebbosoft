@@ -321,24 +321,24 @@ public class XmlFile {
 
 		void remove(Tag tag) {
 			// remove from allByOrder
-			for (int i = 0; i < allByOrder.size();) {
-				Object o = allByOrder.get(i);
+			for (Iterator<Object> i = allByOrder.iterator(); i.hasNext();) {
+				Object o = i.next();
 				if (o == tag) {
-					allByOrder.remove(i);
-					break;
-				}
-				++i;
-			}
-			// removefrom tagsByName
-			for (Iterator<Entry<String, Tag>> i = tagsByName.entrySet()
-					.iterator(); i.hasNext();) {
-				Entry<String, Tag> entry = i.next();
-				Tag t = (Tag) entry.getValue();
-				if (t == tag) {
-					tagsByName.remove(entry.getKey(), t);
+					i.remove();
 					break;
 				}
 			}
+			// removefrom tagsByName by name
+			for (final Iterator<Tag> i = tagsByName.subMap(tag.name, tag.name + "#999999").values().iterator(); i.hasNext();) {
+				final Tag t = i.next();
+				if (t == tag)
+					i.remove();
+			}
+			
+			// removefrom tagsByName with name attribute
+			final String key = "\\" + tag.name + "\\" + tag.attributes.get("name");
+			tagsByName.remove(key, tag);
+			
 		}
 
 		void writeRoot(OutputStream os, String encoding) throws IOException {
@@ -858,18 +858,6 @@ public class XmlFile {
 		return new String(c);
 	}
 
-	/*
-	 * private void fix(Tag here) { String last = ""; int count = 0; for
-	 * (Iterator i = here.tagsByName.keySet().iterator(); i.hasNext();) { String
-	 * key = (String)i.next(); if (!key.equals(last)) { last = key; count = 0; }
-	 * else { if (count == 0) { Tag o = (Tag)here.tagsByName.get(key);
-	 * here.tagsByName.remove(key, o); // here.tagsByName.remove(key);
-	 * here.tagsByName.put(key + '#' + i2s(count++), o); } Tag o =
-	 * (Tag)here.tagsByName.get(key); // if (!o.name.equals(key)) // throw new
-	 * RuntimeException("mismatch: " + o.name +"!=" + key);
-	 * here.tagsByName.remove(key, o); key = key + '#' + i2s(count++);
-	 * here.tagsByName.put(key, o); } fix((Tag)here.tagsByName.get(key)); } }
-	 */
 	/**
 	 * Write all internal data to the file.
 	 */
@@ -920,7 +908,7 @@ public class XmlFile {
 		return here;
 	}
 
-	private Tag createTag(String path) {
+	private Tag findOrCreateTag(String path) {
 		if (path.length() == 0)
 			return root;
 		path = path.substring(1);
@@ -1018,15 +1006,6 @@ public class XmlFile {
 				}
 			}
 		}
-		/*
-		 * for (Iterator i = here.tagsByName.keySet().iterator(); i.hasNext();)
-		 * { String key = (String) i.next(); // System.out.println("K: " + key +
-		 * "[" +(((Tag)here.tagsByName.get(key)).name) + "] *= P: " + path); if
-		 * ((path.length() == 0 && key.charAt(0) != '\\') || (path.length() != 0
-		 * && key.startsWith(path) && (wildStar || key.length() == path.length()
-		 * || key.charAt(path.length()) == '#'))) { v.add(opath + key + '/'); }
-		 * }
-		 */
 		return v;
 
 	}
@@ -1143,7 +1122,15 @@ public class XmlFile {
 			return;
 		}
 		if (here == null)
-			here = createTag(section);
+			here = findOrCreateTag(section);
+		if (attribute.equals("name") && here.parent != null) {
+			final String oldName = here.attributes.get("name");
+			if (!value.equals(oldName)) {
+				if (oldName != null)
+					here.parent.tagsByName.remove("\\" + here.name + "\\" + oldName, here);
+				here.parent.tagsByName.put("\\" + here.name + "\\" + value, here);
+			}
+		}
 		here.attributes.put(attribute, value);
 	}
 
@@ -1211,7 +1198,7 @@ public class XmlFile {
 	 *            the new content.
 	 */
 	public void addComment(String section, String comment) {
-		Tag here = createTag(section);
+		Tag here = findOrCreateTag(section);
 		if (here == null)
 			return;
 		here.addContent(new ByteRef("<!-- " + encode(comment, encoding)
@@ -1229,14 +1216,14 @@ public class XmlFile {
 	 * @see #getContent
 	 */
 	public void setContent(String section, String content) {
-		Tag here = createTag(section);
+		Tag here = findOrCreateTag(section);
 		if (here == null)
 			return;
 		here.setContent(encode(content, encoding));
 	}
 
 	public void addContent(String section, String content) {
-		Tag here = createTag(section);
+		Tag here = findOrCreateTag(section);
 		if (here == null)
 			return;
 		here.addContent(encode(content, encoding));
@@ -1401,7 +1388,7 @@ public class XmlFile {
 		String path = section.substring(0, idx);
 		section = section.substring(idx + 1);
 
-		Tag here = createTag(path);
+		Tag here = findOrCreateTag(path);
 
 		Tag nt = new Tag(section);
 		here.add(nt);
