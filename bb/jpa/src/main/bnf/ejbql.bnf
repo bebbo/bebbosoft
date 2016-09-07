@@ -1,0 +1,178 @@
+EXPORT
+{ // this defines the created class, to be used as parser entry point.
+  class : de.bb.jpa.QLParser;
+  // and here we list all member functions which are public exposed
+  public : QL;
+}
+
+IMPORT
+{  
+  Char ::= de.bb.bex2.xml.Char;
+  NameChar ::= de.bb.bex2.xml.NameChar;
+  Letter ::= de.bb.bex2.xml.Letter;
+}
+
+RULES
+{
+  SPACE ::= #x20 | #x0D | #x0A | #x09;
+  S ::= SPACE;
+  HEX ::= [0-9A-Fa-f];
+  DIGIT1 ::= [1-9];
+  DIGIT ::= [0-9];
+  IDENTCHARSTART ::= [a-zA-Z_$];
+  IDENTCHAR ::= [a-zA-Z0-9_$];
+  
+  integer ::= '0' | DIGIT1 DIGIT*;
+  Number ::= ('0'| DIGIT1 DIGIT*) ('.' DIGIT* ('e' ('+'|'-')? Integer)? )?;
+  
+  
+  String ::= '"' stringEnd;
+  stringEnd ::= '"' | '\u' HEX HEX HEX HEX stringEnd | '\' ESC stringEnd | Char stringEnd;
+  
+  Identification_variable ::= IDENTCHARSTART IDENTCHAR*;
+  
+  QL ::= select_statement | update_statement | delete_statement ;
+  select_statement ::= select_clause from_clause where_clause? groupby_clause? having_clause? orderby_clause? ;
+  update_statement ::= update_clause where_clause? ;
+  delete_statement ::= delete_clause where_clause? ;
+
+  delete_clause ::= "DELETE" S+ "FROM" S+ abstract_schema_name (("AS" S+)? Identification_variable)? ;
+  from_clause ::= "FROM" S+ identification_variable_declaration (S* "," S* (identification_variable_declaration | collection_member_declaration))* ;
+  groupby_clause ::= "GROUP" S+ "BY" S+ groupby_item ("," S* groupby_item)* ;
+  having_clause ::= "HAVING" S+ conditional_expression ;
+  orderby_clause ::= "ORDER" S+ "BY" S+ orderby_item ("," S* orderby_item)* ;
+  select_clause ::= "SELECT" S+ ("DISTINCT" S+)? select_expression ("," S* select_expression)*;
+  where_clause ::= "WHERE" S+ conditional_expression;
+
+  abstract_schema_name ::=  Identification_variable S+;
+
+  identification_variable_declaration ::= range_variable_declaration ( join | fetch_join )* ;
+  range_variable_declaration ::= abstract_schema_name S+ ("AS" S+)? Identification_variable ;
+  
+  join ::= join_spec path_expression S+ ("AS" S+)? Identification_variable ;
+  fetch_join ::= join_spec S+ "FETCH" S+ path_expression ;
+  join_spec::= ("LEFT" S+ (("OUTER" | "INNER") S+)? )? "JOIN" S+ ;
+  
+  path_expression ::= Identification_variable ("." S* Identification_variable)+ S*;
+  opt_path_expression ::= path_expression;
+  collection_member_declaration ::= "IN" S* "(" S* path_expression ")" S* ("AS" S+)? Identification_variable ;
+
+  groupby_item ::= opt_path_expression ;
+  orderby_item ::= path_expression (("ASC" | "DESC" ) S*)? ;
+
+  select_expression ::= "OBJECT" S* "(" S* Identification_variable ")" S* | aggregate_expression | constructor_expression | opt_path_expression ;
+
+  constructor_expression ::= "NEW" S+ constructor_name "(" S* constructor_item ("," S* constructor_item)* ")" S* ;
+  constructor_name ::= Identification_variable S* ("." S* Identification_variable S*)*;
+  constructor_item ::= path_expression ;
+  aggregate_expression ::= ( "AVG" | "MAX" | "MIN" | "SUM" ) S* "(" S* ("DISTINCT" S+)? path_expression ")" S* |
+      "COUNT" S* "(" S* ("DISTINCT" S+)? opt_path_expression ")" S* ;
+
+  update_clause ::= "UPDATE" S+ abstract_schema_name (("AS" S+)? Identification_variable S+)?
+            "SET" S+ update_item ("," S* update_item)* ;
+            
+  update_item ::= path_expression "=" S* new_value ;
+
+  new_value ::= simple_expression | primary | simple_entity_expression | "NULL" S*;
+
+  conditional_expression ::= ("NOT" S+)? ( "(" S* conditional_expression ")" S* | simple_cond_expression ) 
+    ("OR" ("(" S* conditional_expression ")" S+ conditional_expression ))? 
+    ("AND" ("(" S* conditional_expression ")" S+ conditional_expression ))? ;
+    
+  simple_cond_expression ::= Number | Input_parameter | 
+  
+  state_field_path_expression |
+(simple_arithmetic_expression) |
+functions_returning_numerics |
+aggregate_expression
+  
+  comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression 
+          | empty_collection_comparison_expression |collection_member_expression | exists_expression ;
+  comparison_expression ::= expression comparison_operator (expression | all_or_any_expression);
+  comparison_operator ::= '=' | '>=' | '<=' | '<>' | '>' | '<';
+
+  expression ::= "(" S* subquery ")" S* | simple_expression ;
+  simple_expression ::= term | simple_arithmetic_expression { + | - } arithmetic_term
+arithmetic_term ::= arithmetic_factor | arithmetic_term { * | / } arithmetic_factor
+arithmetic_factor ::= [{ + | - }] arithmetic_primary
+arithmetic_primary ::=
+state_field_path_expression |
+numeric_literal |
+(simple_arithmetic_expression) |
+input_parameter |
+functions_returning_numerics |
+aggregate_expression
+
+/*
+  subquery ::= simple_select_clause subquery_from_clause (where_clause)? (groupby_clause)? (having_clause)? ;
+  subquery_from_clause ::= "FROM" S+ subselect_identification_variable_declaration ("," S* subselect_identification_variable_declaration)* ;
+
+  subselect_identification_variable_declaration ::= path_expression ("AS" S+)? Identification_variable | collection_member_declaration ;
+  simple_select_clause ::= SELECT S+ ("DISTINCT" S+)? simple_select_expression ;
+  simple_select_expression::= opt_path_expression;
+  
+  conditional_expression ::= conditional_term | conditional_expression S+ "OR" S+ conditional_term ;
+  conditional_term ::= conditional_factor | conditional_term S* "AND" S+ conditional_factor;
+  conditional_factor ::= ("NOT" S+)? conditional_primary;
+  conditional_primary ::= simple_cond_expression | (conditional_expression)
+  between_expression ::= arithmetic_expression [NOT] BETWEEN arithmetic_expression AND arithmetic_expression |
+         string_expression [NOT] BETWEEN string_expression AND string_expression |
+        datetime_expression [NOT] BETWEEN datetime_expression AND datetime_expression
+  in_expression ::= state_field_path_expression [NOT] IN ( in_item {, in_item}* | subquery)
+  in_item ::= literal | input_parameter
+  like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]
+  null_comparison_expression ::= opt_path_expression IS [NOT] NULL
+  empty_collection_comparison_expression ::= opt_path_expression IS [NOT] EMPTY
+  collection_member_expression ::= entity_expression [NOT] MEMBER [OF] opt_path_expression
+  exists_expression::= [NOT] EXISTS (subquery)
+  all_or_any_expression ::= { ALL | ANY | SOME} (subquery)
+
+
+string_expression ::= string_primary | (subquery)
+string_primary ::=
+state_field_path_expression |
+string_literal |
+input_parameter |
+functions_returning_strings |
+aggregate_expressiondatetime_expression ::= datetime_primary | (subquery)
+datetime_primary ::=
+state_field_path_expression |
+input_parameter |
+functions_returning_datetime |
+aggregate_expression
+boolean_expression ::= boolean_primary | (subquery)
+boolean_primary ::=
+state_field_path_expression |
+boolean_literal |
+input_parameter |
+enum_expression ::= enum_primary | (subquery)
+enum_primary ::=
+state_field_path_expression |
+enum_literal |
+input_parameter |
+entity_expression ::=
+single_valued_association_path_expression | simple_entity_expression
+simple_entity_expression ::=
+Identification_variable |
+input_parameter
+functions_returning_numerics::=
+LENGTH(string_primary) |
+LOCATE(string_primary, string_primary[, simple_arithmetic_expression]) |
+ABS(simple_arithmetic_expression) |
+SQRT(simple_arithmetic_expression) |
+MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
+SIZE(collection_valued_path_expression)
+functions_returning_datetime ::=
+CURRENT_DATE|
+CURRENT_TIME |
+CURRENT_TIMESTAMP
+functions_returning_strings ::=
+CONCAT(string_primary, string_primary) |
+SUBSTRING(string_primary,
+simple_arithmetic_expression, simple_arithmetic_expression)|
+TRIM([[trim_specification] [trim_character] FROM] string_primary) |
+LOWER(string_primary) |
+UPPER(string_primary)
+trim_specification ::= LEADING | TRAILING | BOTH
+*/
+}

@@ -10,11 +10,11 @@
   	<dependency>
   		<groupId>de.bb</groupId>
   		<artifactId>util</artifactId>
-  		<version>1.0.18</version>
+  		<version>1.0.19</version>
     	</dependency>
   </dependencies>
   <groupId>de.bb</groupId>
   <artifactId>bex2</artifactId>
-  <version>1.0.9</version>
+  <version>1.0.10</version>
   <packaging>jar</packaging>
 </project>

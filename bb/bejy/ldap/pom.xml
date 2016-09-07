@@ -7,13 +7,13 @@
   </parent>
   <groupId>de.bb.bejy</groupId>
   <artifactId>ldap</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>server</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.8</version>
+      <version>1.6.9</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

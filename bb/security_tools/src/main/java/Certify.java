@@ -127,6 +127,14 @@ public class Certify {
                                 (byte) 0x86, (byte) 0xf8, 0x42, 0x01, 0x01, 0x01, 0x01, (byte) 0xff, 0x04, 0x04, 0x03,
                                 0x02, 0x00, (byte) nsCertType};
                 cert = Asn1.addTo(cert, nsc);
+                
+                if ((nsCertType & 0x40) == 0x40) {
+                	byte[] t = Asn1.addTo(Asn1.newSeq, Asn1.makeASN1(Asn1.string2Oid("2.5.29.37"), Asn1.OBJECT_IDENTIFIER));
+                	byte[] s = Asn1.newSeq;
+                	s = Asn1.addTo(s, Asn1.makeASN1(Asn1.string2Oid("1.3.6.1.5.5.7.3.1"), Asn1.OBJECT_IDENTIFIER));
+                	t = Asn1.addTo(t, Asn1.makeASN1(s, Asn1.OCTET_STRING));
+                	cert = Asn1.addTo(cert, t);
+                }
             }
 
             // read password

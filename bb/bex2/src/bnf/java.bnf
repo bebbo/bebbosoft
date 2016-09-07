@@ -1,0 +1,64 @@
+/*
+ * Bebbo's BNF for Java 2
+ */
+EXPORT
+{ // this defines the created class, to be used as parser entry point.
+  class : de.bb.bex2.parser.Java2;
+  // and here we list all member functions which are public exposed
+  public : CompilationUnit;
+}
+
+IMPORT
+{  
+  Char ::= de.bb.bex2.xml.Char;
+  NameChar ::= de.bb.bex2.xml.NameChar;
+  Letter ::= de.bb.bex2.xml.Letter;
+}
+
+RULES
+{
+  LF ::= #x0D | #x0A;
+  SPACE ::= #x20 | #x0D | #x0A | #x09;
+  S ::= SPACE | BlockComment | LineComment;
+  DIGIT1 ::= [1-9];
+  DIGIT ::= [0-9];
+  HEX   ::= [0-9A-Fa-f];  
+  IDENTCHARSTART ::= [a-zA-Z_$];
+  IDENTCHAR ::= [a-zA-Z0-9_$];
+  ESC ::= [bnrt\\];
+  NOLF ::= [^\x0d\x0a];
+  
+  
+  HexNumber ::= HEX+;  
+  Integer ::= '0' | DIGIT1 DIGIT*;
+  Number ::= '0x' HexNumber 'l'? | '0'| DIGIT1 DIGIT* ('l' | 'f' | 'd' | '.' DIGIT* ('e' ('+'|'-')? Integer)? ('f' | 'd')?)?;
+  
+  Identifier ::= IDENTCHARSTART IDENTCHAR* S*;
+  
+  // special handling to detect also /** 
+  BlockComment ::= '/*' ('*/' | '*' BlockCommentEnd | BlockCommentEnd);
+  BlockCommentEnd ::= '*/' | Char BlockCommentEnd;
+  
+  LineComment ::= '//' LineCommentEnd;
+  LineCommentEnd ::= LF | Char LineCommentEnd;
+  
+  String ::= '"' StringEnd;
+  StringEnd ::= '"' | '\u' HEX HEX HEX HEX StringEnd | '\' ESC StringEnd | Char StringEnd;
+  
+  Character ::= "'" ('\u' HEX HEX HEX HEX | '\\' ESC | NOLF) "'";
+  
+  Expression ::= 
+  
+  Type ::= Identifier ('(' S* Integer S* ')';
+  Variable ::= Identifier; 
+  Formula ::= 'eing' | Expression;
+    
+  Line ::=
+    '#' LineCommentEnd |
+    ':' LineCommentEnd |
+    S* (Type S* Variable S* '=' S* Formula)?
+    ;
+  
+  CompilationUnit ::= (Line)*;
+  
+}

@@ -1,0 +1,32 @@
+/*
+ * Test Grammar.
+ 
+(1) Z ! S
+(2) S ! Sb
+(3) S ! bAa
+(4) A ! aSc
+(5) A ! a
+(6) A ! aSb
+
+ */
+EXPORT
+{ // this defines the created class, to be used as parser entry point.
+  class : G1;
+  // and here we list all member functions which are public exposed
+  public : Z;
+}
+
+IMPORT
+{  
+  Char ::= de.bb.bex2.xml.Char;
+  NameChar ::= de.bb.bex2.xml.NameChar;
+  Letter ::= de.bb.bex2.xml.Letter;
+}
+
+RULES
+{
+  Z ::= S;
+  S ::= S 'b' | 'b' A 'a' ; 
+  A ::= 'a' S 'c' | 'a' | 'a' S 'b';
+//  A ::= 'a' ( S ('c' | 'b' ))?;
+}

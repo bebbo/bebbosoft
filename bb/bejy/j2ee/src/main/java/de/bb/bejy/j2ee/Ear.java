@@ -35,7 +35,7 @@ public class Ear extends Configurable {
     public void activate(LogFile logFile) throws Exception {
         logFile.writeDate("loading EAR:" + getProperty("name"));
 
-        path = getProperty("path");
+        path = getProperty("path").trim();
         // if EAR archive, unpack it
         if (path.toUpperCase().endsWith(".EAR")) {
             File file = new File(path);

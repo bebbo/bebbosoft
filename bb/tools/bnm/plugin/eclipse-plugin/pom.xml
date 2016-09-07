@@ -7,31 +7,31 @@
   </parent>
   <groupId>de.bb.tools.bnm.plugin</groupId>
   <artifactId>eclipse-plugin</artifactId>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>util</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.18</version>
+      <version>1.0.19</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>jar-plugin</artifactId>
       <groupId>de.bb.tools.bnm.plugin</groupId>
-      <version>0.2.3</version>
+      <version>0.2.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>core</artifactId>
       <groupId>de.bb.tools.bnm</groupId>
-      <version>0.2.3</version>
+      <version>0.2.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>eclipse</artifactId>
       <groupId>de.bb.tools.bnm</groupId>
-      <version>0.2.3</version>
+      <version>0.2.4</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

@@ -1,0 +1,244 @@
+/*
+ * JAVA grammar (mostly complete)
+ */
+
+
+ALPHA = '_$'; // Java uses *more* letters than A-Za-z
+
+CompilationUnit =
+        PackageStatement?
+        ImportStatement*
+        TypeDeclaration*
+;
+PackageStatement =
+        'package' PackageName ';'
+;
+
+ImportStatement =
+        'import' ImportName ';'
+;
+
+ImportName =
+        Identifier ('.' '*'|  ('.' ImportName)?  )
+;
+
+TypeDeclaration =
+        ClassDeclaration
+|       InterfaceDeclaration
+|       ';'
+;
+ClassDeclaration =
+        ClassModifier* ClassBaseDeclaration
+;
+
+InnerClassDeclaration =
+        InnerClassModifier* ClassBaseDeclaration
+;
+
+ClassBaseDeclaration =
+        'class' Identifier
+        ('extends' ClassName)?
+        ('implements' InterfaceName (',' InterfaceName)*)?
+        '{' FieldDeclaration* '}'
+;
+InterfaceDeclaration =
+        InterfaceModifier* 'interface' Identifier
+        ('extends' InterfaceName (',' InterfaceName)*)?
+        '{' FieldDeclaration* '}'
+;
+FieldDeclaration =
+        DocComment?  ( MethodDeclaration
+              |        ConstructorDeclaration
+              |        VariableDeclaration
+              |        InnerClassDeclaration
+        )
+|       StaticInitializer
+|       ';'
+;
+MethodDeclaration =
+        Modifier* Type Identifier '(' ParameterList? ')' ('throws' ClassName)?
+        ( '{' Statement* '}' | ';' )
+;
+ConstructorDeclaration =
+        Modifier* Identifier '(' ParameterList? ')' ('throws' ClassName)?
+        '{' Statement* '}'
+;
+VariableDeclaration =
+        Modifier* Type VariableDeclarator (',' VariableDeclarator)* ';'
+;
+VariableDeclarator =
+        Identifier ('[' ']')* ('=' VariableInitializer)?
+;
+VariableInitializer  =
+        Expression
+|       '{'  ( VariableInitializer  ( ',' VariableInitializer  )* ','? )? '}'
+;
+StaticInitializer =
+        'static' '{' Statement* '}'
+;
+ParameterList =
+        Parameter (',' Parameter)*
+;
+Parameter =
+        TypeSpecifier Identifier ('[' ']')*
+;
+Statement =
+        '{' Statement* '}'
+|       'if' '(' Expression ')' Statement ('else' Statement)?
+|       'while' '(' Expression ')' Statement
+|       'do' Statement 'while' '(' Expression ')' ';'
+|       'for' '(' (VariableDeclaration | Expression? ';' )
+           Expression? ';' Expression? ')' Statement
+|       'try' '{' Statement '}' ('catch' '(' Parameter ')' Statement)*
+                ('finally' Statement)?
+|       'switch' '(' Expression ')' '{' CaseStatement* '}'
+|       'synchronized' '(' Expression ')' Statement
+|       'return' Expression? ';'
+|       'throw' Expression ';'
+|        VariableDeclaration
+|        Expression ';'
+|        Identifier ':' Statement
+|       'break' Identifier? ';'
+|       'continue' Identifier? ';'
+|       ';'
+;
+
+CaseStatement =
+         ( 'case' Expression  | 'default' )  ':'   Statement*
+;
+
+
+Expression2 =
+        '+' Expression
+|       '-' Expression
+|       '*' Expression
+|       '/' Expression
+|       '%' Expression
+|       '^' Expression
+|       '&' Expression
+|       '|' Expression
+|       '&&' Expression
+|       '||' Expression
+|       '<<' Expression
+|       '>>' Expression
+|       '>>>' Expression
+|       '=' Expression
+|       '+=' Expression
+|       '-=' Expression
+|       '*=' Expression
+|       '/=' Expression
+|       '%=' Expression
+|       '^=' Expression
+|       '&;=' Expression
+|       '|=' Expression
+|       '<<=' Expression
+|       '>>=' Expression
+|       '>>>=' Expression
+|       '<' Expression
+|       '>' Expression
+|       '<=' Expression
+|       '>=' Expression
+|       '==' Expression
+|       '!=' Expression
+|       '.' Expression
+|       ',' Expression
+|       'instanceof' ( ClassName | InterfaceName )
+|       '?' Expression ':' Expression
+|       '[' Expression ']'
+|       '++'
+|       '--'
+|       '(' ArgList? ')'
+;
+
+Expression =
+    (
+        '++' Expression
+|       '--' Expression
+|       '-' Expression
+|       '!' Expression
+|       '~' Expression
+|       '('  ( Type ')' Expression
+             |  Expression  ')'
+             )
+|       'new' ( ClassName  '(' ArgList?')'
+              | TypeSpecifier  ( '[' Expression ']' )+ ('['  ']')*
+              | '(' Expression  ')'
+              )
+|       'true'
+|       'false'
+|       'null'
+|       'super'
+|       'this'
+|       Identifier
+|       Number
+|       String
+|       Character
+    )   Expression2*
+;
+ArgList =
+        Expression (',' Expression )*
+;
+Type =
+        TypeSpecifier ('[' ']')*
+;
+TypeSpecifier =
+        'boolean'
+|       'byte'
+|       'char'
+|       'short'
+|       'int'
+|       'float'
+|       'long'
+|       'double'
+|       ClassName
+|       InterfaceName
+;
+
+ClassModifier =
+        'public'
+|       'final'
+|       'abstract'
+|       'synchronized'
+;
+
+InnerClassModifier =
+        'static'
+|       'protected'
+|       ClassModifier
+;
+
+
+InterfaceModifier =
+        'public'
+|       'abstract'
+;
+
+
+Modifier =
+        'public'
+|       'private'
+|       'protected'
+|       'static'
+|       'final'
+|       'native'
+|       'synchronized'
+|       'abstract'
+|       'threadsafe'
+|       'transient'
+;
+
+PackageName = Identifier ( '.' Identifier )*
+;
+
+
+ClassName =
+        Identifier
+|       PackageName '.' Identifier
+;
+
+InterfaceName =
+        Identifier
+|       PackageName '.' Identifier
+;
+
+
