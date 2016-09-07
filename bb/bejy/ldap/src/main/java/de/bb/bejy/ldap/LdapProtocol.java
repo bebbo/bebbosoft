@@ -208,7 +208,7 @@ public class LdapProtocol extends Protocol {
 
 		if (checkWritePermission(modifyDn)) {
 			final String modifyKey = "/ldap/" + dn2Key(modifyDn);
-			final String last = XmlFile.getLastSegment(modifyKey);
+			final String last = base(XmlFile.getLastSegment(modifyKey));
 
 			final ByteRef attr = newType.nextWord('=').toLowerCase();
 			final String val = newType.toString();
@@ -392,7 +392,7 @@ public class LdapProtocol extends Protocol {
 		byte[] resultVal = null;
 
 		boolean access = checkWritePermission(modifyBaseDn);
-		boolean selfAccess = access ? false : modifyBaseDn.endsWith(currentUser);
+		boolean selfAccess = !access && modifyBaseDn.endsWith(currentUser);
 
 		if (!access && !selfAccess) {
 			logFile.writeDate("search: " + currentUser + " has NO WRITE ACCESS to " + modifyBaseDn);
