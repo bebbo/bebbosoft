@@ -230,8 +230,8 @@ public class Asn1 implements Iterator<Asn1> {
                     if (dumpData)
                         sb.append("[" + sub + "]");
                     sb.append("\r\n");
-                    if (!probe(sub.toByteArray()))
-                    sub = sub.substring(1);
+                    if (sub.charAt(0) == 0)
+                        sub = sub.substring(1);
                     if (probe(sub.toByteArray()))
                         sb.append(dump(indent + 2, sub.toByteArray(), 0, len - 1, dumpData));
                     break;
