@@ -28,123 +28,125 @@ import de.bb.util.LogFile;
 /**
  * @author bebbo
  */
-public class MimeTypesCfg extends Configurable implements Configurator
-{
-  private final static String PROPERTIES[][] =
-    {}
-  ;
-  
-  public MimeTypesCfg()
-  {
-    init("mime types", PROPERTIES);
-    Config.addGlobalUnique(getPath());
-  }
+public class MimeTypesCfg extends Configurable implements Configurator {
+	private final static String PROPERTIES[][] = {};
 
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#getName()
-   */
-  public String getName()
-  {
-    return "mime types";
-  }
+	public MimeTypesCfg() {
+		init("mime types", PROPERTIES);
+		Config.addGlobalUnique(getPath());
+	}
 
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#getDescription()
-   */
-  public String getDescription()
-  {
-    return "this is a set of mime type definitions";
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#getName()
+	 */
+	public String getName() {
+		return "mime types";
+	}
 
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#getPath()
-   */
-  public String getPath()
-  {
-    return "mime-types";
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#getDescription()
+	 */
+	public String getDescription() {
+		return "this is a set of mime type definitions";
+	}
 
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#getId()
-   */
-  public String getId()
-  {
-    return "de.bb.bejy.http.mime-types";
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#getPath()
+	 */
+	public String getPath() {
+		return "mime-types";
+	}
 
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#getExtensionId()
-   */
-  public String getExtensionId()
-  {
-    return "de.bb.bejy";
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#getId()
+	 */
+	public String getId() {
+		return "de.bb.bejy.http.mime-types";
+	}
 
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#getRequired()
-   */
-  public String getRequired()
-  {
-    return null;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#getExtensionId()
+	 */
+	public String getExtensionId() {
+		return "de.bb.bejy";
+	}
 
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#create()
-   */
-  public de.bb.bejy.Configurable create()
-  {
-    return new MimeTypesCfg();
-  }
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurator#loadClass()
-   */
-  public boolean loadClass()
-  {
-    return false;
-  }
-  
-  private static HashMap mimes = new HashMap(); 
-  
-  /**
-   * @param extension
-   * @return
-   */
-  public static String getMimeType(String extension)
-  {
-    if (extension == null)
-      return null;
-    String mt = (String)mimes.get(extension);
-    if (mt != null)
-      return mt;
-    Configurable c = Config.getInstance().getChild("mime-types");
-    if (c == null)
-      return null;
-    for (Iterator i = c.children(); i.hasNext();)
-    {
-      Configurable m = (Configurable)i.next();
-      if (extension.equals(m.getProperty("extension")))
-      {
-        mt = m.getProperty("type");
-        if (mt != null)
-        {
-          mimes.put(extension, mt);      
-        }
-        return mt;
-      }
-    }
-    return null;
-  }
-  
-  /* (non-Javadoc)
-   * @see de.bb.bejy.Configurable#update(de.bb.util.LogFile)
-   */
-  public void update(LogFile logFile) throws Exception
-  {
-    Configurable parent = getParent();
-    if (parent != Config.getInstance())
-      parent.update(logFile);
-    else
-      mimes.clear();
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#getRequired()
+	 */
+	public String getRequired() {
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#create()
+	 */
+	public de.bb.bejy.Configurable create() {
+		return new MimeTypesCfg();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurator#loadClass()
+	 */
+	public boolean loadClass() {
+		return false;
+	}
+
+	private static HashMap<String, String> mimes = new HashMap<String, String>();
+
+	/**
+	 * @param extension
+	 * @return
+	 */
+	public static String getMimeType(String extension) {
+		if (extension == null)
+			return null;
+		if (mimes.isEmpty()) {
+			Configurable c = Config.getInstance().getChild("mime-types");
+			if (c != null) {
+				for (final Iterator<Configurable> i = c.children(); i.hasNext();) {
+					final Configurable m = i.next();
+					if (extension.equals(m.getProperty("extension"))) {
+						final String mt = m.getProperty("type");
+						if (mt != null) {
+							mimes.put(extension, mt);
+						}
+						return mt;
+					}
+				}
+			}
+		}
+		final String mt = mimes.get(extension);
+		return mt;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.bb.bejy.Configurable#update(de.bb.util.LogFile)
+	 */
+	public void update(LogFile logFile) throws Exception {
+		Configurable parent = getParent();
+		if (parent != Config.getInstance())
+			parent.update(logFile);
+		else
+			mimes.clear();
+	}
 
 }
