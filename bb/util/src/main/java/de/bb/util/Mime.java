@@ -124,7 +124,7 @@ public class Mime {
     public final static byte[] encode(byte x[], int width) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         // read up to 3 bytes - write up to 4 bytes
-        for (int i = 0; i < x.length;) {
+        for (int i = 0, len = 0; i < x.length;) {
             int a, b, c, d;
             a = x[i++] & 0xff;
             if (i < x.length) {
@@ -148,9 +148,11 @@ public class Mime {
             bos.write(encodeTable[b]);
             bos.write(encodeTable[c]);
             bos.write(encodeTable[d]);
-            if (i < x.length && (i % width) == 0) {
+            len += 4;
+            if (i < x.length && len >= width) {
                 bos.write((byte) 0xd);
                 bos.write((byte) 0xa);
+                len -= width;
             }
         }
         return bos.toByteArray();
