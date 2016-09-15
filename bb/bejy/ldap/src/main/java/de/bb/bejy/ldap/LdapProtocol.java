@@ -344,9 +344,14 @@ public class LdapProtocol extends Protocol {
 
 								// create child entries per attribute value
 								while (values.hasNext()) {
-									final String val = values.next().asByteRef().toString("utf-8");
-									final String vkey = xml.createSection(createdKey + attr);
-									setValue(xml, vkey, val);
+									final ByteRef value = values.next().asByteRef();
+									if (attr.equals("userpassword")) {
+										setPassword(createdKey, value);
+									} else {
+										final String val = value.toString("utf-8");
+										final String vkey = xml.createSection(createdKey + attr);
+										setValue(xml, vkey, val);
+									}
 								}
 							}
 							resultVal = RESULT_SUCCESS;
