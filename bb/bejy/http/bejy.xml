@@ -1,0 +1,70 @@
+<bejy>
+	<group name="user" class="de.bb.bejy.ConfigGroup">
+		<user name="admin" />
+		<user name="bebbo"
+			password="{P5SHA256}DV2hGwIgwhi640m5ss2lrULtn1FLsOr5c8TjKSNP8ieJuqY0i3C4QGVsd3S5UgOhOQg=" />
+	</group>
+
+	<group class="de.bb.bejy.LDAPUserGroup" ldapUser="uid=ldapread,ou=people,dc=serveronline,dc=org"
+		ldapPassword="duppiWuppy124" ldapRolesBase="ou=securedata,ou=groups,dc=serveronline,dc=org"
+		ldapBase=""
+		ldapQuery="(&amp;(objectClass=inetOrgPerson)(uid={u})(ismemberof=cn=user,ou=securedata,ou=groups,dc=serveronline,dc=org))"
+		ldapQueryRoles="(&amp;(objectClass=groupOfUniqueNames)(uniqueMember={%U}))"
+		ldapUrl="ldaps://serveronline.org" name="securedata" />
+
+
+	<server name="https" port="10444" timeout="180000">
+		<protocol class="de.bb.bejy.http.HttpFactory" logFile="logs/https"
+			verbose="">
+			<host logFile="logs/www.serveronline.org">
+				<context group="user" path="../../product/bejy/src/main/resources/admin"
+					realm="ServerOnline Administration Area" urlPath="/admin">
+					<handler class="de.bb.bejy.http.CgiHandler" command="/usr/bin/php-cgi -c ."
+						mask="*.php" />
+					<handler class="de.bb.bejy.http.ServletHandler" mask="*.jsp"
+						servlet="de.bb.jsp.JspServlet" />
+					<handler class="de.bb.bejy.http.ServletHandler" mask="/weba/*"
+						servlet="de.bb.bejy.admin.WebalizerServlet" />
+					<handler class="de.bb.bejy.http.FileHandler" mask="*" />
+				</context>
+				<war group="securedata" path="htdocs/data" realm="secure data"
+					urlPath="/" />
+			</host>
+		</protocol>
+	</server>
+	<server name="http" port="80" timeout="180000">
+		<protocol class="de.bb.bejy.http.HttpFactory" logFile="logs/https"
+			verbose="">
+			<host logFile="logs/www.serveronline.org">
+				<context path="../../product/bejy/src/main/resources/admin"
+					realm="ServerOnline Administration Area" urlPath="/admin">
+					<handler class="de.bb.bejy.http.CgiHandler" command="/usr/bin/php-cgi -c ."
+						mask="*.php" />
+					<handler class="de.bb.bejy.http.ServletHandler" mask="*.jsp"
+						servlet="de.bb.jsp.JspServlet" />
+					<handler class="de.bb.bejy.http.ServletHandler" mask="/weba/*"
+						servlet="de.bb.bejy.admin.WebalizerServlet" />
+					<handler class="de.bb.bejy.http.FileHandler" mask="*" />
+				</context>
+				<war group="securedata" path="htdocs/data" realm="secure data"
+					urlPath="/" />
+				<webapps path="webapps" />
+			</host>
+		</protocol>
+	</server>
+	<server bindAddr="" name="RR" port="8888">
+		<protocol class="de.bb.bejy.http.RRFactory" verbose="xtrue">
+			<vhost host="*">
+				<vpath path="/jenkins">
+					<destination uri="127.0.0.1:10488/jenkins" />
+				</vpath>
+                <vpath path="/f">
+                    <destination uri="127.0.0.1:80/f" />
+                </vpath>
+        <vpath path="/d02" reverseByExt="?WSDL:schemaLocation,location" reverseByType="text/html:src,href">
+          <destination uri="127.0.0.1:9020/TAXOR"/>
+        </vpath>
+			</vhost>
+		</protocol>
+	</server>
+</bejy>

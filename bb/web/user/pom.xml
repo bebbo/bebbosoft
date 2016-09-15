@@ -7,31 +7,31 @@
   </parent>
   <groupId>de.bb.web</groupId>
   <artifactId>user</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7-SNAPSHOT</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>util</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.19</version>
+      <version>1.0.20-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>mejb</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.0.6</version>
+      <version>0.0.7-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>rmi</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.0.6</version>
+      <version>0.0.7-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>sql</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.6</version>
+      <version>1.0.7-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

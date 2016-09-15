@@ -7,6 +7,7 @@ syntax: regexp
 ^.*/webapps.*$
 ^.*/entapps$
 ^.*/entapps.*$
+^.*/htdocs$
 ^.*/work$
 ^.*/.settings$
 syntax: regexp

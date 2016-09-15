@@ -8,18 +8,18 @@
 	<groupId>de.bb.tools.bnm.plugin</groupId>
 	<artifactId>install-plugin</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.4</version>
+	<version>0.2.5-SNAPSHOT</version>
 	<description>BNM clean plugin</description>
 	<dependencies>
 	 <dependency>
 	   <groupId>de.bb.tools.bnm</groupId>
 	   <artifactId>core</artifactId>
-	   <version>0.2.4</version>
+	   <version>0.2.5-SNAPSHOT</version>
 	 </dependency>
 	 <dependency>
     <groupId>de.bb</groupId>
     <artifactId>util</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.20-SNAPSHOT</version>
 	 </dependency>
 	</dependencies>
 </project>

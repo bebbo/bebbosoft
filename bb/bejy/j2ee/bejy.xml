@@ -1,0 +1,18 @@
+<bejy>
+	<group class="de.bb.bejy.LDAPUserGroup" ldapUser="uid=ldapread,ou=people,dc=serveronline,dc=org"
+		ldapPassword="duppiWuppy124" ldapRolesBase="ou=securedata,ou=groups,dc=serveronline,dc=org"
+		ldapBase=""
+		ldapQuery="(&amp;(objectClass=inetOrgPerson)(uid={u})(ismemberof=cn=user,ou=securedata,ou=groups,dc=serveronline,dc=org))"
+		ldapQueryRoles="(&amp;(objectClass=groupOfUniqueNames)(uniqueMember={%U}))"
+		ldapUrl="ldaps://serveronline.org" name="securedata" />
+
+
+	<server name="http" port="8089" timeout="180000">
+		<protocol class="de.bb.bejy.http.HttpFactory" logFile="logs/http8089"
+			verbose="">
+			<host logFile="logs/entapps">
+				<entapps path="entapps" />
+			</host>
+		</protocol>
+	</server>
+</bejy>

@@ -8,13 +8,13 @@
 	</parent>
 	<groupId>de.bb.product</groupId>
 	<artifactId>bb_mug</artifactId>
-	<version>1.7.5</version>
+	<version>1.7.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>de.bb.tools</groupId>
 			<artifactId>mug</artifactId>
-			<version>1.7.5</version>
+			<version>1.7.6-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -51,7 +51,7 @@
 					<dependency>
 						<groupId>de.bb.tools</groupId>
 						<artifactId>uses</artifactId>
-                        <version>1.5.3</version>
+                        <version>1.5.4-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -83,7 +83,7 @@
 					<dependency>
 						<groupId>de.bb.tools</groupId>
 						<artifactId>mug</artifactId>
-						<version>1.7.5</version>
+						<version>1.7.6-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 				<executions>
