@@ -1305,6 +1305,6 @@ public class HttpContext extends Configurable implements javax.servlet.ServletCo
     }
     
     public String toString() {
-    	return "HttpContext: " + sContext + " <" + aRealm + "> [" + aGroup + "]";
+    	return super.toString() + " " + sContext + " <" + aRealm + "> [" + aGroup + "]";
     }
 }
