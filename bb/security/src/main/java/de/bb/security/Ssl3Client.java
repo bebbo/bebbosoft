@@ -303,8 +303,11 @@ public class Ssl3Client extends Ssl3 // implements Connector
             System.arraycopy(shd, 0, t, mdd.length, shd.length);
             signedVerify = Pkcs6.padSignedContent(t, keyLength, 2);
         }
-        if (!Misc.equals(signedContent, signedVerify))
+        if (!Misc.equals(signedContent, signedVerify)) {
+        	Misc.dump("content:", System.out, signedContent);
+        	Misc.dump("verify:", System.out, signedVerify);
             throw new IOException("dh key params signature mismatch");
+        }
     }
 
     private int newEmptyClientCerts() {
