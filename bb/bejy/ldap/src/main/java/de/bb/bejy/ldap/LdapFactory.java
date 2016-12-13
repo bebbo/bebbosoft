@@ -3,12 +3,16 @@ package de.bb.bejy.ldap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import de.bb.bejy.Config;
-import de.bb.bejy.Cron;
-import de.bb.bejy.CronJob;
 import de.bb.bejy.Factory;
 import de.bb.bejy.Protocol;
+import de.bb.bejy.Version;
+import de.bb.util.ByteRef;
+import de.bb.util.LRUCache;
 import de.bb.util.XmlFile;
 
 public class LdapFactory extends Factory {
@@ -17,8 +21,51 @@ public class LdapFactory extends Factory {
 	private XmlFile xml;
 	private long lastModified;
 	private Runnable safer;
+	static final LRUCache<ByteRef, ArrayList<byte[]>> CACHE = new LRUCache<ByteRef, ArrayList<byte[]>>();
+
+	private final static String version;
+
+	static {
+		version = Version.getShort() + " LDAP " + V.V + " (c) 2000-" + V.Y
+				+ " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+	}
+
+	static HashMap<ByteRef, ByteRef> L2C = new HashMap<ByteRef, ByteRef>();
+
+	public static String getVersion() {
+		return V.V;
+	}
+
+	public String getFullVersion() {
+		return version;
+	}
 
 	public LdapFactory() {
+		XmlFile xml = getXmlFile();
+
+		xml.setString("/ldap/vendorversion", "name", getVersion());
+
+		// get all predefined names for correct upper/lower case
+		for (final String key : xml.getSections("/ldap/\\cn\\schema/attributetypes")) {
+			String val = xml.getString(key, "name", "");
+			int namePos = val.indexOf("NAME");
+			if (namePos < 0)
+				continue;
+			val = val.substring(namePos + 4).trim();
+			if (val.startsWith("(")) {
+				int ket = val.indexOf(')');
+				val = val.substring(1, ket);
+			} else {
+				int quote = val.indexOf('\'', 1);
+				val = val.substring(0, quote + 1);
+			}
+			for (final StringTokenizer st = new StringTokenizer(val); st.hasMoreTokens();) {
+				String name = st.nextToken();
+				name = name.substring(1, name.length() - 1);
+				L2C.put(new ByteRef(name.toLowerCase()), new ByteRef(name));
+			}
+		}
+
 	}
 
 	@Override
@@ -26,18 +73,19 @@ public class LdapFactory extends Factory {
 		return new LdapProtocol(this, logFile);
 	}
 
-	public XmlFile getXmlFile() {
+	public synchronized XmlFile getXmlFile() {
 		long lm = FILE.lastModified();
 		if (lm != lastModified || xml == null) {
 			lastModified = lm;
 			this.xml = new XmlFile();
 			xml.readFile(FILE.getAbsolutePath());
 			xml.setEncoding("utf-8");
+			CACHE.clear();
 		}
 		return xml;
 	}
 
-	public void saveXmlFile() throws IOException {
+	public synchronized void saveXmlFile() throws IOException {
 		synchronized (this) {
 			if (safer != null)
 				return;

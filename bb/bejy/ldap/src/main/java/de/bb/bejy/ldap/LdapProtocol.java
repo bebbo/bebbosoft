@@ -2,6 +2,7 @@ package de.bb.bejy.ldap;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,19 +10,19 @@ import java.util.Map;
 import javax.naming.SizeLimitExceededException;
 
 import de.bb.bejy.Protocol;
-import de.bb.bejy.Version;
 import de.bb.security.Asn1;
 import de.bb.security.SHA;
 import de.bb.security.SecureRandom;
 import de.bb.util.ByteRef;
-import de.bb.util.LRUCache;
 import de.bb.util.LogFile;
 import de.bb.util.Mime;
 import de.bb.util.Misc;
+import de.bb.util.SessionManager;
 import de.bb.util.XmlFile;
 
 public class LdapProtocol extends Protocol {
 
+	private static final String PAGED_RESULTS_CONTROL = "1.2.840.113556.1.4.319";
 	private static final int BASEOBJECT = 0;
 	private static final int SINGLELEVEL = 1;
 	private static final int WHOLESUBTREE = 2;
@@ -58,16 +59,9 @@ public class LdapProtocol extends Protocol {
 
 	private final static byte NEWSET[] = { 0x31, 0x00 };
 
-	private static final LRUCache<ByteRef, ArrayList<byte[]>> CACHE = new LRUCache<ByteRef, ArrayList<byte[]>>();
+	private final static byte NEWCONTROLS[] = { (byte) 0xA0, 0x00 };
 
 	// version stuff
-
-	private final static String version;
-
-	static {
-		version = Version.getShort() + " LDAP " + V.V
-				+ " (c) 2000-" + V.Y + " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
-	}
 
 	private LogFile logFile;
 
@@ -82,13 +76,7 @@ public class LdapProtocol extends Protocol {
 	private int sizeLimit;
 	private byte[] data;
 
-	public static String getVersion() {
-		return V.V;
-	}
-
-	public String getFullVersion() {
-		return version;
-	}
+	private HashMap<String, ArrayList<byte[]>> cookie2data = new HashMap<String, ArrayList<byte[]>>();
 
 	LdapProtocol(LdapFactory hf, LogFile _logFile) {
 		super(hf);
@@ -96,16 +84,11 @@ public class LdapProtocol extends Protocol {
 	}
 
 	private XmlFile getXmlFile() {
-		synchronized (factory) {
-			return ((LdapFactory) this.factory).getXmlFile();
-		}
+		return ((LdapFactory) this.factory).getXmlFile();
 	}
 
 	private void saveXmlFile() throws IOException {
-		synchronized (factory) {
-			CACHE.clear();
-			((LdapFactory) this.factory).saveXmlFile();
-		}
+		((LdapFactory) this.factory).saveXmlFile();
 	}
 
 	protected boolean doit() throws Exception {
@@ -201,7 +184,7 @@ public class LdapProtocol extends Protocol {
 		return true;
 	}
 
-	private void modifyDn(Iterator<Asn1> content) throws IOException, SizeLimitExceededException {
+	private void modifyDn(Iterator<Asn1> content) throws IOException {
 		final ByteRef modifyDn = content.next().asByteRef().toLowerCase();
 		final ByteRef newType = content.next().asByteRef();
 		byte[] resultVal = null;
@@ -242,6 +225,13 @@ public class LdapProtocol extends Protocol {
 			xml.setString(key, "value", null);
 			return;
 		}
+
+		// set permissions only if it matches a write permission
+		if (l.endsWith("readpermission") || l.endsWith("writepermission")) {
+			if (!checkWritePermission(new ByteRef(val)))
+				return;
+		}
+
 		String lower = val.toLowerCase();
 		xml.setString(key, "name", lower);
 		if (lower.equals(val)) {
@@ -251,7 +241,7 @@ public class LdapProtocol extends Protocol {
 		}
 	}
 
-	private void remove(Asn1 request) throws IOException, SizeLimitExceededException {
+	private void remove(Asn1 request) throws IOException {
 		final ByteRef removeDn = request.asByteRef();
 		// check access for the key
 		byte[] resultVal = null;
@@ -288,7 +278,7 @@ public class LdapProtocol extends Protocol {
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void insert(Iterator<Asn1> content) throws IOException, SizeLimitExceededException {
+	private void insert(Iterator<Asn1> content) throws IOException {
 		final ByteRef insertDn = content.next().asByteRef().toLowerCase();
 
 		// check access for the key
@@ -391,7 +381,7 @@ public class LdapProtocol extends Protocol {
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void modify(Iterator<Asn1> content) throws IOException, SizeLimitExceededException {
+	private void modify(Iterator<Asn1> content) throws IOException {
 		final ByteRef modifyBaseDn = content.next().asByteRef();
 		// check access for the key
 		byte[] resultVal = null;
@@ -496,7 +486,7 @@ public class LdapProtocol extends Protocol {
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void extendedOperation(Iterator<Asn1> content) throws IOException, SizeLimitExceededException {
+	private void extendedOperation(Iterator<Asn1> content) throws IOException {
 		ByteRef oid = content.next().asByteRef();
 
 		if (oid.equals("1.3.6.1.4.1.4203.1.11.1")) {
@@ -507,7 +497,7 @@ public class LdapProtocol extends Protocol {
 		sendExOpError("unsupported extended Operation", ERROR_UNSUPORTED_OPERATION);
 	}
 
-	private void sendExOpError(String msg, byte[] error) throws IOException, SizeLimitExceededException {
+	private void sendExOpError(String msg, byte[] error) throws IOException {
 		byte result[] = RESPONSE_EXTENDED_OPERATION;
 		result = Asn1.addTo(result, error);
 		result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
@@ -515,7 +505,7 @@ public class LdapProtocol extends Protocol {
 		writeResponse(result);
 	}
 
-	private void extendedChangePassword(Iterator<Asn1> content) throws IOException, SizeLimitExceededException {
+	private void extendedChangePassword(Iterator<Asn1> content) throws IOException {
 		Iterator<Asn1> params = content.next().children().next().children();
 		ByteRef uid = params.next().asByteRef();
 		ByteRef opw = params.next().asByteRef();
@@ -623,11 +613,7 @@ public class LdapProtocol extends Protocol {
 		}
 		if (!access && !selfAccess) {
 			logFile.writeDate("search: " + currentUser + " has NO ACCESS to " + searchBaseDn);
-			try {
-				sendSearchError();
-			} catch (SizeLimitExceededException e) {
-				// ignore
-			}
+			sendSearchError();
 			return;
 		}
 
@@ -638,15 +624,34 @@ public class LdapProtocol extends Protocol {
 
 		final ByteRef cacheKey = currentUser.append(content.asByteRef());
 
-		// null --> cached response
-		currentResponses = new ArrayList<byte[]>();
-		try {
-			ArrayList<byte[]> cachedResults = CACHE.get(cacheKey);
-			if (cachedResults != null) {
-				for (final byte[] b : cachedResults) {
-					writeResponse(b);
-				}
-			} else {
+		int criticality = 0;
+		String cookie = null;
+		if (content.hasNext()) {
+			content.next();
+			Iterator<Asn1> extension = content.children();
+			Iterator<Asn1> ext1 = extension.next().children();
+			Asn1 controlType = ext1.next();
+			// pagedResultsControl
+			if (controlType.asByteRef().equals(PAGED_RESULTS_CONTROL)) {
+				criticality = ext1.next().asInt();
+				Iterator<Asn1> controlValueOctet = ext1.next().children();
+				Iterator<Asn1> controlValue = controlValueOctet.next().children();
+				int size = controlValue.next().asInt();
+				if (size > 0 && size < sizeLimit)
+					sizeLimit = size;
+
+				cookie = controlValue.next().asByteRef().toString();
+			}
+		}
+
+		if (cookie != null && cookie.length() > 0) {
+			currentResponses = cookie2data.remove(cookie);
+		} else {
+			currentResponses = LdapFactory.CACHE.get(cacheKey);
+
+			// null --> read from data base
+			if (currentResponses == null) {
+				currentResponses = new ArrayList<byte[]>();
 
 				// apply the baseDn
 				String searchRoot = dn2Key(searchBaseDn);
@@ -697,11 +702,7 @@ public class LdapProtocol extends Protocol {
 					currentResponses = null;
 				}
 			}
-		} catch (SizeLimitExceededException slee) {
 		}
-
-		if (currentResponses != null)
-		CACHE.put(cacheKey, currentResponses);
 
 		// create response
 		byte result[] = currentResponses == null ? ERROR_NO_SUCH_OBJECT : RESPONSE_SEARCH_DONE;
@@ -709,10 +710,52 @@ public class LdapProtocol extends Protocol {
 		result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
 		result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
 
-		try {
-			writeResponse(result);
-		} catch (SizeLimitExceededException e) {
+		if (currentResponses != null) {
+			LdapFactory.CACHE.put(cacheKey, currentResponses);
+
+			// write the data
+			final ArrayList<byte[]> tmp = currentResponses;
+			currentResponses = null;
+
+			int offset = offsetFromCookie(cookie);
+			int len = sizeLimit > 0 ? sizeLimit : tmp.size();
+			if (offset + len > tmp.size())
+				len = tmp.size() - offset;
+			for (int i = offset; len > 0; ++i, --len, ++offset) {
+				byte[] b = tmp.get(i);
+				writeResponse(b);
+			}
+			if (cookie != null && offset < tmp.size()) {
+				String newCookie = SessionManager.newKey() + ":" + offset;
+				cookie2data.put(newCookie, tmp);
+
+				// create pagedResultsControl response
+				byte[] realSearchControlValue = Asn1.addTo(Asn1.newSeq, Asn1.makeASN1(tmp.size(), Asn1.INTEGER));
+				realSearchControlValue = Asn1.addTo(realSearchControlValue,
+						Asn1.makeASN1(newCookie, Asn1.OCTET_STRING));
+				realSearchControlValue = Asn1.makeASN1(realSearchControlValue, Asn1.OCTET_STRING);
+
+				byte[] pagedResultsControl = Asn1.addTo(Asn1.newSeq,
+						Asn1.makeASN1(PAGED_RESULTS_CONTROL, Asn1.OCTET_STRING));
+				pagedResultsControl = Asn1.addTo(pagedResultsControl, Asn1.makeASN1(criticality, Asn1.BOOLEAN));
+				pagedResultsControl = Asn1.addTo(pagedResultsControl, realSearchControlValue);
+
+				byte[] controls = Asn1.addTo(NEWCONTROLS, pagedResultsControl);
+
+				result = Asn1.addTo(result, controls);
+			}
 		}
+
+		writeResponse(result);
+	}
+
+	private int offsetFromCookie(String cookie) {
+		if (cookie == null)
+			return 0;
+		int colon = cookie.lastIndexOf(':');
+		if (colon > 0)
+			return Integer.parseInt(cookie.substring(colon + 1));
+		return 0;
 	}
 
 	private String printableAttrs(Asn1 attributeDescriptionList) {
@@ -727,7 +770,7 @@ public class LdapProtocol extends Protocol {
 		return sb.toString();
 	}
 
-	private void sendModifyError() throws IOException, SizeLimitExceededException {
+	private void sendModifyError() throws IOException {
 		// create response
 		byte result[] = RESPONSE_MODIFY;
 		result = Asn1.addTo(result, ERROR_INSUFFICIENT_ACCESS_RIGHTS);
@@ -736,7 +779,7 @@ public class LdapProtocol extends Protocol {
 		writeResponse(result);
 	}
 
-	private void sendSearchError() throws IOException, SizeLimitExceededException {
+	private void sendSearchError() throws IOException {
 		// create response
 		byte result[] = RESPONSE_SEARCH_DONE;
 		result = Asn1.addTo(result, ERROR_INSUFFICIENT_ACCESS_RIGHTS);
@@ -758,7 +801,11 @@ public class LdapProtocol extends Protocol {
 	 * @throws SizeLimitExceededException
 	 */
 	private void findRecursive(XmlFile xml, String key, Search search, Asn1 attributeDescriptionList, int scope)
-			throws IOException, SizeLimitExceededException {
+			throws IOException {
+
+		if (!xml.sections(key).hasNext())
+			return;
+
 		// search only if BASEOBJECT or WHOLESUBTREE
 		if (scope != SINGLELEVEL) {
 			int hit = search.match(xml, key);
@@ -780,8 +827,8 @@ public class LdapProtocol extends Protocol {
 				EqualityFilter ef = (EqualityFilter) search;
 				String found = xml.normalizeSection(key + "\\" + ef.what + "\\" + ef.value);
 				if (found != null) {
-					writeSearchResult(xml, found, attributeDescriptionList, scope == BASEOBJECT);
-					return;
+					if (xml.sections(found).hasNext())
+						writeSearchResult(xml, found, attributeDescriptionList, scope == BASEOBJECT);
 				}
 			}
 			for (Iterator<String> i = xml.sections(key); i.hasNext();) {
@@ -792,7 +839,7 @@ public class LdapProtocol extends Protocol {
 	}
 
 	private void writeSearchResult(XmlFile xml, String key, Asn1 attributeDescriptionList, boolean appendAllAttributes)
-			throws IOException, SizeLimitExceededException {
+			throws IOException {
 		final String dn = key2Dn(xml, key);
 
 		byte attrResult[] = Asn1.newSeq;
@@ -810,7 +857,7 @@ public class LdapProtocol extends Protocol {
 					byte attName[] = Asn1.newSeq;
 					attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
 					byte attVal[] = NEWSET;
-					attVal = Asn1.addTo(attVal, Asn1.makeASN1(dn, Asn1.OCTET_STRING));
+					attVal = Asn1.addTo(attVal, patchOctetString(Asn1.makeASN1(dn, Asn1.UTF8String)));
 					attName = Asn1.addTo(attName, attVal);
 					attrResult = Asn1.addTo(attrResult, attName);
 				} else if (sattr.equals("*"))
@@ -845,7 +892,7 @@ public class LdapProtocol extends Protocol {
 
 				if (attVal.length > NEWSET.length) {
 					byte attName[] = Asn1.newSeq;
-					attName = Asn1.addTo(attName, Asn1.makeASN1("ismemberof".getBytes(), Asn1.OCTET_STRING));
+					attName = Asn1.addTo(attName, Asn1.makeASN1("isMemberOf".getBytes(), Asn1.OCTET_STRING));
 					attName = Asn1.addTo(attName, attVal);
 					attrResult = Asn1.addTo(attrResult, attName);
 				}
@@ -857,9 +904,12 @@ public class LdapProtocol extends Protocol {
 				String val = getValue(xml, key);
 				if (val != null) {
 					byte attName[] = Asn1.newSeq;
-					attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
+					ByteRef cattr = LdapFactory.L2C.get(sattr);
+					if (cattr == null)
+						cattr = sattr;
+					attName = Asn1.addTo(attName, Asn1.makeASN1(cattr.toByteArray(), Asn1.OCTET_STRING));
 					byte attVal[] = NEWSET;
-					attVal = Asn1.addTo(attVal, Asn1.makeASN1(val, Asn1.OCTET_STRING));
+					attVal = Asn1.addTo(attVal, patchOctetString(Asn1.makeASN1(val, Asn1.UTF8String)));
 					attName = Asn1.addTo(attName, attVal);
 					attrResult = Asn1.addTo(attrResult, attName);
 				}
@@ -868,7 +918,10 @@ public class LdapProtocol extends Protocol {
 
 			boolean hasAttr = false;
 			byte attName[] = Asn1.newSeq;
-			attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
+			ByteRef cattr = LdapFactory.L2C.get(sattr);
+			if (cattr == null)
+				cattr = sattr;
+			attName = Asn1.addTo(attName, Asn1.makeASN1(cattr.toByteArray(), Asn1.OCTET_STRING));
 			byte attVal[] = NEWSET;
 			for (Iterator<String> j = xml.sections(key + sattr); j.hasNext();) {
 				final String k = j.next();
@@ -979,7 +1032,7 @@ public class LdapProtocol extends Protocol {
 		String dnKey = "";
 		for (ByteRef part = searchBaseDn.nextWord(','); part != null; part = searchBaseDn.nextWord(',')) {
 			ByteRef key = part.nextWord('=');
-			dnKey = "\\" + key + "\\" + part.trim('"') + "/" + dnKey;
+			dnKey = "\\" + key + "\\" + part.trim('"').toString("utf-8") + "/" + dnKey;
 		}
 		return dnKey.toLowerCase();
 	}
@@ -993,7 +1046,7 @@ public class LdapProtocol extends Protocol {
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void bind(Iterator<Asn1> seq) throws IOException, SizeLimitExceededException {
+	private void bind(Iterator<Asn1> seq) throws IOException {
 		int version = seq.next().asInt();
 		ByteRef name = seq.next().asByteRef();
 		ByteRef auth = seq.next().asByteRef();
@@ -1037,15 +1090,24 @@ public class LdapProtocol extends Protocol {
 		writeResponse(result);
 	}
 
-	private void writeResponse(byte[] responseContent) throws IOException, SizeLimitExceededException {
+	private void writeResponse(byte[] responseContent) throws IOException {
 		// support response caching
-		if (currentResponses != null)
+		if (currentResponses != null) {
 			currentResponses.add(responseContent);
+			return;
+		}
+
+		logResponse(responseContent);
 
 		byte response[] = Asn1.newSeq;
 		response = Asn1.addTo(response, Asn1.makeASN1(msgId, Asn1.INTEGER));
 		response = Asn1.addTo(response, responseContent);
 
+		os.write(response);
+
+	}
+
+	private void logResponse(byte[] responseContent) {
 		Iterator<Asn1> msg = new Asn1(responseContent).children();
 		Asn1 cn = msg.next();
 		byte[] data = Asn1.getData(cn.toByteArray());
@@ -1072,13 +1134,6 @@ public class LdapProtocol extends Protocol {
 				}
 			}
 		}
-
-		// System.out.println("> " + new Asn1(response));
-		// Misc.dump(System.out, response);
-		os.write(response);
-
-		if (this.sizeLimit > 0 && --this.sizeLimit == 0)
-			throw new SizeLimitExceededException();
 	}
 
 	Search createSearch(Asn1 searchAsn) {
