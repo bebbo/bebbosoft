@@ -43,8 +43,6 @@ import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.ServletSecurityElement;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
@@ -222,13 +220,16 @@ public class HttpContext extends Configurable implements javax.servlet.ServletCo
             String remoteUser = (String) session.getAttribute("j_username");
             if (remoteUser == null) {
                 final FormVerification fv = (FormVerification) verify;
-                if (localPath.equals("/" + fv.loginPage) || localPath.equals("/" + fv.loginErrorPage))
+                String comparePath = localPath;
+                if (request.getQueryString() != null)
+                	comparePath += "?" + request.getQueryString();
+                if (comparePath.equals(fv.loginPage) || comparePath.equals(fv.loginErrorPage))
                     return request;
 
                 if (!localPath.endsWith("/j_security_check")) {
                     if (session.getAttribute("j_redirect") == null)
                         session.setAttribute("j_redirect", request.getRequestURI());
-                    response.sendRedirect(this.sContext + "/" + fv.loginPage);
+                    response.sendRedirect(this.sContext + fv.loginPage);
                     return null;
                 }
                 try {
@@ -280,7 +281,7 @@ public class HttpContext extends Configurable implements javax.servlet.ServletCo
         if (verify instanceof FormVerification) {
             final FormVerification fv = (FormVerification) verify;
             if (fv.loginErrorPage != null) {
-                response.sendRedirect(this.sContext + "/" + fv.loginErrorPage);
+                response.sendRedirect(this.sContext + fv.loginErrorPage);
                 return null;
             }
         }
@@ -366,27 +367,14 @@ public class HttpContext extends Configurable implements javax.servlet.ServletCo
             sPath = sPath.substring(0, idx) + '/' + sPath.substring(idx + 1);
         }
 
-        if (aGroup != null) {
+        if (aGroup != null && verify == null) {
             final UserGroupDbi vfy = Config.getGroup(aGroup);
 
-            final String loginJsp = getRealPath("loginPage.jsp");
+            final String loginJsp = getRealPath("/loginPage.jsp");
             if (new File(loginJsp).exists()) {
-                verify = new FormVerification("loginPage.jsp", "loginErrorPage.jsp", new ServletHandler() {
-                    @Override
-                    public void service(ServletRequest in, ServletResponse out) throws IOException, ServletException {
-                        if (vfy == null)
-                            return;
-                        final String userName = in.getParameter("j_username");
-                        final String password = in.getParameter("j_password");
-                        final Collection<String> permissions = vfy.verifyUserGroup(userName, password);
-                        final HttpServletRequest hsr = (HttpServletRequest) in;
-                        final javax.servlet.http.HttpSession session = hsr.getSession(true);
-                        if (permissions != null) {
-                            session.setAttribute("j_username", userName);
-                            session.setAttribute("j_user_roles", permissions);
-                        }
-                    }
-                });
+            	final LoginServlet loginServlet = new LoginServlet();
+            	loginServlet.setVerify(vfy);
+                verify = new FormVerification("/loginPage.jsp", "/loginErrorPage.jsp", loginServlet);
             } else {
                 verify = vfy;
             }

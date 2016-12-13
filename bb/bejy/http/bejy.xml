@@ -12,7 +12,7 @@
 		ldapQueryRoles="(&amp;(objectClass=groupOfUniqueNames)(uniqueMember={%U}))"
 		ldapUrl="ldaps://serveronline.org" name="securedata" />
 
-
+<!--
 	<server name="https" port="10444" timeout="180000">
 		<protocol class="de.bb.bejy.http.HttpFactory" logFile="logs/https"
 			verbose="">
@@ -32,10 +32,12 @@
 			</host>
 		</protocol>
 	</server>
+-->
 	<server name="http" port="80" timeout="180000">
 		<protocol class="de.bb.bejy.http.HttpFactory" logFile="logs/https"
 			verbose="">
 			<host logFile="logs/www.serveronline.org">
+			<!--
 				<context path="../../product/bejy/src/main/resources/admin"
 					realm="ServerOnline Administration Area" urlPath="/admin">
 					<handler class="de.bb.bejy.http.CgiHandler" command="/usr/bin/php-cgi -c ."
@@ -48,10 +50,12 @@
 				</context>
 				<war group="securedata" path="htdocs/data" realm="secure data"
 					urlPath="/" />
+					-->
 				<webapps path="webapps" />
 			</host>
 		</protocol>
 	</server>
+	<!--
 	<server bindAddr="" name="RR" port="8888">
 		<protocol class="de.bb.bejy.http.RRFactory" verbose="xtrue">
 			<vhost host="*">
@@ -67,4 +71,5 @@
 			</vhost>
 		</protocol>
 	</server>
+	-->
 </bejy>

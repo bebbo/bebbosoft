@@ -306,6 +306,9 @@ public class WebAppContext extends HttpContext {
                     loginError = loginError.trim();
                 if (login != null) {
                     String servletClassName = getInitParameter("loginClass");
+                    if (servletClassName == null) 
+                    	servletClassName = "de.bb.bejy.http.LoginServlet";
+                    
                     ServletRegistration.Dynamic servletRegistration = (de.bb.bejy.http.ServletRegistration.Dynamic) addServlet(
                             "j_security_check", servletClassName);
 
@@ -313,6 +316,10 @@ public class WebAppContext extends HttpContext {
                             login);
                     servletRegistration.setInitParameter("form-error-page",
                             loginError);
+                    
+                    if (servletRegistration.servlet instanceof LoginServlet) {
+                    	((LoginServlet)servletRegistration.servlet).setVerify(verify);
+                    }
                 }
             } else if (am.length() > 0) {
                 logFile.writeDate("WARNING: auth-method " + am
@@ -847,9 +854,9 @@ public class WebAppContext extends HttpContext {
                 }
 
                 if ("j_security_check".endsWith(servletRegistration.name)) {
-                    final String login = servletHandler
+                    final String login = servletRegistration
                             .getInitParameter("form-login-page");
-                    final String loginError = servletHandler
+                    final String loginError = servletRegistration
                             .getInitParameter("form-error-page");
                     verify = new FormVerification(login, loginError,
                             servletHandler);

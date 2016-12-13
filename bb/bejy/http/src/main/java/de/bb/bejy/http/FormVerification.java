@@ -28,13 +28,21 @@ public class FormVerification implements UserGroupDbi {
     ServletHandler handler;
 
     public FormVerification(final String loginPage, final String loginErrorPage, ServletHandler h) {
-        this.loginPage = loginPage;
-        this.loginErrorPage = loginErrorPage == null ? null : loginErrorPage.trim();
+        this.loginPage = loginPage == null ? "/loginPage.jsp" : loginPage;
+        this.loginErrorPage = loginErrorPage == null ? "/loginError.jsp" : loginErrorPage.trim();
         this.handler = h;
     }
 
     public Collection<String> verifyUserGroup(String user, String pass) {
         return null;
     }
+
+	public void setLoginPage(String login) {
+		loginPage = login;
+	}
+
+	public void setLoginErrorPage(String loginError) {
+		loginErrorPage = loginError;
+	}
 
 }
