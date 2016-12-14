@@ -511,18 +511,9 @@ public class SessionManager<K, V> {
      */
     public Object remove(Object key) {
         synchronized (map) {
-            Object val = ht.get(key);
-            if (val == null) {
-                return null;
-            }
-
-            if (DEBUG) {
-                System.out.println("remove k,v:" + key + "," + val);
-            }
-            Object tkey = rev.get(key);
-
-            rev.remove(key);
-            map.remove(tkey);
+            Object tkey = rev.remove(key);
+            if  (tkey != null)
+            	map.remove(tkey);
             Object o = ht.remove(key);
             if (DEBUG) {
                 size();
