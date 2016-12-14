@@ -48,12 +48,47 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-exec-plugin</artifactId>
                 <dependencies>
+					<dependency>
+						<groupId>de.bb.tools</groupId>
+						<artifactId>uses</artifactId>
+                        <version>1.5.5</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>uses</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>-l</argument>
+								<argument>${project.build.directory}/uses.log</argument>
+								<argument>${project.build.directory}/unjared</argument>
+								<argument>${project.build.directory}/used</argument>
+								<argument>de.bb.bejy.Main</argument>
+								<argument>de.bb.bejy.ServerCfg</argument>
+								<argument>de.bb.bejy.ProtocolCfg</argument>
+								<argument>de.bb.bejy.ldap.LdapFactory</argument>
+							</arguments>
+							<includePluginDependencies>true</includePluginDependencies>
+							<includeProjectDependencies>false</includeProjectDependencies>
+							<mainClass>de.bb.tools.uses.Main</mainClass>
+						</configuration>
+					</execution>
+				</executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-exec-plugin</artifactId>
+                <dependencies>
                     <dependency>
                         <groupId>de.bb.tools</groupId>
                         <artifactId>mug</artifactId>
                         <version>1.7.7</version>
                     </dependency>
-                </dependencies>
+				</dependencies>
                 <executions>
                     <execution>
                         <id>mug</id>
@@ -65,8 +100,8 @@
                             <arguments>
                                <argument>-l</argument>
                                <argument>${project.build.directory}/mug.log</argument>
-                               <argument>${project.build.directory}/unjared</argument>
-                               <argument>${project.build.directory}/classes</argument>
+                               <argument>${project.build.directory}/used</argument>
+                               <argument>${project.build.directory}/mugged</argument>
                             </arguments>
                             <includePluginDependencies>true</includePluginDependencies>
                             <includeProjectDependencies>false</includeProjectDependencies>
@@ -75,6 +110,23 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classesDirectory>${project.build.directory}/mugged</classesDirectory>
+							<outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
+							<finalName>bejy-ldap.jar</finalName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 </project>

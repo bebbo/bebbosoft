@@ -1,0 +1,128 @@
+#!/bin/sh
+
+### PATH TO BEJY #########################################################
+FILEDIR=`dirname $(readlink -f $0)`
+### /PATH TO BEJY #########################################################
+
+# Determine the base and follow a runlevel link name.
+base=${0##*/}
+link=${base#*[SK][0-9][0-9]}
+# Force execution if not called by a runlevel directory.
+test $link = $base && START_BEJY=yes
+test "$START_BEJY" = yes || exit 0
+
+### ENVIRONMENT #########################################################
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$FILEDIR/lib/
+### /ENVIRONMENT ########################################################
+
+### INTERNAL VARIABLES ##################################################
+LOGDIR=$FILEDIR/logs
+if [ ! -d $LOGDIR ]
+then
+	mkdir $LOGDIR
+fi
+LOGFILE=$LOGDIR/console.log
+PIDFILE=$FILEDIR/server.pid
+SCRIPTFILE=$FILEDIR/bejy
+SERVERNAME=BEJY-Server
+### /INTERNAL VARIABLES #################################################
+
+### JAVA VARIABLES ##################################################
+JAVADIR=$(dirname $(dirname `readlink -f /usr/bin/java`))
+JAVA=$JAVADIR/bin/java
+
+RTL_LIBS=$JAVADIR/jre/lib/rt.jar:$JAVADIR/lib/tools.jar
+USER_LIBS=servlets
+
+p="$FILEDIR/lib/bejy.jar"
+for x in $FILEDIR/lib/* ; do
+  if [ "$x" != "$FILEDIR/lib/bejy-ldap.jar" ] && [ "${x:${#x} - 4}" == ".jar" ]; then
+    p=$p:$x
+  fi
+done
+echo $p
+CLASSPATH=$RTL_LIBS:$p:$USER_LIBS
+
+MAIN_CLASS=de.bb.bejy.Main
+### /JAVA VARIABLES ##################################################
+
+### MISC ################################################################
+KILL=/bin/kill
+RM=/bin/rm
+CAT=/bin/cat
+DATECMD=/bin/date
+DATE=`$DATECMD`
+### /MISC ###############################################################
+
+
+### Please do not edit anything below this line! ########################
+#                                                                       #
+return=$rc_done
+case "$1" in
+    start)
+        if test -e $PIDFILE ; then
+            if $KILL -0 `$CAT $PIDFILE` 2>/dev/null ; then
+                echo "$SERVERNAME is already running."
+                echo "Please stop Server first with \"$SCRIPTFILE stop\"."
+	    else
+		echo "No $SERVERNAME running, but PID-File exists."
+		echo "Removing $PIDFILE."
+		$RM $PIDFILE
+		echo "Please try again now."
+            fi
+	fi
+        if test -e $PIDFILE ; then
+		echo ...
+	else
+	    cd $FILEDIR
+    	    echo "" >> $LOGFILE
+	    echo -n "Starting $SERVERNAME in $FILEDIR:  "
+	    umask 002
+	    $JAVA -classpath $CLASSPATH $MAIN_CLASS >> $LOGFILE 2>&1 & PID=$! || RETURN="$rc_failed"
+ 	    echo -e "$return"
+	    echo "(Pid: $PID)"
+	    echo $PID > $PIDFILE
+	    echo "#### $SERVERNAME Log start" >> $LOGFILE
+            echo "#### $DATE" >> $LOGFILE
+	    echo "#### Using CLASSPATH: $CLASSPATH" >> $LOGFILE
+	fi
+    ;;
+    stop)
+	if test -e $PIDFILE ; then
+    	    echo -n "Shutting down $SERVERNAME  :"
+	    $KILL `$CAT $PIDFILE` || RETURN="$rc_failed"
+	    $RM $PIDFILE
+	    echo -e "$return"
+	    echo "#### $SERVERNAME Log stop" >> $LOGFILE
+            echo "#### $DATE" >> $LOGFILE
+	else
+	    echo "No $SERVERNAME running"
+	fi
+    ;;
+    reload|restart)
+	$SCRIPTFILE stop
+	sleep 1
+	$SCRIPTFILE start
+    ;;
+
+    status)
+	echo -n "Checking for $SERVERNAME:"
+	if test -e $PIDFILE ; then
+	    echo " seems running"
+	else
+	    echo " not running"
+	fi
+	;;
+    *)
+	echo "Usage: $SCRIPTFILE {start|stop|restart|status}"
+		exit 1
+	;;
+esac
+exit 0
+#                                                                       #
+#########################################################################
+
+# Inform the caller not only verbosely and set an exit status.
+test "$return" = "$rc_done" || exit 1
+exit 0
+
