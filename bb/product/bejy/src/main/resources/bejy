@@ -12,7 +12,7 @@ test $link = $base && START_BEJY=yes
 test "$START_BEJY" = yes || exit 0
 
 ### ENVIRONMENT #########################################################
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/bejy/lib/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/$FILEDIR/lib/
 ### /ENVIRONMENT ########################################################
 
 ### INTERNAL VARIABLES ##################################################
