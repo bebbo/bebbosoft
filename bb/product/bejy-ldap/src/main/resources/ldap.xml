@@ -7,8 +7,10 @@
   <supportedcontrol name="1.2.840.113556.1.4.319"/>
   <supportedextension name="1.3.6.1.4.1.4203.1.11.1"/>
   <vendorname name="stefan 'bebbo' franke" value="Stefan 'Bebbo' Franke"/>
-  <vendorversion name="0.1.3"/>
+  <vendorversion name="0.9.0"/>
   <cn name="directory manager" auth="x">
+    <objectclass name="top"/>
+    <objectclass name="person"/>
     <readpermission name=""/>
     <writepermission name=""/>
   </cn>
