@@ -70,10 +70,11 @@ public class TestPkcs5 {
         bos.write(salt.getBytes());
         bos.write(pbkdf2);
 
-        final byte[] encoded = Mime.encode(bos.toByteArray());
+        final byte[] encoded = Mime.encode(bos.toByteArray(), 120);
 
         final String b64 = "CgcBAgMEBQYHCAkKCwwNDg8QWlfO+luPj3zipKGms+rRDBHTNsMvQ0oI5E7XZAPPAac=";
-        Assert.assertEquals(b64, new String(encoded));
+        final String sencoded = new String(encoded);
+        Assert.assertEquals(b64, sencoded);
         
         final String ep = "{PKCS5SHA256}" + new String(encoded);
         
