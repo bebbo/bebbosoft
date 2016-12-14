@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>de.bb.product</groupId>
 	<artifactId>update-site</artifactId>
-	<version>0.2.5-SNAPSHOT</version>
+	<version>0.2.6</version>
 	<packaging>jar</packaging>
 	<organization>BebboSoft</organization>
 	<description>BebboSoft - Update Site for Eclipse</description>
@@ -17,7 +17,7 @@
 			<plugin>
 				<groupId>de.bb.tools.bnm.plugin</groupId>
 				<artifactId>eclipse-plugin</artifactId>
-				<version>0.2.5-SNAPSHOT</version>
+				<version>0.2.6</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>de.bb.tools.bnm</groupId>
 			<artifactId>feature</artifactId>
-			<version>0.2.5-SNAPSHOT</version>
+			<version>0.2.6</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>

@@ -7,13 +7,13 @@
   </parent>
   <groupId>de.bb.tools.bnm</groupId>
   <artifactId>eclipse</artifactId>
-  <version>0.2.5-SNAPSHOT</version>
+  <version>0.2.6</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <groupId>de.bb.tools.bnm</groupId>
       <artifactId>core</artifactId>
-      <version>0.2.5-SNAPSHOT</version>
+      <version>0.2.6</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.core</groupId>

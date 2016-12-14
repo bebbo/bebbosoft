@@ -10,16 +10,16 @@
     <dependency>
       <groupId>de.bb</groupId>
       <artifactId>util</artifactId>
-      <version>1.0.20-SNAPSHOT</version>
+      <version>1.0.21</version>
     </dependency>
     <dependency>
       <groupId>de.bb</groupId>
       <artifactId>security</artifactId>
-      <version>1.0.12-SNAPSHOT</version>
+      <version>1.0.13</version>
     </dependency>
   </dependencies>
   <groupId>de.bb</groupId>
   <artifactId>ws</artifactId>
-  <version>0.2.9-SNAPSHOT</version>
+  <version>0.2.10</version>
   <packaging>jar</packaging>
 </project>

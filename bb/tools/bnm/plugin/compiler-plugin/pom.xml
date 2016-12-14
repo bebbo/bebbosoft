@@ -9,18 +9,18 @@
 	<groupId>de.bb.tools.bnm.plugin</groupId>
 	<artifactId>compiler-plugin</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.5-SNAPSHOT</version>
+	<version>0.2.6</version>
 	<description>BNM compiler plugin</description>
   <dependencies>
    <dependency>
      <groupId>de.bb.tools.bnm</groupId>
      <artifactId>core</artifactId>
-     <version>0.2.5-SNAPSHOT</version>
+     <version>0.2.6</version>
    </dependency>
    <dependency>
     <groupId>de.bb</groupId>
     <artifactId>util</artifactId>
-    <version>1.0.20-SNAPSHOT</version>
+    <version>1.0.21</version>
    </dependency>
   </dependencies>
 </project>

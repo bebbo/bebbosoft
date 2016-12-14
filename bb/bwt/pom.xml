@@ -7,19 +7,19 @@
   </parent>
   <groupId>de.bb</groupId>
   <artifactId>bwt</artifactId>
-  <version>0.0.7-SNAPSHOT</version>
+  <version>0.0.8</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>security</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.12-SNAPSHOT</version>
+      <version>1.0.13</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>util</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.20-SNAPSHOT</version>
+      <version>1.0.21</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

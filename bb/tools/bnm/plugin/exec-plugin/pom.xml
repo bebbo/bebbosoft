@@ -7,19 +7,19 @@
   </parent>
   <groupId>de.bb.tools.bnm.plugin</groupId>
   <artifactId>exec-plugin</artifactId>
-  <version>0.2.5-SNAPSHOT</version>
+  <version>0.2.6</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>core</artifactId>
       <groupId>de.bb.tools.bnm</groupId>
-      <version>0.2.5-SNAPSHOT</version>
+      <version>0.2.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>util</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.20-SNAPSHOT</version>
+      <version>1.0.21</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

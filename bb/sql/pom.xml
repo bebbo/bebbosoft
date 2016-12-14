@@ -8,13 +8,13 @@
   </parent>
   <groupId>de.bb</groupId>
   <artifactId>sql</artifactId>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.0.8</version>
   <packaging>jar</packaging>
   <dependencies>
   	<dependency>
   		<groupId>de.bb</groupId>
   		<artifactId>util</artifactId>
-  		<version>1.0.20-SNAPSHOT</version>
+  		<version>1.0.21</version>
     	</dependency>
   </dependencies>
 </project>

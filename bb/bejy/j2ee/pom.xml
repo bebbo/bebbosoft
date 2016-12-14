@@ -7,19 +7,19 @@
   </parent>
   <groupId>de.bb.bejy</groupId>
   <artifactId>j2ee</artifactId>
-  <version>0.0.7-SNAPSHOT</version>
+  <version>0.0.8</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>server</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.10-SNAPSHOT</version>
+      <version>1.6.11</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>http</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.10-SNAPSHOT</version>
+      <version>1.6.11</version>
       <scope>compile</scope>
     </dependency>
 <!--     <dependency>
@@ -38,24 +38,24 @@
     <dependency>
       <artifactId>ws</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.2.9-SNAPSHOT</version>
+      <version>0.2.10</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>jcc</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.13-SNAPSHOT</version>
+      <version>1.0.14</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>de.bb</groupId>
         <artifactId>sql</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
+        <version>1.0.8</version>
     </dependency>
     <dependency>
     	<groupId>de.bb</groupId>
     	<artifactId>jpa</artifactId>
-    	<version>0.0.4-SNAPSHOT</version>
+    	<version>0.0.5</version>
     </dependency>
   </dependencies>
 </project>
