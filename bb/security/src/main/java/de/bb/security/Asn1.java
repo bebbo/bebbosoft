@@ -30,6 +30,10 @@ import de.bb.util.Misc;
  * This class can also be used as an iterator over ASN.1 structures.
  */
 public class Asn1 implements Iterator<Asn1> {
+	
+    /** OID for BOOLEAN. */
+    final public static byte BOOLEAN = 1;
+
     /** OID for INTEGER. */
     final public static byte INTEGER = 2;
 
