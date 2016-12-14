@@ -102,7 +102,7 @@ public abstract class BlockCipher
    * The size must be a multiple of block size.
    * You may use one byte array as input data and output data, to encrypt in place.
    * The initialization vector is updated by this function!
-   * @param iv the initialization vector.
+   * @param iv the initialization vector. The iv is modified to allow chained calls.
    * @param clearText input data which is encrypted
    * @param cipherText output data which is encrypted.
    */
@@ -124,7 +124,7 @@ public abstract class BlockCipher
    * The size must be a multiple of block size.
    * You may use one byte array as input data and output data, to decrypt in place.
    * The initialization vector is updated by this function!
-   * @param iv the initialization vector.
+   * @param iv the initialization vector. The iv is modified to allow chained calls.
    * @param cipherText output data which is encrypted.
    * @param clearText input data which is encrypted
    */
