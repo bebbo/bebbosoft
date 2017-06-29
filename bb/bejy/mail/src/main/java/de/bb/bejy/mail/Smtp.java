@@ -18,13 +18,18 @@
 
 package de.bb.bejy.mail;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.SortedMap;
 import java.util.StringTokenizer;
 
 import de.bb.bejy.Version;
@@ -39,10 +44,11 @@ import de.bb.util.LogFile;
 import de.bb.util.Mime;
 import de.bb.util.Process;
 import de.bb.util.SessionManager;
+import de.bb.util.SingleMap;
 
-final class Smtp extends de.bb.bejy.Protocol {
+final public class Smtp extends de.bb.bejy.Protocol {
 	private final static Logger LOG = Logger.getLogger(Smtp.class);
-	
+
 	private final static boolean DEBUG = false;
 
 	private boolean VERBOSE = DEBUG;
@@ -51,8 +57,8 @@ final class Smtp extends de.bb.bejy.Protocol {
 
 	private final static String version;
 	static {
-		version = Version.getShort() + " ESMTP " + V.V
-				+ " (c) 2000-" + V.Y + " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
+		version = Version.getShort() + " ESMTP " + V.V + " (c) 2000-" + V.Y
+				+ " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
 	}
 
 	/**
@@ -132,6 +138,9 @@ final class Smtp extends de.bb.bejy.Protocol {
 
 	private static SessionManager<String, Integer> NOSTARTTLS = new SessionManager<String, Integer>(
 			1000L * 60 * 60 * 3);
+
+	private static long lastreadWhitelist;
+	private static SingleMap<String, SingleMap<String, String>> WHITELIST = new SingleMap();
 
 	protected Smtp(SmtpFactory sf, LogFile _logFile) {
 		super(sf);
@@ -400,20 +409,13 @@ final class Smtp extends de.bb.bejy.Protocol {
 							if (localOnly && dnsbl != null) {
 								// compose reverted IP and prepend to dnsbl
 								// entry
-								String remote = getRemoteAddress();
-								int dot = remote.indexOf('.');
-								String checkDomain = remote.substring(0, dot + 1) + dnsbl;
-								int dot2 = remote.indexOf('.', dot + 1);
-								checkDomain = remote.substring(dot, dot2 + 1) + checkDomain;
-								int dot3 = remote.indexOf('.', dot2 + 1);
-								checkDomain = remote.substring(dot3 + 1) + remote.substring(dot2, dot3) + checkDomain;
-
-								String result = MailCfg.getDNS().getIpFromDomain(checkDomain);
-								logFile.writeDate(tx() + "DNSBL: [" + remote + "]:" + checkDomain + " -> " + result);
-								if ("127.0.0.2".equals(result)) {
-									error = new ByteRef("450 blacklisted\r\n");
+								final String remote = getRemoteAddress();
+								final String result = checkDnsbl(remote, resolvedDomain, dnsbl, logFile);
+								if (result != null) {
+									error = new ByteRef("450 blacklisted [" + remote + "] cause: " + result + "\r\n");
 									break;
 								}
+
 							}
 
 							if (user.length() == 0 && domain.length() == 0) {
@@ -701,10 +703,10 @@ final class Smtp extends de.bb.bejy.Protocol {
 			} catch (Exception ex) {
 				lwrite(E450);
 				os.flush();
-				
+
 				if (!(ex instanceof SocketException))
 					LOG.error(ex.getMessage(), ex);
-	            throw ex;
+				throw ex;
 
 			} finally {
 				((MailFactory) factory).releaseDbi(this, mDbi);
@@ -717,6 +719,129 @@ final class Smtp extends de.bb.bejy.Protocol {
 			}
 			os.flush();
 		}
+	}
+
+	/**
+	 * Check all provided dnsbls with the given remote address.
+	 * 
+	 * @param remote
+	 *            the remote address
+	 * @param resolvedDomain
+	 *            the resolved Domain name for the remote address.
+	 * @param dnsbl
+	 *            the dnsbls to query
+	 * @param logFile
+	 *            a log file to write the block message
+	 * @return null if ok, otherwise a string with some info why it's blocked.
+	 */
+	public static String checkDnsbl(final String remote, final String resolvedDomain, final String dnsbl,
+			final LogFile logFile) {
+		// first check for white listed mail servers
+		if (isWhiteListed(resolvedDomain))
+			return null;
+
+		final int dot = remote.indexOf('.');
+		String checkDomain = remote.substring(0, dot + 1);
+		final int dot2 = remote.indexOf('.', dot + 1);
+		checkDomain = remote.substring(dot, dot2 + 1) + checkDomain;
+		final int dot3 = remote.indexOf('.', dot2 + 1);
+		checkDomain = remote.substring(dot3 + 1) + remote.substring(dot2, dot3) + checkDomain;
+
+		// check multiple dnsbl
+		for (final StringTokenizer st = new StringTokenizer(dnsbl, " ,|\t\n\r"); st.hasMoreTokens();) {
+			final String xdnsbl = st.nextToken();
+			final int lt = xdnsbl.indexOf('<');
+			final String adnsbl = lt > 0 ? xdnsbl.substring(0, lt) : xdnsbl;
+			final int check = lt > 0 ? Integer.parseInt(xdnsbl.substring(lt + 1)) : 256;
+			final String acheckDomain = checkDomain + adnsbl;
+			String result = MailCfg.getDNS().getIpFromDomain(acheckDomain);
+			if (result != null) {
+				int ldot = result.lastIndexOf('.');
+				if (!result.startsWith("127.0.0.") || Integer.parseInt(result.substring(ldot + 1)) < check) {
+					logFile.writeDate(
+							tx() + "DNSBL: " + adnsbl + ": " + resolvedDomain + " [" + remote + "] -> " + result);
+					return adnsbl + " -> " + result;
+				}
+			}
+		}
+		return null;
+	}
+
+	private static synchronized boolean isWhiteListed(final String resolvedDomain) {
+		// update the white list data
+		final File whitelistFile = new File("whitelist.txt");
+		if (whitelistFile.lastModified() > lastreadWhitelist) {
+			lastreadWhitelist = whitelistFile.lastModified();
+			readWhitelist(whitelistFile);
+		}
+		
+		// search the white list
+		final SortedMap<String, SingleMap<String, String>> head = WHITELIST.headMap(resolvedDomain + '\0');
+		if (head.isEmpty())
+			return false;
+		
+		final String headkey = head.lastKey();
+		if (!resolvedDomain.startsWith(headkey))
+			return false;
+		
+		final SingleMap<String, String> taillookup = head.get(headkey);
+		final String reversed = reverse(resolvedDomain);
+		final SortedMap<String, String> tail = taillookup.headMap(reversed);
+		if (tail.isEmpty())
+			return false;
+		
+		final String tailkey = tail.lastKey();
+		
+		return reversed.startsWith(tailkey);
+	}
+
+	/**
+	 * Read the white list file.
+	 * One entry per line.
+	 * One wild card per line.
+	 * @param whitelistFile the white list file
+	 */
+	private static void readWhitelist(File whitelistFile) {
+		try {
+			BufferedReader fr = new BufferedReader(new FileReader(whitelistFile));
+			for (String line = fr.readLine(); line != null; line = fr.readLine()) {
+				line = line.trim();
+				if (line.length() == 0)
+					continue;
+				int star = line.indexOf('*');
+				String begin, end;
+				if (star >= 0) {
+					begin = line.substring(0,  star);
+					end = line.substring(star + 1);
+				} else {
+					begin = line;
+					end = line;
+				}
+				
+				SingleMap<String, String> tail = WHITELIST.get(begin);
+				if (tail == null) {
+					tail = new SingleMap<String, String>();
+					WHITELIST.put(begin, tail);
+				}
+				
+				// reverse the end
+				end = reverse(end);
+				tail.put(end, end);
+			}
+			fr.close();
+		} catch (IOException e) {
+		}
+	}
+
+	private static String reverse(final String astring) {
+		final char []cdata = new char[astring.length()];
+		astring.getChars(0, cdata.length, cdata, 0);
+		for (int i = 0, j = cdata.length - 1; i < j; ++i, --j) {
+			char x = cdata[i];
+			cdata[i] = cdata[j];
+			cdata[j] = x;
+		}
+		return new String(cdata);
 	}
 
 	private boolean copyMail(OutputStream fos) throws IOException {
@@ -1018,6 +1143,9 @@ final class Smtp extends de.bb.bejy.Protocol {
 		final Boolean cachedResult = checkCache.get(fromDomain + "#" + toDomain);
 		if (cachedResult != null)
 			return cachedResult;
+		
+		if (isWhiteListed(resolvedDomain))
+			return true;
 
 		String fromEmail = fromUser + "@" + fromDomain;
 		// check SPF

@@ -8,6 +8,7 @@ import org.junit.Test;
 import de.bb.bejy.Config;
 import de.bb.bejy.Dns;
 import de.bb.bejy.DnsCfg;
+import de.bb.bejy.mail.MailCfg;
 import de.bb.bejy.mail.spf.SpfContext;
 import de.bb.util.LogFile;
 
@@ -17,13 +18,15 @@ public class SpfTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        Config cfg = Config.getInstance();
-        dns = (Dns) new DnsCfg().create();
-        cfg.addChild("dns", dns);
-        //dns.setProperty("server", dnsIp);
+		dns = MailCfg.getDNS();
+		if (dns == null) {
+			Config cfg = Config.getInstance();
+			dns = (Dns) new DnsCfg().create();
+			cfg.addChild("dns", dns);
+	        LogFile log = new LogFile("*");
+			dns.activate(log);
+		}
         dns.setProperty("defaultSpf", "v=spf1 +a:%{p1r}.%{p2} a:%{p1r}.netcup.net +a +mx -all");
-        LogFile log = new LogFile("*");
-        dns.activate(log);
     }
 
     @Test
