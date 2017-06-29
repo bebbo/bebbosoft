@@ -352,7 +352,7 @@ public class WikiManager {
 
         StringBuffer all = new StringBuffer();
         if (!preview) {
-            all.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n");
+            all.append("<!DOCTYPE HTML>\r\n");
             all.append("<html><head><title>\r\n");
             String title = simpleWiki.getTitle();
             if (title == null)

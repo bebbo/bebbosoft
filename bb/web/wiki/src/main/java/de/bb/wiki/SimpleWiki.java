@@ -133,25 +133,20 @@ public class SimpleWiki {
                     }
                     makeList(line, list.toString());
                     continue;
-                case '/':
-                    if (peek(data, index + 1) == '/') {
+                case '/': // th
+                case '|': // td
+                    if (peek(data, index + 1) == ch) {
                         ++index;
-                        int count = count(data, index + 1, '\'') / 2;
+                        int count = count(data, index + 1, ch) / 2;
                         int colspan = 1 + count;
                         if (count > 0)
                             index += count + count;
-                        makeTable(sb, colspan, 'h', true);
-                        continue;
-                    }
-                    break;
-                case '|':
-                    if (peek(data, index + 1) == '|') {
-                        ++index;
-                        int count = count(data, index + 1, '\'') / 2;
-                        int colspan = 1 + count;
-                        if (count > 0)
-                            index += count + count;
-                        makeTable(sb, colspan, 'd', true);
+                        
+                        boolean lspace = index + 1 < data.length && data[index + 1] <= 32;
+                        
+                        boolean rspace = index + 1 < data.length && data[index + 1] <= 32;
+                        
+                        makeTable(sb, colspan, ch == '/' ? 'h' : 'd', true);
                         continue;
                     }
                     break;
@@ -260,7 +255,11 @@ public class SimpleWiki {
                 }
                 break;
             case '|':
+            case '/':
                 if (hasLink) {
+                    // ignore '/' inside of links in table headers
+                	if (ch == '/')
+                		break;
                     if (alt != null) {
                         target = line.toString().trim();
                     } else {
@@ -269,41 +268,20 @@ public class SimpleWiki {
                     line = new StringBuilder();
                     continue;
                 }
-                if (peek(data, index + 1) == '|') {
+                if (peek(data, index + 1) == ch) {
                     ++index;
 
                     sb.append(line);
                     line = new StringBuilder();
 
-                    int count = count(data, index + 1, '\'') / 2;
+                    int count = count(data, index + 1, ch) / 2;
                     int colspan = 1 + count;
                     if (count > 0)
                         index += count + count;
 
-                    makeTable(sb, colspan, 'd', false);
+                    makeTable(sb, colspan, ch == '/' ? 'h' : 'd', false);
                     continue;
                 }
-
-                break;
-            case '/':
-                // ignore '/' inside of links in table headers
-                if (hasLink)
-                    break;
-                if (peek(data, index + 1) == '/') {
-                    ++index;
-
-                    sb.append(line);
-                    line = new StringBuilder();
-
-                    int count = count(data, index + 1, '\'') / 2;
-                    int colspan = 1 + count;
-                    if (count > 0)
-                        index += count + count;
-
-                    makeTable(sb, colspan, 'h', false);
-                    continue;
-                }
-
                 break;
             case ']':
                 if (hasLink) {
@@ -473,8 +451,6 @@ public class SimpleWiki {
                 int ch = list.charAt(list.length() - 1);
                 switch (ch) {
                 case ':':
-                    sb.append("</dd><dd>");
-                    break;
                 case '#':
                 case '*':
                     sb.append("</li><li>");
@@ -500,12 +476,10 @@ public class SimpleWiki {
         for (; j >= i; --j) {
             int ch = currentList.charAt(j);
             switch (ch) {
-            case ':':
-                sb.append("</dd></dl>");
-                break;
             case '#':
                 sb.append("</li></ol>");
                 break;
+            case ':':
             case '*':
                 sb.append("</li></ul>");
                 break;
@@ -516,7 +490,7 @@ public class SimpleWiki {
             int ch = list.charAt(i);
             switch (ch) {
             case ':':
-                sb.append("<dl><dd>");
+                sb.append("<ul style='list-style-type:none;'><li>");
                 break;
             case '#':
                 sb.append("<ol><li>");
@@ -616,20 +590,21 @@ public class SimpleWiki {
         return 0;
     }
 
+    int mn = 0;
     private void addMenu(StringBuilder line, int newLevel) {
         if (!hasMenu) {
             hasMenu = true;
             menuStack = new Stack<Integer>();
-            line.append("<script type='text/javascript' src='script/menu.js'></script>\r\n<div>\r\n");
+//            line.append("<script type='text/javascript' src='script/menu.js'></script>\r\n<div>\r\n");
         }
 
         closeMenu(line, newLevel);
         if (newLevel > 0) {
             menuStack.push(newLevel);
-            line.append("<!-- " + newLevel + " -->\r\n");
             line.append("<div class='m'><table><tr><td>");
-            line.append("<img src='gfx/opened.gif' alt='+' onclick='javascript:$t(this)'/></td>");
-            line.append("\r\n  <td><div class='m'><div class='m'><img src='gfx/drawer.gif' onclick='javascript:$s(this)' alt='D' />");
+            line.append("<img src='/gfx/opened.gif' alt='+' onclick='javascript:$t(this)'/></td>");
+            line.append("\r\n  <td><div class='m'><div class='m' id='__menu_" + mn + "'><img src='/gfx/drawer.gif' onclick='javascript:$s(this)' alt='D' id='__menu_" + mn + "_ico'/>");
+            ++mn;
         }
     }
 
@@ -661,12 +636,12 @@ public class SimpleWiki {
         // remove tags from title
         String withoutTags = removeTags(sl);
         String escaped = EnDeCode.urlEscape(EnDeCode.escape(withoutTags));
-        // String ided = escaped.replace(' ', '_').replace('&',
-        // '_').replace(';', '_');
-        //
-        sb.append("<a name='").append(escaped).append("'></a>");
+         String ided = escaped.replace(' ', '_').replace('&',
+         '_').replace(';', '_');
+        
+        sb.append("<a id='").append(ided).append("'></a>");
         sb.append(sl).append("</h").append(header).append(">");
-        if (header == 1 && title == null) {
+        if (header == 1 || title == null) {
             title = withoutTags;
         }
 
