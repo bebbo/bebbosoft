@@ -108,12 +108,15 @@ public class RRFactory extends de.bb.bejy.Factory {
             if (hostNames == null)
                 continue;
 
+            final String redirect = hostCfg.getProperty("redirect");
+
             ArrayList<RREntry> rrEntryList = new ArrayList<RREntry>();
             for (Iterator<?> j = hostCfg.children(); j.hasNext();) {
                 VPathCfg pathCfg = (VPathCfg) j.next();
                 String path = pathCfg.getProperty("path");
                 if (path != null) {
                     RREntry rr = new RREntry(path);
+                    rr.redirect = redirect;
                     rr.group = pathCfg.getProperty("group", "");
                     rr.userHeader = pathCfg.getProperty("userHeader", "");
                     rr.setReverseByExt(pathCfg.getProperty("reverseByExt", ""));
@@ -125,6 +128,7 @@ public class RRFactory extends de.bb.bejy.Factory {
                             rr.ll.addLast(dest);
                         }
                     }
+                    
                     rrEntryList.add(rr);
                 }
             }
@@ -135,7 +139,6 @@ public class RRFactory extends de.bb.bejy.Factory {
                 if (old != null)
                     System.out.println("WARNING: redirection for " + old + " is configured twice");
             }
-
         }
     }
 

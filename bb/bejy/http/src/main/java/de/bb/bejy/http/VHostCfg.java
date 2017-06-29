@@ -24,7 +24,8 @@ import de.bb.bejy.Configurator;
  * @author bebbo
  */
 public class VHostCfg extends Configurable implements Configurator {
-    private final static String PROPERTIES[][] = {{"host", "the forwarded host"},};
+    private final static String PROPERTIES[][] = {{"host", "the forwarded host"},
+    		{"redirect", "redirect from prefix.host to host, if strip value is 'www.'"}};
 
     public VHostCfg() {
         init("forwarded host", PROPERTIES);

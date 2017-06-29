@@ -27,6 +27,7 @@ class RREntry {
     LinkedList<String> ll;
     String group;
     String userHeader;
+	String redirect;
     HashMap<String, String[]> extension2Attrs = new HashMap<String, String[]>();
     HashMap<String, String[]> type2Attrs = new HashMap<String, String[]>();
 

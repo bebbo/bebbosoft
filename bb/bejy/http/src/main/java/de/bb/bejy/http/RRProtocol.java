@@ -179,12 +179,19 @@ class RRProtocol extends Protocol {
                 if (!readRequestHeaders(requestBuffer, requestHeaders))
                     break;
 
+                // reads also the host
                 final RREntry destination = lookupDestination();
                 if (destination == null) {
                     send404();
                     return false;
                 }
 
+                if (destination.redirect != null && host.startsWith(destination.redirect)) {
+                	host = host.substring(destination.redirect.length());
+                	send301();
+                	return false;
+                }
+                
                 if (!checkAccess(destination, requestHeaders)) {
                     send401(destination);
                     continue;
@@ -504,7 +511,8 @@ class RRProtocol extends Protocol {
     private void connect() throws IOException {
         int dp = forwardHost.indexOf(':');
         // open new connection if necessary
-        if (forwardSocket != null && (forwardSocket.isClosed() || validUntil < System.currentTimeMillis())) {
+        if (requestLine.startsWith("POST") || // use always a fresh connection for POST 
+        		( forwardSocket != null && (forwardSocket.isClosed() || validUntil < System.currentTimeMillis()))) {
             closeForwardSocket();
         }
         if (forwardSocket == null) {
@@ -600,6 +608,22 @@ class RRProtocol extends Protocol {
         return true;
     }
 
+    private void send301() throws IOException {
+    	final StringBuilder sb = new StringBuilder();
+    	sb.append(isSecure ? "https://" : "http://");
+    	sb.append(host);
+    	final int port = server.getPort();
+    	if ((isSecure && port != 443) || (!isSecure && port != 80))
+    		sb.append(":").append(port);
+    	sb.append(lookupPath);
+    	
+        ByteUtil.writeString("HTTP/1.0 301 Moved Permanently\r\n", os);
+        ByteUtil.writeString("Location: " + sb + "\r\n", os);
+        ByteUtil.writeString("Content-Length: 0\r\n", os);
+        ByteUtil.writeString("Connection: close, close\r\n\r\n", os);
+        os.flush();
+    }
+    
     private void send401(final RREntry destination) throws IOException {
         ByteUtil.writeString("HTTP/1.0 401 Unauthorized\r\n", os);
         ByteUtil.writeString("WWW-Authenticate: Basic realm=\"" + destination.group + "\"\r\n", os);
@@ -661,6 +685,7 @@ class RRProtocol extends Protocol {
         if (host == null)
             return null; // no host -> error
 
+        host.toLowerCase();
         // get the forward entry
         final RREntry destination = factory.getRREntry(host, lookupPath);
         if (DEBUG)
