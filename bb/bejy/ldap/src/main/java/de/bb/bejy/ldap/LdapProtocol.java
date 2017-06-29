@@ -89,6 +89,7 @@ public class LdapProtocol extends Protocol {
 
 	private void saveXmlFile() throws IOException {
 		((LdapFactory) this.factory).saveXmlFile();
+		LdapFactory.CACHE.clear();
 	}
 
 	protected boolean doit() throws Exception {
@@ -823,14 +824,16 @@ public class LdapProtocol extends Protocol {
 		if (scope == SINGLELEVEL || scope == WHOLESUBTREE) {
 			if (scope == SINGLELEVEL)
 				scope = BASEOBJECT;
-			if (search instanceof EqualityFilter) {
-				EqualityFilter ef = (EqualityFilter) search;
-				String found = xml.normalizeSection(key + "\\" + ef.what + "\\" + ef.value);
-				if (found != null) {
-					if (xml.sections(found).hasNext())
-						writeSearchResult(xml, found, attributeDescriptionList, scope == BASEOBJECT);
-				}
-			}
+			// if (search instanceof EqualityFilter) {
+			// EqualityFilter ef = (EqualityFilter) search;
+			// String found = xml.normalizeSection(key + "\\" + ef.what + "\\" +
+			// ef.value);
+			// if (found != null) {
+			// if (xml.sections(found).hasNext())
+			// writeSearchResult(xml, found, attributeDescriptionList, scope ==
+			// BASEOBJECT);
+			// }
+			// }
 			for (Iterator<String> i = xml.sections(key); i.hasNext();) {
 				String nextkey = i.next();
 				findRecursive(xml, nextkey, search, attributeDescriptionList, scope);
