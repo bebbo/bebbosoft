@@ -79,6 +79,8 @@ final public class Smtp extends de.bb.bejy.Protocol {
 		return version;
 	}
 
+	private final static byte EMPTY[] = {};
+	
 	private final static ByteRef CRLF = new ByteRef("\r\n");
 
 	protected LogFile logFile;
@@ -335,7 +337,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 								os.flush();
 
 								line = readLine(br);
-								a = line.toByteArray();
+								a = line != null ? line.toByteArray() : EMPTY;
 								String passwd = new String(Mime.decode(a, 0, a.length));
 
 								// release the DBI otherwise it's locked while
