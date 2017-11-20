@@ -179,6 +179,8 @@ public class WebAppContext extends HttpContext {
         for (final String className : collection) {
             final Class<?> clazz = zcl.loadClass(className);
             final Named namedAnnotation = clazz.getAnnotation(Named.class);
+            if (namedAnnotation == null)
+            	continue;
             final String name = namedAnnotation.value();
         }
     }
@@ -190,6 +192,8 @@ public class WebAppContext extends HttpContext {
                     .loadClass(className);
             final WebFilter webFilterAnnotation = clazz
                     .getAnnotation(WebFilter.class);
+            if (webFilterAnnotation == null)
+            	continue;
             final javax.servlet.FilterRegistration.Dynamic reg = addFilter(
                     webFilterAnnotation.filterName(), clazz);
             reg.setAsyncSupported(webFilterAnnotation.asyncSupported());
@@ -206,6 +210,8 @@ public class WebAppContext extends HttpContext {
                     .loadClass(className);
             final WebServlet webServletAnnotation = clazz
                     .getAnnotation(WebServlet.class);
+            if (webServletAnnotation == null)
+            	continue;
             final javax.servlet.ServletRegistration.Dynamic reg = addServlet(
                     webServletAnnotation.name(), clazz);
             reg.setAsyncSupported(webServletAnnotation.asyncSupported());
