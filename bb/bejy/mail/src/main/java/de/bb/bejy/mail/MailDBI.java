@@ -490,17 +490,17 @@ public abstract class MailDBI {
 	}
 
 	/**
-	 * @param muid
-	 * @param fwid
+	 * @param mail_user_id
+	 * @param forward_id
 	 * @return
 	 * @throws SQLException
 	 */
-	public int deleteFromForward(String muid, String fwid) throws SQLException {
+	public int deleteFromForward(String mail_user_id, String forward_id) throws SQLException {
 		checkConnection();
 		String q = "DELETE FROM forward WHERE id=? AND mail_user_id=?";
 		PreparedStatement ps = getPreparedStatement(q);
-		ps.setString(1, fwid);
-		ps.setString(2, muid);
+		ps.setString(1, forward_id);
+		ps.setString(2, mail_user_id);
 		return ps.executeUpdate();
 	}
 
@@ -789,12 +789,13 @@ public abstract class MailDBI {
 	}
 
 	/**
+	 * @param mbId 
 	 * @return
 	 * @throws SQLException
 	 */
-	public int getNextIdFromImapData() throws SQLException {
+	public int getNextIdFromImapData(String mbId) throws SQLException {
 		checkConnection();
-		String q = "SELECT MAX(id) FROM imap_data";
+		String q = "SELECT MAX(id) FROM imap_data WHERE imap_folder_id=" + mbId;
 		ResultSet rs = stmt.executeQuery(q);
 		try {
 			if (!rs.next())
@@ -954,7 +955,7 @@ public abstract class MailDBI {
 	/**
 	 * Create a new entry in the forwarder table.
 	 * 
-	 * @param uid
+	 * @param mail_user_id
 	 *            the user id
 	 * @param forward
 	 *            the forwarder
@@ -963,12 +964,12 @@ public abstract class MailDBI {
 	 * @return true on success.
 	 * @throws SQLException
 	 */
-	public boolean insertIntoForward(String uid, String forward, boolean notify) throws SQLException {
+	public boolean insertIntoForward(String mail_user_id, String forward, boolean notify) throws SQLException {
 		checkConnection();
 		String q = "INSERT INTO forward (mail_user_id, forward, notify) VALUES (?, ?, ?)";
 
 		PreparedStatement ps = getPreparedStatement(q);
-		ps.setString(1, uid);
+		ps.setString(1, mail_user_id);
 		ps.setString(2, forward.trim());
 		ps.setInt(3, (notify ? 1 : 0));
 		return 0 != ps.executeUpdate();
@@ -2030,17 +2031,17 @@ public abstract class MailDBI {
 	}
 
 	/**
-	 * @param muid
+	 * @param mail_user_id
 	 * @return
 	 * @throws SQLException
 	 */
-	public String selectFromResponse(String muid) throws SQLException {
+	public String selectFromResponse(String mail_user_id) throws SQLException {
 		checkConnection();
 		String q = "SELECT * FROM response WHERE mail_user_id=?";
 		ResultSet rs = null;
 		try {
 			PreparedStatement ps = getPreparedStatement(q);
-			ps.setInt(1, Integer.parseInt(muid));
+			ps.setInt(1, Integer.parseInt(mail_user_id));
 			rs = ps.executeQuery();
 			if (rs.next())
 				return unescape(rs.getString(3));
@@ -2350,7 +2351,7 @@ public abstract class MailDBI {
 			// get user and mail_domain
 			int idx = recipient.indexOf('@');
 			if (idx <= 0) {
-				LOG.debug("INVALID RECIPIENT: " + recipient);
+				LOG.error("INVALID RECIPIENT: " + recipient);
 				continue;
 			}
 
@@ -2361,7 +2362,7 @@ public abstract class MailDBI {
 			String toUser = recipient.substring(0, idx);
 
 			if (!isLocalDomain(fromDomain) && !isLocalDomain(toDomain)) {
-				LOG.debug("ERROR: won't send for domain " + fromDomain + " to domain " + toDomain);
+				LOG.error("ERROR: won't send for domain " + fromDomain + " to domain " + toDomain);
 				continue;
 			}
 
