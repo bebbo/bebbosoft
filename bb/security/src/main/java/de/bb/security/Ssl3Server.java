@@ -232,15 +232,14 @@ public class Ssl3Server extends Ssl3 {
                 preMasterSecret = new byte[48];
 
                 int i = 2;
-                for (; i < b.length; ++i) {
+                for (; i < b.length - preMasterSecret.length - 1; ++i) {
                     if (b[i] == 0)
                         break;
                 }
                 
-                boolean wrong = (b[0] != 0 || b[1] != 2 || b[i] != 0);
-
-                ++i;
-                if (versionMinor != 0) {
+                boolean wrong = (b.length < preMasterSecret.length || b[0] != 0 || b[1] != 2 || b[i] != 0);
+                if (!wrong && versionMinor != 0) {
+                    ++i;
                     wrong |= (b[i] != 3 || b[i + 1] != versionMinor);
                 }
                 
@@ -309,6 +308,10 @@ public class Ssl3Server extends Ssl3 {
         } catch (IOException e) {
             if (DEBUG.ON)
                 System.out.println(e.getMessage());
+            try {
+            	close();
+            } catch (IOException ioe)
+            {}
             throw e;
         } catch (Exception e) {
             e.printStackTrace();
