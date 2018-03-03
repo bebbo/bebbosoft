@@ -387,7 +387,7 @@ public abstract class Ssl3 {
 					
 					if (versionMinor > 0) {
 						// check padding
-						for (int i = 1; i < pad; ++i) {
+						for (int i = 1; i <= pad; ++i) {
 							if (readBuffer[len - i] != pad) {
 								++readBuffer[rpos]; // hash check will fail
 								break;
