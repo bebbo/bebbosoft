@@ -11,7 +11,8 @@ public class SslException extends IOException {
         super(msg);
         Ssl3Config.dropSession(clientSessionId);
         // avoid timing attacks
-        long delay = 100 - System.currentTimeMillis() % 100;
+        long delay = 20 - System.currentTimeMillis() % 20;
+        if (delay > 0)
         try {
             Thread.sleep(delay);
         } catch (Exception ex) {}
