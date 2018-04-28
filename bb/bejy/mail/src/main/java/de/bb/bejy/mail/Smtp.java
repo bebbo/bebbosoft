@@ -24,11 +24,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
 
@@ -42,9 +44,9 @@ import de.bb.util.ByteUtil;
 import de.bb.util.DateFormat;
 import de.bb.util.LogFile;
 import de.bb.util.Mime;
+import de.bb.util.MultiMap;
 import de.bb.util.Process;
 import de.bb.util.SessionManager;
-import de.bb.util.SingleMap;
 
 final public class Smtp extends de.bb.bejy.Protocol {
 	private final static Logger LOG = Logger.getLogger(Smtp.class);
@@ -57,7 +59,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 
 	private final static String version;
 	static {
-		version = Version.getShort() + " ESMTP " + V.V + " (c) 2000-" + V.Y
+		version = Version.getShort() + " (c) 2000-" + V.Y
 				+ " by BebboSoft, Stefan \"Bebbo\" Franke, all rights reserved";
 	}
 
@@ -80,7 +82,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 	}
 
 	private final static byte EMPTY[] = {};
-	
+
 	private final static ByteRef CRLF = new ByteRef("\r\n");
 
 	protected LogFile logFile;
@@ -93,9 +95,9 @@ final public class Smtp extends de.bb.bejy.Protocol {
 
 	private final static int S_IDLE = 0, S_HELO = 1, S_MAIL = 2;
 
-	private final static ByteRef READY = new ByteRef("220 " + getFull() + " ready\r\n"),
-			// POSTMASTER = new ByteRef("postmaster"),
-			ESYNTAX = new ByteRef("500 syntax error or command not valid in current state\r\n"),
+	private final static ByteRef
+	// POSTMASTER = new ByteRef("postmaster"),
+	ESYNTAX = new ByteRef("500 syntax error or command not valid in current state\r\n"),
 			EUSERNOTHERE = new ByteRef("550 user does not exist\r\n"),
 			EMAILBOX = new ByteRef("553 mailbox name not allowed:"),
 			EPOPBEFORE = new ByteRef("503 get mail with POP3 to send to foreign addresses\r\n"),
@@ -142,7 +144,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 			1000L * 60 * 60 * 3);
 
 	private static long lastreadWhitelist;
-	private static SingleMap<String, SingleMap<String, String>> WHITELIST = new SingleMap();
+	private static MultiMap<String, MultiMap<String, String>> WHITELIST = new MultiMap<String, MultiMap<String, String>>();
 
 	protected Smtp(SmtpFactory sf, LogFile _logFile) {
 		super(sf);
@@ -158,8 +160,15 @@ final public class Smtp extends de.bb.bejy.Protocol {
 	}
 
 	// overwrite the trigger method, since clients expects a message first
+	static ByteRef READY;
+
+	@Override
 	protected boolean trigger() throws Exception {
 		try {
+			if (READY == null) {
+				READY = new ByteRef(
+						"220 " + InetAddress.getLocalHost().getHostName() + " ESMTP " + getFull() + " - ready\r\n");
+			}
 			lwrite(READY);
 			os.flush();
 		} catch (Exception e) {
@@ -168,6 +177,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 		return super.trigger();
 	}
 
+	@Override
 	protected boolean doit() throws Exception {
 		String userId = null;
 
@@ -652,11 +662,9 @@ final public class Smtp extends de.bb.bejy.Protocol {
 								}
 
 								/*
-								 * // collect the mail for (line = readLine(br);
-								 * line != null; line = readLine(br)) { // not
-								 * stored in file if (line.equals(MAILEND))
-								 * break; // write to stream line.writeTo(fos);
-								 * crlf.writeTo(fos); }
+								 * // collect the mail for (line = readLine(br); line != null; line =
+								 * readLine(br)) { // not stored in file if (line.equals(MAILEND)) break; //
+								 * write to stream line.writeTo(fos); crlf.writeTo(fos); }
 								 */
 
 								fos.flush();
@@ -776,32 +784,51 @@ final public class Smtp extends de.bb.bejy.Protocol {
 			lastreadWhitelist = whitelistFile.lastModified();
 			readWhitelist(whitelistFile);
 		}
-		
+
 		// search the white list
-		final SortedMap<String, SingleMap<String, String>> head = WHITELIST.headMap(resolvedDomain + '\0');
+		final SortedMap<String, MultiMap<String, String>> head = WHITELIST.headMap(resolvedDomain + '\0');
 		if (head.isEmpty())
 			return false;
-		
-		final String headkey = head.lastKey();
-		if (!resolvedDomain.startsWith(headkey))
-			return false;
-		
-		final SingleMap<String, String> taillookup = head.get(headkey);
-		final String reversed = reverse(resolvedDomain);
-		final SortedMap<String, String> tail = taillookup.headMap(reversed);
-		if (tail.isEmpty())
-			return false;
-		
-		final String tailkey = tail.lastKey();
-		
-		return reversed.startsWith(tailkey);
+
+		final ArrayList<Entry<String, MultiMap<String, String>>> candidates = new ArrayList<Entry<String, MultiMap<String, String>>>(
+				head.entrySet());
+		Collections.reverse(candidates);
+		for (final Iterator<Entry<String, MultiMap<String, String>>> i = candidates.iterator(); i.hasNext();) {
+			final Entry<String, MultiMap<String, String>> e = i.next();
+			if (!resolvedDomain.startsWith(e.getKey())) {
+				if (e.getKey().compareTo(resolvedDomain) < 0)
+					continue;
+				break;
+			}
+			
+			final MultiMap<String, String> taillookup = e.getValue();
+			final String reversed = reverse(resolvedDomain);
+			final SortedMap<String, String> tail = taillookup.headMap(reversed);
+			if (tail.isEmpty())
+				continue;
+
+			final ArrayList<Entry<String, String>> reverse = new ArrayList<Entry<String, String>>(
+					tail.entrySet());
+			Collections.reverse(reverse);
+
+			for (final Iterator<Entry<String,  String>> j = reverse.iterator(); j.hasNext();) {
+				final Entry<String, String> f = j.next();
+				if (!reversed.startsWith(f.getKey())) {
+					if (f.getKey().compareTo(reversed) < 0)
+						continue;
+					break;
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
-	 * Read the white list file.
-	 * One entry per line.
-	 * One wild card per line.
-	 * @param whitelistFile the white list file
+	 * Read the white list file. One entry per line. One wild card per line.
+	 * 
+	 * @param whitelistFile
+	 *            the white list file
 	 */
 	private static void readWhitelist(File whitelistFile) {
 		try {
@@ -813,19 +840,19 @@ final public class Smtp extends de.bb.bejy.Protocol {
 				int star = line.indexOf('*');
 				String begin, end;
 				if (star >= 0) {
-					begin = line.substring(0,  star);
+					begin = line.substring(0, star);
 					end = line.substring(star + 1);
 				} else {
 					begin = line;
 					end = line;
 				}
-				
-				SingleMap<String, String> tail = WHITELIST.get(begin);
+
+				MultiMap<String, String> tail = WHITELIST.get(begin);
 				if (tail == null) {
-					tail = new SingleMap<String, String>();
+					tail = new MultiMap<String, String>();
 					WHITELIST.put(begin, tail);
 				}
-				
+
 				// reverse the end
 				end = reverse(end);
 				tail.put(end, end);
@@ -836,7 +863,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 	}
 
 	private static String reverse(final String astring) {
-		final char []cdata = new char[astring.length()];
+		final char[] cdata = new char[astring.length()];
 		astring.getChars(0, cdata.length, cdata, 0);
 		for (int i = 0, j = cdata.length - 1; i < j; ++i, --j) {
 			char x = cdata[i];
@@ -948,8 +975,8 @@ final public class Smtp extends de.bb.bejy.Protocol {
 
 	/**
 	 * Check whether the MXs and the sending server are in the same segment. -
-	 * retrieve all MX IPs and the domain ip - retrieve all sender IPs - compare
-	 * the first 3 segments 1.2.3.X
+	 * retrieve all MX IPs and the domain ip - retrieve all sender IPs - compare the
+	 * first 3 segments 1.2.3.X
 	 * 
 	 * @param clientHelo
 	 *            the name in HELO
@@ -1037,8 +1064,8 @@ final public class Smtp extends de.bb.bejy.Protocol {
 
 	/**
 	 * Returns true if at least one ip segments are in the resolvedDomain. e.g.
-	 * nat-195-91-144-163.inet-comfort.ru and 195.91.144.162 We check decimal
-	 * and hex version.
+	 * nat-195-91-144-163.inet-comfort.ru and 195.91.144.162 We check decimal and
+	 * hex version.
 	 * 
 	 * @param resolvedDomain
 	 *            the resolved Domain
@@ -1145,7 +1172,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 		final Boolean cachedResult = checkCache.get(fromDomain + "#" + toDomain);
 		if (cachedResult != null)
 			return cachedResult;
-		
+
 		if (isWhiteListed(resolvedDomain))
 			return true;
 
@@ -1250,5 +1277,10 @@ final public class Smtp extends de.bb.bejy.Protocol {
 
 	private static String tout() {
 		return "[" + Thread.currentThread().getName() + "] > ";
+	}
+
+	public static void main(String[] args) {
+		if (isWhiteListed("mail2.ing-diba.de"))
+			System.out.println("ok");
 	}
 }
