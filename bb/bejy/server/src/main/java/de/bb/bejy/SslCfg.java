@@ -20,7 +20,6 @@ import de.bb.security.Asn1;
 import de.bb.security.Pem;
 import de.bb.security.Pkcs1;
 import de.bb.security.Ssl3;
-import de.bb.security.Ssl3Config;
 import de.bb.util.ByteRef;
 import de.bb.util.LogFile;
 
@@ -198,6 +197,11 @@ public class SslCfg extends Configurable implements Configurator {
             logFile.writeDate("could not load keyfile: " + keyFile);
         }
 
+        // support let'sencrypt format.
+        byte[] lec = Asn1.getSeq(b, new int[] {0x90, 0x84, 0x10}, 0);
+        if (lec != null)
+        	b = lec;
+        
         pkData = Pkcs1.getPrivateKey(b);
 
         /* verify the pkData */
@@ -267,6 +271,20 @@ public class SslCfg extends Configurable implements Configurator {
 
     public boolean hashPassword() {
         return false;
+    }
+    
+    public static void main(String args[]) {
+    	SslCfg sslcfg = new SslCfg();
+    	sslcfg.setProperty("certFile", "d:\\develop\\workspaces\\w1\\bebbosoft\\bb\\security\\fullchain.pem");
+    	sslcfg.setProperty("keyFile", "d:\\develop\\workspaces\\w1\\bebbosoft\\bb\\security\\privkey.pem");
+    	
+    	LogFile logFile = new LogFile("*");
+		try {
+			sslcfg.activate(logFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
     }
 }
 
