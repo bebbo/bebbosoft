@@ -447,16 +447,6 @@ public class HttpRequestBase {
                                                     --e;
                                                 }
                                                 String val = new String(l, 0, m, e - m);
-                                                if ("JSESSIONID".equals(name)) {
-                                                    sid = val;
-                                                    if (DEBUG) {
-                                                        System.out.println("got jsessionid: " + sid);
-                                                    }
-                                                    fromC = true;
-                                                    ++i;
-                                                    continue;
-                                                }
-
                                                 inCookies.add(new Cookie(name, val));
                                                 ++i;
                                             }
