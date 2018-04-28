@@ -111,4 +111,27 @@ public class SpfTest {
         int r = SpfContext.validateSpf("0000014af9bf958d-4dd6fcb8-d1e2-4d10-9514-7dd8110f75dd-000000@amazonses.com", "franke.ms", "54.240.10.186", "a10-186.smtp-out.amazonses.com", "a10-186.smtp-out.amazonses.com");
         Assert.assertEquals('+', r);
     }
+    
+    @Test
+    public void testDns9() throws Exception {
+    	dns.addStaticEntry(Dns.TYPE_TXT, "spf.emsecure.net","spf2.0/pra,mfrom ip4:37.148.178.128/25 ip4:37.148.183.0/24 ip4:50.57.210.0/30 ip4:91.230.170.0/23 ip4:91.230.176.0/22 ip4:161.47.56.128/27 ip4:176.62.161.64/26 ip4:185.194.84.0/22 ip4:194.213.114.0/23 ip4:198.61.129.106/31 ip4:198.61.132.233");
+    	dns.addStaticEntry(Dns.TYPE_TXT, "spf.emsecure.net"," ip4:198.101.139.158/31 -all");
+    	dns.addStaticEntry(Dns.TYPE_TXT, "spf.emsecure.net","v=spf1 ip4:37.148.178.128/25 ip4:37.148.183.0/24 ip4:50.57.210.0/30 ip4:91.230.170.0/23 ip4:91.230.176.0/22 ip4:161.47.56.128/27 ip4:176.62.161.64/26 ip4:185.194.84.0/22 ip4:194.213.114.0/23 ip4:198.61.129.106/31 ip4:198.61.132.233");
+    	dns.addStaticEntry(Dns.TYPE_TXT, "spf.emsecure.net"," ip4:198.101.139.158/31 -all");
+    	dns.addStaticEntry(Dns.TYPE_TXT, "service-mail.zalando.de", "v=spf1 a mx include:spf.emsecure.net -all");
+  
+        int r = SpfContext.validateSpf("info@service-mail.zalando.de", "franke.ms", "194.213.115.241", "webbpp241.emsecure.net", "webbpp241.emsecure.net");
+        Assert.assertEquals('+', r);
+    }
+    
+    @Test
+    public void testDns10() throws Exception {
+    	dns.addStaticEntry(Dns.TYPE_TXT, "designer.dm.de", "v=spf1 a mx -all");
+    	dns.addStaticEntry(Dns.TYPE_MX, "designer.dm.de", "mx01.foto-online-service.com");
+    	dns.addStaticEntry(Dns.TYPE_A, "mx01.foto-online-service.com", "188.40.16.223");
+
+    	  
+        int r = SpfContext.validateSpf("info@designer.dm.de", "franke.ms", "188.40.16.223", "mx01.foto-online-service.com", "mx01.foto-online-service.com");
+        Assert.assertEquals('+', r);
+    }
 }
