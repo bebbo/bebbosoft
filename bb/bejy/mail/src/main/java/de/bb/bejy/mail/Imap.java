@@ -641,8 +641,18 @@ final class Imap extends de.bb.bejy.Protocol {
 								try {
 									// collect the mail
 									while (len > 0) {
+										int b0 = is.read();
+										if (b0 < 0)
+											throw new IOException("no data in APPEND");
+										fos.write(b0);
+										--len;
+										if (len == 0 || is.available() == 0)
+											continue;
+										
 										int read = data.length < len ? data.length : len;
 										read = is.read(data, 0, read);
+										if (read == 0)
+											throw new IOException("no data in APPEND");
 										if (read > 0) {
 											fos.write(data, 0, read);
 										}
