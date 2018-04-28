@@ -492,17 +492,12 @@ public class Dns extends Configurable {
 		int n = 0;
 		Loop: for (;;) {
 			LinkedList<RD> ll = queryDns(name, inType);
-			if (ll.isEmpty() && ++n >= 5)
+			if (ll.isEmpty() && ++n >= 2)
 				break;
 			for (Iterator<RD> i = ll.iterator(); i.hasNext();) {
 				RD rd = i.next();
-				if (unique.contains(rd) && n == 0)
+				if (!unique.add(rd))
 					break Loop;
-				if (unique.add(rd)) {
-					++n;
-				} else if (n > 0) {
-					--n;
-				}
 			}
 		}
 		LinkedList<RD> ll = new LinkedList<RD>();
@@ -574,7 +569,9 @@ public class Dns extends Configurable {
 			// =====
 			local = new DatagramSocket(); //
 			DatagramPacket p = new DatagramPacket(sendData, sendLength);
-			DatagramPacket a = new DatagramPacket(responseData, responseData.length);
+			DatagramPacket a = new DatagramPacket(responseData, 1400);
+
+//			Misc.dump("->", System.out, sendData, sendLength);
 
 			for (final String nameServer : nameServers) {
 
@@ -585,12 +582,12 @@ public class Dns extends Configurable {
 				int aCount = -1;
 				// send 5 times
 				int k = 0;
-				for (; k < 5; ++k) {
+				for (; k < 3; ++k) {
 					int id = getNextId();
 					sendData[0] = (byte) (id >> 8);
 					sendData[1] = (byte) id;
 					local.send(p);
-					local.setSoTimeout(5000);
+					local.setSoTimeout(500);
 					local.receive(a);
 
 					if (responseData[0] == sendData[0] && responseData[1] == sendData[1]) {
@@ -647,7 +644,12 @@ public class Dns extends Configurable {
 						ll.add(rdData);
 					}
 					offset += rdData.getLength();
+					if (offset >= responseData.length) {
+						offset = responseData.length;
+						break;
+					}
 				}
+//				Misc.dump("<-", System.out, responseData, offset);
 				return ll;
 			}
 		} catch (Throwable e) {
@@ -754,7 +756,6 @@ public class Dns extends Configurable {
 
 			int rLen = ((b[tOffset] & 0xff) << 8) | (b[tOffset + 1] & 0xff);
 			tOffset += 2;
-			length = tOffset - xoffset + rLen;
 			switch (type) {
 			case TYPE_A: {
 				int a1 = 0xff & b[tOffset];
@@ -784,6 +785,7 @@ public class Dns extends Configurable {
 				data = resolveName(b, tOffset, null);
 				break;
 			}
+			length = tOffset - xoffset + rLen;
 		}
 
 		/**
