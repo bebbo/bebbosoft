@@ -320,7 +320,7 @@ public class SpfContext extends Context {
         for (; i.hasNext();) {
             String ip = i.next();
             int iip = ip2Int(ip);
-            if (iip < 0) // invalid String
+            if (iip == -1) // invalid String
             	continue;
             if (iip >>> bits == clientIpInt >>> bits)
                 throw new SpfException(prefix);
