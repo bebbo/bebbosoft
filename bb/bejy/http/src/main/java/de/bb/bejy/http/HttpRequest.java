@@ -1011,6 +1011,18 @@ public class HttpRequest extends HttpRequestBase implements javax.servlet.http.H
             return;
         }
 
+        for (Cookie c : inCookies) {
+            if ("JSESSIONID".equals(c.getName()) && context.sessionManager.containsKey(c.getValue())) {
+                sid = c.getValue();
+                if (DEBUG) {
+                    System.out.println("got jsessionid: " + sid);
+                }
+                fromC = true;
+                break;
+            }
+        }
+        
+        
         String localPath = context.localPath(sPath);
         if (DEBUG) {
             System.out.println("localPath = " + localPath);
