@@ -186,10 +186,18 @@ class RRProtocol extends Protocol {
                     return false;
                 }
 
+                // check if a redirect like 'www.host' -> 'host' is configured
                 if (destination.redirect != null && host.startsWith(destination.redirect)) {
                 	host = host.substring(destination.redirect.length());
                 	send301();
                 	return false;
+                }
+                
+                // check if it's a match without further path information, redirect if no trailing '/'
+                if (destination.path.equals(lookupPath) && !lookupPath.endsWith(ROOT)) {
+                	lookupPath = lookupPath.append(ROOT);
+                        	send301();
+                        	return false;
                 }
                 
                 if (!checkAccess(destination, requestHeaders)) {
