@@ -155,7 +155,7 @@ public class Inject {
                 } while (f.exists());
                 logFile.writeDate("temp mail file: " + f.getCanonicalPath());
                 FileOutputStream fos = new FileOutputStream(f);
-                BufferedReader ir = new BufferedReader(new InputStreamReader(System.in));
+                BufferedReader ir = new BufferedReader(new InputStreamReader(System.in, "utf-8"));
                 try {
                     for (;;) {
                         String line;
@@ -163,7 +163,7 @@ public class Inject {
                         if (line == null || ".".equals(line)) {
                             break;
                         }
-                        fos.write(line.getBytes());
+                        fos.write(line.getBytes("utf-8"));
                         fos.write(13);
                         fos.write(10);
                     }
@@ -173,7 +173,7 @@ public class Inject {
                 }
                 fos.close();
                 sendMail(f.getCanonicalPath(), tos);
-                f.delete();
+//                f.delete();
             }
 
         } catch (Exception ex) {
@@ -405,7 +405,7 @@ public class Inject {
             String a = args[i];
 
             if (a.charAt(0) == '-') {
-                if (a.length() < 2 || "?ifCLFS".indexOf(a.charAt(1)) == -1)
+                if (a.length() < 2 || "?ifCLFSt".indexOf(a.charAt(1)) == -1)
                     throw new Exception("invalid argument: " + a + "\r\n\r\n" + sysMessage);
 
                 int ch = a.charAt(1);
