@@ -49,7 +49,9 @@ public class MailCfg extends Configurable implements Configurator {
                             "the count of delivery retries until intervall switches and a 2nd mail notification is sent",
                             "12"}, {"maxRetries", "the max count of delivery retries", "60"},
                     {"dnsbl", "a dns black list provider"},
-                    {"logFile", "name of an own log file"},};
+                    {"logFile", "name of an own log file"},
+                    {"debug", "write debug infos if true", "false"},
+            };
 
     private static Dns xdns;
 
