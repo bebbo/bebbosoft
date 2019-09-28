@@ -311,7 +311,7 @@ public class ByteRef implements Cloneable, Comparable<ByteRef> {
     public ByteRef append(byte[] data) {
         final int l = end - begin;
         byte b[] = new byte[l + data.length];
-        System.arraycopy(data, begin, b, 0, l);
+        System.arraycopy(this.data, begin, b, 0, l);
         System.arraycopy(data, 0, b, l, data.length);
         return new ByteRef(b);
     }
