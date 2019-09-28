@@ -14,6 +14,7 @@ package de.bb.bejy;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import de.bb.log.Logger;
 import de.bb.security.Ssl3Config;
 
 /**
@@ -23,7 +24,9 @@ import de.bb.security.Ssl3Config;
  */
 public class SslRefCfg extends Configurable implements Configurator {
 
-    private final static String PROPERTIES[][] = { { "ref", "the id of the ssl config to refer to " },
+	private final static Logger LOG = Logger.getLogger(SslRefCfg.class);
+	
+    private final static String PROPERTIES[][] = {{ "ref", "the id of the ssl config to refer to " },
             { "byName", "true if the hostname is used to locate the ssl data" }, };
 
     private Ssl3Config config;
@@ -123,8 +126,10 @@ public class SslRefCfg extends Configurable implements Configurator {
 
         final String ref = getProperty("ref");
         final SslCfg sc = scs.get(ref);
-        if (sc == null || !sc.isValid())
+        if (sc == null || !sc.isValid()) {
+            LOG.error("sslref: sc is not valid");
             return null;
+        }
 
         createConfig(sc, scs);
 
@@ -135,11 +140,14 @@ public class SslRefCfg extends Configurable implements Configurator {
         if (config != null)
             return;
 
+        LOG.info("sslref: creating new config");
         Ssl3Config newConfig = new Ssl3Config(sc.getCerts(), sc.getKeyData(), sc.getCiphers());
 
         if ("true".equals(getProperty("byName"))) {
+            LOG.info("sslref: add sslcfgs by name");
             for (final Entry<String, SslCfg> e : scs.entrySet()) {
                 final SslCfg v = e.getValue();
+                LOG.info("sslref: add host data for: " + e.getKey() + " valid=" + v.isValid());
                 if (v.isValid())
                     newConfig.addHostData(e.getKey(), v.getCerts(), v.getKeyData());
             }
