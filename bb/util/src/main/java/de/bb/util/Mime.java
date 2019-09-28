@@ -182,6 +182,16 @@ public class Mime {
     }
 
     /**
+     * Search the begin string for an encoded range.
+     * @param x the byte array.
+     * @param off the offset.
+     * @return the offset or - 1;
+     */
+    public static int searchBegin(byte[] x, int off) {
+    	return strstr(x, off, beginText);
+    }
+    
+    /**
      * Search an base64 encodede range. Also header information, marked by a double lf, is skipped!
      * 
      * @param x
@@ -202,7 +212,7 @@ public class Mime {
      * @return a byte array containing the part within "-----BEGIN ..." ... "-----END ..."
      */
     public static byte[] searchDecode(byte x[], int off) {
-        int start = strstr(x, off, beginText);
+        int start = searchBegin(x, off);
         if (start < 0)
             return null;
         // next line
