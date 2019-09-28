@@ -201,7 +201,7 @@ public class HttpProtocol extends Protocol {
                         t.printStackTrace();
                 }
             }
-            return alive;
+            return alive && response.status != 500;
         } finally {
             currentRequest = null;
         }
