@@ -33,10 +33,18 @@ public abstract class Ssl3 {
 	// 0-1: cipher id
 	// 2: key bytes;
 	// 3: crypter: 0=RC4, 1=AES, 2=DES3, 3=DES;
-	// 4: hash: 1=MD5, 2=SHA, 4=SHA256;
+	// 4: hash: 1=MD5, 2=SHA, 4=SHA256, 5=SHA384;
 	// 5: key exchange: 0=DHE_DSS, 1=DHE_RSA, 2=DH_ANON 4=RSA, 5=DH_DSS,
 	// 6=DH_RSA
 
+	public final static byte[] TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 = {0x00, (byte)0x9e, 32, 1, 5, 1};
+
+	public final static byte[] TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 = {0x00, (byte)0x9e, 16, 1, 4, 1};
+	
+	public final static byte[] TLS_RSA_WITH_AES_256_GCM_SHA384 = {0x00, (byte)0x9d, 32, 1, 5, 4};
+	
+	public final static byte[] TLS_RSA_WITH_AES_128_GCM_SHA256 = {0x00, (byte)0x9c, 16, 1, 4, 4};
+	
 	public final static byte[] TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 = { 0, 0x6b, 32, 1, 4, 1 };
 
 	public final static byte[] TLS_DHE_RSA_WITH_AES_256_CBC_SHA = { 0, 0x39, 32, 1, 2, 1 };
