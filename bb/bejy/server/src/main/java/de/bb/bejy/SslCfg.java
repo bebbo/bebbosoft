@@ -273,19 +273,18 @@ public class SslCfg extends Configurable implements Configurator {
         return false;
     }
     
-    public static void main(String args[]) {
-    	SslCfg sslcfg = new SslCfg();
-    	sslcfg.setProperty("certFile", "d:\\develop\\workspaces\\w1\\bebbosoft\\bb\\security\\fullchain.pem");
-    	sslcfg.setProperty("keyFile", "d:\\develop\\workspaces\\w1\\bebbosoft\\bb\\security\\privkey.pem");
-    	
-    	LogFile logFile = new LogFile("*");
-		try {
-			sslcfg.activate(logFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-    	
-    }
+//    public static void main(String args[]) {
+//    	SslCfg sslcfg = new SslCfg();
+//    	sslcfg.setProperty("certFile", "d:\\develop\\workspaces\\w1\\bebbosoft\\bb\\security\\fullchain.pem");
+//    	sslcfg.setProperty("keyFile", "d:\\develop\\workspaces\\w1\\bebbosoft\\bb\\security\\privkey.pem");
+//    	
+//    	LogFile logFile = new LogFile("*");
+//		try {
+//			sslcfg.activate(logFile);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//    }
 }
 
 /******************************************************************************
