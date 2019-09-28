@@ -236,14 +236,17 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
      * @return
      */
     private static long checkForUpdate(Configurable c, File folder, long last) {
+    	LogFile log = Config.getLogFile();
         long t = last;
         String files[] = folder.list();
         if (files != null)
         for (int i = 0; i < files.length; ++i) {
             String webAppName = files[i];
             File f = new File(folder, files[i]);
-            if (f.lastModified() > t)
+            if (f.lastModified() > t) {
+            	log.writeDate(f.getAbsolutePath() + " changed -> trigger reload");
                 t = f.lastModified();
+            }
             if (webAppName.endsWith(".link")) {
                 FileReader fr = null;
                 try {
@@ -251,10 +254,10 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
                     BufferedReader br = new BufferedReader(fr);
                     String line = br.readLine();
                     f = new File(line);
-                    webAppName = webAppName.substring(0, webAppName.length() - 5);
-                    File webAppFolder = new File(folder, webAppName);
-                    if (!webAppFolder.exists())
+                    if (!f.exists()) {
+                    	log.writeDate(f.getAbsolutePath() + " is missing -> trigger reload");
                         t = last + 1;
+                    }
                 } catch (IOException e) {
                 }
                 if (fr != null) {
@@ -268,14 +271,16 @@ public class WebAppsCfg extends Configurable implements Configurator, Runnable {
             if (webinfFiles != null) {
                 for (final File wf : webinfFiles) {
                     long ft = wf.lastModified();
-                    if (ft > t)
+                    if (ft > t) {
                         t = ft;
+                    	log.writeDate(wf.getAbsolutePath() + " changed -> trigger reload");
+                }
                 }
             }
         }
         try {
             if (t > last)
-                c.update(Config.getLogFile());
+                c.update(log);
         } catch (Exception e) {
         }
 
