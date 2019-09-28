@@ -468,6 +468,10 @@ public abstract class Configurable {
     }
 
     void store(String path, XmlFile xml) {
+    	// do not save synthetic entries.
+    	if (getConfigurator().getPath().equals("#"))
+    		return;
+    	
         if (!path.endsWith("/"))
             path += "/";
         path += getConfigurator().getPath();
