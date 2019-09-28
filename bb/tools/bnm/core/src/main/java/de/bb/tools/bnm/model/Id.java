@@ -42,6 +42,8 @@ public class Id {
         int col1 = plugin.indexOf(':');
         groupId = plugin.substring(0, col1++);
         int col2 = plugin.indexOf(':', col1);
+        if (col2 < col1)
+        	throw new RuntimeException("invalid plugin: " + plugin);
         artifactId = plugin.substring(col1, col2);
         version = plugin.substring(col2 + 1);
     }
@@ -51,7 +53,11 @@ public class Id {
      * 
      * @return
      */
-    public String getId() {
+    public synchronized String getId() {
+    	if (version != null && version.startsWith("[")) {
+    		int komma = version.indexOf(',');
+    		version = version.substring(1, komma);
+    	}
         return groupId + ":" + artifactId + ":" + version;
     }
 
