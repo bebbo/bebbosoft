@@ -160,8 +160,7 @@ public class Dns extends Configurable {
 	/**
 	 * Remove the cached mail exchangers for the domain.
 	 * 
-	 * @param domain
-	 *            the domain
+	 * @param domain the domain
 	 */
 	public void removeMx(String domain) {
 		String key = domain + '\15';
@@ -172,8 +171,7 @@ public class Dns extends Configurable {
 	 * Get a map of mail exchangers (MX) by domain name. The map is sorted by
 	 * priority.
 	 * 
-	 * @param domain
-	 *            the domain name
+	 * @param domain the domain name
 	 * @return a Map with the mail exchangers.
 	 */
 	public List<String> getMXfromDomain(String domain) {
@@ -222,8 +220,7 @@ public class Dns extends Configurable {
 	 * Get a map of mail exchangers (MX) by domain name. The map is sorted by
 	 * priority.
 	 * 
-	 * @param domain
-	 *            the domain name
+	 * @param domain the domain name
 	 * @return a Map with the mail exchangers.
 	 */
 	public List<String> getRealMXfromDomain(String domain) {
@@ -263,8 +260,7 @@ public class Dns extends Configurable {
 	}
 
 	/**
-	 * @param the
-	 *            key to cache
+	 * @param the key to cache
 	 * @param ll
 	 * @return
 	 */
@@ -279,8 +275,7 @@ public class Dns extends Configurable {
 	}
 
 	/**
-	 * @param the
-	 *            key to cache
+	 * @param the key to cache
 	 * @param ll
 	 * @return
 	 */
@@ -306,8 +301,7 @@ public class Dns extends Configurable {
 	/**
 	 * Retrieves the domain name for a given ip address.
 	 * 
-	 * @param ip
-	 *            the ip address.
+	 * @param ip the ip address.
 	 * @return the domain name - if found or null.
 	 */
 	public String getDomainFromIp(String ip) {
@@ -323,8 +317,7 @@ public class Dns extends Configurable {
 	/**
 	 * Retrieves the domain names for a given ip address.
 	 * 
-	 * @param ip
-	 *            the ip address.
+	 * @param ip the ip address.
 	 * @return the domain name - if found or null.
 	 */
 	public Iterator<String> getDomainsFromIp(String ip) {
@@ -340,8 +333,7 @@ public class Dns extends Configurable {
 	/**
 	 * Retrieves the ip address for a given domain name.
 	 * 
-	 * @param domain
-	 *            the domain name
+	 * @param domain the domain name
 	 * @return the ip address if found or null.
 	 */
 	public String getIpFromDomain(String domain) {
@@ -356,8 +348,7 @@ public class Dns extends Configurable {
 	/**
 	 * Retrieves the TXT for a given domain name.
 	 * 
-	 * @param domain
-	 *            the domain name
+	 * @param domain the domain name
 	 * @return the ip address if found or null.
 	 */
 	public String getTextFromDomain(String domain) {
@@ -373,10 +364,8 @@ public class Dns extends Configurable {
 	 * Retrieves the SPF for a given domain name which starts with the specified
 	 * start.
 	 * 
-	 * @param domain
-	 *            the domain name
-	 * @param start
-	 *            the match
+	 * @param domain the domain name
+	 * @param start  the match
 	 * @return the ip address if found or null.
 	 */
 	public String getSpfFromDomain(String domain, String start) {
@@ -392,10 +381,8 @@ public class Dns extends Configurable {
 	 * Retrieves the TXT for a given domain name which starts with the specified
 	 * start.
 	 * 
-	 * @param domain
-	 *            the domain name
-	 * @param start
-	 *            the match
+	 * @param domain the domain name
+	 * @param start  the match
 	 * @return the ip address if found or null.
 	 */
 	public String getTextFromDomain(String domain, String start) {
@@ -410,8 +397,7 @@ public class Dns extends Configurable {
 	/**
 	 * Retrieves the SOA information for a given domain name.
 	 * 
-	 * @param domain
-	 *            the domain name
+	 * @param domain the domain name
 	 * @return the ip address if found or null.
 	 */
 	public String getSoaFromDomain(String domain) {
@@ -426,8 +412,7 @@ public class Dns extends Configurable {
 	/**
 	 * Retrieves the ip addresses for a given domain name.
 	 * 
-	 * @param domain
-	 *            the domain name
+	 * @param domain the domain name
 	 * @return the ip address if found or null.
 	 */
 	public Iterator<String> getIpsFromDomain(String domain) {
@@ -481,10 +466,8 @@ public class Dns extends Configurable {
 	/**
 	 * Query the DNS multiple times.
 	 * 
-	 * @param name
-	 *            the name to query
-	 * @param inType
-	 *            the type to Query.
+	 * @param name   the name to query
+	 * @param inType the type to Query.
 	 * @return a LinkedList containing all entries with different responses.
 	 */
 	private LinkedList<RD> queryDnsAll(String name, int inType) {
@@ -508,10 +491,8 @@ public class Dns extends Configurable {
 	/**
 	 * Query the DNS.
 	 * 
-	 * @param domain
-	 *            the name to query
-	 * @param inType
-	 *            the type to Query.
+	 * @param domain the name to query
+	 * @param inType the type to Query.
 	 * @return a LinkedList containing all entries for 1 response.
 	 */
 	private LinkedList<RD> queryDns(String domain, int inType) {
@@ -523,49 +504,61 @@ public class Dns extends Configurable {
 			return r;
 		}
 		DatagramSocket local = null;
+		byte sendData[] = new byte[512];
+		byte responseData[] = new byte[1400];
+
+		/*
+		 *                                    1  1  1  1  1  1
+		 *      0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                      ID                       |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                    QDCOUNT                    |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                    ANCOUNT                    |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                    NSCOUNT                    |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                    ARCOUNT                    |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 */
+		int sendLength = 0;
+		sendData[sendLength++] = 0;
+		sendData[sendLength++] = 1; // ID
+		sendData[sendLength++] = 1;
+		sendData[sendLength++] = 0; // QR...
+		sendData[sendLength++] = 0;
+		sendData[sendLength++] = 1; // QDCOUNT
+		sendData[sendLength++] = 0;
+		sendData[sendLength++] = 0; // ANCOUNT
+		sendData[sendLength++] = 0;
+		sendData[sendLength++] = 0; // NSCOUNT
+		sendData[sendLength++] = 0;
+		sendData[sendLength++] = 0; // ARCOUNT
+
+		/*
+		 *                                    1  1  1  1  1  1
+		 *      0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                                               |
+		 *    /                     QNAME                     /
+		 *    /                                               /
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                     QTYPE                     |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 *    |                     QCLASS                    |
+		 *    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+		 */
+
+		sendLength = insert(sendData, sendLength, domain); // QNAME
+		sendData[sendLength++] = 0;
+		sendData[sendLength++] = (byte) inType;
+		sendData[sendLength++] = 0;
+		sendData[sendLength++] = 1; // QCLASS: arpa = 1
+
 		try {
-			byte sendData[] = new byte[512];
-			byte responseData[] = new byte[1400];
-
-			/*
-			 * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | ID |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ |QR| Opcode
-			 * |AA|TC|RD|RA| Z | RCODE |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | QDCOUNT |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | ANCOUNT |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | NSCOUNT |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | ARCOUNT |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-			 */
-			int sendLength = 0;
-			sendData[sendLength++] = 0;
-			sendData[sendLength++] = 1; // ID
-			sendData[sendLength++] = 1;
-			sendData[sendLength++] = 0; // QR...
-			sendData[sendLength++] = 0;
-			sendData[sendLength++] = 1; // QDCOUNT
-			sendData[sendLength++] = 0;
-			sendData[sendLength++] = 0; // ANCOUNT
-			sendData[sendLength++] = 0;
-			sendData[sendLength++] = 0; // NSCOUNT
-			sendData[sendLength++] = 0;
-			sendData[sendLength++] = 0; // ARCOUNT
-
-			/*
-			 * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | | / QNAME / /
-			 * / +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | QTYPE |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ | QCLASS |
-			 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-			 */
-
-			sendLength = insert(sendData, sendLength, domain); // QNAME
-			sendData[sendLength++] = 0;
-			sendData[sendLength++] = (byte) inType;
-			sendData[sendLength++] = 0;
-			sendData[sendLength++] = 1; // QCLASS: arpa = 1
-
 			// =====
 			local = new DatagramSocket(); //
 			DatagramPacket p = new DatagramPacket(sendData, sendLength);
@@ -574,83 +567,86 @@ public class Dns extends Configurable {
 //			Misc.dump("->", System.out, sendData, sendLength);
 
 			for (final String nameServer : nameServers) {
+				try {
 
-				InetAddress ia = InetAddress.getByName(nameServer);
-				p.setAddress(ia);
-				p.setPort(53);
+					InetAddress ia = InetAddress.getByName(nameServer);
+					p.setAddress(ia);
+					p.setPort(53);
 
-				int aCount = -1;
-				// send 5 times
-				int k = 0;
-				for (; k < 3; ++k) {
-					int id = getNextId();
-					sendData[0] = (byte) (id >> 8);
-					sendData[1] = (byte) id;
-					local.send(p);
-					local.setSoTimeout(500);
-					local.receive(a);
+					int aCount = -1;
+					// send 5 times
+					int k = 0;
+					for (; k < 3; ++k) {
+						int id = getNextId();
+						sendData[0] = (byte) (id >> 8);
+						sendData[1] = (byte) id;
+						local.send(p);
+						local.setSoTimeout(500);
+						local.receive(a);
 
-					if (responseData[0] == sendData[0] && responseData[1] == sendData[1]) {
+						if (responseData[0] == sendData[0] && responseData[1] == sendData[1]) {
 //						Misc.dump(System.out, responseData);
-						aCount = ((responseData[6] & 0xff) << 8) | (responseData[7] & 0xff);
-						break;
-					}
-					Thread.sleep(250);
-				}
-				
-				
-				if (aCount == 0) {
-					if ((responseData[2] & 2) == 0)
-						break;
-					
-					// truncated message -> use TCP
-					
-					final Socket socket = new Socket(nameServer, 53);
-					final OutputStream os = socket.getOutputStream();
-					
-					System.arraycopy(sendData, 0, sendData, 2, sendLength);
-					
-					sendData[0] = (byte) (sendLength >> 8);
-					sendData[1] = (byte) sendLength;
-					
-					os.write(sendData, 0, sendLength + 2);
-					InputStream is = socket.getInputStream();
-					int responseLength = (is.read() & 0xff) << 8;
-					responseLength += (is.read() & 0xff);
-					if (responseLength > responseData.length)
-						responseData = new byte[responseLength];
-					for(int pos = 0; pos < responseLength;) {
-						int read = is.read(responseData, pos, responseLength - pos);
-						if (read == 0)
+							aCount = ((responseData[6] & 0xff) << 8) | (responseData[7] & 0xff);
 							break;
-						pos += read;
+						}
+						Thread.sleep(250);
 					}
-					socket.close();
-					
-					if (responseData[0] != sendData[2] || responseData[1] != sendData[3])
-						break;
-					
-					//	Misc.dump(System.out, responseData);
-					aCount = ((responseData[6] & 0xff) << 8) | (responseData[7] & 0xff);
-				}
 
-				LOG.debug("got {0} entries", aCount);
-				LinkedList<RD> ll = new LinkedList<RD>();
-				
-				int offset = sendLength;
-				while (aCount-- > 0) {
-					RD rdData = new RD(responseData, offset);
-					if (rdData.getType() == inType) {
-						ll.add(rdData);
+					if (aCount == 0) {
+						if ((responseData[2] & 2) == 0)
+							break;
+
+						// truncated message -> use TCP
+
+						final Socket socket = new Socket(nameServer, 53);
+						final OutputStream os = socket.getOutputStream();
+
+						System.arraycopy(sendData, 0, sendData, 2, sendLength);
+
+						sendData[0] = (byte) (sendLength >> 8);
+						sendData[1] = (byte) sendLength;
+
+						os.write(sendData, 0, sendLength + 2);
+						InputStream is = socket.getInputStream();
+						int responseLength = (is.read() & 0xff) << 8;
+						responseLength += (is.read() & 0xff);
+						if (responseLength > responseData.length)
+							responseData = new byte[responseLength];
+						for (int pos = 0; pos < responseLength;) {
+							int read = is.read(responseData, pos, responseLength - pos);
+							if (read == 0)
+								break;
+							pos += read;
+						}
+						socket.close();
+
+						if (responseData[0] != sendData[2] || responseData[1] != sendData[3])
+							break;
+
+						// Misc.dump(System.out, responseData);
+						aCount = ((responseData[6] & 0xff) << 8) | (responseData[7] & 0xff);
 					}
-					offset += rdData.getLength();
-					if (offset >= responseData.length) {
-						offset = responseData.length;
-						break;
+
+					LOG.debug("got {0} entries", aCount);
+					LinkedList<RD> ll = new LinkedList<RD>();
+
+					int offset = sendLength;
+					while (aCount-- > 0) {
+						RD rdData = new RD(responseData, offset);
+						if (rdData.getType() == inType) {
+							ll.add(rdData);
+						}
+						offset += rdData.getLength();
+						if (offset >= responseData.length) {
+							offset = responseData.length;
+							break;
+						}
 					}
-				}
 //				Misc.dump("<-", System.out, responseData, offset);
-				return ll;
+					return ll;
+				} catch (Throwable e) {
+					LOG.error(e.getMessage(), e);
+				}
 			}
 		} catch (Throwable e) {
 			LOG.error(e.getMessage(), e);
@@ -659,7 +655,6 @@ public class Dns extends Configurable {
 				local.close();
 		}
 		return EMPTY;
-
 	}
 
 	private static synchronized int getNextId() {
@@ -687,12 +682,9 @@ public class Dns extends Configurable {
 	/**
 	 * reads a name from buffer and updates the specified offset.
 	 * 
-	 * @param b
-	 *            the DNS message data
-	 * @param i
-	 *            current index
-	 * @param res
-	 *            holds the new position
+	 * @param b   the DNS message data
+	 * @param i   current index
+	 * @param res holds the new position
 	 * @return the name
 	 */
 	static String resolveName(byte[] b, int i, int[] res) {
@@ -852,10 +844,8 @@ public class Dns extends Configurable {
 	/**
 	 * Returns an iterator over all ips from all mx of the specified domain.
 	 * 
-	 * @param domain
-	 *            the domain to query the mx IP adresses
-	 * @return an iterator containing Strings with the IP address
-	 *         aaa.bbb.ccc.ddd
+	 * @param domain the domain to query the mx IP adresses
+	 * @return an iterator containing Strings with the IP address aaa.bbb.ccc.ddd
 	 */
 	public Iterator<String> getMxIps(String domain) {
 		HashSet<String> ips = new HashSet<String>();
@@ -939,24 +929,23 @@ public class Dns extends Configurable {
 	 * / public static void main(String args[]) { try { String dnsIp =
 	 * "192.168.0.1"; // String dns = "81.169.163.106"; dnsIp = "8.8.8.8";
 	 * 
-	 * if (args.length > 0) dnsIp = args[0]; System.out.println("using: " +
-	 * dnsIp);
+	 * if (args.length > 0) dnsIp = args[0]; System.out.println("using: " + dnsIp);
 	 * 
 	 * // new T(args[0]).start();
 	 * 
-	 * if (args.length < 2) { args = new String[] { dnsIp, "amazon.com" }; args
-	 * = new String[] { dnsIp, "b.gillastore.amazplus.com" }; }
+	 * if (args.length < 2) { args = new String[] { dnsIp, "amazon.com" }; args =
+	 * new String[] { dnsIp, "b.gillastore.amazplus.com" }; }
 	 * 
-	 * for (int i = 1; i < args.length; ++i) { for (int j = 0; j < 5; ++j) { Dns
-	 * dns = new Dns(); dns.setProperty("server", dnsIp); LogFile log = new
-	 * LogFile("*"); dns.activate(log); System.out.println(args[i]); String name
-	 * = args[i]; System.out.println(args[i] + " -> " + name); if (name == null)
-	 * name = args[i]; String text = dns.getTextFromDomain(name, "v=spf1");
+	 * for (int i = 1; i < args.length; ++i) { for (int j = 0; j < 5; ++j) { Dns dns
+	 * = new Dns(); dns.setProperty("server", dnsIp); LogFile log = new
+	 * LogFile("*"); dns.activate(log); System.out.println(args[i]); String name =
+	 * args[i]; System.out.println(args[i] + " -> " + name); if (name == null) name
+	 * = args[i]; String text = dns.getTextFromDomain(name, "v=spf1");
 	 * System.out.println("TXT: " + name + " -> " + text); // text =
-	 * dns.getSoaFromDomain(name); // System.out.println("SOA: " + name + " -> "
-	 * + text); // String ip = dns.getIpFromDomain(name); // System.out.println(
-	 * "IP: " + name + " -> " + ip); } } } catch (Exception ex) {
-	 * ex.printStackTrace(); } } /
+	 * dns.getSoaFromDomain(name); // System.out.println("SOA: " + name + " -> " +
+	 * text); // String ip = dns.getIpFromDomain(name); // System.out.println( "IP:
+	 * " + name + " -> " + ip); } } } catch (Exception ex) { ex.printStackTrace(); }
+	 * } /
 	 **/
 }
 /******************************************************************************
