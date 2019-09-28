@@ -20,6 +20,10 @@ public class Ssl3Config {
 		addHostData("*", certificates, pkData);
 	}
 
+	private final static Object LOCK = new Object();
+	private static byte[] pp0;
+	private static byte[] gg0;
+
 	private static byte[][] checkKeyData(byte[][] pkData) {
 		if (pkData.length == 10)
 			return pkData;
@@ -29,21 +33,30 @@ public class Ssl3Config {
 		for (int i = 0; i < 8; ++i) {
 			t[i] = pkData[i];
 		}
-		// create the diffie hellman prime
-		SecureRandom secureRnd = SecureRandom.getInstance();
-		int nlen = 256;// pkData[0].length - (pkData[0][0] == 0 ? 1 : 0);
-		byte p[] = Pkcs6.generatePrime(nlen * 8).toByteArray();
 
-		// get rid of the leading zero - MS does no longer work...
-		byte p0[] = new byte[nlen];
-		System.arraycopy(p, 1, p0, 0, p0.length);
-		byte g0[] = new byte[p0.length];
-		secureRnd.nextBytes(g0);
-		g0[0] &= 0x7f;
-		g0[g0.length - 1] |= 1;
+		synchronized (LOCK) {
+			if (pp0 != null && gg0 != null) {
+				t[8] = pp0;
+				t[9] = gg0;
+			} else {
 
-		t[8] = p0;
-		t[9] = g0;
+				// create the diffie hellman prime
+				SecureRandom secureRnd = SecureRandom.getInstance();
+				int nlen = 256;// pkData[0].length - (pkData[0][0] == 0 ? 1 : 0);
+				byte p[] = Pkcs6.generatePrime(nlen * 8).toByteArray();
+
+				// get rid of the leading zero - MS does no longer work...
+				byte p0[] = new byte[nlen];
+				System.arraycopy(p, 1, p0, 0, p0.length);
+				byte g0[] = new byte[p0.length];
+				secureRnd.nextBytes(g0);
+				g0[0] &= 0x7f;
+				g0[g0.length - 1] |= 1;
+
+				pp0 = t[8] = p0;
+				gg0 = t[9] = g0;
+			}
+		}
 		return t;
 	}
 
@@ -55,8 +68,8 @@ public class Ssl3Config {
 	}
 
 	/**
-	 * 10 byte arrays with the private key data: n, e, d, p, q, dp1, dq1, iqmp,
-	 * dhp, dhg
+	 * 10 byte arrays with the private key data: n, e, d, p, q, dp1, dq1, iqmp, dhp,
+	 * dhg
 	 * 
 	 * @param hostname
 	 * @return
