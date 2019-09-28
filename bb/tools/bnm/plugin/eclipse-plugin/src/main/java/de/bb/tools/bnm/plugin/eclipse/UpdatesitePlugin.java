@@ -68,10 +68,9 @@ public class UpdatesitePlugin extends JarPlugin {
 		maxDate = 0;
 
 		final FileBrowser fb = new FileBrowser() {
-			@Override
-			protected void handleFile(String path, String name) {
-				String f = getBaseDir() + path + "/" + name;
-				long mod = new File(f).lastModified();
+			protected void handleFile(final String path, final String name) {
+				final String f = getBaseDir() + path + "/" + name;
+				final long mod = new File(f).lastModified();
 				if (mod > maxDate)
 					maxDate = mod;
 			}
@@ -117,16 +116,16 @@ public class UpdatesitePlugin extends JarPlugin {
 		}
 
 		// create new content.xml
-		XmlFile xml = new XmlFile();
+		final XmlFile xml = new XmlFile();
 		xml.readString(CONTENT_TEMPLATE);
 
-		XmlFile axml = new XmlFile();
+		final XmlFile axml = new XmlFile();
 		axml.readString(ARTIFACT_TEMPLATE);
 
-		XmlFile sxml = new XmlFile();
+		final XmlFile sxml = new XmlFile();
 		sxml.readString(SITE_TEMPLATE);
 
-		long now = System.currentTimeMillis();
+		final long now = System.currentTimeMillis();
 
 		xml.setString("/repository", "name", epom.groupId + "." + epom.artifactId);
 		xml.setString("/repository/properties/\\property\\p2.timestamp", "value", Long.toString(now));
@@ -138,19 +137,14 @@ public class UpdatesitePlugin extends JarPlugin {
 		// sxml.setString("/site/description", "url", myUrl);
 		sxml.setContent("/site/description", myDescription);
 
-		sxml.setString("/site/category-def", "name", epom.groupId + "." + epom.artifactId);
-		sxml.setString("/site/category-def", "label", myLabel);
-		sxml.setContent("/site/category-def/description", myDescription);
-
 		// add own unit
 		final String mainKey = xml.createSection("/repository/units/unit");
 		xml.setString(mainKey, "id", epom.groupId + "." + epom.artifactId);
-		xml.setString(mainKey, "version", epom.version);
+		setVersion(xml, mainKey, epom.version);
 
 		addProperty(xml, mainKey, "org.eclipse.equinox.p2.name", myLabel);
 		addProperty(xml, mainKey, "org.eclipse.equinox.p2.description", myDescription);
 		addProperty(xml, mainKey, "org.eclipse.equinox.p2.provider", organization);
-		addProperty(xml, mainKey, "org.eclipse.equinox.p2.type.category", "true");
 		addPropertySize(xml, mainKey);
 
 		addProvides(xml, mainKey, "org.eclipse.equinox.p2.iu", epom.groupId + "." + epom.artifactId, epom.version);
@@ -174,11 +168,12 @@ public class UpdatesitePlugin extends JarPlugin {
 			if (artifact.getGA().equals(epom.getGA()))
 				continue;
 
+			added.clear();
 			addArtifact(axml, artifact, true);
 
 			final String ga = artifact.groupId + "." + artifact.artifactId;
 
-			XmlFile feature = new XmlFile();
+			final XmlFile feature = new XmlFile();
 			final InputStream is = loader.findInputStream(artifact, "jar", "feature.xml");
 			feature.read(is);
 			is.close();
@@ -191,11 +186,17 @@ public class UpdatesitePlugin extends JarPlugin {
 			final String license = feature.getContent("/feature/license").trim();
 			final String licenseUrl = feature.getString("/feature/license", "url", null);
 
-			addRequired(xml, mainKey, ga + ".group", artifact.version);
+			final String cat = sxml.createSection("/site/category-def");
+			sxml.setString(cat, "name", label);
+			sxml.setString(cat, "label", label);
+			sxml.setContent(cat + "description", description);
+			setVersion(sxml, cat, artifact.version);
+
+			addRequired(xml, mainKey, ga + ".group", artifact.version, artifact.version);
 
 			String key = xml.createSection("/repository/units/unit");
 			xml.setString(key, "id", ga + ".feature.jar");
-			xml.setString(key, "version", artifact.version);
+			setVersion(xml, key, artifact.version);
 
 			addProperty(xml, key, "org.eclipse.equinox.p2.name", label);
 			addProperty(xml, key, "org.eclipse.equinox.p2.provider", providerName);
@@ -213,7 +214,7 @@ public class UpdatesitePlugin extends JarPlugin {
 			xml.setString(key + "artifacts", "size", "1");
 			xml.setString(key + "artifacts/artifact", "classifier", "org.eclipse.update.feature");
 			xml.setString(key + "artifacts/artifact", "id", ga);
-			xml.setString(key + "artifacts/artifact", "version", artifact.version);
+			setVersion(xml, key + "artifacts/artifact", artifact.version);
 
 			xml.setString(key + "touchpoint", "id", "org.eclipse.equinox.p2.osgi");
 			xml.setString(key + "touchpoint", "version", "1.0.0");
@@ -238,7 +239,7 @@ public class UpdatesitePlugin extends JarPlugin {
 			// add group
 			key = xml.createSection("/repository/units/unit");
 			xml.setString(key, "id", ga + ".feature.group");
-			xml.setString(key, "version", artifact.version);
+			setVersion(xml, key, artifact.version);
 			xml.setString(key, "singleton", "false");
 
 			xml.setString(key + "update", "id", ga + ".feature.group");
@@ -255,7 +256,7 @@ public class UpdatesitePlugin extends JarPlugin {
 			addProvides(xml, key, "org.eclipse.equinox.p2.iu", ga + ".feature.group", artifact.version);
 			addProvidesSize(xml, key);
 
-			final String subkey = addRequired(xml, key, ga + ".feature.jar", artifact.version);
+			final String subkey = addRequired(xml, key, ga + ".feature.jar", artifact.version, artifact.version);
 			xml.setContent(subkey + "filter", "(org.eclipse.update.install.features=true)");
 			Pom artifactPom = bnm.getPom(artifact.getId());
 			if (artifactPom == null) {
@@ -266,7 +267,7 @@ public class UpdatesitePlugin extends JarPlugin {
 				if (id.getGA().equals(artifact.getGA()))
 					continue;
 
-				addRequired(xml, key, id.groupId + "." + id.artifactId, id.version);
+				addRequired(xml, key, id.groupId + "." + id.artifactId, id.version, id.version);
 
 				if (addArtifact(axml, id, false)) {
 
@@ -274,15 +275,15 @@ public class UpdatesitePlugin extends JarPlugin {
 					final String unitKey = xml.createSection("/repository/units/unit");
 
 					final InputStream mis = loader.findInputStream(id, "jar", "META-INF/MANIFEST.MF");
-					int len = mis.available();
-					byte data[] = new byte[len];
+					final int len = mis.available();
+					final byte data[] = new byte[len];
 					mis.read(data);
 					mis.close();
-					String content = new String(data, "utf-8");
-					ManifestInfo mi = new ManifestInfo(content);
+					final String content = new String(data, "utf-8");
+					final ManifestInfo mi = new ManifestInfo(content);
 
 					xml.setString(unitKey, "id", id.groupId + "." + id.artifactId);
-					xml.setString(unitKey, "version", id.version);
+					setVersion(xml, unitKey, id.version);
 
 					if (!mi.getFullSymbolicName().endsWith("singleton:=true"))
 						xml.setString(unitKey, "singleton", "false");
@@ -304,14 +305,14 @@ public class UpdatesitePlugin extends JarPlugin {
 					for (final NameVersion nv : mi.getBundleMap().values()) {
 						if (nv.getName().equals(id.groupId + "." + id.artifactId))
 							continue;
-						addRequired(xml, unitKey, nv.getName(), nv.getVersion());
+						addRequired(xml, unitKey, nv.getName(), nv.getVersion(), "9" + nv.getVersion());
 					}
 					addRequiredSize(xml, unitKey);
 
 					xml.setString(unitKey + "artifacts", "size", "1");
 					xml.setString(unitKey + "artifacts/artifact", "classifier", "osgi.bundle");
 					xml.setString(unitKey + "artifacts/artifact", "id", id.groupId + "." + id.artifactId);
-					xml.setString(unitKey + "artifacts/artifact", "version", id.version);
+					setVersion(xml, unitKey + "artifacts/artifact", id.version);
 
 					xml.setString(unitKey + "touchpoint", "id", "org.eclipse.equinox.p2.osgi");
 					xml.setString(unitKey + "touchpoint", "version", "1.0.0");
@@ -321,7 +322,6 @@ public class UpdatesitePlugin extends JarPlugin {
 					xml.setString(unitKey + "touchpointData/instructions/instruction", "key", "manifest");
 					xml.setContent(unitKey + "touchpointData/instructions/instruction", "Bundle-SymbolicName: "
 							+ mi.getFullSymbolicName() + "\r\nBundle-Version: " + id.version + "\r\n");
-
 				}
 			}
 			addRequiredSize(xml, key);
@@ -343,11 +343,30 @@ public class UpdatesitePlugin extends JarPlugin {
 
 			lastKey = key;
 
+			// add category to feature.xml
 			key = sxml.createSection("/site/feature");
 			sxml.setString(key, "url", "features/" + ga + "-" + artifact.version + ".jar");
 			sxml.setString(key, "id", ga);
-			sxml.setString(key, "version", artifact.version);
-			sxml.setString(key + "category", "id", epom.groupId + "." + epom.artifactId);
+			setVersion(sxml, key, artifact.version);
+			sxml.setString(key + "category", "id", label);
+
+			// add unit for the category
+			final String catUnitKey = xml.createSection("/repository/units/unit");
+			xml.setString(catUnitKey, "id", label);
+			setVersion(xml, catUnitKey, artifact.version);
+
+			addProperty(xml, catUnitKey, "org.eclipse.equinox.p2.name", label);
+			addProperty(xml, catUnitKey, "org.eclipse.equinox.p2.type.category", "true");
+			addPropertySize(xml, catUnitKey);
+
+			addProvides(xml, catUnitKey, "org.eclipse.equinox.p2.iu", label, artifact.version);
+			addProvidesSize(xml, catUnitKey);
+
+			addRequired(xml, catUnitKey, ga, artifact.version, artifact.version);
+			addRequiredSize(xml, catUnitKey);
+
+			xml.setString(catUnitKey + "touchpoint", "id", "null");
+			xml.setString(catUnitKey + "touchpoint", "version", "0.0.0");
 		}
 
 		final int unitCount = xml.getSections("/repository/units/unit").size();
@@ -374,7 +393,7 @@ public class UpdatesitePlugin extends JarPlugin {
 		super.execute();
 	}
 
-	private boolean addArtifact(XmlFile axml, Id id, boolean isFeature) throws Exception {
+	private boolean addArtifact(final XmlFile axml, final Id id, final boolean isFeature) throws Exception {
 		if (added.contains(id.getId()))
 			return false;
 
@@ -382,13 +401,13 @@ public class UpdatesitePlugin extends JarPlugin {
 
 		final File pFile = loader.findFile(id, "jar");
 		final File outFile = new File(isFeature ? featureDir : pluginsDir,
-				id.groupId + "." + id.artifactId + "-" + id.version + ".jar");
+				id.groupId + "." + id.artifactId + "-" + fixVersion(id.version) + ".jar");
 		copyFile(log, pFile, outFile);
 
 		final String key = axml.createSection("/repository/artifacts/artifact");
 		axml.setString(key, "classifier", isFeature ? "org.eclipse.update.feature" : "osgi.bundle");
 		axml.setString(key, "id", id.groupId + "." + id.artifactId);
-		axml.setString(key, "version", id.version);
+		setVersion(axml, key, id.version);
 
 		addProperty(axml, key, "artifact.size", Long.toString(outFile.length()));
 		addProperty(axml, key, "download.size", Long.toString(outFile.length()));
@@ -404,45 +423,62 @@ public class UpdatesitePlugin extends JarPlugin {
 		return true;
 	}
 
-	private void addRequiredSize(XmlFile xml, String key) {
+	private static void addRequiredSize(final XmlFile xml, final String key) {
 		final int size = xml.getSections(key + "requires/required").size();
 		if (size > 0)
 			xml.setString(key + "requires", "size", Integer.toString(size));
 	}
 
-	private String addRequired(XmlFile xml, String key, String name, String version) {
+	private static String addRequired(final XmlFile xml, final String key, final String name, final String from,
+			final String to) {
 		final String r = xml.createSection(key + "requires/required");
 		xml.setString(r, "namespace", "org.eclipse.equinox.p2.iu");
 		xml.setString(r, "name", name);
-		String vv = version == null ? "0.0.0" : "[" + version + "," + version + "]";
+		String vv;
+		if (from == null)
+			vv = "0.0.0";
+		else
+			vv = "[" + fixVersion(from) + "," + fixVersion(to) + "]";
+
 		xml.setString(r, "range", vv);
 		return r;
 	}
 
-	private void addProvidesSize(XmlFile xml, String key) {
+	private static void addProvidesSize(final XmlFile xml, final String key) {
 		final int size = xml.getSections(key + "provides/provided").size();
 		xml.setString(key + "provides", "size", Integer.toString(size));
 	}
 
-	private void addProvides(XmlFile xml, String key, String namespace, String name, String version) {
+	private static void addProvides(final XmlFile xml, final String key, final String namespace, final String name,
+			final String version) {
 		final String p = xml.createSection(key + "provides/provided");
 		xml.setString(p, "namespace", namespace);
 		xml.setString(p, "name", name);
-		xml.setString(p, "version", version);
+		setVersion(xml, p, version);
 	}
 
-	private void addPropertySize(final XmlFile xml, final String key) {
+	private static void addPropertySize(final XmlFile xml, final String key) {
 		final int size = xml.getSections(key + "properties/property").size();
 		xml.setString(key + "properties", "size", Integer.toString(size));
 	}
 
-	private void addProperty(XmlFile xml, String key, String name, String value) {
+	private static void addProperty(final XmlFile xml, final String key, final String name, final String value) {
 		if (value == null)
 			return;
 
 		final String p = xml.createSection(key + "properties/property");
 		xml.setString(p, "name", name);
 		xml.setString(p, "value", value);
+	}
+
+	public static void setVersion(final XmlFile xml, final String key, final String version) {
+		xml.setString(key, "version", fixVersion(version));
+	}
+
+	private static String fixVersion(final String version) {
+		if (version.endsWith("SNAPSHOT"))
+			return version.substring(0, version.length() - 9);
+		return version;
 	}
 
 }

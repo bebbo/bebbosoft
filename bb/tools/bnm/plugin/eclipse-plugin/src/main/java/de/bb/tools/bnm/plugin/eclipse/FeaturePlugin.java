@@ -46,25 +46,25 @@ public class FeaturePlugin extends JarPlugin {
                 if (artifact.getGA().equals(epom.getGA()))
                     continue;
                 final File jar = loader.findFile(artifact, "jar");
-                if (jar.lastModified() > outfile.lastModified()) {
+                if (!jar.exists() || jar.lastModified() > outfile.lastModified()) {
                     uptodate = false;
                     break;
                 }
             }
         }
 
-        // still uptodate
-        if (uptodate) {
-            getLog().info("file is uptodate: " + outfile.getAbsolutePath());
-            return;
-        }
-
         // read the feature.xml template file and fill it
         final XmlFile xml = new XmlFile();
         xml.readFile(feature.getAbsolutePath());
 
-        xml.setString("/feature", "id", epom.groupId + ':' + epom.artifactId);
-        xml.setString("/feature", "version", epom.version);
+        // still uptodate
+        if (uptodate && xml.getString("/feature", "id", null) != null) {
+            getLog().info("feature.xml is uptodate: " + outfile.getAbsolutePath());
+            return;
+        }
+
+        xml.setString("/feature", "id", epom.groupId + '.' + epom.artifactId);
+        UpdatesitePlugin.setVersion(xml, "/feature", epom.version);
 
         for (final Id artifact : artifacts) {
             // skip self
@@ -78,7 +78,7 @@ public class FeaturePlugin extends JarPlugin {
                 xml.setString(key, "download-size", "" + fsize);
                 xml.setString(key, "install-size", "" + fsize);
                 xml.setString(key, "unpack", "false");
-                xml.setString(key, "version", artifact.version);
+                UpdatesitePlugin.setVersion(xml, key, artifact.version);
             }
         }
         final FileOutputStream fos = new FileOutputStream(outfile);
