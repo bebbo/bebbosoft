@@ -26,7 +26,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +34,7 @@ import java.util.Vector;
 import de.bb.bejy.Configurable;
 import de.bb.security.Asn1;
 import de.bb.security.Pkcs6;
+import de.bb.security.Ssl3;
 import de.bb.security.Ssl3Client;
 import de.bb.util.ByteRef;
 import de.bb.util.DateFormat;
@@ -65,7 +65,7 @@ class Spooler extends Thread {
     /** the max sleep time for the spooler */
     private final static long MAXSLEEP = 1000L * 60 * 5;
 
-    private final static int E_SUCCESS = 0, E_RETRY = 1, E_PERMANENT = 1000, E_INVALID_DOMAIN = 101, E_UNKNOWN_USER = 102;
+    private final static int E_SUCCESS = 0, E_RETRY = 1, E_PERMANENT = 1000, E_INVALID_DOMAIN = 99, E_UNKNOWN_USER = 102;
 
     final static byte[] CRLF = { (byte) '\r', (byte) '\n' };
 
@@ -353,7 +353,7 @@ class Spooler extends Thread {
                 dbi = cfg.getDbi(this);
 
                 line = new ByteRef();
-                reason = M_GIVEUP;
+                reason = M_CONNECT_REJECT;
                 error = E_INVALID_DOMAIN;
                 
                 String mailServerDomain = se.toDomain;
@@ -375,8 +375,8 @@ class Spooler extends Thread {
                         Socket socket = null;
 
                         mailServerDomain = null;
-                        for (int pass = 0; error != 0 && pass < 2; ++pass) {
-                            boolean retryWithoutTLS = pass == 1;
+                        for (int pass = 0; error != 0 && pass < 3; ++pass) {
+                            boolean retryWithoutTLS = pass == 2;
 
                             for (Iterator<String> i = mailServer.iterator(); error != 0 && i.hasNext();) {
 
@@ -410,8 +410,6 @@ class Spooler extends Thread {
                                         // read server's message
                                         line = readResponse(br, is);
                                         ByteRef cmd = line.substring(0, 3).toUpperCase();
-                                        if (VERBOSE)
-                                            logFile.writeDate(mailServerDomain + ": " + line);
                                         if (cmd.equals(R220)) {
                                             try {
                                                 if (VERBOSE)
@@ -421,62 +419,63 @@ class Spooler extends Thread {
 
                                                     final String ehlo = "EHLO " + se.fromDomain + "\r\n";
                                                     os.write(ehlo.getBytes());
+                                                    if (VERBOSE)
+                                                        logFile.writeDate("> " + ehlo);
 
                                                     boolean startTls = false;
                                                     do {
                                                         line = ByteRef.readLine(br, is);
                                                         if (VERBOSE)
-                                                            logFile.writeDate(line.toString());
+                                                            logFile.writeDate("< " + line);
 
-                                                        startTls |= line.substring(4).equals("STARTTLS");
+                                                        startTls |= line.indexOf("STARTTLS") >= 0;
                                                     } while (line.charAt(3) != ' ');
 
-                                                    if (VERBOSE)
-                                                        logFile.writeDate(mailServerDomain + "> " + line);
-
                                                     cmd = line.substring(0, 3).toUpperCase();
-                                                    if (cmd.equals(R250)) {
+                                                    if (startTls || cmd.equals(R250)) {
                                                         // start TLS unless it's
                                                         // a retry
                                                         if (startTls && !retryWithoutTLS) {
-                                                            Pair<InputStream, OutputStream> p = doStartTls(br, is, os, mailServerDomain, ehlo);
+                                                            Pair<InputStream, OutputStream> p = doStartTls(pass, br, is, os, mailServerDomain, ehlo);
                                                             is = p.getFirst();
                                                             os = p.getSecond();
 
                                                             // send a new EHLO
                                                             os.write(ehlo.getBytes());
+                                                            if (VERBOSE)
+                                                                logFile.writeDate("> " + ehlo);
                                                             line = readResponse(br, is);
                                                             cmd = line.substring(0, 3).toUpperCase();
                                                         }
                                                     }
+                                                    error = E_RETRY;
                                                     // second compare - in case
                                                     // of STARTTLS
                                                     if (cmd.equals(R250)) {
                                                         final String mailFrom = "MAIL FROM:<" + se.fromName + '@' + se.fromDomain + ">\r\n";
                                                         os.write(mailFrom.getBytes());
+                                                        if (VERBOSE)
+                                                            logFile.writeDate("> " + mailFrom);
 
                                                         line = readResponse(br, is);
-                                                        if (VERBOSE)
-                                                            logFile.writeDate(mailServerDomain + "> " + line);
 
                                                         cmd = line.substring(0, 3).toUpperCase();
                                                         if (cmd.equals(R250)) {
                                                             final String rcptTo = "RCPT TO:<" + se.toName + '@' + se.toDomain + ">\r\n";
                                                             os.write(rcptTo.getBytes());
+                                                            if (VERBOSE)
+                                                                logFile.writeDate("> " + rcptTo);
 
                                                             line = readResponse(br, is);
-                                                            if (VERBOSE)
-                                                                logFile.writeDate(mailServerDomain + ": " + line);
 
                                                             cmd = line.substring(0, 3).toUpperCase();
                                                             if (cmd.equals(R250)) {
-                                                                error = E_RETRY;
 
                                                                 os.write("DATA\r\n".getBytes());
+                                                                if (VERBOSE)
+                                                                    logFile.writeDate("> DATA");
 
                                                                 line = readResponse(br, is);
-                                                                if (VERBOSE)
-                                                                    logFile.writeDate(mailServerDomain + ": " + line);
 
                                                                 cmd = line.substring(0, 3).toUpperCase();
                                                                 if (cmd.equals(R354)) {
@@ -484,8 +483,6 @@ class Spooler extends Thread {
                                                                     copyMail(fis, os);
 
                                                                     line = readResponse(br, is);
-                                                                    if (VERBOSE)
-                                                                        logFile.writeDate(mailServerDomain + ": " + line);
 
                                                                     cmd = line.substring(0, 3).toUpperCase();
                                                                     if (cmd.equals(R250)) {
@@ -494,6 +491,8 @@ class Spooler extends Thread {
                                                                         reason = line;
                                                                     }
                                                                     os.write("QUIT\r\n".getBytes());
+                                                                    if (VERBOSE)
+                                                                        logFile.writeDate("> QUIT");
                                                                 } else
                                                                     reason = line;
                                                             } else {
@@ -511,7 +510,6 @@ class Spooler extends Thread {
                                             } catch (Throwable e2) {
                                                 if (VERBOSE)
                                                     logFile.writeDate(mailServerDomain + ": " + e2.getMessage());
-                                                error = E_PERMANENT;
                                                 // send an error message to
                                                 // sender
                                             }
@@ -534,6 +532,10 @@ class Spooler extends Thread {
                                     } finally {
                                         socket.close();
                                     }
+                                }
+                                if (error != 0) {
+                                    logFile.writeDate("FAILURE sending mail from " + se.fromName + "@" + se.fromDomain + " to " + se.toName + "@" + se.toDomain
+                                            + " using server " + mailServerDomain + ": " + reason);
                                 }
                             }
                             // while (error != 0 && mailAddr != null);
@@ -560,9 +562,7 @@ class Spooler extends Thread {
                             if (se.retry > 0)
                                 sendMailBack(se, "Delivered your mail to: " + se.toName + '@' + se.toDomain, "notice: attempt #" + se.retry
                                         + " was finally successfull\r\n", R220);
-                        } else
-                            logFile.writeDate("FAILURE sending mail from " + se.fromName + "@" + se.fromDomain + " to " + se.toName + "@" + se.toDomain
-                                    + " using server " + mailServerDomain + ": " + reason);
+                        }
                     }
                 } catch (Throwable e) {
                     reason = M_INTERN;
@@ -605,13 +605,11 @@ class Spooler extends Thread {
                     if (error > 0 && error < E_PERMANENT) {
                         spoolerRetry(se);
 
-                        if (error > 99) // prevent deletion
-                            error = 99;
                     }
                 }
 
                 // remove the spool entry
-                if (error == 0 || error > 99) {
+                if (error == 0 || error == E_PERMANENT) {
                     if (VERBOSE)
                         logFile.writeDate("spooler: erase " + se.mailId);
                     spoolerDeleteEntry(se);
@@ -657,18 +655,28 @@ class Spooler extends Thread {
             bos.flush();
         }
 
-        private Pair<InputStream, OutputStream> doStartTls(ByteRef br, InputStream is, OutputStream os, String mailServerDomain, String ehlo) throws IOException {
+        private Pair<InputStream, OutputStream> doStartTls(int pass, ByteRef br, InputStream is, OutputStream os, String mailServerDomain, String ehlo) throws IOException {
             os.write("STARTTLS\r\n".getBytes());
             os.flush();
+            if (VERBOSE)
+                logFile.writeDate("> STARTTLS");
 
             line = readResponse(br, is);
-            if (VERBOSE)
-                logFile.writeDate(mailServerDomain + "> " + line);
 
-            Ssl3Client client = new Ssl3Client();
+            Ssl3Client client;
+            if (pass == 0) {
+            	client = new Ssl3Client();
+            } else {
+            	// retry without DHE
+            	byte[][] cs = {
+            		Ssl3.TLS_RSA_WITH_AES_256_CBC_SHA256, Ssl3.TLS_RSA_WITH_AES_256_CBC_SHA, Ssl3.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
+            		Ssl3.TLS_DHE_RSA_WITH_AES_128_CBC_SHA, Ssl3.TLS_RSA_WITH_AES_128_CBC_SHA256, Ssl3.TLS_RSA_WITH_AES_128_CBC_SHA,
+            	};
+				client = new Ssl3Client(cs);
+            }
             client.connect(is, os, mailServerDomain);
             if (VERBOSE)
-                logFile.writeDate(mailServerDomain + "> " + client.getCipherSuite());
+                logFile.writeDate(mailServerDomain + ": " + client.getCipherSuite());
 
             Vector<byte[]> certificates = client.getCertificates();
             byte[] root = certificates.get(certificates.size() - 1);
@@ -723,7 +731,7 @@ class Spooler extends Thread {
             do {
                 line = ByteRef.readLine(br, is);
                 if (VERBOSE)
-                    logFile.writeDate(line.toString());
+                    logFile.writeDate("< " + line.toString());
             } while (line.charAt(3) != ' ');
             return line;
         }
