@@ -1268,7 +1268,7 @@ final class Imap extends de.bb.bejy.Protocol {
 		 *            a parameter object passed to the handler
 		 * @throws Exception
 		 */
-		void call(int pos, String uid, String mbId, ResultSet rs, Object o) throws Exception;
+		void call(long pos, String uid, String mbId, ResultSet rs, Object o) throws Exception;
 
 	}
 
@@ -1550,7 +1550,7 @@ final class Imap extends de.bb.bejy.Protocol {
 		 * @see de.bb.bejy.mail.Imap.MsgHandler#call(int, java.lang.String,
 		 *      java.lang.String, java.sql.ResultSet, java.lang.Object)
 		 */
-		public void call(int pos, String uid, String mbId, ResultSet rs, Object o) throws Exception {
+		public void call(long pos, String uid, String mbId, ResultSet rs, Object o) throws Exception {
 			RandomAccessFile raf = null;
 			try {
 				// ResultSet rs2;
@@ -2095,7 +2095,7 @@ final class Imap extends de.bb.bejy.Protocol {
 
 		public boolean searchUid;
 
-		TreeSet<Integer> result;
+		TreeSet<Long> result;
 
 		Search(boolean uid) {
 			this.returnUid = uid;
@@ -2126,7 +2126,7 @@ final class Imap extends de.bb.bejy.Protocol {
 		}
 
 		// the range can be specified at start or end or elsewhere
-		TreeSet<Integer> result = searchAnd("1:*", q, s);
+		TreeSet<Long> result = searchAnd("1:*", q, s);
 
 		if (result == null) {
 			return false;
@@ -2138,7 +2138,7 @@ final class Imap extends de.bb.bejy.Protocol {
 		os.write(("* SEARCH").getBytes());
 		if (!result.isEmpty()) {
 			final StringBuilder sb = new StringBuilder();
-			for (final Integer ii : result) {
+			for (final Long ii : result) {
 				sb.append(" ").append(ii);
 			}
 			if (VERBOSE) {
@@ -2170,15 +2170,15 @@ final class Imap extends de.bb.bejy.Protocol {
 		return val;
 	}
 
-	private TreeSet<Integer> searchAnd(String range, ByteRef q, Search s) throws Exception {
-		TreeSet<Integer> andResult = null;
+	private TreeSet<Long> searchAnd(String range, ByteRef q, Search s) throws Exception {
+		TreeSet<Long> andResult = null;
 		do {
 			if (q.equals(KET)) {
 				if (andResult == null)
-					return new TreeSet<Integer>();
+					return new TreeSet<Long>();
 				return andResult;
 			}
-			TreeSet<Integer> result = searchCmd(range, q, s);
+			TreeSet<Long> result = searchCmd(range, q, s);
 			if (andResult != null) {
 				andResult = andResult(andResult, result);
 			} else {
@@ -2195,10 +2195,10 @@ final class Imap extends de.bb.bejy.Protocol {
 		return andResult;
 	}
 
-	private TreeSet<Integer> searchCmd(String searchRange, ByteRef q, Search search) throws Exception {
+	private TreeSet<Long> searchCmd(String searchRange, ByteRef q, Search search) throws Exception {
 		search.q = null;
 		search.not = false;
-		search.result = new TreeSet<Integer>();
+		search.result = new TreeSet<Long>();
 
 		if (q.equals(BRA)) {
 			if (line == null) {
@@ -2232,7 +2232,7 @@ final class Imap extends de.bb.bejy.Protocol {
 				return null;
 			}
 			q.toUpperCase();
-			TreeSet<Integer> r1 = searchCmd("1:*", q, search);
+			TreeSet<Long> r1 = searchCmd("1:*", q, search);
 			if (line == null) {
 				return r1;
 			}
@@ -2241,7 +2241,7 @@ final class Imap extends de.bb.bejy.Protocol {
 				return r1;
 			}
 			q.toUpperCase();
-			TreeSet<Integer> r2 = searchCmd("1:*", q, search);
+			TreeSet<Long> r2 = searchCmd("1:*", q, search);
 			r1.addAll(r2);
 			return r1;
 		}
@@ -2283,9 +2283,9 @@ final class Imap extends de.bb.bejy.Protocol {
 		return search.result;
 	}
 
-	private static TreeSet<Integer> andResult(TreeSet<Integer> left, TreeSet<Integer> right) {
-		TreeSet<Integer> and = new TreeSet<Integer>();
-		for (final Integer ii : left) {
+	private static TreeSet<Long> andResult(TreeSet<Long> left, TreeSet<Long> right) {
+		TreeSet<Long> and = new TreeSet<Long>();
+		for (final Long ii : left) {
 			if (right.contains(ii))
 				and.add(ii);
 		}
@@ -2302,7 +2302,7 @@ final class Imap extends de.bb.bejy.Protocol {
 		 * @see de.bb.bejy.mail.Imap.MsgHandler#call(int, java.lang.String,
 		 *      java.lang.String, java.sql.ResultSet, java.lang.Object)
 		 */
-		public void call(int pos, String uid, String mbId, ResultSet rs, Object o) throws Exception {
+		public void call(long pos, String uid, String mbId, ResultSet rs, Object o) throws Exception {
 			Search s = (Search) o;
 			boolean add = true; // default add it to the result
 			if (DEBUG)
@@ -2426,7 +2426,7 @@ final class Imap extends de.bb.bejy.Protocol {
 			}
 			if (add ^ s.not) {
 				if (s.returnUid) {
-					s.result.add(Integer.parseInt(uid));
+					s.result.add(Long.parseLong(uid));
 				} else {
 					s.result.add(pos);
 				}
@@ -2436,7 +2436,7 @@ final class Imap extends de.bb.bejy.Protocol {
 
 	private boolean handleMessages(String mbId, final String msgNumbers, boolean useUid, Object o, MsgHandler mh) {
 		try {
-			final ArrayList<Pair<Integer, Integer>> ranges = new ArrayList<Pair<Integer, Integer>>();
+			final ArrayList<Pair<Long, Long>> ranges = new ArrayList<Pair<Long, Long>>();
 
 			// parse the provided message numbers
 			for (final StringTokenizer st = new StringTokenizer(msgNumbers, ","); st.hasMoreElements();) {
@@ -2445,9 +2445,9 @@ final class Imap extends de.bb.bejy.Protocol {
 				if (colon < 0) {
 					// next is single number if no colon or colon > komma
 					if (part.equals("*")) {
-						ranges.add(Pair.makePair(1, Integer.MAX_VALUE));
+						ranges.add(Pair.makePair(1L, Long.MAX_VALUE));
 					} else {
-						final Integer n = Integer.parseInt(part);
+						final Long n = Long.parseLong(part);
 						ranges.add(Pair.makePair(n, n));
 					}
 				} else {
@@ -2456,30 +2456,33 @@ final class Imap extends de.bb.bejy.Protocol {
 					final String sto = part.substring(colon + 1);
 					// convert to int
 					try {
-						final Integer from = sfrom.equals("*") ? 1 : Integer.parseInt(sfrom);
-						final Integer to = sto.equals("*") ? Integer.MAX_VALUE : Integer.parseInt(sto);
+						final Long from = sfrom.equals("*") ? 1 : Long.parseLong(sfrom);
+						final Long to = sto.equals("*") ? Integer.MAX_VALUE : Long.parseLong(sto);
 						ranges.add(Pair.makePair(from, to));
 					} catch (Exception ex) {
-						ranges.add(Pair.makePair(1, Integer.MAX_VALUE));
+						ranges.add(Pair.makePair(1L, Long.MAX_VALUE));
 					}
 				}
 			}
 
-			Collections.sort(ranges, new Comparator<Pair<Integer, Integer>>() {
-				public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-					return o1.getFirst() - o2.getFirst();
+			Collections.sort(ranges, new Comparator<Pair<Long, Long>>() {
+				public int compare(Pair<Long, Long> o1, Pair<Long, Long> o2) {
+					long diff = o1.getFirst() - o2.getFirst();
+					if (diff > 0) return 1;
+					if (diff < 0) return -1;
+					return 0;
 				}
 			});
 
 			// merge overlapping ranges
 			for (int i = 1; i < ranges.size();) {
-				Pair<Integer, Integer> a = ranges.get(i - 1);
-				Pair<Integer, Integer> b = ranges.get(i);
+				Pair<Long, Long> a = ranges.get(i - 1);
+				Pair<Long, Long> b = ranges.get(i);
 				if (a.getSecond() < b.getFirst()) {
 					++i;
 					continue;
 				}
-				Pair<Integer, Integer> c = Pair.makePair(a.getFirst(), Integer.max(a.getSecond(), b.getSecond()));
+				Pair<Long, Long> c = Pair.makePair(a.getFirst(), Long.max(a.getSecond(), b.getSecond()));
 				ranges.set(i - 1, c);
 				ranges.remove(i);
 			}
@@ -2510,15 +2513,15 @@ final class Imap extends de.bb.bejy.Protocol {
 					}
 					int pos = 1;
 
-					for (Pair<Integer, Integer> p : ranges) {
-						final int from = p.getFirst();
-						final int to = p.getSecond();
+					for (Pair<Long, Long> p : ranges) {
+						final long from = p.getFirst();
+						final long to = p.getSecond();
 						if (DEBUG) {
 							logFile.writeln("[" + from + ":" + to + "] in total " + total);
 						}
 
-						int diff = total - pos;
-						int iuid = rs.getInt(1);
+						long diff = total - pos;
+						long iuid = rs.getLong(1);
 						if (from - iuid < diff) {
 							diff = from - iuid;
 						}
@@ -2582,12 +2585,20 @@ final class Imap extends de.bb.bejy.Protocol {
 				ResultSet rs = mDbi.selectFromImapData(mbId);
 				try {
 					if (rs.next()) {
-						int pos = 1;
-						for (Pair<Integer, Integer> p : ranges) {
-							final int from = p.getFirst();
-							final int to = p.getSecond();
+						long pos = 1;
+						Outer:
+						for (Pair<Long, Long> p : ranges) {
+							final long from = p.getFirst();
+							final long to = p.getSecond();
 							if (from > pos) {
-								if (!rs.relative(from - pos)) {
+								long seek = from - pos;
+								while (seek > Integer.MAX_VALUE) {
+									seek -= Integer.MAX_VALUE;
+									if (!rs.relative(Integer.MAX_VALUE)) {
+										break Outer;
+									}
+								}
+								if (!rs.relative((int)seek)) {
 									break;
 								}
 								pos = from;
@@ -2666,7 +2677,7 @@ final class Imap extends de.bb.bejy.Protocol {
 		 * @see de.bb.bejy.mail.Imap.MsgHandler#call(int, java.lang.String,
 		 *      java.lang.String, java.sql.ResultSet, java.lang.Object)
 		 */
-		public void call(int pos, String uid, String mbId, ResultSet rs, Object o) throws Exception {
+		public void call(long pos, String uid, String mbId, ResultSet rs, Object o) throws Exception {
 			Store st = (Store) o;
 
 			boolean f1, f2, f3, f4, f5;
@@ -2768,7 +2779,7 @@ final class Imap extends de.bb.bejy.Protocol {
 		 * @see de.bb.bejy.mail.Imap.MsgHandler#call(int, java.lang.String,
 		 *      java.lang.String, java.sql.ResultSet, java.lang.Object)
 		 */
-		public void call(int pos, String uid, String mbId, ResultSet r, Object o) throws Exception {
+		public void call(long pos, String uid, String mbId, ResultSet r, Object o) throws Exception {
 			final String destId = (String) o;
 			try {
 				// copy imap_data entry
