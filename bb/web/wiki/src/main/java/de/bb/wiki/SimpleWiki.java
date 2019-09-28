@@ -568,7 +568,7 @@ public class SimpleWiki {
         dot = alt.lastIndexOf('.');
         boolean altImg = dot > 0 && manager.getImages().contains(alt.substring(dot));
         if (altImg) {
-            sb.append("<img alt='").append(EnDeCode.escape(url)).append("'");
+            sb.append("><img alt='").append(EnDeCode.escape(url)).append("'");
             sb.append(" title='").append(EnDeCode.escape(url)).append("'");
             sb.append(" width='").append(manager.getThumbWidth()).append("'");
             sb.append(" height='").append(manager.getThumbHeight()).append("'");
