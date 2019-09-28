@@ -63,22 +63,23 @@ public class LdapProtocol extends Protocol {
 
 	// version stuff
 
-	private LogFile logFile;
+	private final LogFile logFile;
 
 	private ByteRef br;
 
 	private int msgId;
 
 	private ByteRef currentUser;
-	private ArrayList<String> currentReadPermissions = new ArrayList<String>();
-	private ArrayList<String> currentWritePermissions = new ArrayList<String>();
+	private String scurrentUser;
+	private final ArrayList<String> currentReadPermissions = new ArrayList<String>();
+	private final ArrayList<String> currentWritePermissions = new ArrayList<String>();
 	private ArrayList<byte[]> currentResponses;
 	private int sizeLimit;
 	private byte[] data;
 
-	private HashMap<String, ArrayList<byte[]>> cookie2data = new HashMap<String, ArrayList<byte[]>>();
+	private final HashMap<String, ArrayList<byte[]>> cookie2data = new HashMap<String, ArrayList<byte[]>>();
 
-	LdapProtocol(LdapFactory hf, LogFile _logFile) {
+	LdapProtocol(final LdapFactory hf, final LogFile _logFile) {
 		super(hf);
 		this.logFile = _logFile;
 	}
@@ -92,6 +93,7 @@ public class LdapProtocol extends Protocol {
 		LdapFactory.CACHE.clear();
 	}
 
+	
 	protected boolean doit() throws Exception {
 		if (br == null || br.length() == 0)
 			br = readFirst();
@@ -106,7 +108,7 @@ public class LdapProtocol extends Protocol {
 		// then we need at least one positive byte
 		int sLen;
 		for (;;) {
-			int avail = br.length();
+			final int avail = br.length();
 			if (avail > 1) {
 				if (avail > data.length)
 					data = new byte[avail];
@@ -116,30 +118,30 @@ public class LdapProtocol extends Protocol {
 				if (sLen > 0 && sLen <= avail)
 					break;
 			}
-			ByteRef r = br.update(is);
+			final ByteRef r = br.update(is);
 			if (r == null)
 				return false;
 		}
 
 		// remove read sequence from buffer
-		byte inc[] = br.substring(0, sLen).toByteArray();
+		final byte inc[] = br.substring(0, sLen).toByteArray();
 		br = br.substring(sLen);
 
-		Asn1 in = new Asn1(inc);
+		final Asn1 in = new Asn1(inc);
 		// System.out.println("< " + in);
 		// Misc.dump(System.out, inc);
 		// get the sequence data
-		Iterator<Asn1> seq = in.children();
+		final Iterator<Asn1> seq = in.children();
 
 		msgId = seq.next().asInt();
-		Asn1 request = seq.next();
+		final Asn1 request = seq.next();
 
 		Asn1 control = null;
 		if (seq.hasNext())
 			control = seq.next();
 
-		Iterator<Asn1> content = request.children();
-		int requestType = request.getType() & 0x1f;
+		final Iterator<Asn1> content = request.children();
+		final int requestType = request.getType() & 0x1f;
 		switch (requestType) {
 		case 0x0: // bind
 			bind(content);
@@ -176,7 +178,7 @@ public class LdapProtocol extends Protocol {
 		default:
 			byte result[] = new byte[] { (byte) (requestType + 0x60), 0 };
 			result = Asn1.addTo(result, ERROR_UNSUPORTED_OPERATION);
-			ByteRef errorMsg = new ByteRef();
+			final ByteRef errorMsg = new ByteRef();
 			result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
 			result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
 
@@ -185,7 +187,7 @@ public class LdapProtocol extends Protocol {
 		return true;
 	}
 
-	private void modifyDn(Iterator<Asn1> content) throws IOException {
+	private void modifyDn(final Iterator<Asn1> content) throws IOException {
 		final ByteRef modifyDn = content.next().asByteRef().toLowerCase();
 		final ByteRef newType = content.next().asByteRef();
 		byte[] resultVal = null;
@@ -213,14 +215,14 @@ public class LdapProtocol extends Protocol {
 		byte result[] = RESPONSE_MODIFYDN;
 		result = Asn1.addTo(result, resultVal);
 		result = Asn1.addTo(result, Asn1.makeASN1(modifyDn.toByteArray(), Asn1.OCTET_STRING));
-		ByteRef errorMsg = new ByteRef();
+		final ByteRef errorMsg = new ByteRef();
 		result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
 
 		writeResponse(result);
 	}
 
-	private void setValue(XmlFile xml, String key, String val) {
-		String l = XmlFile.getLastSegment(key);
+	private void setValue(final XmlFile xml, final String key, final String val) {
+		final String l = XmlFile.getLastSegment(key);
 		if (l.endsWith("userpassword") || l.endsWith("attributetypes") || l.endsWith("objectclasses")) {
 			xml.setString(key, "name", val);
 			xml.setString(key, "value", null);
@@ -233,7 +235,7 @@ public class LdapProtocol extends Protocol {
 				return;
 		}
 
-		String lower = val.toLowerCase();
+		final String lower = val.toLowerCase();
 		xml.setString(key, "name", lower);
 		if (lower.equals(val)) {
 			xml.setString(key, "value", null);
@@ -242,7 +244,7 @@ public class LdapProtocol extends Protocol {
 		}
 	}
 
-	private void remove(Asn1 request) throws IOException {
+	private void remove(final Asn1 request) throws IOException {
 		final ByteRef removeDn = request.asByteRef();
 		// check access for the key
 		byte[] resultVal = null;
@@ -266,7 +268,7 @@ public class LdapProtocol extends Protocol {
 		byte result[] = RESPONSE_DELETE;
 		result = Asn1.addTo(result, resultVal);
 		result = Asn1.addTo(result, Asn1.makeASN1(removeDn.toByteArray(), Asn1.OCTET_STRING));
-		ByteRef errorMsg = new ByteRef();
+		final ByteRef errorMsg = new ByteRef();
 		result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
 
 		writeResponse(result);
@@ -274,12 +276,12 @@ public class LdapProtocol extends Protocol {
 
 	/**
 	 * Insert a new entry.
-	 * 
+	 *
 	 * @param content
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void insert(Iterator<Asn1> content) throws IOException {
+	private void insert(final Iterator<Asn1> content) throws IOException {
 		final ByteRef insertDn = content.next().asByteRef().toLowerCase();
 
 		// check access for the key
@@ -313,7 +315,7 @@ public class LdapProtocol extends Protocol {
 					final XmlFile xml = getXmlFile();
 
 					// check if object already exists
-					Map<String, String> existingAttrs = xml
+					final Map<String, String> existingAttrs = xml
 							.getAttributes(parentKey + "\\" + last + "\\" + newName.toLowerCase());
 					if (existingAttrs != null) {
 						resultVal = ERROR_ENTRY_ALREADY_EXISTS;
@@ -359,14 +361,14 @@ public class LdapProtocol extends Protocol {
 		byte result[] = RESPONSE_INSERT;
 		result = Asn1.addTo(result, resultVal);
 		result = Asn1.addTo(result, Asn1.makeASN1(insertDn.toByteArray(), Asn1.OCTET_STRING));
-		ByteRef errorMsg = new ByteRef();
+		final ByteRef errorMsg = new ByteRef();
 		result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
 
 		writeResponse(result);
 
 	}
 
-	private boolean checkWritePermission(ByteRef dn) {
+	private boolean checkWritePermission(final ByteRef dn) {
 		for (final String wp : currentWritePermissions) {
 			if (dn.endsWith(wp)) {
 				return true;
@@ -377,18 +379,18 @@ public class LdapProtocol extends Protocol {
 
 	/**
 	 * Modify an existing entry
-	 * 
+	 *
 	 * @param content
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void modify(Iterator<Asn1> content) throws IOException {
+	private void modify(final Iterator<Asn1> content) throws IOException {
 		final ByteRef modifyBaseDn = content.next().asByteRef();
 		// check access for the key
 		byte[] resultVal = null;
 
-		boolean access = checkWritePermission(modifyBaseDn);
-		boolean selfAccess = !access && modifyBaseDn.endsWith(currentUser);
+		final boolean access = checkWritePermission(modifyBaseDn);
+		final boolean selfAccess = !access && modifyBaseDn.endsWith(currentUser);
 
 		if (!access && !selfAccess) {
 			logFile.writeDate("search: " + currentUser + " has NO WRITE ACCESS to " + modifyBaseDn);
@@ -404,7 +406,7 @@ public class LdapProtocol extends Protocol {
 			final XmlFile xml = getXmlFile();
 
 			// apply the incoming changes
-			for (Iterator<Asn1> i = modifications.children(); i.hasNext();) {
+			for (final Iterator<Asn1> i = modifications.children(); i.hasNext();) {
 				final Iterator<Asn1> mod = i.next().children();
 				final int operation = mod.next().asInt();
 				final Iterator<Asn1> attrTypeAndValue = mod.next().children();
@@ -452,7 +454,7 @@ public class LdapProtocol extends Protocol {
 						setPassword(modifyKey, value);
 					} else {
 						final String key = modifyKey + attr;
-						String val = value.toString("utf-8");
+						final String val = value.toString("utf-8");
 						setValue(xml, key, val);
 					}
 					if (resultVal == null)
@@ -473,7 +475,7 @@ public class LdapProtocol extends Protocol {
 		byte result[] = RESPONSE_MODIFY;
 		result = Asn1.addTo(result, resultVal);
 		result = Asn1.addTo(result, Asn1.makeASN1(modifyBaseDn.toByteArray(), Asn1.OCTET_STRING));
-		ByteRef errorMsg = new ByteRef();
+		final ByteRef errorMsg = new ByteRef();
 		result = Asn1.addTo(result, Asn1.makeASN1(errorMsg.toByteArray(), Asn1.OCTET_STRING));
 
 		writeResponse(result);
@@ -482,13 +484,13 @@ public class LdapProtocol extends Protocol {
 
 	/**
 	 * Handle an extended operation
-	 * 
+	 *
 	 * @param content
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void extendedOperation(Iterator<Asn1> content) throws IOException {
-		ByteRef oid = content.next().asByteRef();
+	private void extendedOperation(final Iterator<Asn1> content) throws IOException {
+		final ByteRef oid = content.next().asByteRef();
 
 		if (oid.equals("1.3.6.1.4.1.4203.1.11.1")) {
 			extendedChangePassword(content);
@@ -498,7 +500,7 @@ public class LdapProtocol extends Protocol {
 		sendExOpError("unsupported extended Operation", ERROR_UNSUPORTED_OPERATION);
 	}
 
-	private void sendExOpError(String msg, byte[] error) throws IOException {
+	private void sendExOpError(final String msg, final byte[] error) throws IOException {
 		byte result[] = RESPONSE_EXTENDED_OPERATION;
 		result = Asn1.addTo(result, error);
 		result = Asn1.addTo(result, Asn1.makeASN1(NADA, Asn1.OCTET_STRING));
@@ -506,13 +508,13 @@ public class LdapProtocol extends Protocol {
 		writeResponse(result);
 	}
 
-	private void extendedChangePassword(Iterator<Asn1> content) throws IOException {
-		Iterator<Asn1> params = content.next().children().next().children();
-		ByteRef uid = params.next().asByteRef();
-		ByteRef opw = params.next().asByteRef();
-		ByteRef npw = params.next().asByteRef();
+	private void extendedChangePassword(final Iterator<Asn1> content) throws IOException {
+		final Iterator<Asn1> params = content.next().children().next().children();
+		final ByteRef uid = params.next().asByteRef();
+		final ByteRef opw = params.next().asByteRef();
+		final ByteRef npw = params.next().asByteRef();
 
-		String key = "/ldap/" + dn2Key(uid);
+		final String key = "/ldap/" + dn2Key(uid);
 		if (!checkPassword(key, opw)) {
 			sendExOpError("invalid credentials", ERROR_INVALID_CREDENTIALS);
 			return;
@@ -540,15 +542,15 @@ public class LdapProtocol extends Protocol {
 
 			String value = newPassword.toString("utf-8");
 			if (!value.toLowerCase().startsWith("{ssha}")) {
-				byte salt[] = new byte[16];
+				final byte salt[] = new byte[16];
 				SecureRandom.getInstance().nextBytes(salt);
 
-				SHA sha = new SHA();
+				final SHA sha = new SHA();
 				sha.update(newPassword.toByteArray());
 				sha.update(salt);
 				final byte[] digest = sha.digest();
 
-				ByteRef all = new ByteRef(digest).append(new ByteRef(salt));
+				final ByteRef all = new ByteRef(digest).append(new ByteRef(salt));
 
 				value = "{ssha}" + new String(Mime.encode(all.toByteArray()), 0);
 			}
@@ -558,7 +560,7 @@ public class LdapProtocol extends Protocol {
 		}
 	}
 
-	private boolean checkPassword(String key, ByteRef password) throws IOException {
+	private boolean checkPassword(final String key, final ByteRef password) throws IOException {
 		String val = getXmlFile().getString(key, "auth", null);
 		if (val != null) {
 			if (!password.equals(val))
@@ -573,52 +575,32 @@ public class LdapProtocol extends Protocol {
 		val = xml.getString(key + "userpassword", "name", "invalid");
 
 		if (val.toLowerCase().startsWith("{ssha}")) {
-			byte[] data = Mime.decode(val.getBytes(), 6, val.length());
-			SHA sha = new SHA();
+			final byte[] data = Mime.decode(val.getBytes(), 6, val.length());
+			final SHA sha = new SHA();
 			sha.update(password.toByteArray());
 			sha.update(data, 20, data.length - 20);
-			byte[] digest = sha.digest();
+			final byte[] digest = sha.digest();
 			return Misc.equals(data, 0, digest, 0, 20);
 		}
 
 		return false;
 	}
 
-	private void search(Asn1 content) throws IOException {
+	private void search(final Asn1 content) throws IOException {
 
 		final Iterator<Asn1> seq = content.children();
-		ByteRef searchBaseDn = seq.next().asByteRef().toLowerCase();
+		final ByteRef searchBaseDn = seq.next().asByteRef().toLowerCase();
 
-		boolean access = false;
-		for (final String rp : currentReadPermissions) {
-			if (searchBaseDn.endsWith(rp)) {
-				access = true;
-				break;
-			}
-		}
-
-		int scope = seq.next().asInt();
-		int deref = seq.next().asInt();
+		final int scope = seq.next().asInt();
+		final int deref = seq.next().asInt();
 		sizeLimit = seq.next().asInt();
-		int timeLimit = seq.next().asInt();
-		int typesOnly = seq.next().asInt();
+		final int timeLimit = seq.next().asInt();
+		final int typesOnly = seq.next().asInt();
 
-		Asn1 searchAsn = seq.next();
-		Search search = createSearch(searchAsn);
+		final Asn1 searchAsn = seq.next();
+		final Search search = createSearch(searchAsn);
 
-		boolean selfAccess = access ? false : searchBaseDn.endsWith(currentUser);
-		if (!selfAccess && search instanceof EqualityFilter) {
-			final EqualityFilter ef = (EqualityFilter) search;
-			final String efsearch = ef.what + "=" + ef.value + "," + searchBaseDn;
-			selfAccess = currentUser.equals(efsearch);
-		}
-		if (!access && !selfAccess) {
-			logFile.writeDate("search: " + currentUser + " has NO ACCESS to " + searchBaseDn);
-			sendSearchError();
-			return;
-		}
-
-		Asn1 attributeDescriptionList = seq.next();
+		final Asn1 attributeDescriptionList = seq.next();
 
 		logFile.writeDate("search: ldap:///" + searchBaseDn + "?" + printableAttrs(attributeDescriptionList) + "?"
 				+ (scope == 0 ? "base" : scope == 1 ? "one" : "sub") + "?" + search + "?" + sizeLimit);
@@ -629,15 +611,15 @@ public class LdapProtocol extends Protocol {
 		String cookie = null;
 		if (content.hasNext()) {
 			content.next();
-			Iterator<Asn1> extension = content.children();
-			Iterator<Asn1> ext1 = extension.next().children();
-			Asn1 controlType = ext1.next();
+			final Iterator<Asn1> extension = content.children();
+			final Iterator<Asn1> ext1 = extension.next().children();
+			final Asn1 controlType = ext1.next();
 			// pagedResultsControl
 			if (controlType.asByteRef().equals(PAGED_RESULTS_CONTROL)) {
 				criticality = ext1.next().asInt();
-				Iterator<Asn1> controlValueOctet = ext1.next().children();
-				Iterator<Asn1> controlValue = controlValueOctet.next().children();
-				int size = controlValue.next().asInt();
+				final Iterator<Asn1> controlValueOctet = ext1.next().children();
+				final Iterator<Asn1> controlValue = controlValueOctet.next().children();
+				final int size = controlValue.next().asInt();
 				if (size > 0 && size < sizeLimit)
 					sizeLimit = size;
 
@@ -654,47 +636,16 @@ public class LdapProtocol extends Protocol {
 			if (currentResponses == null) {
 				currentResponses = new ArrayList<byte[]>();
 
+				// System.out.println(search);
+				final XmlFile xmlFile = getXmlFile();
+				scurrentUser = xmlFile.normalizeSection("/ldap/" + dn2Key(currentUser));
+
 				// apply the baseDn
 				String searchRoot = dn2Key(searchBaseDn);
 				searchRoot = "/ldap/" + searchRoot;
 
-				// System.out.println(search);
-				final XmlFile xmlFile = getXmlFile();
-
-				String searchRoot2 = xmlFile.normalizeSection(searchRoot);
-				if (searchRoot2 == null) {
-					// TODO remove after upgrade
-					searchRoot2 = "";
-					for (String rest = searchRoot; rest.length() > 0;) {
-						int bs = rest.indexOf('\\');
-						if (bs < 0) {
-							searchRoot2 += rest;
-							break;
-						}
-
-						searchRoot2 += rest.substring(0, bs);
-						rest = rest.substring(bs + 1);
-						bs = rest.indexOf('\\');
-						String part = rest.substring(0, bs);
-						int sl = rest.indexOf('/', bs);
-						String name = rest.substring(bs + 1, sl);
-						rest = rest.substring(sl + 1);
-
-						boolean f = false;
-						for (String key : xmlFile.getSections(searchRoot2 + part)) {
-							if (name.equalsIgnoreCase(xmlFile.getString(key, "name", null))) {
-								f = true;
-								searchRoot2 = key;
-								break;
-							}
-						}
-						if (!f) {
-							searchRoot2 = null;
-							break;
-						}
-					}
-				}
-
+				final String searchRoot2 = xmlFile.normalizeSection(searchRoot);
+//				System.out.println(searchRoot + "==" + searchRoot2);
 				if (searchRoot2 != null) {
 					if (xmlFile.sections(searchRoot2).hasNext()) {
 						findRecursive(xmlFile, searchRoot2, search, attributeDescriptionList, scope);
@@ -723,11 +674,11 @@ public class LdapProtocol extends Protocol {
 			if (offset + len > tmp.size())
 				len = tmp.size() - offset;
 			for (int i = offset; len > 0; ++i, --len, ++offset) {
-				byte[] b = tmp.get(i);
+				final byte[] b = tmp.get(i);
 				writeResponse(b);
 			}
 			if (cookie != null && offset < tmp.size()) {
-				String newCookie = SessionManager.newKey() + ":" + offset;
+				final String newCookie = SessionManager.newKey() + ":" + offset;
 				cookie2data.put(newCookie, tmp);
 
 				// create pagedResultsControl response
@@ -741,7 +692,7 @@ public class LdapProtocol extends Protocol {
 				pagedResultsControl = Asn1.addTo(pagedResultsControl, Asn1.makeASN1(criticality, Asn1.BOOLEAN));
 				pagedResultsControl = Asn1.addTo(pagedResultsControl, realSearchControlValue);
 
-				byte[] controls = Asn1.addTo(NEWCONTROLS, pagedResultsControl);
+				final byte[] controls = Asn1.addTo(NEWCONTROLS, pagedResultsControl);
 
 				result = Asn1.addTo(result, controls);
 			}
@@ -750,20 +701,20 @@ public class LdapProtocol extends Protocol {
 		writeResponse(result);
 	}
 
-	private int offsetFromCookie(String cookie) {
+	private int offsetFromCookie(final String cookie) {
 		if (cookie == null)
 			return 0;
-		int colon = cookie.lastIndexOf(':');
+		final int colon = cookie.lastIndexOf(':');
 		if (colon > 0)
 			return Integer.parseInt(cookie.substring(colon + 1));
 		return 0;
 	}
 
-	private String printableAttrs(Asn1 attributeDescriptionList) {
-		StringBuilder sb = new StringBuilder();
-		for (Iterator<Asn1> i = attributeDescriptionList.children(); i.hasNext();) {
-			Asn1 attr = i.next();
-			ByteRef sattr = attr.asByteRef().toLowerCase();
+	private String printableAttrs(final Asn1 attributeDescriptionList) {
+		final StringBuilder sb = new StringBuilder();
+		for (final Iterator<Asn1> i = attributeDescriptionList.children(); i.hasNext();) {
+			final Asn1 attr = i.next();
+			final ByteRef sattr = attr.asByteRef().toLowerCase();
 			if (sb.length() > 0)
 				sb.append(",");
 			sb.append(sattr.toString());
@@ -791,32 +742,46 @@ public class LdapProtocol extends Protocol {
 
 	/**
 	 * Search using the given search and regard the scope
-	 * 
+	 *
 	 * @param xml
-	 * @param key
+	 * @param searchRoot
 	 * @param search
 	 * @param attributeDescriptionList
-	 * @param scope
-	 *            level / recursion
+	 * @param scope                    level / recursion
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void findRecursive(XmlFile xml, String key, Search search, Asn1 attributeDescriptionList, int scope)
-			throws IOException {
+	private void findRecursive(final XmlFile xml, final String searchRoot, final Search search,
+			final Asn1 attributeDescriptionList, int scope) throws IOException {
 
-		if (!xml.sections(key).hasNext())
+		// access for objects here and below.
+		boolean access = searchRoot.startsWith(scurrentUser) || scurrentUser.startsWith(searchRoot);
+		for (final String rp : currentReadPermissions) {
+//			System.out.println(rp + " ? " + searchRoot);
+			if (searchRoot.startsWith(rp) || rp.startsWith(searchRoot)) {
+				access = true;
+				break;
+			}
+		}
+
+//		System.out.println(scurrentUser + " :: " + searchRoot + " = " + access);
+
+		if (!access)
+			return;
+
+		if (!xml.sections(searchRoot).hasNext())
 			return;
 
 		// search only if BASEOBJECT or WHOLESUBTREE
 		if (scope != SINGLELEVEL) {
-			int hit = search.match(xml, key);
+			final int hit = search.match(xml, searchRoot);
 			if (hit > 0) {
 				if (hit == 1) {
-					writeSearchResult(xml, key, attributeDescriptionList, scope == BASEOBJECT);
+					writeSearchResult(xml, searchRoot, attributeDescriptionList, scope == BASEOBJECT);
 				} else if (hit == 2) {
 					// discard the last part of the key
-					int slash = key.lastIndexOf('/', key.length() - 2);
-					String key2 = key.substring(0, slash + 1);
+					final int slash = searchRoot.lastIndexOf('/', searchRoot.length() - 2);
+					final String key2 = searchRoot.substring(0, slash + 1);
 					writeSearchResult(xml, key2, attributeDescriptionList, scope == BASEOBJECT);
 				}
 			}
@@ -824,45 +789,32 @@ public class LdapProtocol extends Protocol {
 		if (scope == SINGLELEVEL || scope == WHOLESUBTREE) {
 			if (scope == SINGLELEVEL)
 				scope = BASEOBJECT;
-			// if (search instanceof EqualityFilter) {
-			// EqualityFilter ef = (EqualityFilter) search;
-			// String found = xml.normalizeSection(key + "\\" + ef.what + "\\" +
-			// ef.value);
-			// if (found != null) {
-			// if (xml.sections(found).hasNext())
-			// writeSearchResult(xml, found, attributeDescriptionList, scope ==
-			// BASEOBJECT);
-			// }
-			// }
-			for (Iterator<String> i = xml.sections(key); i.hasNext();) {
-				String nextkey = i.next();
+			for (final Iterator<String> i = xml.sections(searchRoot); i.hasNext();) {
+				final String nextkey = i.next();
 				findRecursive(xml, nextkey, search, attributeDescriptionList, scope);
 			}
 		}
 	}
 
-	private void writeSearchResult(XmlFile xml, String key, Asn1 attributeDescriptionList, boolean appendAllAttributes)
-			throws IOException {
+	private void writeSearchResult(final XmlFile xml, final String key, final Asn1 attributeDescriptionList,
+			boolean appendAllAttributes) throws IOException {
 		final String dn = key2Dn(xml, key);
 
 		byte attrResult[] = Asn1.newSeq;
-		String last = XmlFile.getLastSegment(key);
+		final String last = XmlFile.getLastSegment(key);
+
+		appendAllAttributes = false;
 
 		// build the list of attributes for the response
-		HashSet<ByteRef> attrsToMatch = new HashSet<ByteRef>();
+		final HashSet<ByteRef> attrsToMatch = new HashSet<ByteRef>();
 		if (!appendAllAttributes) {
 			// read the supplies attributes
-			for (Iterator<Asn1> i = attributeDescriptionList.children(); i.hasNext();) {
-				Asn1 attr = i.next();
-				ByteRef sattr = attr.asByteRef().toLowerCase();
+			for (final Iterator<Asn1> i = attributeDescriptionList.children(); i.hasNext();) {
+				final Asn1 attr = i.next();
+				final ByteRef sattr = attr.asByteRef().toLowerCase();
 				attrsToMatch.add(sattr);
 				if (sattr.equals("dn")) {
-					byte attName[] = Asn1.newSeq;
-					attName = Asn1.addTo(attName, Asn1.makeASN1(sattr.toByteArray(), Asn1.OCTET_STRING));
-					byte attVal[] = NEWSET;
-					attVal = Asn1.addTo(attVal, patchOctetString(Asn1.makeASN1(dn, Asn1.UTF8String)));
-					attName = Asn1.addTo(attName, attVal);
-					attrResult = Asn1.addTo(attrResult, attName);
+					attrResult = addResult(attrResult, sattr.toByteArray(), dn);
 				} else if (sattr.equals("*"))
 					appendAllAttributes = true;
 			}
@@ -871,27 +823,22 @@ public class LdapProtocol extends Protocol {
 		if (appendAllAttributes || attrsToMatch.isEmpty()) {
 			// read all attributes
 			attrsToMatch.add(new ByteRef(last));
-			for (String s : xml.getSections(key)) {
+			for (final String s : xml.getSections(key)) {
 				// only empty tags are own attributes
 				if (!xml.sections(s).hasNext())
 					attrsToMatch.add(new ByteRef(XmlFile.getLastSegment(s)));
 			}
 		}
 
-		for (ByteRef sattr : attrsToMatch) {
+		for (final ByteRef sattr : attrsToMatch) {
 			if (sattr.equals("1.1")) {
-				byte attName[] = Asn1.newSeq;
-				attName = Asn1.addTo(attName, Asn1.makeASN1("dn".getBytes(), Asn1.OCTET_STRING));
-				byte attVal[] = NEWSET;
-				attVal = Asn1.addTo(attVal, Asn1.makeASN1(key2Dn(xml, key), Asn1.OCTET_STRING));
-				attName = Asn1.addTo(attName, attVal);
-				attrResult = Asn1.addTo(attrResult, attName);
+				attrResult = addResult(attrResult, "dn".getBytes(), key2Dn(xml, key));
 				continue;
 			}
 
-			if (sattr.equals("ismemberof")) {
+			if (sattr.equalsIgnoreCase("ismemberof")) {
 				// support "isMemberOf"
-				byte attVal[] = memberOfSearch(xml, NEWSET, "/ldap/", dn.toLowerCase());
+				final byte attVal[] = memberOfSearch(xml, NEWSET, "/ldap/", dn.toLowerCase());
 
 				if (attVal.length > NEWSET.length) {
 					byte attName[] = Asn1.newSeq;
@@ -902,19 +849,26 @@ public class LdapProtocol extends Protocol {
 				continue;
 			}
 
+			if (sattr.equalsIgnoreCase("defaultnamingcontext")) {
+				for (final String knc : xml.getSections("/ldap/namingcontexts")) {
+					final String d = xml.getString(knc, "name", "<>");
+					if (currentUser.endsWith(d)) {
+						attrResult = addResult(attrResult, "defaultnamingcontext".getBytes(), d);
+						break;
+					}
+				}
+				continue;
+			}
+
 			// main attribute => self key
 			if (sattr.equals(last)) {
-				String val = getValue(xml, key);
+				final String val = getValue(xml, key);
 				if (val != null) {
-					byte attName[] = Asn1.newSeq;
 					ByteRef cattr = LdapFactory.L2C.get(sattr);
 					if (cattr == null)
 						cattr = sattr;
-					attName = Asn1.addTo(attName, Asn1.makeASN1(cattr.toByteArray(), Asn1.OCTET_STRING));
-					byte attVal[] = NEWSET;
-					attVal = Asn1.addTo(attVal, patchOctetString(Asn1.makeASN1(val, Asn1.UTF8String)));
-					attName = Asn1.addTo(attName, attVal);
-					attrResult = Asn1.addTo(attrResult, attName);
+
+					attrResult = addResult(attrResult, cattr.toByteArray(), val);
 				}
 				continue;
 			}
@@ -926,9 +880,9 @@ public class LdapProtocol extends Protocol {
 				cattr = sattr;
 			attName = Asn1.addTo(attName, Asn1.makeASN1(cattr.toByteArray(), Asn1.OCTET_STRING));
 			byte attVal[] = NEWSET;
-			for (Iterator<String> j = xml.sections(key + sattr); j.hasNext();) {
+			for (final Iterator<String> j = xml.sections(key + sattr); j.hasNext();) {
 				final String k = j.next();
-				String val = getValue(xml, k);
+				final String val = getValue(xml, k);
 				if (val != null) {
 					hasAttr = true;
 					attVal = Asn1.addTo(attVal, patchOctetString(Asn1.makeASN1(val, Asn1.UTF8String)));
@@ -949,7 +903,17 @@ public class LdapProtocol extends Protocol {
 		writeResponse(res);
 	}
 
-	private String getValue(XmlFile xml, final String k) {
+	private byte[] addResult(final byte[] attrResult, final byte [] attribute, final String val) {
+		byte attName[] = Asn1.newSeq;
+		attName = Asn1.addTo(attName, Asn1.makeASN1(attribute, Asn1.OCTET_STRING));
+		byte attVal[] = NEWSET;
+		attVal = Asn1.addTo(attVal, patchOctetString(Asn1.makeASN1(val, Asn1.UTF8String)));
+		attName = Asn1.addTo(attName, attVal);
+		final byte[] newAttrResult = Asn1.addTo(attrResult, attName);
+		return newAttrResult;
+	}
+
+	private String getValue(final XmlFile xml, final String k) {
 		String val = xml.getString(k, "value", null);
 		if (val == null) {
 			val = xml.getString(k, "name", null);
@@ -960,20 +924,20 @@ public class LdapProtocol extends Protocol {
 		return val;
 	}
 
-	private byte[] patchOctetString(byte[] b) {
+	private byte[] patchOctetString(final byte[] b) {
 		b[0] = Asn1.OCTET_STRING;
 		return b;
 	}
 
 	/**
 	 * global ismemberof search
-	 * 
+	 *
 	 * @param attVal
 	 * @param key
 	 * @param dn
 	 * @return the collected attrVal
 	 */
-	private byte[] memberOfSearch(XmlFile xml, byte[] attVal, String key, String dn) {
+	private byte[] memberOfSearch(final XmlFile xml, byte[] attVal, final String key, final String dn) {
 		final String uniquemember = xml.getString(key + "\\uniquemember\\" + dn, "name", null);
 		if (uniquemember != null)
 			attVal = Asn1.addTo(attVal, Asn1.makeASN1(key2Dn(xml, key), Asn1.OCTET_STRING));
@@ -985,14 +949,14 @@ public class LdapProtocol extends Protocol {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
-	private static String key2Dn(XmlFile xml, String key) {
+	private static String key2Dn(final XmlFile xml, final String key) {
 		// create a dn
 		String dnPath = key.substring(0, key.length() - 1); // skip last /slash
-		StringBuilder dn = new StringBuilder();
+		final StringBuilder dn = new StringBuilder();
 		for (int slash = dnPath.lastIndexOf('/'); slash > 0; slash = dnPath.lastIndexOf('/')) {
 			String s = dnPath.substring(slash + 1);
 
@@ -1021,7 +985,7 @@ public class LdapProtocol extends Protocol {
 	}
 
 	private static String stripNr(String s) {
-		int nr = s.lastIndexOf('#');
+		final int nr = s.lastIndexOf('#');
 		if (nr > 0) {
 			s = s.substring(0, nr);
 		} else if (s.endsWith("/")) {
@@ -1030,11 +994,11 @@ public class LdapProtocol extends Protocol {
 		return s;
 	}
 
-	private static String dn2Key(ByteRef dn) {
-		ByteRef searchBaseDn = (ByteRef) dn.clone();
+	private static String dn2Key(final ByteRef dn) {
+		final ByteRef searchBaseDn = dn.clone();
 		String dnKey = "";
 		for (ByteRef part = searchBaseDn.nextWord(','); part != null; part = searchBaseDn.nextWord(',')) {
-			ByteRef key = part.nextWord('=');
+			final ByteRef key = part.nextWord('=');
 			dnKey = "\\" + key + "\\" + part.trim('"').toString("utf-8") + "/" + dnKey;
 		}
 		return dnKey.toLowerCase();
@@ -1042,24 +1006,24 @@ public class LdapProtocol extends Protocol {
 
 	/**
 	 * Handle the bind command.
-	 * 
+	 *
 	 * @param seq
 	 * @param content
 	 * @return
 	 * @throws IOException
 	 * @throws SizeLimitExceededException
 	 */
-	private void bind(Iterator<Asn1> seq) throws IOException {
-		int version = seq.next().asInt();
-		ByteRef name = seq.next().asByteRef();
-		ByteRef auth = seq.next().asByteRef();
+	private void bind(final Iterator<Asn1> seq) throws IOException {
+		final int version = seq.next().asInt();
+		final ByteRef name = seq.next().asByteRef();
+		final ByteRef auth = seq.next().asByteRef();
 
-		ByteRef dn = new ByteRef();
-		ByteRef errorMsg = new ByteRef();
+		final ByteRef dn = new ByteRef();
+		final ByteRef errorMsg = new ByteRef();
 
 		byte[] resultVal = RESULT_SUCCESS;
 
-		String key = "/ldap/" + dn2Key(name);
+		final String key = "/ldap/" + dn2Key(name);
 
 		if (name.length() > 0) {
 			if (!checkPassword(key, auth)) {
@@ -1073,10 +1037,13 @@ public class LdapProtocol extends Protocol {
 		currentUser = name;
 
 		// fetch the read and write permissions.
-		XmlFile xml = getXmlFile();
+		final XmlFile xml = getXmlFile();
 		currentReadPermissions.clear();
 		for (final String rp : xml.getSections(key + "readpermission")) {
-			currentReadPermissions.add(xml.getString(rp, "name", "$invalid$"));
+			final String val = xml.getString(rp, "name", "$invalid$");
+			final String val2 = xml.normalizeSection("/ldap/" + dn2Key(new ByteRef(val)));
+//			System.out.println("read: " + val + " -> " + val2);
+			currentReadPermissions.add(val2);
 		}
 
 		currentWritePermissions.clear();
@@ -1093,7 +1060,7 @@ public class LdapProtocol extends Protocol {
 		writeResponse(result);
 	}
 
-	private void writeResponse(byte[] responseContent) throws IOException {
+	private void writeResponse(final byte[] responseContent) throws IOException {
 		// support response caching
 		if (currentResponses != null) {
 			currentResponses.add(responseContent);
@@ -1110,22 +1077,22 @@ public class LdapProtocol extends Protocol {
 
 	}
 
-	private void logResponse(byte[] responseContent) {
-		Iterator<Asn1> msg = new Asn1(responseContent).children();
-		Asn1 cn = msg.next();
-		byte[] data = Asn1.getData(cn.toByteArray());
+	private void logResponse(final byte[] responseContent) {
+		final Iterator<Asn1> msg = new Asn1(responseContent).children();
+		final Asn1 cn = msg.next();
+		final byte[] data = Asn1.getData(cn.toByteArray());
 		if (data.length > 1)
 			logFile.writeDate("> " + new ByteRef(data));
-		Asn1 r = msg.next();
+		final Asn1 r = msg.next();
 		if ((0x1f & r.getType()) == Asn1.SEQUENCE) {
-			for (Iterator<Asn1> j = r.children(); j.hasNext();) {
-				Asn1 r2 = j.next();
+			for (final Iterator<Asn1> j = r.children(); j.hasNext();) {
+				final Asn1 r2 = j.next();
 				if ((0x1f & r2.getType()) == Asn1.SEQUENCE) {
 					Iterator<Asn1> i = r2.children();
-					Asn1 nameAsn1 = i.next();
-					String name = nameAsn1.asByteRef().toString();
-					Asn1 setAsn1 = i.next();
-					StringBuilder vals = new StringBuilder();
+					final Asn1 nameAsn1 = i.next();
+					final String name = nameAsn1.asByteRef().toString();
+					final Asn1 setAsn1 = i.next();
+					final StringBuilder vals = new StringBuilder();
 					if ((0x1f & setAsn1.getType()) == Asn1.SET) {
 						for (i = setAsn1.children(); i.hasNext();) {
 							if (vals.length() > 0)
@@ -1139,8 +1106,8 @@ public class LdapProtocol extends Protocol {
 		}
 	}
 
-	Search createSearch(Asn1 searchAsn) {
-		Iterator<Asn1> i = searchAsn.children();
+	Search createSearch(final Asn1 searchAsn) {
+		final Iterator<Asn1> i = searchAsn.children();
 		switch (searchAsn.getType() & 0xf) {
 		case 0x0:
 			return new AndFilter(i);
@@ -1165,35 +1132,36 @@ public class LdapProtocol extends Protocol {
 
 	class SubStringFilter implements Search {
 
-		private String attribute;
+		private final String attribute;
 
-		private int where;
+		private final int where;
 
-		private ArrayList<String> substrings = new ArrayList<String>();
+		private final ArrayList<String> substrings = new ArrayList<String>();
 
-		SubStringFilter(Iterator<Asn1> i) {
+		SubStringFilter(final Iterator<Asn1> i) {
 			this.attribute = i.next().asByteRef().toString();
-			Asn1 list = i.next();
+			final Asn1 list = i.next();
 			this.where = list.getType() & 3;
-			for (Iterator<Asn1> j = list.children(); j.hasNext();) {
-				ByteRef val = j.next().asByteRef();
+			for (final Iterator<Asn1> j = list.children(); j.hasNext();) {
+				final ByteRef val = j.next().asByteRef();
 				substrings.add(val.toString().toLowerCase());
 			}
 		}
 
-		public int match(XmlFile xml, String searchRoot) {
+		
+		public int match(final XmlFile xml, final String searchRoot) {
 
 			String id = XmlFile.getLastSegment(searchRoot);
 			if (attribute.equalsIgnoreCase(id)) {
-				String value = xml.getString(searchRoot, "name", null);
-				for (String v : substrings) {
+				final String value = xml.getString(searchRoot, "name", null);
+				for (final String v : substrings) {
 					if (value.toLowerCase().indexOf(v) >= 0)
 						return 1;
 				}
 			}
 
-			for (Iterator<String> i = xml.sections(searchRoot); i.hasNext();) {
-				String key = i.next();
+			for (final Iterator<String> i = xml.sections(searchRoot); i.hasNext();) {
+				final String key = i.next();
 
 				// skip LDAP objects - identified by nested object class
 				if (xml.sections(key + "objectclass").hasNext())
@@ -1203,11 +1171,11 @@ public class LdapProtocol extends Protocol {
 				if (!attribute.equalsIgnoreCase(id))
 					continue;
 
-				String value = xml.getString(key, "name", null);
+				final String value = xml.getString(key, "name", null);
 				if (value == null)
 					continue;
 
-				for (String v : substrings) {
+				for (final String v : substrings) {
 					if (value.toLowerCase().indexOf(v) >= 0)
 						return 1;
 				}
@@ -1215,6 +1183,7 @@ public class LdapProtocol extends Protocol {
 			return -1;
 		}
 
+		
 		public String toString() {
 			String s = substrings.toString();
 			s = s.substring(1, s.length() - 1);
@@ -1224,23 +1193,24 @@ public class LdapProtocol extends Protocol {
 
 	class PresentFilter implements Search {
 
-		private ByteRef attribute;
+		private final ByteRef attribute;
 
-		private int where;
+		private final int where;
 
-		private ArrayList<ByteRef> substrings = new ArrayList<ByteRef>();
+		private final ArrayList<ByteRef> substrings = new ArrayList<ByteRef>();
 
-		PresentFilter(Iterator<Asn1> i) {
+		PresentFilter(final Iterator<Asn1> i) {
 			this.attribute = i.next().asByteRef().toLowerCase();
-			Asn1 list = i.next();
+			final Asn1 list = i.next();
 			this.where = list.getType() & 3;
-			for (Iterator<Asn1> j = list.children(); j.hasNext();) {
-				ByteRef val = j.next().asByteRef();
+			for (final Iterator<Asn1> j = list.children(); j.hasNext();) {
+				final ByteRef val = j.next().asByteRef();
 				substrings.add(val);
 			}
 		}
 
-		public int match(XmlFile xml, String searchRoot) {
+		
+		public int match(final XmlFile xml, final String searchRoot) {
 			final String found = xml.normalizeSection(searchRoot + attribute);
 			if (found == null)
 				return 0;
@@ -1250,6 +1220,7 @@ public class LdapProtocol extends Protocol {
 			return 1;
 		}
 
+		
 		public String toString() {
 			return "(" + attribute + "=*)";
 		}
@@ -1258,15 +1229,16 @@ public class LdapProtocol extends Protocol {
 	class OrFilter implements LdapProtocol.Search {
 		ArrayList<LdapProtocol.Search> searches = new ArrayList<Search>();
 
-		public OrFilter(Iterator<Asn1> i) {
+		public OrFilter(final Iterator<Asn1> i) {
 			while (i.hasNext()) {
 				searches.add(createSearch(i.next()));
 			}
 		}
 
-		public int match(XmlFile xml, String key) {
-			for (LdapProtocol.Search s : this.searches) {
-				int r = s.match(xml, key);
+		
+		public int match(final XmlFile xml, final String key) {
+			for (final LdapProtocol.Search s : this.searches) {
+				final int r = s.match(xml, key);
 				if (r > 0) {
 					return r;
 				}
@@ -1274,10 +1246,11 @@ public class LdapProtocol extends Protocol {
 			return -1;
 		}
 
+		
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			sb.append("(|");
-			for (Search s : searches) {
+			for (final Search s : searches) {
 				sb.append(s.toString());
 			}
 			sb.append(")");
@@ -1288,24 +1261,26 @@ public class LdapProtocol extends Protocol {
 	class NotFilter implements LdapProtocol.Search {
 		ArrayList<LdapProtocol.Search> searches = new ArrayList<Search>();
 
-		public NotFilter(Iterator<Asn1> i) {
+		public NotFilter(final Iterator<Asn1> i) {
 			while (i.hasNext()) {
 				searches.add(createSearch(i.next()));
 			}
 		}
 
-		public int match(XmlFile xml, String key) {
-			for (LdapProtocol.Search s : this.searches) {
-				int r = s.match(xml, key);
+		
+		public int match(final XmlFile xml, final String key) {
+			for (final LdapProtocol.Search s : this.searches) {
+				final int r = s.match(xml, key);
 				return r > 0 ? 0 : 1;
 			}
 			return -1;
 		}
 
+		
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			sb.append("(!");
-			for (Search s : searches) {
+			for (final Search s : searches) {
 				sb.append(s.toString());
 			}
 			sb.append(")");
@@ -1316,25 +1291,27 @@ public class LdapProtocol extends Protocol {
 	class AndFilter implements Search {
 		ArrayList<Search> searches = new ArrayList<Search>();
 
-		public AndFilter(Iterator<Asn1> i) {
+		public AndFilter(final Iterator<Asn1> i) {
 			while (i.hasNext()) {
 				searches.add(createSearch(i.next()));
 			}
 		}
 
-		public int match(XmlFile xml, String key) {
-			for (Search s : searches) {
-				int r = s.match(xml, key);
+		
+		public int match(final XmlFile xml, final String key) {
+			for (final Search s : searches) {
+				final int r = s.match(xml, key);
 				if (r <= 0)
 					return r;
 			}
 			return 1;
 		}
 
+		
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			sb.append("(&");
-			for (Search s : searches) {
+			for (final Search s : searches) {
 				sb.append(s.toString());
 			}
 			sb.append(")");
@@ -1344,13 +1321,13 @@ public class LdapProtocol extends Protocol {
 	}
 
 	class EqualityFilter implements Search {
-		private ByteRef what;
+		private final ByteRef what;
 
-		private String value;
+		private final String value;
 
-		public EqualityFilter(Iterator<Asn1> i) {
+		public EqualityFilter(final Iterator<Asn1> i) {
 			what = i.next().asByteRef().toLowerCase();
-			ByteRef v = i.next().asByteRef();
+			final ByteRef v = i.next().asByteRef();
 			if (v.startsWith(what) && v.charAt(what.length()) == '=')
 				v.nextWord('=');
 			value = v.toString().toLowerCase();
@@ -1358,14 +1335,14 @@ public class LdapProtocol extends Protocol {
 
 		/**
 		 * A XML node can reflect an LDAP object or an attribute.
-		 * 
-		 * If the last segment matches, it's a LDAP object. Otherwise it's an
-		 * attribute.
-		 * 
+		 *
+		 * If the last segment matches, it's a LDAP object. Otherwise it's an attribute.
+		 *
 		 * Ensure that LDAP objects are not found as attribute.
 		 */
-		public int match(XmlFile xml, String searchRoot) {
-			String id = XmlFile.getLastSegment(searchRoot);
+		
+		public int match(final XmlFile xml, final String searchRoot) {
+			final String id = XmlFile.getLastSegment(searchRoot);
 			if (what.equals(id)) {
 				if (value.equalsIgnoreCase(xml.getString(searchRoot, "name", null)))
 					return 1;
@@ -1384,27 +1361,11 @@ public class LdapProtocol extends Protocol {
 				found = null;
 			if (found != null)
 				return 1;
-			// for (Iterator<String> i = xml.sections(searchRoot); i.hasNext();)
-			// {
-			// String key = i.next();
-			//
-			// // skip LDAP objects - identified by nested object class
-			// if (xml.sections(key).hasNext())
-			// continue;
-			// id = getLastSegment(key);
-			// if (what.equalsIgnoreCase(id)) {
-			// if (value.equalsIgnoreCase(xml.getString(key, "name", null)))
-			// return 1;
-			// }
-			// /*
-			// * String v = xml.getString(key, "ref", null); if (v != null &&
-			// * v.indexOf(value) >= 0) return 2;
-			// */
-			// }
 
 			return -1;
 		}
 
+		
 		public String toString() {
 			return "(" + what + "=" + value + ")";
 		}
@@ -1412,12 +1373,12 @@ public class LdapProtocol extends Protocol {
 
 	/**
 	 * Get the last segment of a XML key.
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
 	static String getLastSegment(final String key) {
-		int slash = key.lastIndexOf('/', key.length() - 2) + 1;
+		final int slash = key.lastIndexOf('/', key.length() - 2) + 1;
 		int num = key.indexOf('#', slash);
 		if (num < slash)
 			num = key.length() - 1;
@@ -1427,7 +1388,7 @@ public class LdapProtocol extends Protocol {
 	static String base(final String segment) {
 		if (!segment.startsWith("\\"))
 			return segment;
-		int b2 = segment.indexOf('\\', 1);
+		final int b2 = segment.indexOf('\\', 1);
 		return segment.substring(1, b2);
 	}
 
