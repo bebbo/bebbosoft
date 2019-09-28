@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import de.bb.util.ByteRef;
+
 public class Connect {
 
     /**
@@ -12,8 +14,13 @@ public class Connect {
      */
     public static void main(String[] args) {
         try {
-            byte[][] cs = { Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA };
-            Ssl3Client client = new Ssl3Client();
+            byte[][] cs = { 
+            		Ssl3.TLS_RSA_WITH_AES_256_CBC_SHA256,
+            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, 
+            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+            		Ssl3.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+            		};
+            Ssl3Client client = new Ssl3Client(cs);
             //client.setMaxVersion(2);
             connect(client);
             connect(client);
@@ -36,13 +43,28 @@ public class Connect {
                 server = "blog.fefe.de";
     //     server = "ikanobank.de";
         //        port = 993;
+                server = "127.0.0.1";
+                port = 25000;
 
 //        port = 4433;
         
         Socket s = new Socket(server, port);
         try {
+    		OutputStream out = s.getOutputStream();
+    		InputStream in = s.getInputStream();
+    		ByteRef br = new ByteRef();
+        	
+        	if (port == 25 || port == 25000) {
+        		readResponse(br, in);
+        		
+        		out.write("EHLO serveronline.org [78.46.86.77]\r\n".getBytes());
+        		readResponse(br, in);
+        		
+        		out.write("STARTTLS\r\n".getBytes());
+        		readResponse(br, in);
+        	}
 
-            client.connect(s.getInputStream(), s.getOutputStream(), server);
+            client.connect(in, out, server);
 
             System.out.println(client.getCipherSuite() + " - " + client.getVersion());
             
@@ -68,5 +90,14 @@ public class Connect {
         } finally {
             s.close();
         }
+    }
+
+	private static ByteRef readResponse(ByteRef br, InputStream is) {
+        ByteRef line;
+        do {
+            line = ByteRef.readLine(br, is);
+            System.out.println("< " + line.toString());
+        } while (line.charAt(3) != ' ');
+        return line;
     }
 }
