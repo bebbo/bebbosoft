@@ -13,5 +13,6 @@
   <description>Eclipse stuff</description>
   <modules>
     <module>editor</module>
+    <module>cdt-amiga</module>
   </modules>
 </project>

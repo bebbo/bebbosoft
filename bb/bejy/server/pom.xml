@@ -7,23 +7,34 @@
   </parent>
   <groupId>de.bb.bejy</groupId>
   <artifactId>server</artifactId>
-  <version>1.6.11</version>
+  <version>1.6.12-SNAPSHOT</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <groupId>de.bb</groupId>
       <artifactId>util</artifactId>
-      <version>1.0.21</version>
+      <version>1.0.22-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>de.bb</groupId>
       <artifactId>security</artifactId>
-      <version>1.0.13</version>
+      <version>1.0.14-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>log</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.1.4</version>
+      <version>0.1.5-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.bb</groupId>
+      <artifactId>io</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <artifactId>io</artifactId>
+      <groupId>de.bb</groupId>
+      <version>0.0.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

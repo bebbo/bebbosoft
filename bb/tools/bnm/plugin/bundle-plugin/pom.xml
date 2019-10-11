@@ -8,29 +8,29 @@
   </parent>
   <groupId>de.bb.tools.bnm.plugin</groupId>
   <artifactId>bundle-plugin</artifactId>
-  <version>0.2.6</version>
+  <version>0.2.7-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>BNM jar plugin</description>
   <dependencies>
    <dependency>
      <groupId>de.bb.tools.bnm</groupId>
      <artifactId>core</artifactId>
-     <version>0.2.6</version>
+     <version>0.2.7-SNAPSHOT</version>
    </dependency>
    <dependency>
     <groupId>de.bb</groupId>
     <artifactId>util</artifactId>
-    <version>1.0.21</version>
+    <version>1.0.22-SNAPSHOT</version>
    </dependency>
    <dependency>
     <groupId>de.bb.tools.bnm.plugin</groupId>
     <artifactId>jar-plugin</artifactId>
-    <version>0.2.6</version>
+    <version>0.2.7-SNAPSHOT</version>
    </dependency>
    <dependency>
     <groupId>de.bb.tools.bnm.plugin</groupId>
     <artifactId>install-plugin</artifactId>
-    <version>0.2.6</version>
+    <version>0.2.7-SNAPSHOT</version>
    </dependency>
   </dependencies>
 </project>

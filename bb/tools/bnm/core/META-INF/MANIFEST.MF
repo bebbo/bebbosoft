@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: bnm
 Bundle-SymbolicName: de.bb.tools.bnm.core
-Bundle-Version: 0.2.6
+Bundle-Version: 0.2.7
 Export-Package: de.bb.tools.bnm,
  de.bb.tools.bnm.annotiation,
  de.bb.tools.bnm.component,
@@ -12,4 +12,4 @@ Export-Package: de.bb.tools.bnm,
 Import-Package: de.bb.util
 Bundle-ClassPath: .
 Bundle-Vendor: BebboSoft GbR
-Require-Bundle: de.bb.util;bundle-version="1.0.21"
+Require-Bundle: de.bb.util;bundle-version="1.0.22"

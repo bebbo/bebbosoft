@@ -6,15 +6,15 @@
   <version>1.0.3</version>
   <!-- <name>${groupId}.${artifactId}</name> -->
   <description>All BebboSoft projects</description>
-  <url>http://www.bebbosoft.de/java/</url>
+  <url>https://www.bebbosoft.de/java/</url>
   <organization>
     <name>BebboSoft</name>
-    <url>http://www.bebbosoft.de/repo/${project.groupId}/${project.artifactId}</url>
+    <url>https://www.bebbosoft.de/repo/${project.groupId}/${project.artifactId}</url>
   </organization>
   <repositories>
     <repository>
       <id>bebbosoft</id>
-      <url>http://www.bebbosoft.de/repo</url>
+      <url>https://www.bebbosoft.de/repo</url>
       <releases>
         <updatePolicy>never</updatePolicy>
         <enabled>true</enabled>
@@ -22,7 +22,7 @@
     </repository>
     <repository>
       <id>ibiblio</id>
-      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+      <url>https://mirrors.ibiblio.org/pub/mirrors/maven2</url>
       <releases>
         <updatePolicy>never</updatePolicy>
         <enabled>true</enabled>

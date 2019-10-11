@@ -8,14 +8,14 @@
 	</parent>
 	<groupId>de.bb</groupId>
 	<artifactId>jcc</artifactId>
-	<version>1.0.14</version>
+	<version>1.0.15-SNAPSHOT</version>
     <packaging>jar</packaging>
 	<description>java (dis)assembler</description>
 	<dependencies>
 		<dependency>
 			<groupId>de.bb</groupId>
 			<artifactId>util</artifactId>
-			<version>1.0.21</version>
+			<version>1.0.22-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

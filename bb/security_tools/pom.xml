@@ -7,31 +7,31 @@
   </parent>
   <groupId>de.bb</groupId>
   <artifactId>security_tools</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.7-SNAPSHOT</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>security</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.13</version>
+      <version>1.0.14-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>util</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.21</version>
+      <version>1.0.22-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>bwt</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.0.8</version>
+      <version>0.0.9-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>security</artifactId>
       <groupId>de.bb</groupId>
-      <version>1.0.13</version>
+      <version>1.0.14-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

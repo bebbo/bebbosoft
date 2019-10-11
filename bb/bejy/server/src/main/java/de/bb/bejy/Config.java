@@ -237,6 +237,7 @@ public class Config extends Configurable implements Configurator {
 				defaultLog.writeDate("activated:  " + ca.getName());
 			} catch (Exception ex) {
 				defaultLog.writeDate("FAILURE:    " + ca.getName() + ": " + ex.getMessage());
+				ex.printStackTrace();
 			}
 		}
 

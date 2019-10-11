@@ -7,19 +7,19 @@
 	</parent>
 	<groupId>de.bb</groupId>
 	<artifactId>mejb</artifactId>
-	<version>0.0.8</version>
+	<version>0.0.9-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<artifactId>rmi</artifactId>
 			<groupId>de.bb</groupId>
-			<version>0.0.8</version>
+			<version>0.0.9-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<artifactId>util</artifactId>
 			<groupId>de.bb</groupId>
-			<version>1.0.21</version>
+			<version>1.0.22-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>de.bb</groupId>
 			<artifactId>sql</artifactId>
-			<version>1.0.8</version>
+			<version>1.0.9-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

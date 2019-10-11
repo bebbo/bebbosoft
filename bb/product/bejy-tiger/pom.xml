@@ -8,13 +8,13 @@
     </parent>
     <groupId>de.bb.product</groupId>
     <artifactId>bejy-tiger</artifactId>
-    <version>1.6.11</version>
+    <version>1.6.12-SNAPSHOT</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <artifactId>http</artifactId>
             <groupId>de.bb.bejy</groupId>
-            <version>1.6.11</version>
+            <version>1.6.12-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -59,7 +59,7 @@
                     <dependency>
                         <groupId>de.bb.tools</groupId>
                         <artifactId>uses</artifactId>
-                        <version>1.5.5</version>
+                        <version>1.5.6-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -95,7 +95,7 @@
                     <dependency>
                         <groupId>de.bb.tools</groupId>
                         <artifactId>mug</artifactId>
-                        <version>1.7.7</version>
+                        <version>1.7.8-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
                 <executions>
