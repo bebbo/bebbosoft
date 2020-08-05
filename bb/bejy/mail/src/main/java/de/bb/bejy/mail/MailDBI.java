@@ -2587,6 +2587,31 @@ public abstract class MailDBI {
 	}
 
 	/**
+	 * Check the keep state for the mail box.
+	 * 
+	 * @param user
+	 *            user part of mail address
+	 * @param mail_domain
+	 *            mail_domain part of mail address
+	 * @return the keep state
+	 * @throws SQLException 
+	 * @throws Exception
+	 */
+	public boolean keepMail(String user, String mail_domain) throws SQLException {
+		ResultSet rs = selectFromMailUser(user, mail_domain);
+		try {
+			if (rs.next()) {
+				boolean keep = rs.getBoolean(7);
+				return keep;
+			}
+		} finally {
+			rs.close();
+		}
+		return false;
+	}
+
+	
+	/**
 	 * Set the quota for the mail box.
 	 * 
 	 * @param owner
@@ -3201,5 +3226,4 @@ public abstract class MailDBI {
 	}
 
 	private final static String ILLEGAL = "<>'\"+&";
-
 }
