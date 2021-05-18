@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import de.bb.bejy.http.Injector;
-import de.bb.util.LogFile;
 import de.bb.util.ZipClassLoader;
 
 /**
@@ -84,8 +83,8 @@ public class EjbClassLoader extends ZipClassLoader implements Injector {
         }
     }
 
-    public void inject(LogFile log, Object o) throws Exception {
-        earClassLoader.injectInstance(null, log, o);
+    public void inject(Object o) throws Exception {
+        earClassLoader.injectInstance(null, o);
     }
 
     /**

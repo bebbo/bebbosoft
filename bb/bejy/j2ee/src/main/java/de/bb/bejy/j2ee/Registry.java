@@ -135,7 +135,7 @@ public class Registry {
     }
     
     static {
-        globalMap.put("jdbc/taxords", new DS());
+        globalMap.put("jdbc/taxords", new de.bb.sql.DataSource());
         globalMap.put("java:comp/UserTransaction", new UT());
     }
 }

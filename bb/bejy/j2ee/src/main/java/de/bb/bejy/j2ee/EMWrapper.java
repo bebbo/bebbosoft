@@ -26,7 +26,7 @@ import javax.persistence.metamodel.Metamodel;
  * @author stefan franke
  * 
  */
-class EMWrapper implements EntityManager {
+public class EMWrapper implements EntityManager {
 
     private ClassLoader cl;
     private PersistenceContext pc;
@@ -36,7 +36,7 @@ class EMWrapper implements EntityManager {
         this.pc = pc;
     }
 
-    private EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         final ThreadContext tc = ThreadContext.currentThreadContext();
         return tc.getEntityManager(cl, pc);
     }
@@ -170,7 +170,6 @@ class EMWrapper implements EntityManager {
     }
 
     public EntityManagerFactory getEntityManagerFactory() {
-        // TODO Auto-generated method stub
         return null;
     }
 

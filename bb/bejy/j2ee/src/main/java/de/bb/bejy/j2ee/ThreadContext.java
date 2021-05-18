@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceProperty;
+import javax.transaction.TransactionManager;
 
 import de.bb.bejy.ServerThread;
 import de.bb.bejy.http.HttpProtocol;
@@ -31,6 +32,7 @@ class ThreadContext {
 
 	SC sessionContext;
 	Connection connection;
+	TM tm;
 
 	EntityManager getEntityManager(ClassLoader cl, PersistenceContext pc) {
 		Pair<ClassLoader, String> p = Pair.makePair(cl, pc.unitName());
@@ -46,14 +48,16 @@ class ThreadContext {
 			EntityManager em = entityManagers.get(p);
 			if (em == null) {
 				Map<String, String> props = new HashMap<String, String>();
-				props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+//				props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
 				props.put("hibernate.transaction.factory_class", "org.hibernate.transaction.JTATransactionFactory");
 				for (PersistenceProperty pp : pc.properties()) {
 					props.put(pp.name(), pp.value());
 				}
 				EntityManagerFactory emf = emfMap.get(pc.unitName());
 				if (emf == null) {
-					emf = Persistence.createEntityManagerFactory(pc.unitName(), props);
+					emf = (EntityManagerFactory) BM.instance.get("javax.persistence.EntityManagerFactory");
+					if (emf == null)
+						emf = Persistence.createEntityManagerFactory(pc.unitName(), props);
 					emfMap.put(pc.unitName(), emf);
 				}
 				em = emf.createEntityManager(props);
@@ -123,5 +127,11 @@ class ThreadContext {
 			}
 		}
 		return false;
+	}
+
+	public TM getCurrentTM() {
+		if (tm == null)
+			tm = new TM();
+		return tm;
 	}
 }

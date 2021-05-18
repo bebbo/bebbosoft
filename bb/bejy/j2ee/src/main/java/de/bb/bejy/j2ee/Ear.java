@@ -75,7 +75,7 @@ public class Ear extends Configurable {
                     ecl.removeSharedJars();
                     MultiMap<String, String> ejbStuff = EarClassLoader.earscan(ecl,
                             earClassLoader.list("*.class", ecl.jars));
-                    earClassLoader.initializeBeans(ecl, ejbStuff, logFile);
+                    earClassLoader.initializeEjbs(ecl, ejbStuff);
                 }
             } finally {
                 t.setContextClassLoader(cl);
@@ -87,14 +87,14 @@ public class Ear extends Configurable {
                 beans.add(eih.ejb);
             }
 
-            earClassLoader.injectBeans(beans, logFile);
+            earClassLoader.injectBeans(beans);
 
             // activate each war and create the web services.
             for (WebAppContext wac : warContexts) {
                 addChild("war", wac);
                 wac.activate(logFile);
 
-                earClassLoader.initializeWS(wac, logFile);
+                earClassLoader.initializeWS(wac);
 
                 ((Host) getParent().getParent()).addContext(wac);
             }
