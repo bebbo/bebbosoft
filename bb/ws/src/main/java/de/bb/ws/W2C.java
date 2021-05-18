@@ -14,8 +14,16 @@ public class W2C {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-//        String wsdlFileName = args[0];
-        String wsdlFileName = "http://127.0.0.1/TAXOR/NavigationManagerService?WSDL";
+        String wsdlFileName, pack = "foo";
+        if (args.length >= 1) {
+        	wsdlFileName = args[0];
+        	if (args.length >= 2)
+        		pack = args[1];
+        }
+        else
+        	wsdlFileName = "http://127.0.0.1/TAXOR/NavigationManagerService?WSDL";
+
+        
         
         SD sd;
         if (wsdlFileName.startsWith("http:")) {
@@ -28,7 +36,6 @@ public class W2C {
             xml.readFile(wsdlFileName);
             sd.parseWsdl(xml);
         }
-        String pack = "foo2";
         File dir = new File("src/main/java/", pack);
         dir.mkdirs();
         sd.createCode(dir, pack);

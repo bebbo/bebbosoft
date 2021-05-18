@@ -58,7 +58,6 @@ public class Test {
             URL url = new URL("http://sabatina.ikornet.de:57000/irj/servlet/prt/soap/UMWebService");
 
             HttpURLConnection con = new HttpURLConnection(url);
-//            String val = "Basic " + new String(Mime.encode(("franke:Welcome123").getBytes()));
             String val = "Basic " + new String(Mime.encode(("duke:test1234").getBytes()));
             con.addRequestProperty("Authorization", val);
             con.addRequestProperty("SOAPAction", "");
