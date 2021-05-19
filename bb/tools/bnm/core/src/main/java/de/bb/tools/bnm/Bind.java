@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import de.bb.tools.bnm.model.Id;
 import de.bb.util.MultiMap;
 import de.bb.util.SingleMap;
@@ -541,7 +539,7 @@ public class Bind {
             }
 
             if (Map.class.isAssignableFrom(ctype)) {
-                mergeMap((Map<String, String>) toValue, (Map<String, String>) fromValue);
+                mergeMap((Map<String, Object>) toValue, (Map<String, Object>) fromValue);
                 continue;
             }
 
@@ -568,18 +566,18 @@ public class Bind {
      * @param to
      * @param from
      */
-    static void mergeMap(Map<String, String> to, Map<String, String> from) {
+    static void mergeMap(Map<String, Object> to, Map<String, Object> from) {
         if (from.size() == 0)
             return;
         if (to.size() == 0) {
             to.putAll(from);
             return;
         }
-        MultiMap<String, String> map = new MultiMap<String, String>();
-        Iterator<Entry<String, String>> l = to.entrySet().iterator();
-        Iterator<Entry<String, String>> r = from.entrySet().iterator();
-        Entry<String, String> le = null;
-        Entry<String, String> re = null;
+        MultiMap<String, Object> map = new MultiMap<String, Object>();
+        Iterator<Entry<String, Object>> l = to.entrySet().iterator();
+        Iterator<Entry<String, Object>> r = from.entrySet().iterator();
+        Entry<String, Object> le = null;
+        Entry<String, Object> re = null;
         if (l.hasNext())
             le = l.next();
         if (r.hasNext())
@@ -610,7 +608,7 @@ public class Bind {
                 // lk == rk
                 // use right objects with same key
                 for (;;) {
-                    map.put(rk, re.getValue());
+                    map.put(rk, re.getValue().toString());
                     if (!r.hasNext()) {
                         re = null;
                         break;
@@ -941,29 +939,4 @@ public class Bind {
         return current;
     }
 
-    public static void setDefaultValues(Object o) throws Exception {
-        if (o == null)
-            return;
-        for (Class<?> clazz = o.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
-            for (final Field f : clazz.getDeclaredFields()) {
-                final XmlElement xe = f.getAnnotation(XmlElement.class);
-                if (xe != null && xe.defaultValue() != null) {
-                    final Class<?> t = f.getType();
-                    if (t.isAssignableFrom(String.class)) {
-                        f.setAccessible(true);
-                        f.set(o, xe.defaultValue());
-                    } else if (t.isAssignableFrom(Integer.class) || clazz.getSimpleName().equals("int")) {
-                        f.setAccessible(true);
-                        f.set(o, Integer.parseInt(xe.defaultValue()));
-                    } else if (t.isAssignableFrom(Long.class) || clazz.getSimpleName().equals("long")) {
-                        f.setAccessible(true);
-                        f.set(o, Long.parseLong(xe.defaultValue()));
-                    }
-                    // else {
-                    // TODO: add futher conversions
-                    // }
-                }
-            }
-        }
-    }
 }
