@@ -16,7 +16,7 @@
 package de.bb.security;
 
 /**
- * This class was partially created from Sun's source for java.security.MessageDigest because it wss not shipped with
+ * This class was partially created from Sun's source for java.security.MessageDigest because it was not shipped with
  * Netscape's JVM. Meanwhile there are many changes, so blame me for errors.
  */
 public abstract class MessageDigest {
@@ -26,6 +26,8 @@ public abstract class MessageDigest {
     long count;
     byte data[];
     int mask;
+	int countLen; // size of counter
+	int end;      // where counter starts
 
     /**
      * Creates a message digest with the specified algorithm name.
@@ -40,6 +42,8 @@ public abstract class MessageDigest {
         this.algorithm = algorithm;
         data = new byte[sz];
         mask = sz - 1;
+        countLen = sz /8;
+        end = sz - countLen;
     }
 
     /**
@@ -88,13 +92,13 @@ public abstract class MessageDigest {
 
         int i = (int) count & mask;
         data[i++] = (byte) 0x80;
-        if (i > 56) {
+        if (i > end) {
             for (int k = i; k < data.length; ++k)
                 data[k] = 0;
             transform();
             i = 0;
         }
-        for (; i < mask - 7; ++i)
+        for (; i < mask - (countLen - 1); ++i)
             data[i] = 0;
 
         addBitCount(bitCount);

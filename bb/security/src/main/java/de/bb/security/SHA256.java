@@ -16,8 +16,7 @@
 package de.bb.security;
 
 /**
- * This is a simple port of Steve Reid's SHA-1 code into Java. I've run his test vectors through the code and they all
- * pass.
+ * This is a straightforward implementation of SHA-256 as given in NIST.FIPS.180 .
  * 
  * @version $
  */
