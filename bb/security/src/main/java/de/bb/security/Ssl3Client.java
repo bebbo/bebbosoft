@@ -185,6 +185,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
                     Misc.dump("clientRandom", System.out, clientRandom);
                     Misc.dump("serverRandom", System.out, serverRandom);
                 }
+                                
                 if (versionMinor != 0)
                     masterSecret = PRF(48, preMasterSecret, "master secret", clientRandom, serverRandom);
                 else
@@ -392,11 +393,36 @@ public class Ssl3Client extends Ssl3 // implements Connector
         System.arraycopy(b, off, sessionId, 0, sl);
         off += sl; // 43 - 43+off := session id
 
+        byte ct0 = b[off++];
+        byte ct1 = b[off++];
+        // we require NO compression
+        if (b[off] != 0)
+            throw new IOException("unsupported compression: " + b[off]);
+        
+        // search the ciphertype
+        int selected = 0;
+        for (; selected < ciphersuites.length; ++selected) {
+            if (ciphersuites[selected][0] == ct0 && ciphersuites[selected][1] == ct1)
+                break;
+        }
+        if (selected == ciphersuites.length)
+        	return -1;
+
         if (DEBUG.HANDSHAKEHASH) {
             Misc.dump("DigestUpdate", System.out, pendingHandshake, 0, pendingHandshake.length);
         }
         if (versionMinor == 3) {
-            hsSha = new SHA256();
+            switch(ciphersuites[selected][4]) {
+    		case 5:
+    			prfMd = new SHA384();
+                hsSha = new SHA384();
+    			break;
+			default:
+    			prfMd = new SHA256();
+                hsSha = new SHA256();
+    			break;
+            }
+
             hsSha.update(pendingHandshake, 0, pendingHandshake.length);
         } else {
             hsMd5 = new MD5();
@@ -405,18 +431,8 @@ public class Ssl3Client extends Ssl3 // implements Connector
             hsSha.update(pendingHandshake, 0, pendingHandshake.length);
         }
         pendingHandshake = NULLBYTES;
-
-        byte ct0 = b[off++];
-        byte ct1 = b[off++];
-        // we require NO compression
-        if (b[off] != 0)
-            throw new IOException("unsupported compression: " + b[off]);
-        // search the ciphertype
-        for (int i = 0; i < ciphersuites.length; ++i) {
-            if (ciphersuites[i][0] == ct0 && ciphersuites[i][1] == ct1)
-                return i;
-        }
-        return -1;
+        
+        return selected;
     }
 
     /**

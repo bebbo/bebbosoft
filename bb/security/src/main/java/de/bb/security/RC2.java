@@ -38,7 +38,7 @@ public class RC2 extends BlockCipher
 	};
 
   
-  private short xkey[] = new short[64];
+  private short xkey[];
   
   public RC2()
   {
@@ -65,6 +65,7 @@ public class RC2 extends BlockCipher
  */
   public void setKey(byte []key, int bits)
 	{    
+	  xkey = new short[64];
 	  if (bits == 0) 
 	    bits = 128;
 	// Phase 1: Expand input key to 128 bytes 
@@ -199,6 +200,11 @@ public class RC2 extends BlockCipher
 	  plain[pOff++] = (byte)(x54 >>> 8);
 	  plain[pOff++] = (byte)x76;
 	  plain[pOff  ] = (byte)(x76 >>> 8);
+	}
+
+	@Override
+	public boolean hasKey() {
+		return xkey != null;
 	}
 }
 

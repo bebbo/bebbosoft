@@ -201,6 +201,11 @@ public class RC5 extends BlockCipher
       b >>>= 8;
     }    
   }
+
+	@Override
+	public boolean hasKey() {
+		return s != null;
+	}
 }
 
 /*

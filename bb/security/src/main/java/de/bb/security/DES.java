@@ -336,7 +336,7 @@ public class DES extends BlockCipher
   };
 
   // the expanded key
-  private int [] keyData = new int[32];
+  private int [] keyData;
   
   /**
    * Creates a new DesCipher object for en- and decrypting.
@@ -371,6 +371,8 @@ public class DES extends BlockCipher
    */
   private void makeKeyData( byte[] key )
   {
+	keyData = new int[32];
+	  
     int c, d, in = 0;
     c  = (key[in++]&0xff)      ;
     c |= (key[in++]&0xff) <<  8;
@@ -685,6 +687,11 @@ public class DES extends BlockCipher
 
      return key;
   }
+
+	@Override
+	public boolean hasKey() {
+		return keyData != null;
+	}
 }
 
 /*

@@ -103,7 +103,17 @@ public class Ssl3Server extends Ssl3 {
                 Misc.dump("hashing handshake messages", System.out, pendingHandshake);
 
             if (versionMinor == 3) {
-                hsSha = new SHA256();
+                switch(ciphersuites[cipherIndex][4]) {
+        		case 5:
+        			prfMd = new SHA384();
+                    hsSha = new SHA384();
+        			break;
+    			default:
+        			prfMd = new SHA256();
+                    hsSha = new SHA256();
+        			break;
+                }
+            	
                 hsSha.update(pendingHandshake, 0, pendingHandshake.length);
             } else {
                 hsMd5 = new MD5();
@@ -711,7 +721,7 @@ public class Ssl3Server extends Ssl3 {
             int keyLength = n.length - (n[0] == 0 ? 1 : 0);
             byte prepared[];
             if (versionMinor >= 3) {
-                prepared = Pkcs6.prepareSignedContent(dhData, "SHA", keyLength);
+                prepared = Pkcs6.prepareSignedContent(dhData, "SHA256", keyLength);
             } else {
                 byte[] mdd = new MD5().digest(dhData);
                 byte[] shd = new SHA().digest(dhData);
@@ -728,7 +738,8 @@ public class Ssl3Server extends Ssl3 {
                 Misc.dump("signed", System.out, signed);
 
             if (versionMinor >= 3) {
-                b[offset++] = 2; // SHA1
+//                b[offset++] = 2; // SHA1
+                b[offset++] = 4; // SHA256
                 b[offset++] = 1; // rsa
             }
 

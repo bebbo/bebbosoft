@@ -14,11 +14,12 @@ public class Connect {
      */
     public static void main(String[] args) {
         try {
-            byte[][] cs = { 
-            		Ssl3.TLS_RSA_WITH_AES_256_CBC_SHA256,
-            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, 
-            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
-            		Ssl3.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+            byte[][] cs = {
+            		Ssl3.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+//            		Ssl3.TLS_RSA_WITH_AES_256_CBC_SHA256,
+//            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, 
+//            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+//            		Ssl3.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
             		};
             Ssl3Client client = new Ssl3Client(cs);
             //client.setMaxVersion(2);
@@ -43,10 +44,10 @@ public class Connect {
                 server = "blog.fefe.de";
     //     server = "ikanobank.de";
         //        port = 993;
-                server = "127.0.0.1";
-                port = 25000;
+  //              server = "127.0.0.1";
+//                port = 25000;
 
-//        port = 4433;
+//        port = 4444;
         
         Socket s = new Socket(server, port);
         try {

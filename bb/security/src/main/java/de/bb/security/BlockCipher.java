@@ -48,6 +48,12 @@ public abstract class BlockCipher
   public abstract void setKey (byte[] keyData);
 
   /**
+   * True if key is set already.
+   * @return true if the key is set already.
+   */
+  public abstract boolean hasKey();
+  
+  /**
    * Encrypt one block of [block size] bytes.
    * You may use one byte array as input data and output data, to encrypt in place.
    * @param clearText input data which is encrypted

@@ -10,7 +10,7 @@ package de.bb.security;
  * @author Stefan Bebbo Franke
  *
  */
-public final class GCM {
+public final class GCM extends BlockCipher{
 
     /** 16 zero bytes, referenced to save memory. */
     private static final byte[] ZERO = new byte[16];
@@ -69,15 +69,22 @@ public final class GCM {
      * The constructor - needs a <code>BlockCiper</code> instance with block size 16.
      * 
      * @param bc
-     *            the used block cipher. The block cipher's key must be set already.
+     *            the used block cipher.
      */
     public GCM(BlockCipher bc) {
+    	super(4);
+    	
         this.bc = bc;
         if (bc.blockSize != 16)
             throw new IllegalArgumentException("cipher's block size must be 16 - " + bc.getClass().getName() + " has "
                     + bc.blockSize);
 
-        byte h[] = new byte[16];
+        if (bc.hasKey())
+        	init();
+    }
+
+	private void init() {
+		byte h[] = new byte[16];
         bc.encrypt(h, 0, h, 0);
 
         // create the lookup table
@@ -134,7 +141,7 @@ public final class GCM {
         }
 
         this.m = m;
-    }
+	}
 
     /**
      * Shift the byte array v right by 1 bit.
@@ -302,7 +309,7 @@ public final class GCM {
      * @param cipherOffset
      *            the cipher text offset.
      * @param length
-     *            the length to encrypt.
+     *            the length to decrypt.
      * @return the length.
      */
     public int decrypt(final byte[] cipherText, int cipherOffset, final byte[] clearText, int clearOffset,
@@ -318,7 +325,7 @@ public final class GCM {
             }
             bc.encrypt(nonceCounter, 0, tmp, 0);
 
-            // encrypt data
+            // decrypt data
             final int t = i + 16;
             if (t >= length) {
                 // handle partial data
@@ -444,4 +451,25 @@ public final class GCM {
         xorInplace(hash, tmp);
         mulHInplace(hash, m);
     }
+
+	@Override
+	public void setKey(byte[] keyData) {
+		bc.setKey(keyData);
+		init();
+	}
+
+	@Override
+	public void encrypt(byte[] clearText, int clearOff, byte[] cipherText, int cipherOff) {
+		// dummy
+	}
+
+	@Override
+	public void decrypt(byte[] cipherText, int cipherOff, byte[] clearText, int clearOff) {
+		// dummy
+	}
+
+	@Override
+	public boolean hasKey() {
+		return bc.hasKey();
+	}
 }

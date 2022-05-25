@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>de.bb</groupId>
 			<artifactId>util</artifactId>
-			<version>1.0.22-SNAPSHOT</version>
+			<version>1.0.22</version>
 		</dependency>
 	</dependencies>
 </project>

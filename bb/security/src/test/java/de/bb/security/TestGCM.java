@@ -140,7 +140,26 @@ public class TestGCM {
                             + "c3c0c95156809539fcf0e2429a6b5254 16aedbf5a0de6a57a637b39b",
                     "5a8def2f0c9e53f1f75d7853659e2a20 eeb2b22aafde6419a058ab4f6f746bf4"
                             + "0fc0c3b780f244452da3ebf1c5d82cde a2418997200ef82e44ae7e3f",
-                    "a44a8266ee1c8eb0c8b5d4cf5ae9f19a", "Test Case 18" } };
+                    "a44a8266ee1c8eb0c8b5d4cf5ae9f19a", "Test Case 18" },
+                    
+    
+			{
+                    	// key
+                    	" 46 6c 11 a8 5f 9b 07 92-81 9a 5a 9d e1 8d b4 1e 15 f9 44 67 87 24 6c 52-63 12 30 43 2d 8b fb 04",
+                    	// in plaintext
+                    	"14 00 00 0c  3b 77 0f a7  08 32 02 1d  8c 0d 05 dc  ",
+                    	// 82 dc 50 e6 a1 d0 9f 39 55 15 e8 db 93 d1 fa e0",
+                    	// aad
+                    	"00 00 00 00 00 00 00 00 16 03 03 00 10",
+                    	// nonce secret + nonce public (from out)
+                    	" fd 58 07 37" + "0e 42 fc 3f ae f9 ac 29 ",
+                    	// out expected
+                    	// "0e 42 fc 3f ae f9 ac 29 "
+                    	"04 39 78 c6 00 54 42 06 dd 45 73 ef a0 7f 68 f8",
+                    	// hash expected
+                    	"fc 3f 82 13 bb 45 ca 41 df 60 e4 3f cb b1 fb 56",
+                    	"TLS 1.2"}                    
+    };
 
     @Test
     public void test() {

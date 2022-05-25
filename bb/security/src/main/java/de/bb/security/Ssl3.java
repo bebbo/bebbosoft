@@ -32,46 +32,47 @@ import de.bb.util.Misc;
 public abstract class Ssl3 {
 	// 0-1: cipher id
 	// 2: key bytes;
-	// 3: crypter: 0=RC4, 1=AES, 2=DES3, 3=DES;
+	// 3: crypter: 0=RC4, 1=AES, 2=DES3, 3=DES, 4=AES with GCM;
 	// 4: hash: 1=MD5, 2=SHA, 4=SHA256, 5=SHA384;
-	// 5: key exchange: 0=DHE_DSS, 1=DHE_RSA, 2=DH_ANON 4=RSA, 5=DH_DSS,
-	// 6=DH_RSA
+	// 5: key exchange: 0=DHE_DSS, 1=DHE_RSA, 2=DH_ANON 4=RSA, 5=DH_DSS, 6=DH_RSA
 
-	public final static byte[] TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 = {0x00, (byte)0x9e, 32, 1, 5, 1};
+	public final static byte[] TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 = {0x00, (byte)0x9f, 32, 4, 5, 1};
 
-	public final static byte[] TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 = {0x00, (byte)0x9e, 16, 1, 4, 1};
+	public final static byte[] TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 = {0x00, (byte)0x9e, 16, 4, 4, 1};
 	
 	public final static byte[] TLS_RSA_WITH_AES_256_GCM_SHA384 = {0x00, (byte)0x9d, 32, 1, 5, 4};
 	
 	public final static byte[] TLS_RSA_WITH_AES_128_GCM_SHA256 = {0x00, (byte)0x9c, 16, 1, 4, 4};
 	
-	public final static byte[] TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 = { 0, 0x6b, 32, 1, 4, 1 };
+	public final static byte[] TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 = { 0, 0x6b, 32, 1, 4, 1};
 
-	public final static byte[] TLS_DHE_RSA_WITH_AES_256_CBC_SHA = { 0, 0x39, 32, 1, 2, 1 };
+	public final static byte[] TLS_DHE_RSA_WITH_AES_256_CBC_SHA = { 0, 0x39, 32, 1, 2, 1};
 
-	public final static byte[] TLS_DHE_RSA_WITH_AES_128_CBC_SHA256 = { 0, 0x67, 16, 1, 4, 1 };
+	public final static byte[] TLS_DHE_RSA_WITH_AES_128_CBC_SHA256 = { 0, 0x67, 16, 1, 4, 1};
 
-	public final static byte[] TLS_DHE_RSA_WITH_AES_128_CBC_SHA = { 0, 0x33, 16, 1, 2, 1 };
+	public final static byte[] TLS_DHE_RSA_WITH_AES_128_CBC_SHA = { 0, 0x33, 16, 1, 2, 1};
 
-	public final static byte[] TLS_RSA_WITH_AES_256_CBC_SHA256 = { 0, 0x3D, 32, 1, 4, 4 };
+	public final static byte[] TLS_RSA_WITH_AES_256_CBC_SHA256 = { 0, 0x3D, 32, 1, 4, 4};
 
-	public final static byte[] TLS_RSA_WITH_AES_128_CBC_SHA256 = { 0, 0x3c, 16, 1, 4, 4 };
+	public final static byte[] TLS_RSA_WITH_AES_128_CBC_SHA256 = { 0, 0x3c, 16, 1, 4, 4};
 
-	public final static byte[] TLS_RSA_WITH_AES_256_CBC_SHA = { 0, 0x35, 32, 1, 2, 4 };
+	public final static byte[] TLS_RSA_WITH_AES_256_CBC_SHA = { 0, 0x35, 32, 1, 2, 4};
 
-	public final static byte[] TLS_RSA_WITH_AES_128_CBC_SHA = { 0, 0x2f, 16, 1, 2, 4 };
+	public final static byte[] TLS_RSA_WITH_AES_128_CBC_SHA = { 0, 0x2f, 16, 1, 2, 4};
 
-	public final static byte[] TLS_RSA_WITH_3DES_EDE_CBC_SHA = { 0, 0x0a, 24, 2, 2, 4 };
+	public final static byte[] TLS_RSA_WITH_3DES_EDE_CBC_SHA = { 0, 0x0a, 24, 2, 2, 4};
 
-	public final static byte[] TLS_RSA_WITH_DES_CBC_SHA = { 0, 0x09, 8, 3, 2, 4 };
+	public final static byte[] TLS_RSA_WITH_DES_CBC_SHA = { 0, 0x09, 8, 3, 2, 4};
 
-	public final static byte[] TLS_RSA_WITH_RC4_128_SHA = { 0, 0x05, 16, 0, 2, 4 };
+	public final static byte[] TLS_RSA_WITH_RC4_128_SHA = { 0, 0x05, 16, 0, 2, 4};
 
-	public final static byte[] TLS_RSA_WITH_RC4_128_MD5 = { 0, 0x04, 16, 0, 1, 4 };
+	public final static byte[] TLS_RSA_WITH_RC4_128_MD5 = { 0, 0x04, 16, 0, 1, 4};
 
-	public final static byte[] TLS_RSA_EXPORT_WITH_RC4_40_MD5 = { 0, 0x03, 5, 0, 1, 4 };
+	public final static byte[] TLS_RSA_EXPORT_WITH_RC4_40_MD5 = { 0, 0x03, 5, 0, 1, 4};
 
-	public final static byte[] CIPHERSUITES[] = { TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+	public final static byte[] CIPHERSUITES[] = { 
+			TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+			TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
 			TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
 			TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA,
 			TLS_RSA_WITH_3DES_EDE_CBC_SHA,
@@ -81,8 +82,10 @@ public abstract class Ssl3 {
 			 */
 	};
 
-	public final static String CIPHERSUITENAMES[] = { "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256",
-			"TLS_DHE_RSA_WITH_AES_256_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA256", "TLS_RSA_WITH_AES_256_CBC_SHA",
+	public final static String CIPHERSUITENAMES[] = { 
+			"TLS_DHE_RSA_WITH_AES_256_GCM_SHA384", "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+			"TLS_DHE_RSA_WITH_AES_256_CBC_SHA256", "TLS_DHE_RSA_WITH_AES_256_CBC_SHA", 
+			"TLS_RSA_WITH_AES_256_CBC_SHA256", "TLS_RSA_WITH_AES_256_CBC_SHA",
 			"TLS_DHE_RSA_WITH_AES_128_CBC_SHA256", "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
 			"TLS_RSA_WITH_AES_128_CBC_SHA256", "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_3DES_EDE_CBC_SHA", };
 
@@ -129,7 +132,7 @@ public abstract class Ssl3 {
 	/** for calculation in send / receive mode. */
 	MessageDigest md5 = new MD5();
 	MessageDigest sha = new SHA();
-	MessageDigest sha256 = new SHA256();
+	MessageDigest prfMd = new SHA256();
 
 	/**
 	 * SSL2: for the 2byte/3byte msg header. SSL3: for the 4byte msg header.
@@ -205,11 +208,18 @@ public abstract class Ssl3 {
 
 	protected byte maxVersion = 3;
 
-	protected byte minVersion = 1;
+	protected byte minVersion = 3;
 
 	protected byte versionMinor;
 
+	protected byte[] writeAad;
+	protected byte[] readAad;
+	byte[] writeNonce;
+	byte[] readNonce;
+	byte[] t16 = new byte[16];
+
 	final static byte ALERT86[] = { 21, 3, 3, 0, 2, 2, 86 };
+
 
 	/**
 	 * Creates a new Ssl3 object, which uses the given InputStream for reading
@@ -375,43 +385,46 @@ public abstract class Ssl3 {
 				if (!readFully(readBuffer, len))
 					return 0;
 
-				if (versionMinor > 1) {
-					rpos = readIV.length;
-				}
-
-				cryptRead.decryptCBC(readIV, readBuffer, 0, readBuffer, 0, len);
-
-				if (blockSize > 1) {
-					--len;
-					
-					int pad = readBuffer[len];
-					
-					readBufferLength = len - pad - hashLen;
-
-					if (readBufferLength < rpos || readBufferLength >= len)
-						readBufferLength = len - hashLen; // no exception here -
-															// let the hash
-															// check throw it
-					
-					if (versionMinor > 0) {
-						// check padding
-						for (int i = 1; i <= pad; ++i) {
-							if (readBuffer[len - i] != pad) {
-								++readBuffer[rpos]; // hash check will fail
-								break;
+				if (cryptRead instanceof GCM) {
+					readBufferLength = gcmDecrypt(r5[0], len);
+				} else {
+					if (versionMinor > 1) {
+						rpos = readIV.length;
+					}
+	
+					cryptRead.decryptCBC(readIV, readBuffer, 0, readBuffer, 0, len);
+	
+					if (blockSize > 1) {
+						--len;
+						
+						int pad = readBuffer[len];
+						
+						readBufferLength = len - pad - hashLen;
+	
+						if (readBufferLength < rpos || readBufferLength >= len)
+							readBufferLength = len - hashLen; // no exception here -
+																// let the hash
+																// check throw it
+						
+						if (versionMinor > 0) {
+							// check padding
+							for (int i = 1; i <= pad; ++i) {
+								if (readBuffer[len - i] != pad) {
+									++readBuffer[rpos]; // hash check will fail
+									break;
+								}
 							}
 						}
+					} else {
+						readBufferLength = len - hashLen;
 					}
-					
-				} else {
-					readBufferLength = len - hashLen;
+	
+					byte hb[] = calcMessageHash(readHash, hashLen, readSecret, readnum++, r5[0], readBuffer, rpos,
+							readBufferLength - rpos);
+					if (!equals(readBuffer, readBufferLength, hb, 0, hashLen))
+						throw new SslException(clientSessionId, "MAC error");
 				}
-
-				byte hb[] = calcMessageHash(readHash, hashLen, readSecret, readnum++, r5[0], readBuffer, rpos,
-						readBufferLength - rpos);
-				if (!equals(readBuffer, readBufferLength, hb, 0, hashLen))
-					throw new SslException(clientSessionId, "MAC error");
-
+				
 				len = readBufferLength - rpos;
 				// handle alerts
 				if (r5[0] == 21) {
@@ -424,6 +437,7 @@ public abstract class Ssl3 {
 					}
 					continue;
 				}
+				
 			} else {
 				readBufferLength = len;
 				readBuffer = new byte[len];
@@ -565,9 +579,16 @@ public abstract class Ssl3 {
 	 */
 	final void rawwrite(byte b[], int typ) throws IOException {
 		int len = b.length;
+		
+		if (cryptWrite instanceof GCM) {
+			int outLen = gcmEncrypt(b, typ, len);
+			os.write(writeBuffer, 0, outLen);
+			return;
+		}
+		
 		int offset = 0;
 		if (versionMinor > 1 && writeIV.length > 0) {
-			// add a random explicite writeIV - since TLS 1.1
+			// add a random explicit writeIV - since TLS 1.1
 			offset = writeIV.length;
 			byte tmp[] = new byte[len + offset];
 			secureRnd.nextBytes(tmp, 0, offset);
@@ -611,6 +632,7 @@ public abstract class Ssl3 {
 		if (pad == blockSize)
 			pad = 0;
 		len += pad + 1;
+
 		int outLen = len + 5;
 
 		if (writeBuffer.length < outLen)
@@ -630,7 +652,130 @@ public abstract class Ssl3 {
 		}
 		writeBuffer[len + 4] = (byte) pad;
 		cryptWrite.encryptCBC(writeIV, writeBuffer, 5, writeBuffer, 5, len);
+		
 		os.write(writeBuffer, 0, outLen);
+	}
+
+	/**
+	 * Read from readBuffer and decrypt into readBuffer
+	 * @param len
+	 * @return the resulting len
+	 * @throws IOException 
+	 */
+	private int gcmDecrypt(int typ, int len) throws IOException {
+		GCM gcm = (GCM) cryptRead;
+		
+		byte r[] = readBuffer;
+		if (DEBUG.ON)
+			Misc.dump("GCM packet in: ", System.out, r, 0, len);
+		
+		readNonce[4] = r[0];
+		readNonce[5] = r[1];
+		readNonce[6] = r[2];
+		readNonce[7] = r[3];
+		readNonce[8] = r[4];
+		readNonce[9] = r[5];
+		readNonce[10] = r[6];
+		readNonce[11] = r[7];
+		
+		gcm.init(readNonce);
+		if (DEBUG.ON)
+			Misc.dump("read nonce: ", System.out, readNonce, 0, 12);
+
+		len -= 24;
+		
+		readAad[8] = (byte)typ;
+		readAad[11] = (byte)(len >> 8);
+		readAad[12] = (byte)len;
+		gcm.updateHash(readAad, 0, readAad.length);
+
+		if (DEBUG.ON)
+			Misc.dump("read aad: ", System.out, readAad, 0, 13);
+
+		// inc counter
+		for (int i = 7; i >= 0; --i)
+			if (++readAad[i] != 0)
+				break;
+
+		gcm.decrypt(r, 8, r, 0, len);
+
+		if (DEBUG.ON)
+			Misc.dump("decoded GCM packet: ", System.out, r, 0, len);
+
+		// append hash
+		gcm.calcHash(t16, 0);
+		if (DEBUG.ON)
+			Misc.dump("GCM hash: ", System.out, t16, 0, 16);
+		
+//		if (!Misc.equals(t16, 0, r, len + 8, 16))
+//			throw new IOException("GCM hash mismatch");
+		
+		return len;
+	}
+	
+	protected int gcmEncrypt(byte[] b, int typ, int len) {
+		GCM gcm = (GCM) cryptWrite;
+
+		int elen = len + 8 + 16; // iv + hash
+		int outLen = elen + 5; // header 
+		
+		if (writeBuffer.length < outLen)
+			writeBuffer = new byte[outLen];
+		
+		byte w[] = writeBuffer;
+		w[0] = (byte) typ;
+		w[1] = (byte) 3; // version
+		w[2] = versionMinor;
+		w[3] = (byte) (elen >>> 8);
+		w[4] = (byte) (elen);
+		
+		w[5] = writeNonce[4];
+		w[6] = writeNonce[5];
+		w[7] = writeNonce[6];
+		w[8] = writeNonce[7];
+		w[9] = writeNonce[8];
+		w[10] = writeNonce[9];
+		w[11] = writeNonce[10];
+		w[12] = writeNonce[11];
+
+		gcm.init(writeNonce);
+
+		if (DEBUG.ON)
+			Misc.dump("write nonce: ", System.out, writeNonce, 0, 12);
+
+		
+		for (int i = 11; i >= 4; --i)
+			if (++writeNonce[i] != 0)
+				break;
+
+//			laufende nummer 8 bytes
+//			type   22 (packet type)
+//			major
+//			minor
+//			hi(len)   des Pakets - ohne expl iv
+//			lo(len)
+
+		writeAad[8] = (byte)typ;
+		writeAad[11] = (byte)(len >> 8);
+		writeAad[12] = (byte)len;
+		gcm.updateHash(writeAad, 0, writeAad.length);
+
+		if (DEBUG.ON)
+			Misc.dump("write aad: ", System.out, writeAad, 0, 13);
+
+		// inc counter
+		for (int i = 7; i >= 0; --i)
+			if (++writeAad[i] != 0)
+				break;
+		
+		gcm.encrypt(b, 0, w, 13, len);
+		
+		// append hash
+		gcm.calcHash(w, 13 + len);
+		
+		if (DEBUG.ON)
+			Misc.dump("GCM packet: ", System.out, writeBuffer, 0, outLen);
+		return outLen;
 	}
 
 	/**
@@ -809,6 +954,28 @@ public abstract class Ssl3 {
 	final void createKeys(boolean isServer) {
 		byte[] cs = ciphersuites[cipherIndex];
 		int keymat = cs[2];
+		switch (cs[4]) {
+		case 1:
+			this.readHash = new MD5();
+			this.writeHash = new MD5();
+			this.hashLen = 16;
+			break;
+		case 2:
+			this.readHash = new SHA();
+			this.writeHash = new SHA();
+			this.hashLen = 20;
+			break;
+		case 4:
+			this.readHash = new SHA256();
+			this.writeHash = new SHA256();
+			this.hashLen = 32;
+			break;
+		case 5:
+			this.readHash = new SHA384();
+			this.writeHash = new SHA384();
+			this.hashLen = 48;
+			break;
+		}
 		switch (cs[3]) {
 		case 0:
 			this.cryptRead = new RC4();
@@ -826,22 +993,16 @@ public abstract class Ssl3 {
 			this.cryptRead = new DES();
 			this.cryptWrite = new DES();
 			break;
-		}
-		switch (cs[4]) {
-		case 1:
-			this.readHash = new MD5();
-			this.writeHash = new MD5();
-			this.hashLen = 16;
-			break;
-		case 2:
-			this.readHash = new SHA();
-			this.writeHash = new SHA();
-			this.hashLen = 20;
-			break;
 		case 4:
-			this.readHash = new SHA256();
-			this.writeHash = new SHA256();
-			this.hashLen = 32;
+			this.cryptRead = new GCM(new AES());
+			this.cryptWrite = new GCM(new AES());
+			hashLen = 0; // not used
+			writeAad = new byte[13];
+			writeAad[9] = 3;
+			writeAad[10] = versionMinor;
+			readAad = new byte[13];
+			readAad[9] = 3;
+			readAad[10] = versionMinor;
 			break;
 		}
 		this.readSecret = new byte[hashLen];
@@ -896,6 +1057,21 @@ public abstract class Ssl3 {
 			cryptWrite.setKey(srk);
 		}
 
+		if (cryptRead instanceof GCM) {
+			writeNonce = new byte[12];
+			writeNonce[0] = writeIV[0];
+			writeNonce[1] = writeIV[1];
+			writeNonce[2] = writeIV[2];
+			writeNonce[3] = writeIV[3];
+			secureRnd.nextBytes(writeNonce, 4, 8);
+			
+			readNonce = new byte[12];
+			readNonce[0] = readIV[0];
+			readNonce[1] = readIV[1];
+			readNonce[2] = readIV[2];
+			readNonce[3] = readIV[3];
+			secureRnd.nextBytes(readNonce, 4, 8);
+		}
 	}
 
 	/**
@@ -1206,8 +1382,8 @@ public abstract class Ssl3 {
 				r[i] ^= r1[i];
 			}
 		} else {
-			// TLS 1.2 is using SHA only
-			r = pHash(length, sha256, secret, data);
+			// TLS 1.2 is using SHA only /?
+			r = pHash(length, prfMd, secret, data);
 		}
 		if (DEBUG.ON)
 			Misc.dump("PRF", System.out, r);
@@ -1275,8 +1451,10 @@ public abstract class Ssl3 {
 		byte[] ai = seed;
 		byte[] r = new byte[length];
 
-		// Misc.dump("secret", System.out, secret);
-		// Misc.dump("seed", System.out, seed);
+		if (DEBUG.ON)
+			Misc.dump("secret", System.out, secret);
+		if (DEBUG.ON)
+			Misc.dump("seed", System.out, seed);
 
 		int pos = 0;
 		while (pos < length) {

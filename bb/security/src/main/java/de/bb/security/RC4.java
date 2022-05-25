@@ -18,13 +18,15 @@ public class RC4 extends BlockCipher
     super(1);
   }
 
-  byte[] key = new byte[258];
+  byte[] key;
   
   /** (non-Javadoc)
    * @see de.bb.security.BlockCipher#setKey(byte[])
    */
   public void setKey(byte[] keyData)
   {
+	key = new byte[258];
+	  
     int i;
     for (i = 0; i < 256; i++)
       key[i] = (byte) i;
@@ -124,5 +126,10 @@ public class RC4 extends BlockCipher
   public void decryptCBC (byte [] iv, byte[] cipherText, int cipherOffset, byte[] clearText, int clearOffset, int length)
   {
     encryptCBC(iv, cipherText, cipherOffset, clearText, clearOffset, length);
-  }  
+  }
+
+	@Override
+	public boolean hasKey() {
+		return key != null;
+	}  
 }

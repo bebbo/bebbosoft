@@ -456,5 +456,10 @@ public class AES extends BlockCipher {
       }
       FF_HELP2[i] = v;
     }
-  }  
+  }
+
+	@Override
+	public boolean hasKey() {
+		return intkp != null;
+	}  
 }
