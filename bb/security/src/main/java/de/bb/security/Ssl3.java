@@ -707,8 +707,8 @@ public abstract class Ssl3 {
 		if (DEBUG.ON)
 			Misc.dump("GCM hash: ", System.out, t16, 0, 16);
 		
-//		if (!Misc.equals(t16, 0, r, len + 8, 16))
-//			throw new IOException("GCM hash mismatch");
+		if (!Misc.equals(t16, 0, r, len + 8, 16))
+			throw new IOException("GCM MAC error");
 		
 		return len;
 	}
@@ -1070,7 +1070,6 @@ public abstract class Ssl3 {
 			readNonce[1] = readIV[1];
 			readNonce[2] = readIV[2];
 			readNonce[3] = readIV[3];
-			secureRnd.nextBytes(readNonce, 4, 8);
 		}
 	}
 

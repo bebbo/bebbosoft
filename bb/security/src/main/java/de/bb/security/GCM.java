@@ -277,19 +277,25 @@ public final class GCM extends BlockCipher{
                 // handle partial data
                 int len = length - i;
                 xorInplace(tmp, clearText, clearOffset, len);
-                System.arraycopy(tmp, 0, cipherText, cipherOffset, len);
 
                 // update hash
                 xorInplace(hash, tmp, 0, len);
+
+                // copy data
+                System.arraycopy(tmp, 0, cipherText, cipherOffset, len);
+                
                 mulHInplace(hash, m);
                 break;
             }
             i = t;
             xorInplace(tmp, clearText, clearOffset, 16);
-            System.arraycopy(tmp, 0, cipherText, cipherOffset, 16);
 
             // update hash
             xorInplace(hash, tmp);
+
+            // copy data
+            System.arraycopy(tmp, 0, cipherText, cipherOffset, 16);
+
             mulHInplace(hash, m);
         }
         dataLen += length;
@@ -331,19 +337,25 @@ public final class GCM extends BlockCipher{
                 // handle partial data
                 int len = length - i;
                 xorInplace(tmp, cipherText, cipherOffset, len);
-                System.arraycopy(tmp, 0, clearText, clearOffset, len);
-
+                
                 // update hash
                 xorInplace(hash, cipherText, cipherOffset, len);
+
+                // copy data
+                System.arraycopy(tmp, 0, clearText, clearOffset, len);
+
                 mulHInplace(hash, m);
                 break;
             }
             i = t;
             xorInplace(tmp, cipherText, cipherOffset, 16);
-            System.arraycopy(tmp, 0, clearText, clearOffset, 16);
 
             // update hash
             xorInplace(hash, cipherText, cipherOffset, 16);
+            
+            // copy data
+            System.arraycopy(tmp, 0, clearText, clearOffset, 16);
+            
             mulHInplace(hash, m);
         }
         dataLen += length;
