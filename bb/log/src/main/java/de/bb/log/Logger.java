@@ -96,7 +96,7 @@ public class Logger {
 	private boolean apply = true;
 
 	/** the current log level; */
-	private int level = INFO;
+	private int level = DEBUG;
 
 	/** the path for this logger. */
 	private String path;
@@ -467,7 +467,7 @@ public class Logger {
 	 */
 	private static String expand(final String message, Object[] a) {
 		M m = M2M.get(message);
-
+		int bracketN = 0;
 		// create a new message helper object.
 		if (m == null) {
 			final ArrayList<String> p = new ArrayList<String>();
@@ -495,7 +495,7 @@ public class Logger {
 					int n = Integer.parseInt(ns);
 					ii.add(n);
 				} catch (Exception e) {
-					ii.add(0);
+					ii.add(bracketN++);
 				}
 				q = q.substring(ket + 1);
 				bra = 0;

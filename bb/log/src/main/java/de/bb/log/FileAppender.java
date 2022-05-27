@@ -29,309 +29,310 @@ import de.bb.io.FastBufferedOutputStream;
 import de.bb.util.DateFormat;
 
 public class FileAppender extends Appender {
-    /** base part of the log file name. */
-    private String baseName = "logfile";
-    /** the date format string. */
-    private String dateFormat;
-    /** the log file extension. */
-    private String extension = ".log";
-    /** current file name. */
-    private String currentfileName;
-    /** true if date format string is appended after closing. */
-    private boolean appendDateAfterClose;
+	/** base part of the log file name. */
+	private String baseName = "logfile";
+	/** the date format string. */
+	private String dateFormat;
+	/** the log file extension. */
+	private String extension = ".log";
+	/** current file name. */
+	private String currentfileName;
+	/** true if date format string is appended after closing. */
+	private boolean appendDateAfterClose;
 
-    /** date extension start time. */
-    private long start;
-    /** date extension increment time. */
-    private long increment;
-    /** the formatter for the date extension. */
-    private DateFormat dateFormatter;
-    /** true if the log file is not erased on start. */
-    private boolean append;
-    /** lookup key for asynchronous I/O. */
-    private String key;
-    /** current buffer size. */
-    private int bufferSize = 0x1000;
-    /** own stream handle. */
-    private OutputStream fos;
+	/** date extension start time. */
+	private long start;
+	/** date extension increment time. */
+	private long increment;
+	/** the formatter for the date extension. */
+	private DateFormat dateFormatter;
+	/** true if the log file is not erased on start. */
+	private boolean append;
+	/** lookup key for asynchronous I/O. */
+	private String key;
+	/** current buffer size. */
+	private int bufferSize = 0x1000;
+	/** own stream handle. */
+	private OutputStream fos;
 
-    public FileAppender() {
-        next = 0;
-        setDateFormat("_yyyyMMdd");
-    }
+	public FileAppender() {
+		next = 0;
+		setDateFormat("_yyyyMMdd");
+	}
 
-    public void setup(final Map<String, String> attributes) {
-        super.setup(attributes);
+	public void setup(final Map<String, String> attributes) {
+		super.setup(attributes);
 
-        append = !"false".equals(attributes.get("append"));
+		append = !"false".equals(attributes.get("append"));
 
-        bufferSize = 0x1000;
-        final String sBufferSize = attributes.get("bufferSize");
-        if (sBufferSize != null) {
-            try {
-                bufferSize = Integer.parseInt(sBufferSize);
-            } catch (Exception ex) {
-                try {
-                    bufferSize = Integer.parseInt(sBufferSize, 16);
-                } catch (Exception ex2) {
-                }
-            }
-        }
+		bufferSize = 0x1000;
+		final String sBufferSize = attributes.get("bufferSize");
+		if (sBufferSize != null) {
+			try {
+				bufferSize = Integer.parseInt(sBufferSize);
+			} catch (Exception ex) {
+				try {
+					bufferSize = Integer.parseInt(sBufferSize, 16);
+				} catch (Exception ex2) {
+				}
+			}
+		}
 
-        final String baseName = attributes.get("baseName");
-        if (baseName != null)
-            setBaseName(baseName);
+		final String baseName = attributes.get("baseName");
+		if (baseName != null)
+			setBaseName(baseName);
 
-        final String dateFormat = attributes.get("dateFormat");
-        if (dateFormat != null) {
-            setDateFormat(dateFormat);
-        }
+		final String dateFormat = attributes.get("dateFormat");
+		if (dateFormat != null) {
+			setDateFormat(dateFormat);
+		}
 
-        appendDateAfterClose = "false".equalsIgnoreCase(attributes
-                .get("appendDateAfterClose"));
-    }
+		appendDateAfterClose = "false".equalsIgnoreCase(attributes.get("appendDateAfterClose"));
+	}
 
-    /**
-     * Set the date format to extend the log file.
-     * 
-     * @param dateFormat2
-     */
-    public void setDateFormat(final String dateFormat) {
-        this.dateFormat = dateFormat;
-        dateFormatter = new DateFormat(dateFormat);
-        key = baseName + extension + "#" + dateFormat;
+	/**
+	 * Set the date format to extend the log file.
+	 * 
+	 * @param dateFormat2
+	 */
+	public void setDateFormat(final String dateFormat) {
+		this.dateFormat = dateFormat;
+		dateFormatter = new DateFormat(dateFormat);
+		key = baseName + extension + "#" + dateFormat;
 
-        // calculate the start time
-        final String sStart = dateFormatter.format(System.currentTimeMillis());
-        start = dateFormatter.parse(sStart);
+		// calculate the start time
+		final String sStart = dateFormatter.format(System.currentTimeMillis());
+		start = dateFormatter.parse(sStart);
 
-        // calculate the increment matching the dateFormat
-        long l = 1;
-        while (dateFormatter.format(start + l).equals(sStart)) {
-            l += l;
-        }
+		// calculate the increment matching the dateFormat
+		long l = 1;
+		while (dateFormatter.format(start + l).equals(sStart)) {
+			l += l;
+		}
 
-        // now inc is to large, find the minimum which yields the same result.
-        increment = l;
-        for (; l > 0; l >>>= 1) {
-            if (!dateFormatter.format(start + increment - l).equals(sStart))
-                increment -= l;
-        }
-    }
+		// now inc is to large, find the minimum which yields the same result.
+		increment = l;
+		for (; l > 0; l >>>= 1) {
+			if (!dateFormatter.format(start + increment - l).equals(sStart))
+				increment -= l;
+		}
+	}
 
-    /**
-     * Compose the new file name using the current date and open the stream.
-     */
-    protected void nextFile() {
-        if (os != null) {
-            try {
-                os.flush();
-                os.close();
-            } catch (IOException e) {
-            }
-        }
+	/**
+	 * Compose the new file name using the current date and open the stream.
+	 */
+	protected void nextFile() {
+		if (os != null) {
+			try {
+				os.flush();
+				os.close();
+			} catch (IOException e) {
+			}
+		}
 
-        if (dateFormatter != null && appendDateAfterClose) {
-            final File baseLog = new File(baseName + extension);
-            if (baseLog.exists()) {
-                final String dt = dateFormatter.format(start);
-                String fn = baseName + '_' + dt + extension;
-                int i = 0;
-                while (new File(fn).exists()) {
-                    fn = baseName + '_' + dt + "-" + (i++) + extension;
-                }
-                baseLog.renameTo(new File(fn));
-            }
-        }
+		if (dateFormatter != null && appendDateAfterClose) {
+			final File baseLog = new File(baseName + extension);
+			if (baseLog.exists()) {
+				final String dt = dateFormatter.format(start);
+				String fn = baseName + '_' + dt + extension;
+				int i = 0;
+				while (new File(fn).exists()) {
+					fn = baseName + '_' + dt + "-" + (i++) + extension;
+				}
+				baseLog.renameTo(new File(fn));
+			}
+		}
 
-        final long now = System.currentTimeMillis();
-        String datePart;
-        if (dateFormatter != null) {
-            // long time inactivity can result multiple adds of the increment.
-            while (start + increment < now) {
-                start += increment;
-            }
-            next = start + increment;
-            datePart = dateFormatter.format(start);
-        } else {
-            datePart = "";
-        }
-        final int ls = baseName.lastIndexOf('/');
-        if (ls > 0) {
-            File dir = new File(baseName.substring(0, ls));
-            dir.mkdirs();
-        }
+		final long now = System.currentTimeMillis();
+		String datePart;
+		if (dateFormatter != null) {
+			// long time inactivity can result multiple adds of the increment.
+			while (start + increment < now) {
+				start += increment;
+			}
+			next = start + increment;
+			datePart = dateFormatter.format(start);
+		} else {
+			datePart = "";
+		}
+		final int ls = baseName.lastIndexOf('/');
+		if (ls > 0) {
+			File dir = new File(baseName.substring(0, ls));
+			dir.mkdirs();
+		}
 
-        if (appendDateAfterClose) {
-            currentfileName = baseName + extension;
-        } else {
-            currentfileName = baseName + datePart + extension;
-        }
-        try {
-            fos = new FileOutputStream(currentfileName, append);
-        } catch (Exception ioe) {
-            try {
-                fos = new FileOutputStream(currentfileName);
-            } catch (Exception ioe2) {
-                fos = System.out;
-                next = 0;
-            }
-        }
-        if (fos != null)
-            os = new FastBufferedOutputStream(fos, bufferSize);
-    }
+		if ("*".equals(baseName)) {
+			fos = System.out;
+			next = Long.MAX_VALUE;
+		} else {
 
-    /**
-     * Identify the logger.
-     * 
-     * @return a key value.
-     */
-    public String getKey() {
-        return key;
-    }
+			if (appendDateAfterClose) {
+				currentfileName = baseName + extension;
+			} else {
+				currentfileName = baseName + datePart + extension;
+			}
+			try {
+				fos = new FileOutputStream(currentfileName, append);
+			} catch (Exception ioe) {
+				try {
+					fos = new FileOutputStream(currentfileName);
+				} catch (Exception ioe2) {
+					fos = System.out;
+					next = 0;
+				}
+			}
+		}
+		if (fos != null)
+			os = new FastBufferedOutputStream(fos, bufferSize);
+	}
 
-    /**
-     * set the base name.
-     * 
-     * @param baseName
-     *            the base name.
-     */
-    public void setBaseName(final String baseName) {
-        next = 0;
-        this.baseName = baseName;
-        key = baseName + extension + "#" + dateFormat;
-    }
+	/**
+	 * Identify the logger.
+	 * 
+	 * @return a key value.
+	 */
+	public String getKey() {
+		return key;
+	}
 
-    /**
-     * Get the current base name.
-     * 
-     * @return the current base name.
-     */
-    public String getBaseName() {
-        return baseName;
-    }
+	/**
+	 * set the base name.
+	 * 
+	 * @param baseName the base name.
+	 */
+	public void setBaseName(final String baseName) {
+		next = 0;
+		this.baseName = baseName;
+		key = baseName + extension + "#" + dateFormat;
+	}
 
-    /**
-     * Get the append value.
-     * 
-     * @return true if the log file is appended.
-     * @see #setAppend(boolean)
-     */
-    public boolean isAppend() {
-        return append;
-    }
+	/**
+	 * Get the current base name.
+	 * 
+	 * @return the current base name.
+	 */
+	public String getBaseName() {
+		return baseName;
+	}
 
-    /**
-     * Set the log file append mode.
-     * 
-     * @param append
-     *            true if the log file is appended.
-     * @see #isAppend()
-     */
-    public void setAppend(boolean append) {
-        this.append = append;
-        if (!append && os != null) {
-            synchronized (this) {
-                flush();
-            }
-        }
-    }
+	/**
+	 * Get the append value.
+	 * 
+	 * @return true if the log file is appended.
+	 * @see #setAppend(boolean)
+	 */
+	public boolean isAppend() {
+		return append;
+	}
 
-    /**
-     * Get current buffer size.
-     * 
-     * @return the current buffer size.
-     * @see #setBufferSize(int)
-     */
-    public int getBufferSize() {
-        return bufferSize;
-    }
+	/**
+	 * Set the log file append mode.
+	 * 
+	 * @param append true if the log file is appended.
+	 * @see #isAppend()
+	 */
+	public void setAppend(boolean append) {
+		this.append = append;
+		if (!append && os != null) {
+			synchronized (this) {
+				flush();
+			}
+		}
+	}
 
-    /**
-     * Set the bufferSize.
-     * 
-     * @param bufferSize
-     *            the new buffer size.
-     * @see #getBufferSize()
-     */
-    public synchronized void setBufferSize(int bufferSize) {
-        this.bufferSize = bufferSize;
-        if (os != null) {
-            flush();
-            os = new FastBufferedOutputStream(fos, bufferSize);
-        }
-    }
+	/**
+	 * Get current buffer size.
+	 * 
+	 * @return the current buffer size.
+	 * @see #setBufferSize(int)
+	 */
+	public int getBufferSize() {
+		return bufferSize;
+	}
 
-    /**
-     * Get the current log file extension.
-     * 
-     * @return the current log file extension.
-     * @see #setExtension(String)
-     */
-    public String getExtension() {
-        return extension;
-    }
+	/**
+	 * Set the bufferSize.
+	 * 
+	 * @param bufferSize the new buffer size.
+	 * @see #getBufferSize()
+	 */
+	public synchronized void setBufferSize(int bufferSize) {
+		this.bufferSize = bufferSize;
+		if (os != null) {
+			flush();
+			os = new FastBufferedOutputStream(fos, bufferSize);
+		}
+	}
 
-    /**
-     * Set th log file extension.
-     * 
-     * @param extension
-     *            the log file extension
-     * @see #getExtension()
-     */
-    public void setExtension(String extension) {
-        if (!extension.startsWith("."))
-            extension = "." + extension;
-        this.extension = extension;
-        key = baseName + extension + "#" + dateFormat;
-    }
+	/**
+	 * Get the current log file extension.
+	 * 
+	 * @return the current log file extension.
+	 * @see #setExtension(String)
+	 */
+	public String getExtension() {
+		return extension;
+	}
 
-    /**
-     * Get the current date format.
-     * 
-     * @return the current date format or null if none is used.
-     */
-    public String getDateFormat() {
-        return dateFormat;
-    }
+	/**
+	 * Set th log file extension.
+	 * 
+	 * @param extension the log file extension
+	 * @see #getExtension()
+	 */
+	public void setExtension(String extension) {
+		if (!extension.startsWith("."))
+			extension = "." + extension;
+		this.extension = extension;
+		key = baseName + extension + "#" + dateFormat;
+	}
 
-    /**
-     * get the current file name.
-     * 
-     * @return the current file name. Can be null if there was no logging yet!
-     */
-    public String getCurrentfileName() {
-        return currentfileName;
-    }
+	/**
+	 * Get the current date format.
+	 * 
+	 * @return the current date format or null if none is used.
+	 */
+	public String getDateFormat() {
+		return dateFormat;
+	}
 
-    /**
-     * Return the value of appendDateAfterClose.
-     * 
-     * @return the value of appendDateAfterClose.
-     */
-    public boolean isAppendDateAfterClose() {
-        return appendDateAfterClose;
-    }
+	/**
+	 * get the current file name.
+	 * 
+	 * @return the current file name. Can be null if there was no logging yet!
+	 */
+	public String getCurrentfileName() {
+		return currentfileName;
+	}
 
-    /**
-     * Set the value for appendDateAfterClose.
-     * 
-     * @param appendDateAfterClose
-     *            If true only the base name is used to log to, plus if the date
-     *            part changes the current log file is closed and renamed. If
-     *            false the datePart is appended immediately.
-     */
-    public void setAppendDateAfterClose(boolean appendDateAfterClose) {
-        this.appendDateAfterClose = appendDateAfterClose;
-    }
+	/**
+	 * Return the value of appendDateAfterClose.
+	 * 
+	 * @return the value of appendDateAfterClose.
+	 */
+	public boolean isAppendDateAfterClose() {
+		return appendDateAfterClose;
+	}
 
-    /**
-     * Developer friendly toString().
-     */
-    public String toString() {
-        if (currentfileName == null)
-            return "Appender: -> " + key;
-        return "Appender: -> " + currentfileName;
-    }
+	/**
+	 * Set the value for appendDateAfterClose.
+	 * 
+	 * @param appendDateAfterClose If true only the base name is used to log to,
+	 *                             plus if the date part changes the current log
+	 *                             file is closed and renamed. If false the datePart
+	 *                             is appended immediately.
+	 */
+	public void setAppendDateAfterClose(boolean appendDateAfterClose) {
+		this.appendDateAfterClose = appendDateAfterClose;
+	}
+
+	/**
+	 * Developer friendly toString().
+	 */
+	public String toString() {
+		if (currentfileName == null)
+			return "Appender: -> " + key;
+		return "Appender: -> " + currentfileName;
+	}
 
 }

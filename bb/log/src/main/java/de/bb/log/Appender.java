@@ -127,4 +127,11 @@ public class Appender implements IAppender, Callback {
     public String toString() {
         return "Appender " + name + " : STDOUT";
     }
+
+	@Override
+	protected void finalize() throws Throwable {
+		flush();
+	}
+    
+    
 }
