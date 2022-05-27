@@ -70,6 +70,9 @@ public class CpHelper {
         if (dep.type != null && !"jar".equals(dep.type))
           continue;
         
+        if (a.getId().equals(project.getId()))
+        	continue;
+        
         File cpElement = loader.findFile(a, dep.classifier , "jar");
         extendedClasspathElements.add(cpElement.getAbsolutePath());
         

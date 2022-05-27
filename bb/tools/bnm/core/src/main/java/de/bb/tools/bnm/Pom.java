@@ -25,12 +25,15 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 
 import de.bb.tools.bnm.annotiation.Config;
 import de.bb.tools.bnm.annotiation.Default;
@@ -159,7 +162,7 @@ public class Pom {
 	 * @param name  the name
 	 * @param value the value
 	 */
-	void addProperty(String name, String value) {
+	public void addProperty(String name, String value) {
 		if (value == null)
 			value = "";
 		properties.put(name, value);
@@ -183,7 +186,7 @@ public class Pom {
 	/**
 	 * Get a property. Searches all parents recursively.
 	 */
-	String getProperty(String name) {
+	public String getProperty(String name) {
 		String value = properties.get(name);
 		if (value != null)
 			return value;
@@ -417,7 +420,8 @@ public class Pom {
 					// configuration and assign to plugin execution
 					MultiMap<String, String> conf = new MultiMap<String, String>();
 					conf.putAll(p.configuration);
-					Bind.mergeMap(conf, pe.configuration);
+					Bind.mergeMap((Map<String, Object>) (MultiMap) conf,
+							(Map<String, Object>) (MultiMap) pe.configuration);
 					pe.configuration = conf;
 
 					if (pe.phase != null) {
@@ -857,300 +861,112 @@ public class Pom {
 		return urls.toArray(new URL[] {});
 	}
 
-    private final static String DEPS[][] = {
-            { "compile", null, "runtime", null },
-            { "provided", null, "provided", null },
-            { "runtime", null, "runtime", null },
-			{ "test", null, "test", null }, { "system", null, "runtime", null } };
-
-	enum Scope {
-		COMPILE, PROVIDED, RUNTIME, TEST, SYSTEM, IMPORT;
-	}
-
 	public ArrayList<Object> getDependencyTree(String sscope) throws Exception {
-		Scope scope = Scope.valueOf(sscope.toUpperCase());
+		Scope targetScope = Scope.valueOf(sscope.toUpperCase());
 
 		HashSet<String> done = new HashSet<String>();
-		return getDependencyTree(done, scope);
+		ArrayList<Object> result = getDependencyTree(done, targetScope, false, Collections.emptyList());
+		result.add(0, new Dependency(effectivePom.getId()));
+		return result;
 	}
 
-	private ArrayList<Object> getDependencyTree(HashSet<String> done, Scope scope) throws Exception {
-		ArrayList<Dependency> pending = new ArrayList<Dependency>();
-		ArrayList<Object> result = new ArrayList<Object>();
+	private ArrayList<Object> getDependencyTree(HashSet<String> done, Scope targetScope, boolean compileOnly,
+			List<Exclusion> exclusions) throws Exception {
+		final ArrayList<Object> result = new ArrayList<Object>();
+		dependencyTreeLoop(done, targetScope, compileOnly, exclusions, (dep, ga) -> {
+			result.add(dep);
+			return null;
+		});
+		dependencyTreeLoop(done, targetScope, compileOnly, exclusions, (dep, ga) -> {
+			done.add(ga);
+			try {
+				Pom transPom = bnm.loadPom(loader, null, dep);
+				ArrayList<Object> list = transPom.getDependencyTree(done, Scope.COMPILE, true, dep.exclusions);
+				result.add(result.indexOf(dep) + 1, list);
+				
+			} catch (Exception e) {
+				Log.getLog().error("unresolved: " + dep);
+			}
+			return null;
+		});
+		return result;
+	}
+
+	private void dependencyTreeLoop(HashSet<String> done, Scope targetScope, boolean compileOnly,
+			List<Exclusion> exclusions, BiFunction<Dependency, String, Void> bif) {
 		for (Dependency dep : effectivePom.dependencies) {
 			String ga = dep.getGA() + ":" + dep.classifier;
 			if (done.contains(ga))
 				continue;
-			done.add(ga);
+
+			Scope depScope = Scope.valueOf(dep.scope.toUpperCase());
+
+			if (compileOnly && Scope.COMPILE != depScope)
+				continue;
+
+			switch (depScope) {
+			case TEST:
+				if (targetScope != Scope.TEST)
+					continue;
+				break;
+			case IMPORT:
+				continue;
+			case SYSTEM:
+			case PROVIDED:
+			case RUNTIME:
+			case COMPILE:
+				// ok
+				break;
+			}
+
+			if (isExclude(exclusions, dep))
+				continue;
 
 			if (dep.version == null) {
 				Log.getLog().warn("no version for " + ga + " using own version " + effectivePom.version);
 				dep.version = effectivePom.version;
 			}
 
-			int depScope = Scope.valueOf(dep.scope.toUpperCase()).ordinal();
+			bif.apply(dep, ga);
+		}
+	}
 
-			if (scope != Scope.TEST && depScope == Scope.TEST.ordinal())
-				continue;
-
-			result.add(dep);
-
-			if (scope.ordinal() < DEPS[depScope].length) {
-				String sfollowScope = DEPS[depScope][scope.ordinal()];
-				if (sfollowScope != null) {
-					Scope followScope = Scope.valueOf(sfollowScope.toUpperCase());
-					if (followScope == Scope.COMPILE || followScope == Scope.TEST) {
-						pending.add(dep);
-					}
-				}
+	private boolean isExclude(List<Exclusion> exs, Id id) {
+		for (Exclusion ex : exs) {
+			if (("*".equals(ex.artifactId) || id.artifactId.equals(ex.artifactId)) &&
+					("*".equals(ex.groupId) || id.artifactId.equals(ex.groupId))) {
+				return true;
 			}
 		}
-		StringBuilder missing = new StringBuilder();
-		for (Dependency dep : pending) {
-			try {
-				Pom transPom = bnm.loadPom(loader, null, dep);
-				Scope depScope = Scope.valueOf(dep.scope.toUpperCase());
-				ArrayList<Object> list = transPom.getDependencyTree(done, depScope);
-				result.add(list);
-			} catch (Exception e) {
-				missing.append(e.getMessage()).append("\r\n");
-				missing.append(dep).append("\r\n");
-			}
-		}
-		if (missing.length() > 0)
-			Log.getLog().error("unresolved: " + missing);
-		return result;
+		return false;
 	}
 
 	public ArrayList<Id> getCompileDependencies() throws Exception {
-		ArrayList<Id> result = new ArrayList<Id>();
-		ArrayList<Object> base = getDependencyTree("compile");
-		// System.err.println(base);
-		LinkedList<ArrayList<Object>> pending = new LinkedList<ArrayList<Object>>();
-		pending.add(base);
-		while (pending.size() > 0) {
-			ArrayList<Object> tree = pending.removeFirst();
-			for (Object o : tree) {
-				if (o instanceof Dependency) {
-					Dependency dep = (Dependency) o;
-					result.add(dep);
-					continue;
-				}
-				ArrayList<Object> next = (ArrayList<Object>) o;
-				pending.addLast(next);
+		ArrayList<Id> r = new ArrayList<>();
+		normalize(r, getDependencyTree("compile"));
+		return r;
+	}
+
+	private void normalize(ArrayList<Id> r, ArrayList<Object> dependencyTree) {
+		for (Object o : dependencyTree) {
+			if (o instanceof Id) {
+				r.add((Id) o);
+			} else {
+				normalize(r, (ArrayList<Object>) o);
 			}
 		}
-		// System.err.println(result);
-		return result;
 	}
 
 	public ArrayList<Id> getRuntimeDependencies() throws Exception {
-		ArrayList<Id> runtime = new ArrayList<Id>();
-
-		runtime.add(getEffectivePom());
-
-		HashSet<String> hit = new HashSet<String>();
-		LinkedList<Dependency> stack = new LinkedList<Dependency>();
-
-		// add direct dependencies
-		for (Dependency d : effectivePom.dependencies) {
-			String ga = d.getGA();
-			/*
-			 * if (ga.startsWith("org.apache.maven")) continue; if
-			 * ("org.codehaus.plexus:plexus-container-default".equals(ga)) continue; if
-			 * ("org.codehaus.plexus:plexus-classworlds".equals(ga)) continue;
-			 */
-			if (hit.contains(ga))
-				continue;
-			if (d.version == null) {
-				throw new Exception("no version for: [" + pom.getId() + "] -> " + d.getId());
-				// if ("org.codehaus.plexus:plexus-utils".equals(ga))
-				// d.version = "1.5.6";
-			}
-			if ("compile".equals(d.scope)) {
-				runtime.add(d);
-				stack.add(d);
-				hit.add(ga);
-				continue;
-			}
-			if ("runtime".equals(d.scope)) {
-				runtime.add(d);
-				hit.add(ga);
-				continue;
-			}
-		}
-
-		while (stack.size() > 0) {
-			Dependency transDep = stack.removeFirst();
-			Pom transPom = bnm.loadPom(loader, null, transDep);
-			for (Dependency d : transPom.effectivePom.dependencies) {
-				String ga = d.getGA();
-				/*
-				 * if ("org.apache.maven:maven-model".equals(ga)) continue; if
-				 * ("org.apache.maven:maven-project".equals(ga)) continue; if
-				 * ("org.apache.maven:maven-artifact".equals(ga)) continue; if
-				 * ("org.apache.maven:maven-artifact-manager".equals(ga)) continue; if
-				 * ("org.apache.maven.wagon:wagon-provider-api".equals(ga)) continue; if
-				 * ("org.apache.maven.surefire:surefire-booter".equals(ga)) continue; if
-				 * ("org.codehaus.plexus:plexus-container-default".equals(ga)) continue; if
-				 * ("org.codehaus.plexus:plexus-classworlds".equals(ga)) continue;
-				 */
-				/*
-				 * if ("commons-logging:commons-logging".equals(ga)) { d.version = "1.0.4"; }
-				 * else if ("log4j:log4j".equals(ga)) { d.version = "1.2.13"; }
-				 */
-				if ("compile".equals(d.scope)) {
-					if (hit.contains(ga))
-						continue;
-					runtime.add(d);
-					stack.add(d);
-					if (d.version == null) {
-						throw new Exception("no version for [" + transDep.getId() + "] -> " + d.getId());
-					}
-					if (d.groupId == null) {
-						throw new Exception("no group id for [" + transDep.getId() + "] -> " + d.getId());
-
-						// if (d.artifactId.startsWith("plexus"))
-						// d.groupId = "org.codehaus.plexus";
-						// else
-						// d.groupId = "org.apache.maven";
-					}
-					hit.add(ga);
-					continue;
-				}
-			}
-		}
-
-		return runtime;
+		ArrayList<Id> r = new ArrayList<>();
+		normalize(r, getDependencyTree("runtime"));
+		return r;
 	}
 
 	public ArrayList<Id> getTestDependencies() throws Exception {
-		ArrayList<Id> test = new ArrayList<Id>();
-
-		HashSet<String> hit = new HashSet<String>();
-		LinkedList<Dependency> stack = new LinkedList<Dependency>();
-
-		// add direct dependencies
-		for (Dependency d : effectivePom.dependencies) {
-			String ga = d.getGA() + ":" + d.classifier;
-			if (hit.contains(ga))
-				continue;
-			if (d.version == null) {
-				throw new Exception("no version for: [" + pom.getId() + "] -> " + d.getId());
-			}
-			if ("compile".equals(d.scope) || "test".equals(d.scope)) {
-				test.add(d);
-				stack.add(d);
-				hit.add(ga);
-				continue;
-			}
-			if ("provided".equals(d.scope) || "system".equals(d.scope)) {
-				test.add(d);
-				hit.add(ga);
-				continue;
-			}
-		}
-
-		while (stack.size() > 0) {
-			Dependency transDep = stack.removeFirst();
-			try {
-				Pom transPom = bnm.loadPom(loader, null, transDep);
-				HashSet<String> excludes = new HashSet<String>();
-				for (Exclusion ex : transDep.exclusions) {
-					excludes.add(ex.getGA());
-				}
-				for (Dependency d : transPom.effectivePom.dependencies) {
-					String ga = d.getGA();
-					// skip excluded stuff
-					if (excludes.contains(ga))
-						continue;
-
-					ga += ":" + d.classifier;
-
-					if ("compile".equals(d.scope)) {
-						if (hit.contains(ga))
-							continue;
-						test.add(d);
-						stack.add(d);
-						if (d.version == null) {
-							throw new Exception("no version for [" + transDep.getId() + "] -> " + d.getId());
-						}
-						if (d.groupId == null) {
-							throw new Exception("no group id for [" + transDep.getId() + "] -> " + d.getId());
-						}
-						hit.add(ga);
-						continue;
-					}
-				}
-			} catch (IOException ioe) {
-				Log.getLog().error(ioe.getMessage());
-			}
-		}
-
-		return test;
-	}
-
-	public ArrayList<Id> $getCompileDependencies() throws Exception {
-		ArrayList<Id> compile = new ArrayList<Id>();
-
-		HashSet<String> hit = new HashSet<String>();
-		LinkedList<Dependency> stack = new LinkedList<Dependency>();
-
-		// add direct dependencies
-		for (Dependency d : effectivePom.dependencies) {
-			String ga = d.getGA();
-			if (hit.contains(ga))
-				continue;
-			if (d.version == null) {
-				throw new Exception("no version for: [" + pom.getId() + "] -> " + d.getId());
-			}
-			if ("compile".equals(d.scope)) {
-				compile.add(d);
-				stack.add(d);
-				hit.add(ga);
-				continue;
-			}
-			if ("provided".equals(d.scope) || "system".equals(d.scope)) {
-				compile.add(d);
-				hit.add(ga);
-				continue;
-			}
-		}
-
-		while (stack.size() > 0) {
-			Dependency transDep = stack.removeFirst();
-			HashSet<String> excludes = new HashSet<String>();
-			for (Exclusion ex : transDep.exclusions) {
-				excludes.add(ex.getGA());
-			}
-			Pom transPom = bnm.loadPom(loader, null, transDep);
-			for (Dependency d : transPom.effectivePom.dependencies) {
-				String ga = d.getGA();
-				// skip excluded stuff
-				if (excludes.contains(ga))
-					continue;
-				if ("compile".equals(d.scope)) {
-					if (hit.contains(ga))
-						continue;
-					compile.add(d);
-					stack.add(d);
-					if (d.version == null) {
-						Log.getLog().warn("no version for [" + transDep.getId() + "] -> " + d.getId() + " using "
-								+ transDep.version);
-						d.version = transDep.version;
-					}
-					if (d.groupId == null) {
-						Log.getLog().warn("no group id for [" + transDep.getId() + "] -> " + d.getId() + " using "
-								+ transDep.groupId);
-						d.groupId = transDep.groupId;
-					}
-					hit.add(ga);
-					continue;
-				}
-			}
-		}
-
-		return compile;
+		ArrayList<Id> r = new ArrayList<>();
+		normalize(r, getDependencyTree("test"));
+		return r;
 	}
 
 	/**
@@ -1225,4 +1041,8 @@ public class Pom {
 		return bnm.setting.settings;
 	}
 
+	public Pom getParent() {
+		return parent;
+	}
+	
 }

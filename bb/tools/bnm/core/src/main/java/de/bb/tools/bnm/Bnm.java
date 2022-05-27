@@ -26,10 +26,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 
 import de.bb.tools.bnm.model.Id;
@@ -74,7 +76,7 @@ public class Bnm {
             // limit maxCount
             if (tm.getMaxCount() > n)
                 tm.setMaxCount(n);
-            Processor t = new Processor(tm, threads, args, tm, pom);
+            Processor t = new Processor(tm, threads, args, pom);
             t.start();
             synchronized (threads) {
                 threads.add(t);
@@ -92,11 +94,11 @@ public class Bnm {
         Exception myException;
         private Log myLog;
 
-        Processor(ThreadManager tm, ArrayList<Processor> threads, String[] args, ThreadManager tm2, Pom pom) {
+        Processor(ThreadManager tm, ArrayList<Processor> threads, String[] args, Pom pom) {
             super(tm);
             this.threads = threads;
             this.args = args;
-            this.tm = tm2;
+            this.tm = tm;
             this.pom = pom;
         }
 
@@ -159,7 +161,6 @@ public class Bnm {
     Setting setting = new Setting();
     private boolean skipUnchanged;
     private boolean verbose;
-	private HashSet<String> relevantProjects;
 
     public Bnm(Loader loader) throws Exception {
         this(loader, true);
@@ -413,21 +414,16 @@ public class Bnm {
      * @throws Exception
      */
     public boolean process(final String[] args, Stack<ArrayList<Pom>> localSorted) throws Exception {
+    	return process(args, localSorted, Collections.emptySet());
+    }
+    public boolean process(final String[] args, Stack<ArrayList<Pom>> localSorted, Set<String> excludeAndStop) throws Exception {
         try {
             errorException = null;
             log.flush();
 
             // clear the attached files
             for (ArrayList<Pom> l : localSorted) {
-            	for (Iterator<Pom> i = l.iterator(); i.hasNext();) {
-            		Pom p = i.next();
-            		
-            		// remove irrelevant projects
-            		if (relevantProjects != null && !relevantProjects.contains(p.getName())) {
-            			i.remove();
-            			continue;
-            		}
-            		
+            	for (Pom p : l) {
                     p.reset();
                 }
             }
@@ -438,6 +434,18 @@ public class Bnm {
                 final ArrayList<Processor> threads = new ArrayList<Processor>();
                 Factory f = new ProcessorFactory(poms, args, threads);
 
+                // don't build the excluded and stop
+                for (Iterator<Pom> j = poms.iterator(); j.hasNext();) {
+                	Pom p = j.next();
+                	if (excludeAndStop.contains(p.getName())) {
+                		i = 0; // stop
+                		j.remove(); // and remove from build
+                	}
+                }
+                
+                if (poms.isEmpty())
+                	continue;
+                
                 ThreadManager tm = new ThreadManager(f);
 
                 tm.setMaxCount(threadCount);

@@ -36,6 +36,7 @@ public class SnapshotVersionRefactoring extends PromoteVersionRefactoring {
   public SnapshotVersionRefactoring(IFile currentFile) {
     super(currentFile.getProject());
     this.currentFile = currentFile;
+    promoteToSnapshot = true;
   }
 
   

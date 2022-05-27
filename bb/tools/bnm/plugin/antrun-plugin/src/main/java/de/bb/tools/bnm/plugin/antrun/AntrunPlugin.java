@@ -51,6 +51,13 @@ public class AntrunPlugin extends AbstractPlugin {
             FileOutputStream fos = new FileOutputStream(tempFile);
             fos.write(("<project basedir=\"" + currentDir.getAbsolutePath() + "\"><target name=\"bnm\">\r\n")
                     .getBytes());
+            fos.write("\r\n<path id=\"maven.plugin.classpath\">".getBytes());
+            for (String cpe : cp.split(File.pathSeparator)) {
+            	fos.write("\r\n  <pathelement path=\"".getBytes());
+            	fos.write(cpe.getBytes());
+            	fos.write("\"/>".getBytes());
+            }
+            fos.write("\r\n</path>".getBytes());
             fos.write(target.getBytes());
             fos.write("\r\n</target></project>".getBytes());
             fos.close();
@@ -103,6 +110,7 @@ public class AntrunPlugin extends AbstractPlugin {
             
             if (ret != 0) {
                 log.error("ant returned: " + ret);
+                throw new Exception("ANT execution failed");
             }
             proc.destroy();
 

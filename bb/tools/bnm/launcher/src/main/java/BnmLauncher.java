@@ -209,14 +209,22 @@ public class BnmLauncher {
 
 		try {
 			URL url = new URL("http://www.bebbosoft.de/repo" + part);
-			info("trying " + url);
-			URLConnection con = url.openConnection();
-			con.setReadTimeout(60000);
-			try {
-				con.connect();
-			} catch (Exception ex) {
-				error("cannot connect to " + url);
-				return null;
+			URLConnection con;
+			for(;;) {
+				info("trying " + url);
+				con = url.openConnection();
+				con.setReadTimeout(60000);
+				try {
+					con.connect();
+				} catch (Exception ex) {
+					error("cannot connect to " + url);
+					return null;
+				}
+				// check for redirect
+				String location = con.getHeaderField("Location");
+				if (location == null)
+					break;
+				url = new URL(location);
 			}
 			InputStream is = con.getInputStream();
 			file.getParentFile().mkdirs();

@@ -46,6 +46,8 @@ public class CcpContainer implements IClasspathContainer {
             for (Id id : deps) {
                 if (!(id instanceof Dependency))
                     continue;
+                if (id.getId().equals(pom.getId()))
+                	continue;
                 try {
                     File jar = loader.findFile(id, null, "jar", false);
                     IPath jpath = new Path(jar.getAbsolutePath());

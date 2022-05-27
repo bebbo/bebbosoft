@@ -86,7 +86,6 @@ public class LoadProjectAction extends PomAction {
 
           Tracker.validateAll();
 
-          Bnm bnm = new Bnm(Plugin.getLoader());
           IProject theProject = pomFile.getProject();
           IPath loc = pomFile.getLocation().removeLastSegments(1);
           File path = loc.toFile();
@@ -100,7 +99,9 @@ public class LoadProjectAction extends PomAction {
             fos.close();
           }
 
+          Bnm bnm = new Bnm(Plugin.getLoader());
           bnm.loadFirst(path);
+        	  
           ArrayList<Pom> poms = bnm.getProjectsInOrder();
           if (poms.size() == 1) {
 
@@ -223,6 +224,7 @@ public class LoadProjectAction extends PomAction {
               entries.add(ce);
             }
 
+            pd.refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, 42));
 
             ce = JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER"));
             entries.add(ce);
@@ -238,7 +240,6 @@ public class LoadProjectAction extends PomAction {
 //            if (entriesB != null)
 //              entriesA = entriesB;
             jp.setRawClasspath(entriesA, output, monitor);
-            theProject.refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, 42));
           }
         } catch (Exception e) {
           exe = e;

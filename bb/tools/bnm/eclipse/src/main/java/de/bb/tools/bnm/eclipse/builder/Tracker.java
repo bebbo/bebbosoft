@@ -288,42 +288,7 @@ public class Tracker implements IResourceChangeListener {
         bp.buildAfter(project);
     }
 
-    /**
-     * This method only marks the modules with changes. TODO currently everything is marked to build The changes are
-     * used in buildUntilProject.
-     * 
-     * @param project
-     * @param delta
-     */
-    public void buildBnmProject(IProject project, IResourceDelta delta) {
-        BnmProject bp = PROJECTS.get(project.getName());
-        if (bp == null)
-            return;
-
-        final ArrayList<IFile> files = new ArrayList<IFile>();
-        collect(delta, files);
-        if (files.isEmpty())
-            return;
-
-        bp.markDirtySlaves(delta);
-    }
-
-    private void collect(final IResourceDelta delta, final ArrayList<IFile> files) {
-        if (delta == null)
-            return;
-        final IResource r = delta.getResource();
-        if (r instanceof IFile) {
-            files.add((IFile) r);
-        } else if (r instanceof IContainer) {
-            if (r.getName().equals("target"))
-                return;
-            for (final IResourceDelta rd : delta.getAffectedChildren()) {
-                collect(rd, files);
-            }
-        }
-    }
-
-    public void clean(IProject project) {
+	public void clean(IProject project) {
         BnmProject bp = PROJECTS.get(project.getName());
         if (bp == null)
             return;

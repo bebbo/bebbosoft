@@ -82,8 +82,9 @@ public abstract class AbstractJarPlugin extends AbstractPlugin {
         makeName();
 
         jarFile = new File(cfgOutputDirectory != null ? cfgOutputDirectory
-                : outputDirectory, finalName);
+                : outputDirectory, finalName + "." + getType());
 
+        getLog().debug("creating " + jarFile.getAbsolutePath());
         collectFiles();
         createJar();
     }
@@ -234,7 +235,6 @@ public abstract class AbstractJarPlugin extends AbstractPlugin {
             finalName = pom.build.finalName;
             if (classifier != null)
                 finalName += "-" + classifier;
-            finalName += "." + getType();
         }
         
     }

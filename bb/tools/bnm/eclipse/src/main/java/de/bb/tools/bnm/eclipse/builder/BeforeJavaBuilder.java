@@ -21,6 +21,7 @@ package de.bb.tools.bnm.eclipse.builder;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -40,7 +41,9 @@ public class BeforeJavaBuilder extends IncrementalProjectBuilder {
   protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
     System.out.println("before " + getProject() + " " + kind);
     Tracker tracker = Plugin.getTracker();
-    tracker.buildUntil(this.getProject(), (String)args.get("master"));
+    IProject project = this.getProject();
+	tracker.buildUntil(project, (String)args.get("master"));
+	project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
     return null;
   }
 

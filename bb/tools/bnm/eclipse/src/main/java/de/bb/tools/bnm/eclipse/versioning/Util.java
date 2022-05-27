@@ -76,9 +76,10 @@ public class Util {
   }
 
   public static List<String> nextSnapshots(String value) {
-      if (value.endsWith("-SNAPSHOT"))
-        value = value.substring(0, value.length() - 9);
       LinkedList<String> list = new LinkedList<String>();
+      String unsnapshot = null;
+      if (value.endsWith("-SNAPSHOT"))
+        unsnapshot = value = value.substring(0, value.length() - 9);
       // find numbers
       char ch [] = value.toCharArray();
       StringBuffer v = new StringBuffer();
@@ -117,6 +118,8 @@ public class Util {
           list.addFirst(sb.toString());
         }
       }
+      if (unsnapshot != null)
+    	  list.addFirst(unsnapshot);
       return list;
     }
 

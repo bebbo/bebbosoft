@@ -184,7 +184,13 @@ public class ImportWizardPage extends WizardPage {
       getContainer().run(true, true, op);
 
       IProject project = (IProject) workspace.getRoot().findMember(name);
-      String[] newNatures = new String[1];
+      String[] newNatures;
+      if ("pom".equals(pom.getProject().packaging)) {
+          newNatures = new String[1];
+      } else {
+          newNatures = new String[2];
+          newNatures[1] = "org.eclipse.jdt.core.javanature";
+      }
       newNatures[0] = BnmNature.NATURE_ID;
       IProjectDescription description2 = project.getDescription();
       description2.setNatureIds(newNatures);

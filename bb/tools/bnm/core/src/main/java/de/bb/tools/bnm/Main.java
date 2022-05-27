@@ -163,13 +163,13 @@ public class Main {
                 o = o.substring(2);
                 if (o.length() == 0)
                     continue;
-                int eq = o.indexOf('"');
+                int eq = o.indexOf('=');
                 String val = "";
                 if (eq > 0) {
                     val = o.substring(eq + 1);
                     o = o.substring(0, eq);
                 }
-                rootBnm.addProperty(o, val);
+                System.setProperty(o, val);
                 continue;
             }
 
@@ -200,6 +200,8 @@ public class Main {
             throw new Exception("Invalid option '" + args[i - 1] + "'");
         }
 
+        Log.getLog().info("using " + bnm.threadCount + " cores");
+        
         String res[] = new String[j];
         System.arraycopy(args, 0, res, 0, j);
         return res;

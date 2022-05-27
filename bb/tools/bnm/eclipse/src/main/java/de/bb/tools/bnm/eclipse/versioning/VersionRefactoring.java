@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -43,7 +47,7 @@ public abstract class VersionRefactoring extends Refactoring {
     ArrayList<IPath> pomList = new ArrayList<IPath>();
     protected HashMap<PomInfo, IPath> pom2Loc = new HashMap<PomInfo, IPath>();
     protected HashMap<String, PomInfo> id2Pom = new HashMap<String, PomInfo>();
-	protected boolean promoteToSnapshot = true;
+	protected boolean promoteToSnapshot = false;
 
     public VersionRefactoring() {
     }
@@ -171,7 +175,7 @@ public abstract class VersionRefactoring extends Refactoring {
 
         HashSet<String> modifiedIds = new HashSet<String>();
         HashMap<String, String> id2newVersion = new HashMap<String, String>();
-        HashSet<String> touched = new HashSet<String>();
+        TreeSet<String> touched = new TreeSet<String>();
         // find all changes
         for (VI vi : data) {
             String orgV = vi.origVersion;
@@ -194,7 +198,7 @@ public abstract class VersionRefactoring extends Refactoring {
             return manifests;
 
         int removeCount = currentProject.getLocation().segmentCount();
-        HashMap<String, TextEdit> pom2TextEdit = new HashMap<String, TextEdit>();
+        Map<String, TextEdit> pom2TextEdit = new TreeMap<String, TextEdit>();
         for (String pomId : touched) {
             PomInfo pi = id2Pom.get(pomId);
             if (pi == null)
@@ -213,7 +217,7 @@ public abstract class VersionRefactoring extends Refactoring {
             }
             for (String mod : modifiedIds) {
                 ArrayList<Pos> positions = pi.getPositions(mod);
-                if (positions != null) {
+                if (!positions.isEmpty()) {
                     String nv = id2newVersion.get(mod);
                     for (Pos pos : positions) {
                         TextEdit re;
@@ -263,23 +267,22 @@ public abstract class VersionRefactoring extends Refactoring {
     }
 
 
-    protected void extendPomChanges(SortedMap<String, String> maniDeps, HashSet<String> modifiedIds,
-            HashMap<String, String> id2newVersion, HashSet<String> touched) {
+    protected void extendPomChanges(SortedMap<String, String> maniDeps, Set<String> modifiedIds,
+            HashMap<String, String> id2newVersion, Set<String> touched) {
         // walk through all and promote changes
         Stack<String> stack = new Stack<String>();
         stack.addAll(modifiedIds);
         while (stack.size() > 0) {
             String module = stack.pop();
             for (String ref : maniDeps.subMap(module, module + "\0").values()) {
-//                if (touched.contains(ref))
-//                    continue;
-                touched.add(ref);
+                if (!touched.add(ref))
+                	continue;
 
                 PomInfo pi = id2Pom.get(ref);
                 String version = id2newVersion.get(ref);
                 if (version == null)
                     version = pi.getVersion();
-                if (version == null || promoteToSnapshot == version.endsWith("-SNAPSHOT"))
+                if (version == null || !promoteToSnapshot || version.endsWith("-SNAPSHOT"))
                     continue;
 
                 String newVersion = Util.nextSnapshots(version).get(0);

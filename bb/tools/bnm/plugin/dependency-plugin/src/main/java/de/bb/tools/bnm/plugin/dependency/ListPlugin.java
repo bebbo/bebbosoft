@@ -3,14 +3,13 @@ package de.bb.tools.bnm.plugin.dependency;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import de.bb.tools.bnm.AbstractPlugin;
 import de.bb.tools.bnm.Log;
 import de.bb.tools.bnm.annotiation.Config;
 import de.bb.tools.bnm.model.Dependency;
-import de.bb.tools.bnm.model.Id;
 
 public class ListPlugin extends AbstractPlugin {
 
@@ -44,7 +43,7 @@ public class ListPlugin extends AbstractPlugin {
 
             HashSet<String> done = new HashSet<String>();
             for (String scope : SCOPES) {
-                ArrayList<Object> deps = project.getDependencyTree(scope);
+                List<Object> deps = project.getDependencyTree(scope);
                 recurse(deps, done);
             }
 
@@ -64,7 +63,7 @@ public class ListPlugin extends AbstractPlugin {
         }
     }
 
-    private void recurse(ArrayList<Object> deps, HashSet<String> done)
+    private void recurse(List<Object> deps, HashSet<String> done)
             throws IOException {
         for (Object o : deps) {
             if (o instanceof Dependency) {
@@ -80,8 +79,8 @@ public class ListPlugin extends AbstractPlugin {
                 write(msg);
                 continue;
             }
-            if (o instanceof ArrayList) {
-                ArrayList<Object> al = (ArrayList<Object>) o;
+            if (o instanceof List) {
+                List<Object> al = (List<Object>) o;
                 recurse(al, done);
                 continue;
             }

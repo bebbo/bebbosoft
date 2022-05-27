@@ -24,6 +24,7 @@ public class PromoteVersionRefactoring extends VersionRefactoring {
 
     public PromoteVersionRefactoring(IProject currentProject) {
         this.currentProject = currentProject;
+        promoteToSnapshot = true;
     }
 
 }
