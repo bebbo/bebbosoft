@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.bb.util.Misc;
-import sun.security.krb5.internal.crypto.Aes256;
 
 public class TestSsl3 {
 

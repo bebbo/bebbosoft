@@ -1,0 +1,6 @@
+.classpath
+.project
+*/.classpath
+*/.project
+*/target
+*/build.properties
