@@ -8,5 +8,9 @@
       <goal>updatesite</goal>
       <implementation>de.bb.tools.bnm.plugin.eclipse.UpdatesitePlugin</implementation>
     </mojo>
+    <mojo>
+      <goal>import</goal>
+      <implementation>de.bb.tools.bnm.plugin.eclipse.ImportPluginsPlugin</implementation>
+    </mojo>
   </mojos>
 </plugin>

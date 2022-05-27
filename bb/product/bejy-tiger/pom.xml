@@ -4,17 +4,17 @@
     <parent>
         <groupId>de.bb</groupId>
         <artifactId>product</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <groupId>de.bb.product</groupId>
     <artifactId>bejy-tiger</artifactId>
-    <version>1.6.12-SNAPSHOT</version>
+    <version>1.6.14</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <artifactId>http</artifactId>
             <groupId>de.bb.bejy</groupId>
-            <version>1.6.12-SNAPSHOT</version>
+            <version>1.6.14</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -35,6 +35,19 @@
                             <includeGroupIds>de.bb</includeGroupIds>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-exec-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>de.bb.tools</groupId>
+                        <artifactId>mug</artifactId>
+                        <version>1.7.8-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <executions>
                     <execution>
                         <id>copyJavaxDeps</id>
                         <phase>compile</phase>
@@ -53,13 +66,18 @@
                 <artifactId>maven-antrun-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-exec-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
                 <dependencies>
                     <dependency>
                         <groupId>de.bb.tools</groupId>
                         <artifactId>uses</artifactId>
-                        <version>1.5.6-SNAPSHOT</version>
+                        <version>1.5.8</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>de.bb.tools</groupId>
+                        <artifactId>mug</artifactId>
+                        <version>1.7.9</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -86,19 +104,6 @@
                             <mainClass>de.bb.tools.uses.Main</mainClass>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-exec-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>de.bb.tools</groupId>
-                        <artifactId>mug</artifactId>
-                        <version>1.7.8-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
-                <executions>
                     <execution>
                         <id>mug</id>
                         <phase>compile</phase>

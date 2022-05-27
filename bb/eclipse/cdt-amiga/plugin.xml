@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+   	id="Amiga"
+   	name="Amiga Executable"
+         point="org.eclipse.cdt.core.BinaryParser">
+         <cextension>
+         <run
+               class="de.bb.eclipse.cdt.utils.amiga.parser.AmigaParser">
+         </run>
+      </cextension>
+   </extension>
+
+</plugin>

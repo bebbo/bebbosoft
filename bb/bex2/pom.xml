@@ -4,17 +4,17 @@
   <parent>
   	<artifactId>bb</artifactId>
   	<groupId>de.bb</groupId>
-  	<version>1.0.3</version>
+  	<version>1.0.4</version>
   </parent>
   <dependencies>
   	<dependency>
   		<groupId>de.bb</groupId>
   		<artifactId>util</artifactId>
-  		<version>1.0.22-SNAPSHOT</version>
+  		<version>1.0.23</version>
     	</dependency>
   </dependencies>
   <groupId>de.bb</groupId>
   <artifactId>bex2</artifactId>
-  <version>1.0.13-SNAPSHOT</version>
+  <version>1.0.14</version>
   <packaging>jar</packaging>
 </project>

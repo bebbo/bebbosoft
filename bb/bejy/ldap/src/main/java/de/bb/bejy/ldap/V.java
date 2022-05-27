@@ -1,1 +1,1 @@
-package de.bb.bejy.ldap; public interface V { public static final String V="0.9.1-SNAPSHOT"; public static final String Y="2019";}
+package de.bb.bejy.ldap; public interface V { public static final String V="0.9.2"; public static final String Y="2021";}

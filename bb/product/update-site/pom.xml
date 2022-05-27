@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>de.bb.product</groupId>
 	<artifactId>update-site</artifactId>
-	<version>0.2.7-SNAPSHOT</version>
+	<version>0.2.9</version>
 	<packaging>jar</packaging>
 	<organization>
 		<name>
@@ -22,7 +22,7 @@
 			<plugin>
 				<groupId>de.bb.tools.bnm.plugin</groupId>
 				<artifactId>eclipse-plugin</artifactId>
-				<version>0.2.7-SNAPSHOT</version>
+				<version>0.2.9</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -41,13 +41,13 @@
 		<dependency>
 			<groupId>de.bb.tools.bnm</groupId>
 			<artifactId>feature</artifactId>
-			<version>0.2.7-SNAPSHOT</version>
+			<version>0.2.9</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.bb.eclipse.cdt-amiga</groupId>
 			<artifactId>feature</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>

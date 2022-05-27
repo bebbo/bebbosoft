@@ -3,18 +3,20 @@
   <parent>
     <artifactId>bb</artifactId>
     <groupId>de.bb</groupId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
   </parent>
   <groupId>de.bb.tools</groupId>
   <artifactId>tools</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <description>BebboSoft Tools</description>
   <modules>
     <module>bnm</module>
-    <module>dbgen</module>
-    <module>mug</module>
-    <module>ant</module>
     <module>uses</module>
+    <module>mug</module>
+<!--
+    <module>dbgen</module>
+    <module>ant</module>
+-->    
   </modules>
 </project>

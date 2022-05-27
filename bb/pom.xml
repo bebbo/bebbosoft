@@ -3,8 +3,8 @@
   <groupId>de.bb</groupId>
   <artifactId>bb</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.3</version>
-  <!-- <name>${groupId}.${artifactId}</name> -->
+  <version>1.0.4</version>
+  <!-- <name>${project.groupId}.${project.artifactId}</name> -->
   <description>All BebboSoft projects</description>
   <url>https://www.bebbosoft.de/java/</url>
   <organization>
@@ -21,8 +21,8 @@
       </releases>
     </repository>
     <repository>
-      <id>ibiblio</id>
-      <url>https://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+      <id>maven repo1</id>
+      <url>https://repo1.maven.org/maven2/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
         <enabled>true</enabled>
@@ -47,8 +47,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
+            <source>1.8</source>
+            <target>1.8</target>
           </configuration>
         </plugin>
         <plugin>
@@ -66,7 +66,7 @@
               <version>1.8.2</version>
             </dependency>
             <dependency>
-              <groupId>net.sf.ant-contrib</groupId>
+              <groupId>ant-contrib</groupId>
               <artifactId>ant-contrib</artifactId>
               <version>1.0b2</version>
             </dependency>
@@ -80,17 +80,18 @@
               </goals>
               <configuration>
                 <target>
-                	<script language="javascript">
-				var s = "src/main/java/${groupId}/${artifactId}".replaceAll("\\.", "/") + "/V.java";
+                	<script language="javascript" classpath="${plugin_classpath}">
+				var s = "src/main/java/${project.groupId}/${project.artifactId}".replaceAll("\\.", "/") + "/V.java";
 				var y = new java.util.Date().getYear() + 1900;
 				var f = new java.io.File(s);
 				if (f.getParentFile().exists()) {
 					print("writing version to: " + s);
 					var out = new java.io.FileOutputStream(f);
-					out.write(("package ${groupId}.${artifactId}; public interface V { public static final String V=\"${version}\"; public static final String Y=\"" + y + "\";}").getBytes());
+					out.write(("package ${project.groupId}.${project.artifactId}; public interface V { public static final String V=\"${project.version}\"; public static final String Y=\"" + y + "\";}").getBytes());
 					out.close();
 				}
                 	</script>
+                	<property name="plugin_classpath" refid="maven.plugin.classpath"/>
                 </target>
               </configuration>
             </execution>
@@ -103,7 +104,7 @@
         <!-- <id>pluginStuff</id> -->
         <directory>.</directory>
         <includes>
-          <include>COPYING</include>
+          <include>LICENSE</include>
           <include>plugin.xml</include>
           <include>META-INF/MANIFEST.MF</include>
         </includes>
@@ -129,12 +130,16 @@
       </resource>
       <resource>
         <directory>src/main/resources</directory>
-      </resource>
+      </resource> 
     </resources>
     <testResources>
-      <testResource>
-        <directory>src/test/java</directory>
-      </testResource>
+    	<testResource>
+	        <directory>src/test/resources</directory>
+    	</testResource>
+    	<testResource>
+	        <directory>src/test/java</directory>
+	        <targetPath>src</targetPath>
+    	</testResource>
     </testResources>
     <plugins>
       <plugin>
@@ -154,23 +159,23 @@
     </dependency>
   </dependencies>
   <modules>
+    <module>log</module>
     <module>tools</module>
-    <module>jcc</module>
     <module>util</module>
-    <module>bex2</module>
-    <module>swing</module>
+    <module>io</module>
+    <module>security</module>
+    <module>bejy</module>
+    <module>jsp</module>
     <module>sql</module>
+    <module>bex2</module>
+    <module>product</module>
+    <module>security_tools</module>
+    <module>jcc</module>
+    <module>swing</module>
     <module>eclipse</module>
     <module>ws</module>
-    <module>bejy</module>
-    <module>security</module>
-    <module>jsp</module>
-    <module>product</module>
     <module>web</module>
-    <module>security_tools</module>
     <module>bwt</module>
-    <module>io</module>
-    <module>log</module>
     <module>benchmark</module>
     <module>mejb</module>
     <module>rmi</module>

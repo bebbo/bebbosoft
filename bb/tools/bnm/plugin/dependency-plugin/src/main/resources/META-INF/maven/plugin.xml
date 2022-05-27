@@ -5,6 +5,10 @@
       <implementation>de.bb.tools.bnm.plugin.dependency.ListPlugin</implementation>
     </mojo>
     <mojo>
+      <goal>tree</goal>
+      <implementation>de.bb.tools.bnm.plugin.dependency.TreePlugin</implementation>
+    </mojo>
+    <mojo>
       <goal>copy-dependencies</goal>
       <implementation>de.bb.tools.bnm.plugin.dependency.CopyDepsPlugin</implementation>
     </mojo>
