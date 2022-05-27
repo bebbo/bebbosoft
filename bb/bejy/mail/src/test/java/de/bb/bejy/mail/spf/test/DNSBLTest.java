@@ -29,13 +29,12 @@ public class DNSBLTest {
 			cfg.addChild("dns", dns);
 			dns.activate(log);
 		}
-		File wl = new File("whitelist.txt");
-		if (!wl.exists()) {
-			FileOutputStream fos = new FileOutputStream(wl);
-			fos.write("mail.*.foo".getBytes());
-			fos.write("neelix.permanent.de".getBytes());
-			fos.close();
-		}
+		File whitelistFile = File.createTempFile("white", ".list");
+		FileOutputStream fos = new FileOutputStream(whitelistFile);
+		fos.write("mail.*.foo\r\n".getBytes());
+		fos.write("neelix.permanent.de\r\n".getBytes());
+		fos.close();
+		Smtp.readWhitelist(whitelistFile);
 	}
 
 	@Test

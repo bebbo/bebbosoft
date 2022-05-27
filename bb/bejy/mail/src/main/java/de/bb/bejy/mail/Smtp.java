@@ -786,7 +786,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 		}
 
 		// search the white list
-		final SortedMap<String, MultiMap<String, String>> head = WHITELIST.headMap(resolvedDomain + '\0');
+		final SortedMap<String, MultiMap<String, String>> head = WHITELIST.headMap(resolvedDomain + "\0");
 		if (head.isEmpty())
 			return false;
 
@@ -803,7 +803,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 			
 			final MultiMap<String, String> taillookup = e.getValue();
 			final String reversed = reverse(resolvedDomain);
-			final SortedMap<String, String> tail = taillookup.headMap(reversed);
+			final SortedMap<String, String> tail = taillookup.headMap(reversed + "\0");
 			if (tail.isEmpty())
 				continue;
 
@@ -830,7 +830,7 @@ final public class Smtp extends de.bb.bejy.Protocol {
 	 * @param whitelistFile
 	 *            the white list file
 	 */
-	private static void readWhitelist(File whitelistFile) {
+	public static void readWhitelist(File whitelistFile) {
 		try {
 			BufferedReader fr = new BufferedReader(new FileReader(whitelistFile));
 			for (String line = fr.readLine(); line != null; line = fr.readLine()) {
