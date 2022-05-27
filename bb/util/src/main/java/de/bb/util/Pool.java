@@ -94,11 +94,11 @@ public class Pool {
     /** maximal count of maintained obects */
     private int maxCount = 0x7fffffff;
     /** a stack to maintain all unused objects */
-    private HashMap unused = new HashMap();
+    private HashMap<Object, Long> unused = new HashMap<Object, Long>();
     /** a hashtable to maintain all used objects */
-    private HashMap used = new HashMap();
-    /** a hashtabke to maintain the lock counter */
-    private HashMap locks = new HashMap();
+    private HashMap<Object, Object> used = new HashMap<Object, Object>();
+    /** a hashtable to maintain the lock counter */
+    private HashMap<Object, Integer> locks = new HashMap<Object, Integer>();
     /** all waiting threads */
     private Object waiting = new Object();
     /** the factory for the objects. */
@@ -341,7 +341,7 @@ public class Pool {
             ) {
                 // signal to one to resume
                 synchronized (waiting) {
-                    unused.put(r, new Long(System.currentTimeMillis()));
+                    unused.put(r, System.currentTimeMillis());
                     waiting.notify();
                 }
                 return;
@@ -395,7 +395,7 @@ public class Pool {
             if (count != null) {
                 c = count.intValue() + 1;
             }
-            count = new Integer(c);
+            count = c;
             locks.put(key, count);
         }
         return c;
@@ -422,7 +422,7 @@ public class Pool {
             }
 
             c = count.intValue() - 1;
-            count = new Integer(c);
+            count = c;
             if (c == 0) {
                 locks.remove(key);
             } else {
@@ -462,7 +462,7 @@ public class Pool {
      */
     public void validate() {
         synchronized (locks) {
-            for (Iterator i = used.keySet().iterator(); i.hasNext();) {
+            for (Iterator<Object> i = used.keySet().iterator(); i.hasNext();) {
                 Object key = i.next();
                 if (!factory.validateKey(key)) {
                     locks.remove(key);

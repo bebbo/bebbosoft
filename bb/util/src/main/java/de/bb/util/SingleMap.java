@@ -1,5 +1,5 @@
 /******************************************************************************
- * A sorted map based in the MapBase which allows now duplicate keys. 
+ * A sorted map based in the MapBase which allows now duplicate keys.
  *
  * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
@@ -15,12 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  *****************************************************************************/
 
 package de.bb.util;
 
-import java.util.*;
+import java.util.Comparator;
 
 /**
  * This class is used to maintain key value pairs, sorted by key. All keys must
@@ -37,11 +37,11 @@ public class SingleMap<K, V> extends MapBase<K, V> {
 
     /**
      * Create a new SingleMap and use the specified Comparator object.
-     * 
+     *
      * @param comp_
      *            the Comparator used to compare all keys vice versa.
      */
-    public SingleMap(Comparator<K> comp_) {
+    public SingleMap(final Comparator<K> comp_) {
         super(comp_);
     }
 
@@ -53,7 +53,7 @@ public class SingleMap<K, V> extends MapBase<K, V> {
 
     /**
      * Insert a given object into the tree using the specified key.
-     * 
+     *
      * @param key
      *            the key
      * @param value
@@ -61,7 +61,7 @@ public class SingleMap<K, V> extends MapBase<K, V> {
      * @return the old replaced value or null.
      */
     @Override
-    public V put(K key, V value) {
+    public V put(final K key, final V value) {
         // handle empty tree: initialize root and count
         if (root == null) {
             root = new Leaf<K, V>(key, value);
@@ -82,17 +82,17 @@ public class SingleMap<K, V> extends MapBase<K, V> {
                     return o;
                 }
                 if (c < 0) {
-                    if (i.l == null) {
-                        neu = i.l = new Leaf<K, V>(key, value);
+                    if (i.__l == null) {
+                        neu = i.__l = new Leaf<K, V>(key, value);
                         break;
                     }
-                    i = i.l;
+                    i = i.__l;
                 } else {
-                    if (i.r == null) {
-                        neu = i.r = new Leaf<K, V>(key, value);
+                    if (i.__r == null) {
+                        neu = i.__r = new Leaf<K, V>(key, value);
                         break;
                     }
-                    i = i.r;
+                    i = i.__r;
                 }
             }
         } else {
@@ -104,22 +104,22 @@ public class SingleMap<K, V> extends MapBase<K, V> {
                     return o;
                 }
                 if (c < 0) {
-                    if (i.l == null) {
-                        neu = i.l = new Leaf<K, V>(key, value);
+                    if (i.__l == null) {
+                        neu = i.__l = new Leaf<K, V>(key, value);
                         break;
                     }
-                    i = i.l;
+                    i = i.__l;
                 } else {
-                    if (i.r == null) {
-                        neu = i.r = new Leaf<K, V>(key, value);
+                    if (i.__r == null) {
+                        neu = i.__r = new Leaf<K, V>(key, value);
                         break;
                     }
-                    i = i.r;
+                    i = i.__r;
                 }
             }
         }
         ++count;
-        neu.top = i;
+        neu.__top = i;
         fixAdd(neu);
         return null;
     }
@@ -128,20 +128,20 @@ public class SingleMap<K, V> extends MapBase<K, V> {
      * Removes the key holding the specified value from this Map. Useful in MultiMap to remove a distinct key / value
      * entry. This method does nothing if the key is not in the Map. If value is null, the first matching key is
      * removed.
-     * 
+     *
      * @param key
      *            the key that needs to be removed.
      * @param value
      *            the value at the key that needs to be removed.
      * @return the value to which the key had been mapped in this MultiMap, or null if the key did not have a mapping.
      */
-    public boolean remove(Object key, Object value) {
-    	final K kkey = (K) key;
+    @Override
+    @SuppressWarnings("unchecked")
+	public boolean remove(final Object key, final Object value) {
+		final K kkey = (K) key;
         // search the key
         Leaf<K, V> p = find(kkey);
-        if (p == null)
-            return false;
-        if (p.value != value)
+        if ((p == null) || (p.value != value))
             return false;
         return unlink(p) != null;
     }

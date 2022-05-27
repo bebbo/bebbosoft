@@ -1,5 +1,7 @@
 package de.bb.util.test;
 
+import java.lang.reflect.Field;
+
 /******************************************************************************
  * $Source: /export/CVS/java/de/bb/util/src/test/java/de/bb/util/test/TestDateFormat.java,v $
  * $Revision: 1.1 $
@@ -67,6 +69,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -83,13 +86,26 @@ public class TestDateFormat extends TestCase {
     public void testFormat1() {
         DateFormat df = new DateFormat("m:ss.S");
         String ms1 = df.format(1);
-        assertEquals(" 0:00.0", ms1);
+        assertEquals("0:00.0", ms1);
         String ms10 = df.format(10);
-        assertEquals(" 0:00.0", ms10);
+        assertEquals("0:00.0", ms10);
         String ms100 = df.format(100);
-        assertEquals(" 0:00.1", ms100);
+        assertEquals("0:00.1", ms100);
         String s1 = df.format(1000);
-        assertEquals(" 0:01.0", s1);
+        assertEquals("0:01.0", s1);
+    }
+
+    @Test
+    public void testFormat2() {
+        DateFormat df = new DateFormat("mm:s.SS");
+        String ms1 = df.format(1);
+        assertEquals(" 0:0.00", ms1);
+        String ms10 = df.format(10);
+        assertEquals(" 0:0.01", ms10);
+        String ms100 = df.format(100);
+        assertEquals(" 0:0.10", ms100);
+        String s1 = df.format(1000);
+        assertEquals(" 0:1.00", s1);
     }
 
     private static void xest(long l) {
@@ -143,12 +159,24 @@ public class TestDateFormat extends TestCase {
         long l2 = df.parse("01.10.2004");
         int d2 = DateFormat.getDayOfMonth(l2);
         System.out.println(d1 + " == " + d2);
-        System.out.println(l1 + " == " + l2);
+        System.out.println(new Date(l1) + " == " + new Date(l2));
     }
 
     @Test
-    public void test1() throws ParseException {
+    public void test1() throws ParseException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         main(null);
+        
+        TimeZone tz = TimeZone.getDefault();
+        
+        Field f = tz.getClass().getDeclaredField("transitions");
+        f.setAccessible(true);
+        long [] ts = (long[]) f.get(tz);
+
+        for (long t : ts) {
+        	System.out.println(new Date(t>>>=12));
+        }
+        
+        tz.toString();        
     }
 }
 

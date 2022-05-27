@@ -109,7 +109,7 @@ public class Mime {
      * @return a new allocated byte array with encoded data - WITHOUT line breaks!
      */
     public final static byte[] encode(byte x[]) {
-        return encode(x, x.length);
+        return encode(x, Integer.MAX_VALUE);
     }
 
     /**

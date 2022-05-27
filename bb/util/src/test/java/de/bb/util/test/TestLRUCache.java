@@ -13,13 +13,13 @@ public class TestLRUCache extends TestCase {
     @Test
     public void testCache1() {
         for (int i = 0; i < 100; ++i) {
-            CACHE.put(new Integer(i), "cached value " + i);
+            CACHE.put(i, "cached value " + i);
         }
         for (int i = 0; i < 5; ++i) {
-            CACHE.get(new Integer(i));
+            CACHE.get(i);
         }
         for (int i = 0; i < 5; ++i) {
-            CACHE.get(new Integer(i));
+            CACHE.get(i);
         }
         System.out.println(CACHE.toString());
         System.gc();
@@ -34,18 +34,18 @@ public class TestLRUCache extends TestCase {
         System.out.println(CACHE.toString());
 
         for (int i = 5; i < 10; ++i) {
-            CACHE.put(new Integer(i), "something else" + i);
+            CACHE.put(i, "something else" + i);
         }
         for (int i = 0; i < 100; ++i) {
-            String s = CACHE.get(new Integer(i));
+            String s = CACHE.get(i);
             if (s != null) {
                 s.toString();
             }
         }
         System.out.println(CACHE.toString());
-        CACHE.remove(new Integer(5));
+        CACHE.remove(5);
         System.out.println(CACHE.toString());
-        CACHE.remove(new Integer(55));
+        CACHE.remove(55);
         System.out.println(CACHE.toString());
 
         LRUCache.shutDown();

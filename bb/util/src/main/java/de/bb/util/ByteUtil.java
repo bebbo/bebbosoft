@@ -134,7 +134,8 @@ public final class ByteUtil {
    * @param os an OutputStream
    * @throws IOException on error
    */
-  public static void writeString(String s, OutputStream os) throws IOException {
+  @SuppressWarnings("deprecation")
+public static void writeString(String s, OutputStream os) throws IOException {
     int len = s.length();
     byte b[] = new byte[len];
     s.getBytes(0, len, b, 0);

@@ -60,8 +60,9 @@ public class TimedLRUCache<K, V> {
      * @param ratio
      *            define the ratio for the underlying cache.
      */
+    @Deprecated
     public TimedLRUCache(long defaultLifeTime, double ratio) {
-        parent = new LRUCache<K, Valuette<V>>(ratio);
+        parent = new LRUCache<K, Valuette<V>>();
         setLifeTime(defaultLifeTime);
     }
 
@@ -151,8 +152,9 @@ public class TimedLRUCache<K, V> {
      * @param v
      *            the Valuette
      */
-    protected Object __sput(K key, Valuette<V> v) {
-        return parent.put(key, v);
+    @SuppressWarnings("unchecked")
+	protected V __sput(K key, Valuette<V> v) {
+        return (V) parent.put(key, v);
     }
 
     /**

@@ -39,14 +39,14 @@ public class MimeFile {
 
         public ArrayList<Pair<String, String>> header;
 
-        Info(String p, String ct, int a, int b, int c, int x, int y) {
+        Info(String p, String ct, int headerBegin, int bodyBegin, int bodyEnd, int headerLines, int bodyLines) {
             path = p;
             contentType = ct;
-            hBegin = a;
-            bBegin = b;
-            end = c;
-            hLines = x;
-            bLines = y;
+            hBegin = headerBegin;
+            bBegin = bodyBegin;
+            end = bodyEnd;
+            hLines = headerLines;
+            bLines = bodyLines;
         }
 
         /**
@@ -56,7 +56,7 @@ public class MimeFile {
          */
         public String toString() {
             return "(" + path + ", " + contentType + ", " + hBegin + ", " + bBegin + ", " + end + ", " + hLines + ", "
-                    + bLines + ")";
+                    + bLines + ")\r\n" + header;
         }
 
         /**
@@ -121,7 +121,7 @@ public class MimeFile {
             path = path.substring(1);
         ByteRef boundary = null;
         int startLines = lines;
-        int startBytes = position;
+        int startPosition = position;
         // read header
         ArrayList<Pair<String, String>> header = new ArrayList<Pair<String, String>>();
         ByteRef line, last = null, contentType = null;
@@ -179,7 +179,7 @@ public class MimeFile {
         //      return false;
 
         int bodyLines, headerLines = lines - startLines;
-        int headerBytes = position - startBytes;
+        int headerBytes = position - startPosition;
 
         boolean res;
         // special handling for message    
@@ -218,8 +218,8 @@ public class MimeFile {
         //    System.out.println(path + " HEADER " + contentType + ": " + startBytes + ":" + headerBytes + " Bytes, " + startLines + ":" + headerLines + " Lines");
         //    System.out.println(path + " BODY " + (startBytes+headerBytes) + "-" + bytes + "(" + bodyBytes + ") Bytes, " + (startLines+headerLines) + "-" + lines + "(" + bodyLines + ") Lines");
         Info info =
-                new Info(path, contentType != null ? contentType.toString() : "", startBytes, startBytes + headerBytes,
-                        lastPosition, headerLines, bodyLines);
+                new Info(path, contentType != null ? contentType.toString() : "", startPosition, startPosition + headerBytes,
+                        lastPosition - 2, headerLines, bodyLines);
         info.header = header;
         v.add(info);
 

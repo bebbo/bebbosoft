@@ -68,10 +68,10 @@ public class TinyIdentitySet<T> extends AbstractSet<T> implements Serializable {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T[] toArray(T[] array) {
+    public <V> V[] toArray(V[] array) {
         if (array.length < data.length) {
             GenericArrayType at = (GenericArrayType) (Type) array.getClass();
-            array = (T[]) Array.newInstance((Class<?>) at.getGenericComponentType(), size());
+            array = (V[]) Array.newInstance((Class<?>) at.getGenericComponentType(), size());
         }
         System.arraycopy(data, 0, array, 0, array.length);
         return array;

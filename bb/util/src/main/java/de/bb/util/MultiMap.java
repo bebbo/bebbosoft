@@ -1,5 +1,5 @@
 /******************************************************************************
- * Map implementation which allows duplicate keys. 
+ * Map implementation which allows duplicate keys.
  *
  * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  *****************************************************************************/
 
 package de.bb.util;
@@ -45,11 +45,11 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 
 	/**
 	 * Creates a MultiMap object, using the specified Comparator.
-	 * 
+	 *
 	 * @param comp_
 	 *            a Comparator object.
 	 */
-	public MultiMap(Comparator<K> comp_) {
+	public MultiMap(final Comparator<K> comp_) {
 		super(comp_);
 	}
 
@@ -64,7 +64,7 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 	 * MultiMap to remove a distinct key / value entry. This method does nothing
 	 * if the key is not in the Map. If value is null, the first matching key is
 	 * removed.
-	 * 
+	 *
 	 * @param key
 	 *            the key that needs to be removed.
 	 * @param value
@@ -72,8 +72,10 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 	 * @return the value to which the key had been mapped in this MultiMap, or
 	 *         null if the key did not have a mapping.
 	 */
-	public boolean remove(Object key, Object value) {
-    	final K kkey = (K) key;
+	@Override
+    public boolean remove(final Object key, final Object value) {
+    	@SuppressWarnings("unchecked")
+		final K kkey = (K) key;
     	if (comp == null) {
 			@SuppressWarnings("unchecked")
 			Comparable<K> cc = (Comparable<K>) key;
@@ -96,12 +98,13 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 
 	/**
 	 * Really finds the first entry with the possible duplicate key.
-	 * 
+	 *
 	 * @param key
 	 *            a key
 	 * @return the really first Leaf with that key, or null
 	 */
-	Leaf<K, V> find(K key) {
+	@Override
+    Leaf<K, V> find(final K key) {
 		Leaf<K, V> p = root;
 		Leaf<K, V> f = null;
 		if (comp == null) {
@@ -113,12 +116,12 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 					int c;
 					while (p != null && (c = cc.compareTo(p.key)) <= 0) {
 						f = p;
-						p = p.l;
+						p = p.__l;
 						lc = c;
 					}
 					if (p == null)
 						break;
-					p = p.r;
+					p = p.__r;
 				}
 				if (f == null || lc != 0) {
 					return p;
@@ -126,9 +129,9 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 
 				// handle special case: left < p, but a right child from p might
 				// be equal!
-				p = f.l;
+				p = f.__l;
 				while (p != null && cc.compareTo(p.key) > 0)
-					p = p.r;
+					p = p.__r;
 				if (p == null)
 					return f;
 				f = null;
@@ -140,12 +143,12 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 				int c;
 				while (p != null && (c = comp.compare(key, p.key)) <= 0) {
 					f = p;
-					p = p.l;
+					p = p.__l;
 					lc = c;
 				}
 				if (p == null)
 					break;
-				p = p.r;
+				p = p.__r;
 			}
 			if (f == null || lc != 0) {
 				return p;
@@ -153,16 +156,17 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 
 			// handle special case: left < p, but a right child from p might be
 			// equal!
-			p = f.l;
+			p = f.__l;
 			while (p != null && comp.compare(key, p.key) > 0)
-				p = p.r;
+				p = p.__r;
 			if (p == null)
 				return f;
 			f = null;
 		}
 	}
 
-	MapBase.Leaf<K, V> findNext(K key) {
+	@Override
+    MapBase.Leaf<K, V> findNext(final K key) {
 		MapBase.Leaf<K, V> l = find(key);
 		if (l != null)
 			return l;
@@ -171,14 +175,15 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 
 	/**
 	 * Insert a given object into the tree using the specified key.
-	 * 
+	 *
 	 * @param key
 	 *            the key
 	 * @param value
 	 *            the inserted value
 	 * @return the old replaced value or null.
 	 */
-	public V put(K key, V value) {
+	@Override
+    public V put(final K key, final V value) {
 		// handle empty tree: initialize root and count
 		if (root == null) {
 			root = new Leaf<K, V>(key, value);
@@ -193,38 +198,38 @@ public class MultiMap<K, V> extends MapBase<K, V> {
 			Comparable<K> cc = (Comparable<K>) key;
 			for (;;) {
 				if (cc.compareTo(i.key) < 0) {
-					if (i.l == null) {
-						neu = i.l = new Leaf<K, V>(key, value);
+					if (i.__l == null) {
+						neu = i.__l = new Leaf<K, V>(key, value);
 						break;
 					}
-					i = i.l;
+					i = i.__l;
 				} else {
-					if (i.r == null) {
-						neu = i.r = new Leaf<K, V>(key, value);
+					if (i.__r == null) {
+						neu = i.__r = new Leaf<K, V>(key, value);
 						break;
 					}
-					i = i.r;
+					i = i.__r;
 				}
 			}
 		} else {
 			for (;;) {
 				if (comp.compare(key, i.key) < 0) {
-					if (i.l == null) {
-						neu = i.l = new Leaf<K, V>(key, value);
+					if (i.__l == null) {
+						neu = i.__l = new Leaf<K, V>(key, value);
 						break;
 					}
-					i = i.l;
+					i = i.__l;
 				} else {
-					if (i.r == null) {
-						neu = i.r = new Leaf<K, V>(key, value);
+					if (i.__r == null) {
+						neu = i.__r = new Leaf<K, V>(key, value);
 						break;
 					}
-					i = i.r;
+					i = i.__r;
 				}
 			}
 		}
 		++count;
-		neu.top = i;
+		neu.__top = i;
 		fixAdd(neu);
 		return null;
 	}

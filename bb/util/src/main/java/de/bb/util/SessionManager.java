@@ -51,7 +51,8 @@ public class SessionManager<K, V> {
     static {
         // try to use a secure random
         try {
-            Class<Random> clazz = (Class<Random>) Class.forName("de.bb.security.SecureRandom");
+            @SuppressWarnings("unchecked")
+			Class<Random> clazz = (Class<Random>) Class.forName("de.bb.security.SecureRandom");
             rand = clazz.newInstance();
         } catch (Exception ex) {
         }
@@ -103,7 +104,8 @@ public class SessionManager<K, V> {
         /**
          * run function, to handle sleep / awake stuff properly.
          */
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public void run() {
             try {
                 for (;;) {
@@ -360,8 +362,8 @@ public class SessionManager<K, V> {
 
             long now = System.currentTimeMillis();
 
-            Object o3[] = new Object[]{this, key, new Long(now)};
-            Long tkey = new Long(now + timeoutMilli);
+            Object o3[] = new Object[]{this, key, now};
+            Long tkey = now + timeoutMilli;
 
             update(key, tkey, o3);
 
@@ -398,7 +400,7 @@ public class SessionManager<K, V> {
         Long tkeyOrg = tkey;
 
         while (map.get(tkey) != null) {
-            tkey = new Long(tkey.longValue() + 1);
+            tkey = tkey.longValue() + 1;
         }
 
         rev.put(key, tkey);
@@ -591,7 +593,7 @@ public class SessionManager<K, V> {
             Long tkey = rev.get(key);
             Object[] o3 = map.remove(tkey);
 
-            Long tkeyNew = new Long(System.currentTimeMillis() + timeoutMilli);
+            Long tkeyNew = System.currentTimeMillis() + timeoutMilli;
 
             update(key, tkeyNew, o3);
 

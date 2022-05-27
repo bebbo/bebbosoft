@@ -1,5 +1,5 @@
 /******************************************************************************
- * Base class for map implementations.  
+ * Base class for map implementations.
  *
  * Copyright (c) by Stefan Bebbo Franke 1999-2015.
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  *****************************************************************************/
 
 package de.bb.util;
@@ -57,7 +57,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
         private static final long serialVersionUID = 3256999977816371506L;
 
         // / refs to top, left nd right
-        MapBase.Leaf<K, V> top, l, r;
+        MapBase.Leaf<K, V> __top, __l, __r;
 
         // / left = -1, equal = 0, right = 1
         byte len;
@@ -68,12 +68,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * creates an empty leaf
-         * 
+         *
          * @param k
          * @param v
          */
-        Leaf(K k, V v) {
-            top = l = r = null;
+        Leaf(final K k, final V v) {
+            __top = __l = __r = null;
             len = 0;
             key = k;
             value = v;
@@ -81,31 +81,34 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map.Entry#getKey()
          */
 
+        @Override
         public K getKey() {
             return key;
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map.Entry#getValue()
          */
 
+        @Override
         public V getValue() {
             return value;
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map.Entry#setValue(java.lang.Object)
          */
 
-        public V setValue(V o) {
+        @Override
+        public V setValue(final V o) {
             V l = value;
             value = o;
             return l;
@@ -113,44 +116,45 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * get the next - sorting order is defined by tree
-         * 
+         *
          * @return the next Leaf or null
          */
         MapBase.Leaf<K, V> next() {
             Leaf<K, V> i = this;
-            if (i.r != null) {
-                for (i = i.r; i.l != null;)
-                    i = i.l;
+            if (i.__r != null) {
+                for (i = i.__r; i.__l != null;)
+                    i = i.__l;
                 return i;
             }
-            Leaf<K, V> j = i.top;
-            for (; j != null && j.r == i;) {
+            Leaf<K, V> j = i.__top;
+            for (; j != null && j.__r == i;) {
                 i = j;
-                j = i.top;
+                j = i.__top;
             }
             return j;
         }
 
         /**
          * get the previous - sorting order is defined by tree
-         * 
+         *
          * @return the next Leaf or null
          */
         Leaf<K, V> prev() {
             Leaf<K, V> i = this;
-            if (i.l != null) {
-                for (i = i.l; i.r != null;)
-                    i = i.r;
+            if (i.__l != null) {
+                for (i = i.__l; i.__r != null;)
+                    i = i.__r;
                 return i;
             }
-            Leaf<K, V> j = i.top;
-            for (; j != null && j.l == i;) {
+            Leaf<K, V> j = i.__top;
+            for (; j != null && j.__l == i;) {
                 i = j;
-                j = i.top;
+                j = i.__top;
             }
             return j;
         }
 
+        @Override
         public String toString() {
             return key + "=" + value;
         }
@@ -162,42 +166,43 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         private Comparator<Entry<K, V>> c;
 
-        SubSet(Entry<K, V> from, Entry<K, V> to) {
+        SubSet(final Entry<K, V> from, final Entry<K, V> to) {
             fromKey = (Leaf<K, V>) from;
             toKey = (Leaf<K, V>) to;
 
             c = new Comparator<Entry<K, V>>() {
 
-                public int compare(Entry<K, V> o1, Entry<K, V> o2) {
+                @Override
+                public int compare(final Entry<K, V> o1, final Entry<K, V> o2) {
                     return MapBase.this.compare(o1.getKey(), o2.getKey());
                 }
             };
         }
 
-        private boolean inRange(Entry<K, V> key) {
-            if (fromKey != null && c.compare(fromKey, key) > 0)
-                return false;
-            if (toKey != null && c.compare(toKey, key) <= 0)
+        private boolean inRange(final Entry<K, V> key) {
+            if ((fromKey != null && c.compare(fromKey, key) > 0) || (toKey != null && c.compare(toKey, key) <= 0))
                 return false;
             return true;
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.SortedSet#comparator()
          */
 
+        @Override
         public Comparator<Entry<K, V>> comparator() {
             return c;
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.SortedSet#first()
          */
 
+        @Override
         public Leaf<K, V> first() {
             if (fromKey == null)
                 return MapBase.this.firstLeaf();
@@ -209,11 +214,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.SortedSet#headSet(java.lang.Object)
          */
 
-        public java.util.SortedSet<Entry<K, V>> headSet(Entry<K, V> to) {
+        @Override
+        public java.util.SortedSet<Entry<K, V>> headSet(final Entry<K, V> to) {
             if (!inRange(to))
                 throw new IllegalArgumentException("key out of range");
             return new SubSet(fromKey, to);
@@ -221,10 +227,11 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.SortedSet#last()
          */
 
+        @Override
         public MapBase.Leaf<K, V> last() {
             MapBase.Leaf<K, V> l;
             if (toKey == null) {
@@ -237,9 +244,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
             l = MapBase.this.findNext(toKey.key);
             if (l == null) {
                 l = MapBase.this.lastLeaf();
-                if (l == null)
-                    return null;
-                if (!inRange(l))
+                if ((l == null) || !inRange(l))
                     return null;
                 return l;
             }
@@ -251,11 +256,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.SortedSet#subSet(java.lang.Object, java.lang.Object)
          */
 
-        public java.util.SortedSet<Entry<K, V>> subSet(Entry<K, V> from, Entry<K, V> to) {
+        @Override
+        public java.util.SortedSet<Entry<K, V>> subSet(final Entry<K, V> from, final Entry<K, V> to) {
             if (!inRange(to) || !inRange(from))
                 throw new IllegalArgumentException("key out of range");
             return new SubSet(from, to);
@@ -263,11 +269,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.SortedSet#tailSet(java.lang.Object)
          */
 
-        public java.util.SortedSet<Entry<K, V>> tailSet(Entry<K, V> from) {
+        @Override
+        public java.util.SortedSet<Entry<K, V>> tailSet(final Entry<K, V> from) {
             if (!inRange(from))
                 throw new IllegalArgumentException("key out of range");
             return new SubSet(from, toKey);
@@ -275,20 +282,22 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Set#iterator()
          */
 
+        @Override
         public Iterator<Entry<K, V>> iterator() {
             return new Iter(first(), last());
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Set#size()
          */
 
+        @Override
         public int size() {
             if (fromKey == null && toKey == null)
                 return MapBase.this.size();
@@ -300,14 +309,16 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Set#isEmpty()
          */
 
+        @Override
         public boolean isEmpty() {
             return first() == null;
         }
 
+        @Override
         public String toString() {
             StringBuffer sb = new StringBuffer("{");
             for (Iterator<Entry<K, V>> i = iterator(); i.hasNext();) {
@@ -322,7 +333,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
             MapBase.Leaf<K, V> here, last, end;
 
-            Iter(MapBase.Leaf<K, V> from, MapBase.Leaf<K, V> to) {
+            Iter(final MapBase.Leaf<K, V> from, final MapBase.Leaf<K, V> to) {
                 here = from;
                 last = null;
                 end = to;
@@ -330,20 +341,22 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
             /**
              * (non-Javadoc)
-             * 
+             *
              * @see java.util.Iterator#hasNext()
              */
 
+            @Override
             public boolean hasNext() {
                 return last != end && here != null;
             }
 
             /**
              * (non-Javadoc)
-             * 
+             *
              * @see java.util.Iterator#next()
              */
 
+            @Override
             public Entry<K, V> next() {
                 last = here;
                 here = here.next();
@@ -352,20 +365,22 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
             /**
              * (non-Javadoc)
-             * 
+             *
              * @see java.util.Iterator#remove()
              */
 
+            @Override
             public void remove() {
                 MapBase.this.remove(last.key, last.value);
             }
 
             /**
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Object#clone()
              */
 
+            @Override
             public Object clone() {
                 Iter i = new Iter(here, end);
                 i.last = last;
@@ -376,11 +391,11 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
     /**
      * creates a Map object
-     * 
+     *
      * @param comp
      *            the used comparator
      */
-    MapBase(Comparator<K> comp) {
+    MapBase(final Comparator<K> comp) {
         this.comp = comp;
         root = null;
         count = 0;
@@ -400,6 +415,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
      * Clears this Map so that it contains no objects.
      */
 
+    @Override
     public void clear() {
         root = null;
         count = 0;
@@ -408,150 +424,152 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
     /**
      * Returns the number of components in this Map.
-     * 
+     *
      * @return the number of components in this Map.
      */
 
+    @Override
     public int size() {
         return count;
     }
 
     /**
      * Tests if this Map has no components.
-     * 
+     *
      * @return true if this Map has no components; false otherwise.
      */
 
+    @Override
     public final boolean isEmpty() {
         return count == 0;
     }
 
     /**
      * get the sorted first leaf.
-     * 
+     *
      * @return the sorted first leaf.
      */
     MapBase.Leaf<K, V> firstLeaf() {
         if (root == null)
             return null;
         MapBase.Leaf<K, V> i = root;
-        while (i.l != null)
-            i = i.l;
+        while (i.__l != null)
+            i = i.__l;
         return i;
     }
 
     /**
      * get the sorted last leaf.
-     * 
+     *
      * @return the sorted last leaf.
      */
     MapBase.Leaf<K, V> lastLeaf() {
         if (root == null)
             return null;
         MapBase.Leaf<K, V> i = root;
-        while (i.r != null)
-            i = i.r;
+        while (i.__r != null)
+            i = i.__r;
         return i;
     }
 
-    private final void drr(MapBase.Leaf<K, V> i, MapBase.Leaf<K, V> j) {
+    private final void drr(final MapBase.Leaf<K, V> i, final MapBase.Leaf<K, V> j) {
         // System.out.println("double rot right");
-        MapBase.Leaf<K, V> k = j.top;
+        MapBase.Leaf<K, V> k = j.__top;
         if (k == null)
-            root = i.r;
-        else if (k.l == j)
-            k.l = i.r;
+            root = i.__r;
+        else if (k.__l == j)
+            k.__l = i.__r;
         else
-            k.r = i.r;
-        i.r.top = k;
+            k.__r = i.__r;
+        i.__r.__top = k;
 
-        k = i.r;
+        k = i.__r;
 
-        i.r = k.l;
-        if (i.r != null)
-            i.r.top = i;
-        i.top = k;
+        i.__r = k.__l;
+        if (i.__r != null)
+            i.__r.__top = i;
+        i.__top = k;
         i.len = k.len <= 0 ? (byte) 0 : -1;
 
-        j.l = k.r;
-        if (j.l != null)
-            j.l.top = j;
-        j.top = k;
+        j.__l = k.__r;
+        if (j.__l != null)
+            j.__l.__top = j;
+        j.__top = k;
         j.len = k.len >= 0 ? (byte) 0 : 1;
 
-        k.l = i;
-        k.r = j;
+        k.__l = i;
+        k.__r = j;
         k.len = 0;
     }
 
-    private final void rr(MapBase.Leaf<K, V> i, MapBase.Leaf<K, V> j) {
+    private final void rr(final MapBase.Leaf<K, V> i, final MapBase.Leaf<K, V> j) {
         // System.out.println("rot right");
-        MapBase.Leaf<K, V> k = j.top;
+        MapBase.Leaf<K, V> k = j.__top;
         if (k == null)
             root = i;
-        else if (k.l == j)
-            k.l = i;
+        else if (k.__l == j)
+            k.__l = i;
         else
-            k.r = i;
+            k.__r = i;
 
-        j.l = i.r;
-        if (j.l != null)
-            j.l.top = j;
-        j.top = i;
+        j.__l = i.__r;
+        if (j.__l != null)
+            j.__l.__top = j;
+        j.__top = i;
 
-        i.r = j;
-        i.top = k;
+        i.__r = j;
+        i.__top = k;
         ++i.len;
         // if (i.len != 0) System.out.println("*");
         j.len = (byte) -i.len;
     }
 
-    private final void drl(MapBase.Leaf<K, V> i, MapBase.Leaf<K, V> j) {
+    private final void drl(final MapBase.Leaf<K, V> i, final MapBase.Leaf<K, V> j) {
         // System.out.println("double rot left");
-        MapBase.Leaf<K, V> k = j.top;
+        MapBase.Leaf<K, V> k = j.__top;
         if (k == null)
-            root = i.l;
-        else if (k.l == j)
-            k.l = i.l;
+            root = i.__l;
+        else if (k.__l == j)
+            k.__l = i.__l;
         else
-            k.r = i.l;
-        i.l.top = k;
-        k = i.l;
+            k.__r = i.__l;
+        i.__l.__top = k;
+        k = i.__l;
 
-        i.l = k.r;
-        if (i.l != null)
-            i.l.top = i;
-        i.top = k;
+        i.__l = k.__r;
+        if (i.__l != null)
+            i.__l.__top = i;
+        i.__top = k;
         i.len = k.len >= 0 ? (byte) 0 : 1;
 
-        j.r = k.l;
-        if (j.r != null)
-            j.r.top = j;
-        j.top = k;
+        j.__r = k.__l;
+        if (j.__r != null)
+            j.__r.__top = j;
+        j.__top = k;
         j.len = k.len <= 0 ? (byte) 0 : -1;
 
-        k.r = i;
-        k.l = j;
+        k.__r = i;
+        k.__l = j;
         k.len = 0;
     }
 
-    private final void rl(MapBase.Leaf<K, V> i, MapBase.Leaf<K, V> j) {
+    private final void rl(final MapBase.Leaf<K, V> i, final MapBase.Leaf<K, V> j) {
         // System.out.println("rot left");
-        MapBase.Leaf<K, V> k = j.top;
+        MapBase.Leaf<K, V> k = j.__top;
         if (k == null)
             root = i;
-        else if (k.l == j)
-            k.l = i;
+        else if (k.__l == j)
+            k.__l = i;
         else
-            k.r = i;
+            k.__r = i;
 
-        j.r = i.l;
-        if (j.r != null)
-            j.r.top = j;
-        j.top = i;
+        j.__r = i.__l;
+        if (j.__r != null)
+            j.__r.__top = j;
+        j.__top = i;
 
-        i.l = j;
-        i.top = k;
+        i.__l = j;
+        i.__top = k;
         --i.len;
         // if (i.len != 0) System.out.println("*");
         j.len = (byte) -i.len;
@@ -559,12 +577,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
     /**
      * Rebalance the tree on add.
-     * 
+     *
      * @param i
      */
     protected final void fixAdd(MapBase.Leaf<K, V> i) {
-        for (MapBase.Leaf<K, V> j = i.top; j != null; i = j, j = i.top) {
-            if (j.l == i)
+        for (MapBase.Leaf<K, V> j = i.__top; j != null; i = j, j = i.__top) {
+            if (j.__l == i)
                 --j.len;
             else
                 ++j.len;
@@ -593,13 +611,13 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
     /**
      * Rebalance the tree on remove.
-     * 
+     *
      * @param i
      *            the Leaf which must be removed after fixage
      */
     final void fixRemove(MapBase.Leaf<K, V> i) {
-        for (MapBase.Leaf<K, V> j = i.top; j != null; i = j, j = i.top) {
-            if (j.l == i)
+        for (MapBase.Leaf<K, V> j = i.__top; j != null; i = j, j = i.__top) {
+            if (j.__l == i)
                 ++j.len;
             else
                 --j.len;
@@ -613,10 +631,10 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
                 return;
 
             if (j.len == -2) {
-                i = j.l;
+                i = j.__l;
                 if (i.len > 0) {
                     drr(i, j);
-                    j = j.top;
+                    j = j.__top;
                     continue;
                 }
                 rr(i, j);
@@ -626,22 +644,21 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
                 continue;
             }
             if (j.len == 2) {
-                i = j.r;
+                i = j.__r;
                 if (i.len < 0) {
                     drl(i, j);
-                    j = j.top;
+                    j = j.__top;
                     continue;
                 }
                 rl(i, j);
                 if (i.len != 0)
                     return;
                 j = i;
-                continue;
             }
         }
     }
 
-    MapBase.Leaf<K, V> find(K key) {
+    MapBase.Leaf<K, V> find(final K key) {
         if (comp == null) {
             @SuppressWarnings("unchecked")
             Comparable<K> cc = (Comparable<K>) key;
@@ -650,9 +667,9 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
                 if (c == 0)
                     return p;
                 if (c > 0)
-                    p = p.r;
+                    p = p.__r;
                 else
-                    p = p.l;
+                    p = p.__l;
             }
             return null;
         }
@@ -661,20 +678,20 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
             if (c == 0)
                 return p;
             if (c > 0)
-                p = p.r;
+                p = p.__r;
             else
-                p = p.l;
+                p = p.__l;
         }
         return null;
     }
 
     /**
      * finds the next Leaf which either fits the key or is the right next.
-     * 
+     *
      * @param key
      * @return the matching Leaf or null if none was found.
      */
-    MapBase.Leaf<K, V> findNext(K key) {
+    MapBase.Leaf<K, V> findNext(final K key) {
         MapBase.Leaf<K, V> l = null;
 
         if (comp == null) {
@@ -686,9 +703,9 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
                     return p;
                 if (c > 0) {
                     l = p;
-                    p = p.r;
+                    p = p.__r;
                 } else
-                    p = p.l;
+                    p = p.__l;
             }
 
             if (l == null)
@@ -696,9 +713,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
             for (;;) {
                 l = l.next();
-                if (l == null)
-                    break;
-                if (cc.compareTo(l.key) < 0)
+                if ((l == null) || (cc.compareTo(l.key) < 0))
                     break;
             }
             return l;
@@ -709,9 +724,9 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
                 return p;
             if (c > 0) {
                 l = p;
-                p = p.r;
+                p = p.__r;
             } else
-                p = p.l;
+                p = p.__l;
         }
 
         if (l == null)
@@ -719,9 +734,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         for (;;) {
             l = l.next();
-            if (l == null)
-                break;
-            if (comp.compare(key, l.key) < 0)
+            if ((l == null) || (comp.compare(key, l.key) < 0))
                 break;
         }
         return l;
@@ -734,7 +747,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
             root = null;
             return i.value;
         }
-        if (i.l != null && i.r != null) {
+        if (i.__l != null && i.__r != null) {
             // seek replacement
             MapBase.Leaf<K, V> r = i.len > 0 ? i.next() : i.prev();
 
@@ -747,31 +760,30 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         // do direct unlink
         fixRemove(i);
-        MapBase.Leaf<K, V> j = i.l == null ? i.r : i.l;
-        MapBase.Leaf<K, V> k = i.top;
+        MapBase.Leaf<K, V> j = i.__l == null ? i.__r : i.__l;
+        MapBase.Leaf<K, V> k = i.__top;
         if (k == null)
             root = j;
-        else {
-            if (k.l == i) {
-                k.l = j;
-            } else {
-                k.r = j;
-            }
+        else if (k.__l == i) {
+            k.__l = j;
+        } else {
+            k.__r = j;
         }
         if (j != null)
-            j.top = k;
+            j.__top = k;
         return i.value;
     }
 
     /**
      * Get the element for the specified value
-     * 
+     *
      * @param key
      *            the key for the element to search
      * @return the value if found, either null
      */
 
-    public final V get(Object key) {
+    @Override
+    public final V get(final Object key) {
         @SuppressWarnings("unchecked")
         MapBase.Leaf<K, V> l = find((K) key);
         if (l == null)
@@ -783,13 +795,14 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
      * Removes the key holding the specified value from this Map. Useful in MultiMap to remove a distinct key / value
      * entry. This method does nothing if the key is not in the Map. If value is null, the first matching key is
      * removed.
-     * 
+     *
      * @param key
      *            the key that needs to be removed.
      * @return the value to which the key had been mapped in this MultiMap, or null if the key did not have a mapping.
      */
 
-    public V remove(Object key) {
+    @Override
+    public V remove(final Object key) {
         // search the key
         @SuppressWarnings("unchecked")
         MapBase.Leaf<K, V> p = find((K) key);
@@ -802,59 +815,64 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
      * Removes the key holding the specified value from this Map. Useful in MultiMap to remove a distinct key / value
      * entry. This method does nothing if the key is not in the Map. If value is null, the first matching key is
      * removed.
-     * 
+     *
      * @param key
      *            the key that needs to be removed.
      * @param value
      *            the value at the key that needs to be removed.
      * @return the value to which the key had been mapped in this MultiMap, or null if the key did not have a mapping.
      */
+    @Override
     public abstract boolean remove(Object key, Object value);
 
     @SuppressWarnings("unchecked")
-    protected final int compare(K a, K b) {
+    protected final int compare(final K a, final K b) {
         return comp == null ? ((Comparable<K>) a).compareTo(b) : comp.compare(a, b);
     }
 
     /**
      * Returns <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
+     *
      * @param key
      *            key whose presence in this map is to be tested.
      * @return <tt>true</tt> if this map contains a mapping for the specified key.
-     * 
+     *
      * @throws NullPointerException
      *             if the key is <tt>null</tt> and this map does not not permit <tt>null</tt> keys.
      */
 
-    public boolean containsKey(Object key) {
+    @Override
+    public boolean containsKey(final Object key) {
         return get(key) != null;
     }
 
     /**
      * Return a Set for this Map's entries.
-     * 
+     *
      * @return a Set for this Map's entries.
      */
 
+    @Override
     public Set<Entry<K, V>> entrySet() {
         return new SubSet(null, null);
     }
 
     /**
      * Return the used Comparator object, if any.
-     * 
+     *
      * @return the used Comparator object, or null.
      */
+    @Override
     public java.util.Comparator<K> comparator() {
         return comp;
     }
 
     /**
      * Return the key of the sorted first entry in this Map.
-     * 
+     *
      * @return the key of the sorted first entry in this Map, or null on empty Map.
      */
+    @Override
     public K firstKey() {
         if (root == null)
             return null;
@@ -863,10 +881,11 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
     /**
      * Return the key of the sorted last entry in this Map.
-     * 
+     *
      * @return the key of the sorted last entry in this Map, or null on empty Map.
      */
 
+    @Override
     public K lastKey() {
         if (root == null)
             return null;
@@ -876,7 +895,7 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
     /**
      * Create a sub map view of this map. The parameters specify the start and the not included end point. It is also
      * possible to create a SubMap from this SubMap.
-     * 
+     *
      * @param from
      *            first key of the sub map
      * @param to
@@ -884,42 +903,46 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
      * @return a new allocated object which is a view to the underlying map.
      */
 
-    public SortedMap<K, V> subMap(K from, K to) {
+    @Override
+    public SortedMap<K, V> subMap(final K from, final K to) {
         return new SubMap(from, to);
     }
 
     /**
      * Create a sub map view of this map. The parameter specifies the start point, and the sub map ends at the same
      * point as this map. It is also possible to create a SubMap from this SubMap.
-     * 
+     *
      * @param from
      *            first key of the sub map
      * @return a new allocated object which is a view to the underlying map.
      */
 
-    public SortedMap<K, V> tailMap(K from) {
+    @Override
+    public SortedMap<K, V> tailMap(final K from) {
         return subMap(from, null);
     }
 
     /**
      * Create a sub map view of this map. The sub map starts at the same point as this map, and the parameter specifies
      * the not included end point. It is also possible to create a SubMap from this SubMap.
-     * 
+     *
      * @param to
      *            first key <b>behind</b> the last key.
      * @return a new allocated object which is a view to the underlying map.
      */
 
-    public SortedMap<K, V> headMap(K to) {
+    @Override
+    public SortedMap<K, V> headMap(final K to) {
         return subMap(null, to);
     }
 
     /**
      * displays the members with toString().
-     * 
+     *
      * @return a String with all members.
      */
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer("{");
         Leaf<K, V> l = firstLeaf();
@@ -936,35 +959,35 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         private K fromKey, toKey;
 
-        SubMap(K from, K to) {
+        SubMap(final K from, final K to) {
             fromKey = from;
             toKey = to;
         }
 
-        private boolean inRange(K key) {
-            if (fromKey != null && MapBase.this.compare(fromKey, key) > 0)
-                return false;
-            if (toKey != null && MapBase.this.compare(toKey, key) <= 0)
+        private boolean inRange(final K key) {
+            if ((fromKey != null && MapBase.this.compare(fromKey, key) > 0) || (toKey != null && MapBase.this.compare(toKey, key) <= 0))
                 return false;
             return true;
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see SortedMap#comparator()
          */
 
+        @Override
         public java.util.Comparator<K> comparator() {
             return MapBase.this.comparator();
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see SortedMap#firstKey()
          */
 
+        @Override
         public K firstKey() {
             if (fromKey == null)
                 return MapBase.this.firstKey();
@@ -976,11 +999,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see SortedMap#headMap(java.lang.Object)
          */
 
-        public SortedMap<K, V> headMap(K to) {
+        @Override
+        public SortedMap<K, V> headMap(final K to) {
             if (!inRange(to))
                 throw new IllegalArgumentException("key out of range");
             return new SubMap(fromKey, to);
@@ -988,10 +1012,11 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see SortedMap#lastKey()
          */
 
+        @Override
         public K lastKey() {
             if (toKey == null)
                 return null;
@@ -1010,11 +1035,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see SortedMap#subMap(java.lang.Object, java.lang.Object)
          */
 
-        public SortedMap<K, V> subMap(K from, K to) {
+        @Override
+        public SortedMap<K, V> subMap(final K from, final K to) {
             if (!inRange(from) || !inRange(to))
                 throw new IllegalArgumentException("key out of range");
             return new SubMap(from, to);
@@ -1022,11 +1048,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see SortedMap#tailMap(java.lang.Object)
          */
 
-        public SortedMap<K, V> tailMap(K from) {
+        @Override
+        public SortedMap<K, V> tailMap(final K from) {
             if (!inRange(from))
                 throw new IllegalArgumentException("key out of range");
             return new SubMap(from, toKey);
@@ -1034,10 +1061,11 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map#entrySet()
          */
 
+        @Override
         public Set<Entry<K, V>> entrySet() {
             Leaf<K, V> first = null;
             if (fromKey != null) {
@@ -1050,41 +1078,45 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map#size()
          */
 
+        @Override
         public int size() {
             return entrySet().size();
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map#isEmpty()
          */
 
+        @Override
         public boolean isEmpty() {
             return firstKey() == null;
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map#containsKey(java.lang.Object)
          */
+        @Override
         @SuppressWarnings("unchecked")
-        public boolean containsKey(Object key) {
+        public boolean containsKey(final Object key) {
             return inRange((K) key) && MapBase.this.containsKey(key);
         }
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map#get(java.lang.Object)
          */
+        @Override
         @SuppressWarnings("unchecked")
-        public V get(Object key) {
+        public V get(final Object key) {
             if (!inRange((K) key))
                 return null;
             return MapBase.this.get(key);
@@ -1092,11 +1124,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map#put(java.lang.Object, java.lang.Object)
          */
 
-        public V put(K key, V value) {
+        @Override
+        public V put(final K key, final V value) {
             if (!inRange(key))
                 throw new IllegalArgumentException("key out of range");
             return MapBase.this.put(key, value);
@@ -1104,11 +1137,12 @@ abstract class MapBase<K, V> extends java.util.AbstractMap<K, V> implements Sort
 
         /**
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Map#remove(java.lang.Object)
          */
+        @Override
         @SuppressWarnings("unchecked")
-        public V remove(Object key) {
+        public V remove(final Object key) {
             if (!inRange((K) key))
                 throw new IllegalArgumentException("key out of range");
             return MapBase.this.remove(key);
