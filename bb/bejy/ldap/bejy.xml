@@ -2,7 +2,7 @@
 	<group name="user" class="de.bb.bejy.ConfigGroup">
 		<user name="admin" />
 		<user name="bebbo"
-			password="{P5SHA256}DV2hGwIgwhi640m5ss2lrULtn1FLsOr5c8TjKSNP8ieJuqY0i3C4QGVsd3S5UgOhOQg=" />
+			password="aSecretPasswurt" />
 	</group>
 	<server name="ldaps" port="636" timeout="180000">
 		<protocol class="de.bb.bejy.ldap.LdapFactory" logFile="logs/ldaps">
