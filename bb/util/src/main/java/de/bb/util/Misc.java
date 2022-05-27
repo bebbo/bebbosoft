@@ -98,6 +98,9 @@ public class Misc {
                 sb.append(ch);
         }
         s = sb.toString();
+        // prepend a zero if necessary
+        if (s.length() % 2 == 1)
+        	s = "0" + s;
         byte b[] = new byte[s.length() / 2];
         for (int i = 0; i < b.length; ++i) {
             b[i] = (byte) Integer.parseInt(s.substring(2 * i, 2 * i + 2), 16);
