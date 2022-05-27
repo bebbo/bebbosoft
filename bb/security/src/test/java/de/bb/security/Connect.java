@@ -44,10 +44,10 @@ public class Connect {
                 server = "blog.fefe.de";
     //     server = "ikanobank.de";
         //        port = 993;
-  //              server = "127.0.0.1";
+                server = "127.0.0.1";
 //                port = 25000;
 
-//        port = 4444;
+        port = 4444;
         
         Socket s = new Socket(server, port);
         try {

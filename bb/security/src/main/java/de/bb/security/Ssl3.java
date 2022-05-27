@@ -1,16 +1,11 @@
 /******************************************************************************
- * $Source: /export/CVS/java/de/bb/security/src/main/java/de/bb/security/Ssl3.java,v $
- * $Revision: 1.23 $
- * $Date: 2014/09/22 09:16:24 $
- * $Author: bebbo $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by Stefan Bebbo Franke 1999-2003. All rights reserved
+ * Copyright (c) by Stefan Bebbo Franke 1999-2022. All rights reserved
  *
  * Base class for SSL3
  *
  * Based on http://home.netscape.com/eng/ssl3/draft302.txt
+ * and teh various SSL/TLS RFCs
  *****************************************************************************/
 
 package de.bb.security;
