@@ -25,4 +25,22 @@ class SC extends C implements SessionContext {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public <T> T getBusinessObject(Class<T> arg0) throws IllegalStateException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class getInvokedBusinessInterface() throws IllegalStateException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean wasCancelCalled() throws IllegalStateException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

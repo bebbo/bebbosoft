@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.bb</groupId>
 		<artifactId>bb</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.4</version>
 	</parent>
 	<groupId>de.bb</groupId>
 	<artifactId>mejb</artifactId>
@@ -28,15 +28,15 @@
 			<version>2.5</version>
 		</dependency>
 		<dependency>
-			<artifactId>jsp-api</artifactId>
 			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
 			<version>2.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.ejb</groupId>
-			<artifactId>ejb</artifactId>
-			<version>2.1</version>
+			<artifactId>javax.ejb-api</artifactId>
+			<version>3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.transaction</groupId>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>de.bb</groupId>
 			<artifactId>sql</artifactId>
-			<version>1.0.9-SNAPSHOT</version>
+			<version>1.0.10</version>
 		</dependency>
 	</dependencies>
 </project>

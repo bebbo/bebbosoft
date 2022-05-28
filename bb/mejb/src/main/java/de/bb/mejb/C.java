@@ -2,6 +2,7 @@ package de.bb.mejb;
 
 import java.security.Identity;
 import java.security.Principal;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJBContext;
@@ -73,4 +74,16 @@ class C implements EJBContext {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public Map<String, Object> getContextData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object lookup(String arg0) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
