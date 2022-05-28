@@ -576,8 +576,4 @@ public class Bnm {
         return pluginInfos.toString();
     }
 
-	public void setBuildOnly(HashSet<String> relevantProjects) {
-		this.relevantProjects = relevantProjects;
-	}
-
 }

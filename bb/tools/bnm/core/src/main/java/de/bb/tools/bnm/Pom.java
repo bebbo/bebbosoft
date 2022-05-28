@@ -276,7 +276,7 @@ public class Pom {
 		}
 		if (parent != null && pom.parent != null && !parent.pom.getId().equals(pom.parent.getId())
 				&& !(parent instanceof RootPom))
-			throw new Exception("parent artifact does not match:\r\n" + "pom.parent = " + pom.parent.getId() + "\r\n"
+			throw new Exception("parent artifact does not match for: " + pom.getId() + "\r\n" + "pom.parent = " + pom.parent.getId() + "\r\n"
 					+ "parent = " + parent.pom.getId());
 
 		// build a list of this pom and all parent poms
@@ -761,7 +761,7 @@ public class Pom {
 
 		Mojo mojo = pi.getMojo(goal);
 		if (mojo == null)
-			throw new Exception("no mojo (yet) for: " + id + " " + goal);
+			throw new Exception("no mojo (yet) for: " + id + " " + goal + "\navailable goals: " + pi.getMojoNames());
 
 		String pluginGoal = ga + ":" + goal;
 		Map<String, String> conf = dconf;

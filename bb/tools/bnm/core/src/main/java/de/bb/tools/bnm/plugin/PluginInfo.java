@@ -54,4 +54,8 @@ public class PluginInfo {
   public String toString() {
     return Bind.append(0, this).toString();
   }
+
+	public String getMojoNames() {
+		return __mojoMap.keySet().toString();
+	}
 }
