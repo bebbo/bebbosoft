@@ -6,9 +6,9 @@
 package de.bb.web.board.mejb;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collection;
 
-import com.sun.jmx.snmp.Timestamp;
 
 import de.bb.web.board.mejb.TopicHome;
 import de.bb.web.board.mejb.TopicHomeBaseBean;
