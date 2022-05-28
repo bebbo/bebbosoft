@@ -30,7 +30,7 @@ public class ImportPluginsPlugin extends AbstractPlugin {
 		File plugins = new File(eclipseDir, "plugins");
 		if (!plugins.exists())
 			throw new Exception(
-					"not in a valid Eclipse directory - plugins folder does not exists. " + plugins.getAbsolutePath());
+					"not in a valid Eclipse directory given via -Declipse.dir=... - plugins folder does not exists. " + plugins.getAbsolutePath());
 
 		// read all plugins and it's dependencies
 		Map<String, String> dependencies = new MultiMap<>();
