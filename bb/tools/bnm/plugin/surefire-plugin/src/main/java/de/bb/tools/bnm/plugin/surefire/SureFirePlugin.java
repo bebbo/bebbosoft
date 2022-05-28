@@ -106,6 +106,7 @@ public class SureFirePlugin extends AbstractPlugin {
 
         fb.addInclude("**/Test*.class");
         fb.addInclude("**/*Test.class");
+        fb.addExclude("**/*$*");
 
         fb.scan(testOutputDirectory.getAbsolutePath(), true);
 
