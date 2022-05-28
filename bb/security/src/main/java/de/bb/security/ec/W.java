@@ -2,22 +2,29 @@ package de.bb.security.ec;
 
 import java.math.BigInteger;
 
-class W extends EC {
+public class W extends EC {
 	BigInteger b, n;
 	P g;
 
-	W(String id, byte[] p, byte[] a, byte[] b, byte[] n, byte[] gx, byte[] gy) {
+	public W(String id, byte[] p, byte[] a, byte[] b, byte[] n, byte[] gx, byte[] gy) {
 		super(id, p, a);
 		this.b = new BigInteger(b);
-		this.n = new BigInteger(n);
+		if (n == null)
+			this.n = this.p.add(ONE);
+		else
+			this.n = new BigInteger(n);
 		g = new P(gx, gy);
+	}
+
+	public P getG() {
+		return g;
 	}
 
 	boolean aminus3() {
 		return a.add(EC.THREE).equals(p);
 	}
 
-	boolean verify(P aa) {
+	public boolean verify(P aa) {
 		if (aa.infinity)
 			return true;
 		/* Verify y^2 = x^3 + ax + b */
@@ -28,117 +35,88 @@ class W extends EC {
 		return lhs.equals(rhs);
 	}
 
+	@Override
 	boolean _normalize(P aa) {
-		if (aa.x == null || aa.y == null)
-			return false;
-
-		if (aa.z == null)
-			return true;
-
-		BigInteger z2 = square(aa.z);
-		BigInteger z2inv = z2.modInverse(p);
-		BigInteger tx = aa.x.multiply(z2inv).mod(p);
-		BigInteger z3 = z2.multiply(aa.z).mod(p);
-		BigInteger z3inv = z3.modInverse(p);
-		BigInteger ty = aa.y.multiply(z3inv).mod(p);
-
-		aa.x = tx;
-		aa.y = ty;
-		aa.z = null;
-
-		return true;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
+	@Override
 	P _add(P aa, P bb, boolean aminus3) {
-		/* U1 = X1*Z2^2 */
-		/* S1 = Y1*Z2^3 */
-		BigInteger u1, s1;
-		if (bb.z != null) {
-			BigInteger bz2 = square(bb.z);
-			BigInteger bz3 = bz2.multiply(bb.z).mod(p);
-			u1 = aa.x.multiply(bz2).mod(p);
-			s1 = aa.y.multiply(bz3).mod(p);
-		} else {
-			u1 = aa.x;
-			s1 = aa.y;
-		}
-
-		/* U2 = X2*Z1^2 */
-		/* S2 = Y2*Z1^3 */
-		BigInteger u2, s2;
-		if (aa.z != null) {
-			BigInteger az2 = square(aa.z);
-			BigInteger az3 = az2.multiply(aa.z).mod(p);
-			u2 = bb.x.multiply(az2).mod(p);
-			s2 = bb.y.multiply(az3).mod(p);
-		} else {
-			u2 = bb.x;
-			s2 = bb.y;
-		}
-
-		if (u1.equals(u2)) {
-			if (s1.equals(s2))
-				return mul2(aa, aminus3);
-			return INFINITY;
-		}
-
-		/* H = U2 - U1 */
-		BigInteger h = sub(u2, u1);
-
-		/* R = S2 - S1 */
-		BigInteger r = sub(s2, s1);
-
-		/* X3 = R^2 - H^3 - 2*U1*H^2 */
-		BigInteger r2 = square(r);
-		BigInteger h2 = square(h);
-		BigInteger h3 = h2.multiply(h).mod(p);
-		BigInteger x3 = sub(sub(r2, h3), TWO.multiply(u1).mod(p).multiply(h2).mod(p));
-
-		/* Y3 = R*(U1*H^2 - X3) - S1*H^3 */
-		BigInteger y3 = sub(r.multiply(sub(u1.multiply(h2).mod(p), x3)).mod(p), s1.multiply(h3).mod(p));
-
-		/* Z3 = H*Z1*Z2 */
-		BigInteger z3 = h.multiply(aa.z).mod(p).multiply(bb.z).mod(p);
-
-		return new P(x3, y3, z3);
+		if (aa.infinity)
+			return bb;
+		if (bb.infinity)
+			return aa;
+		BigInteger m = __m(aa, bb);
+		BigInteger xr = m.multiply(m).subtract(aa.x).subtract(bb.x).mod(p);
+		BigInteger yr = aa.y.add(m.multiply(xr.subtract(aa.x))).mod(p).negate();
+		return new P(xr, yr);
 	}
 
-	P _mul2(P aa, boolean aminus3) {
-		if (aa.y.equals(ZERO))
-			return INFINITY;
+	private BigInteger __m(P aa, P bb) {
+        if (aa.x.equals(bb.x))
+            return THREE.multiply(bb.x.multiply(bb.x)).add(a).multiply(TWO.multiply(aa.y).modInverse(p));
+        return aa.y.subtract(bb.y).multiply(aa.x.subtract(bb.x).modInverse(p));
+	}
 
-		BigInteger y2 = square(aa.y);
-		BigInteger xy2 = aa.x.multiply(y2).mod(p);
-		BigInteger twice_xy2 = mul2(xy2);
-		BigInteger s = mul2(twice_xy2);
-		BigInteger m;
-
-		if (aminus3) {
-			BigInteger z2 = aa.z == null ? ONE : square(aa.z);
-			BigInteger xpz2 = add(aa.x, z2);
-			BigInteger xmz2 = sub(aa.x, z2);
-			BigInteger second = xpz2.multiply(xmz2).mod(p);
-			m = mul3(second);
-		} else {
-			BigInteger az4 = aa.z == null ? a : a.multiply(square(square(aa.z))).mod(p);
-			BigInteger x2 = square(aa.x);
-			BigInteger triplex2 = mul3(x2);
-			m = add(triplex2, az4);
+	/*
+ def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, LONG_TYPE):
+            if other % self.curve.field.n == 0:
+                return Inf(self.curve)
+            if other < 0:
+                addend = Point(self.curve, self.x, -self.y % self.p)
+            else:
+                addend = self
+            result = Inf(self.curve)
+            # Iterate over all bits starting by the LSB
+            for bit in reversed([int(i) for i in bin(abs(other))[2:]]):
+                if bit == 1:
+                    result += addend
+                addend += addend
+            return result
+	 */
+	public P mul(P aa, long n) {
+		return mul(aa, BigInteger.valueOf(n));
+	}
+	
+	
+	public P mul(P aa, BigInteger m) {
+		m = m.mod(n);
+		if (m.equals(ZERO))
+			return new P();
+		
+		if (m.signum() < 0) {
+			m = m.negate();
+			aa = new P(aa.x, aa.y.negate());
 		}
+		P r = new P();
+		for (int i = m.bitLength();;) {
+			if (m.testBit(--i))
+				r = _add(aa, r, false);
+			if (i == 0)
+				break;
+			r = _add(r, r, false);
+		}
+		
+		if (!r.infinity && r.y.signum() < 0)
+			r.y = r.y.add(p);
+		return r;
+	}
 
-		BigInteger m2 = square(m);
-		BigInteger twices = mul2(s);
-		BigInteger outx = sub(m2, twices);
-
-		BigInteger sx = sub(s, outx);
-		BigInteger msx = m.multiply(sx).mod(p);
-		BigInteger y4 = square(y2);
-		BigInteger eighty4 = y4.multiply(EIGHT).mod(p);
-		BigInteger outy = sub(msx, eighty4);
-
-		BigInteger yz = aa.z == null ? aa.y : aa.y.multiply(aa.z).mod(p);
-		BigInteger outz = mul2(yz);
-
-		return new P(outx, outy, outz);
+	@Override
+	P _mul2(P aa, boolean aminus3) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public String toString() {
+		return "p: " + p.toString(16) + "\n"
+				+ "a:" + a.toString(16) + "\n"
+				+ "b:" + b.toString(16) + "\n"
+				+ "n:" + n.toString(16) + "\n"
+				+ "Gx:" + g.x.toString(16) + "\n"
+				+ "Gy:" + g.y.toString(16) + "\n"
+				;
 	}
 }

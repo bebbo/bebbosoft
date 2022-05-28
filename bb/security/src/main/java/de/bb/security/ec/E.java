@@ -50,7 +50,7 @@ class E extends EC {
 		z = sub(ONE, d.multiply(axbxayby).mod(p)).modInverse(p);
 		BigInteger outy = n.multiply(z).mod(p);
 
-		return new P(outx, outy, null);
+		return new P(outx, outy);
 	}
 
 	P _mul2(P aa, boolean aminus3) {
