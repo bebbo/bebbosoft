@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: bb_util
 Bundle-SymbolicName: de.bb.util
-Bundle-Version: 1.0.23
+Bundle-Version: 1.0.24
 Export-Package: de.bb.util
 Bundle-Vendor: BebboSoft GbR
 Bundle-ClassPath: .

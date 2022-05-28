@@ -14,7 +14,7 @@
 	<description>Eclipse stuff</description>
 	<modules>
 		<!-- <module>editor</module> -->
-		<module>cdt-amiga</module>
+<!-- 		<module>cdt-amiga</module>
 		<module>cdt-amiga-feature</module>
-	</modules>
+ -->	</modules>
 </project>

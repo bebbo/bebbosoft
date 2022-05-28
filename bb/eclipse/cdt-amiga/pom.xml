@@ -11,6 +11,19 @@
   <version>1.0.0</version>
   <packaging>jar</packaging>
   <dependencies>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
+			<version>3.13.0</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+  
   <!-- 
     <dependency>
       <groupId>org.eclipse.core</groupId>

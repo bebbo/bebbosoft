@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.bb.eclipse</groupId>
-		<artifactId>cdt-amiga</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<artifactId>eclipse</artifactId>
+		<version>2.0.0</version>
 	</parent>
 	<groupId>de.bb.eclipse.cdt-amiga</groupId>
 	<artifactId>feature</artifactId>

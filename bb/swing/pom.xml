@@ -4,7 +4,7 @@
   <parent>
   	<artifactId>bb</artifactId>
   	<groupId>de.bb</groupId>
-  	<version>1.0.3</version>
+  	<version>1.0.4</version>
   </parent>
   <groupId>de.bb</groupId>
   <artifactId>swing</artifactId>
@@ -14,7 +14,7 @@
     <dependency>
       <groupId>de.bb</groupId>
       <artifactId>util</artifactId>
-      <version>1.0.22-SNAPSHOT</version>
+      <version>1.0.24</version>
     </dependency>
   </dependencies>
 </project>
