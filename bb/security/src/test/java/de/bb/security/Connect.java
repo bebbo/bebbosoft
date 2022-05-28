@@ -15,7 +15,8 @@ public class Connect {
     public static void main(String[] args) {
         try {
             byte[][] cs = {
-            		Ssl3.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+            		Ssl3.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+//            		Ssl3.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
 //            		Ssl3.TLS_RSA_WITH_AES_256_CBC_SHA256,
 //            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, 
 //            		Ssl3.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
@@ -36,18 +37,19 @@ public class Connect {
         int port = 443;
         String server;
         server = "www.google.de";
-        //        server = "www.ibm.com";
-        //       server = "login.live.com";
+                server = "www.ibm.com";
+               server = "login.live.com";
         //      server = "localhost";
-                server = "www.mikestoolbox.org";
+//                server = "www.mikestoolbox.org";
         //        server = "serveronline.org";
                 server = "blog.fefe.de";
     //     server = "ikanobank.de";
         //        port = 993;
-                server = "127.0.0.1";
+//                server = "127.0.0.1";
 //                port = 25000;
 
-        port = 4444;
+		server = "172.22.47.126";
+		port = 44330;
         
         Socket s = new Socket(server, port);
         try {

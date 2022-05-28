@@ -1,73 +1,51 @@
 package de.bb.security;
 
-import de.bb.util.Misc;
+import java.math.BigInteger;
+
+import de.bb.security.ec.EC;
+import de.bb.security.ec.P;
 
 public class ECMath {
 
-    int p[];
-    int len;
-    
-    class P {
-        int x[];
-        int y[];
-        
-        P add(P p) {
-            return null;
-        }
-        P dub() {
-            return null;
-        }
-    }
-    class Fp extends P{
-        P add(P p) {
-            if (p == INFINITY)
-                return this;
-            if (this == INFINITY)
-                return p;
-            
-            // add negative or double
-            if (Misc.equals(x, p.x)) {
-                if (Misc.equals(y, p.y))
-                    return dub();
-                return INFINITY;
-            }
-            
-            int lambda[] = new int[len];
-            
-            return null;
-        }
+	public static byte[] genPrivateKey(int curve) {
+		EC ec = getEC(curve);
+		return ec.genPrivateKey().toByteArray();
+	}
 
-        P dub() {
-            if (this == INFINITY)
-                return INFINITY;
-            
-            // check y == 0
-            int i = 0;
-            for (; i < len; ++i) {
-                if (y[i] != 0)
-                    break;
-            }
-            if (i == len)
-                return INFINITY;
-            
-            return null;
-        }
-    }
+	private static EC getEC(int curve) {
+		EC ec;
+		switch (curve) {
+		case 0x17:
+			ec = EC.SECP256R1;
+			break;
+		case 0x18:
+			ec = EC.SECP384R1;
+			break;
+		case 0x19:
+			ec = EC.SECP521R1;
+			break;
+		default:
+			throw new RuntimeException("invalid curve: " + curve);
+		}
+		return ec;
+	}
 
-    final P INFINITY = new P();
+	public static byte[][] genPublicKey(int curve, byte[] n) {
+		EC ec = getEC(curve);
+		return ec.mul(ec.getG(), new BigInteger(n)).toBA();
+	}
 
-    protected P montgomeryLadder(P p1, int e[], int eLen) {
-        P p0 = INFINITY;
+	public static byte[][] doEC(int curve, byte[] ptx, byte[] pty, byte[] n) {
+		EC ec = getEC(curve);
+		P p = new P(ptx, pty);
+		if (!ec.verify(p))
+			throw new RuntimeException("point " + p + " not on curve: " + curve);
+		P r = ec.mul(p, new BigInteger(n));
+		return r.toBA();
+	}
 
-        while (--eLen > 0) {
-            if ((e[eLen >> 6] & (1 << (eLen & 31))) == 0) {
-                p1 = p1.add(p0);
-                p0 = p0.add(p0);
-            } else {
-                p0 = p0.add(p1);
-                p1 = p1.add(p1);
-            }
-        }
-        return p0;
-    }
+	public static int byteLength(int curve) {
+		EC ec = getEC(curve);
+		return ec.getByteLength();
+	}
 }

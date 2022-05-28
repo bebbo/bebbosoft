@@ -4,19 +4,18 @@ import java.math.BigInteger;
 
 public class P {
 	BigInteger x, y;
-	boolean infinity;
 
-	P() {
-		infinity = true;
-	}
+	public final static P INF = new P();
+
+	P() {}
 
 	P(byte[] gx) {
 		x = new BigInteger(gx);
 	}
 
-	P(byte[] gx, byte[] gy) {
-		this.x = new BigInteger(gx);
-		this.y = new BigInteger(gy);
+	public P(byte[] gx, byte[] gy) {
+		this.x = new BigInteger(1, gx, 0, gx.length);
+		this.y = new BigInteger(1, gy, 0, gy.length);
 	}
 
 	public P(BigInteger x, BigInteger y) {
@@ -25,11 +24,33 @@ public class P {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof P) {
+			P p = (P) obj;
+			if (x == null)
+				return p.x == null;
+			
+			return x.equals(p.x) && y.equals(p.y);
+		}
+		return false;
+	}
+
+	@Override
 	public String toString() {
-		if (infinity)
+		if (x == null)
 			return "[INF]";
 		if (y != null)
-			return "[" + x + ", " + y + "]";
-		return "[" + x + "]";
+			return "[" + x.toString(16) + ", " + y.toString(16) + "]";
+		return "[" + x.toString(16) + "]";
+	}
+
+	public byte[][] toBA() {
+		if (x == null)
+			return null;
+		return new byte[][] { x.toByteArray(), y.toByteArray() };
+	}
+
+	public boolean infinity() {
+		return x == null;
 	}
 }
