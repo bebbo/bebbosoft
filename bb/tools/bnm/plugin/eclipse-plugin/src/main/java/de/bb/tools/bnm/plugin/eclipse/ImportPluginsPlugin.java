@@ -38,6 +38,7 @@ public class ImportPluginsPlugin extends AbstractPlugin {
 		for (File plugin : plugins.listFiles()) {
 			byte data[];
 			try {
+				log.info("inspecting " + plugin);
 				if (plugin.isDirectory()) {
 					data = IOUtils.readFile(new File(plugin, "META-INF/MANIFEST.MF"));
 				} else {
