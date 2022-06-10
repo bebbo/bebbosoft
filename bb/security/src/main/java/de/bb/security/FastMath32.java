@@ -7,806 +7,1012 @@
 
 package de.bb.security;
 
+
+import de.bb.util.Misc;
+
 /**
- * A small and fast implementation for BigInteger maths.
- * Operates on int[] arrays and all 32 bits user per int.
+ * A small and fast implementation for BigInteger maths. Operates on int[]
+ * arrays and all of the 32 bits are used.
  */
-final class FastMath32 {
-    static int[] ONE = { 1 };
+public final class FastMath32 {
+	static int[] ONE = { 1 };
 
-    // static long start;
+	// static long start;
 
-    static int[] oddModPow(int[] z, byte[] exp, int[] mod) {
-        // long start = System.currentTimeMillis();
+	static int[] oddModPow(int[] z, byte[] exp, int[] mod) {
+		// long start = System.currentTimeMillis();
 
-        // search highest bit of exponent
-        int expLen = exp.length;
-        int expi = 0;
-        while (expi < expLen) {
-            if (exp[expi] != 0)
-                break;
-            ++expi;
-        }
-        // no bit found --> ONE is the result
-        if (expi == expLen)
-            return ONE;
+		// search highest bit of exponent
+		int expLen = exp.length;
+		int expi = 0;
+		while (expi < expLen) {
+			if (exp[expi] != 0)
+				break;
+			++expi;
+		}
+		// no bit found --> ONE is the result
+		if (expi == expLen)
+			return ONE;
 
-        // preload the bits
-        int expBitsLeft;
-        int expBits = exp[expi++] << 24;
+		// preload the bits
+		int expBitsLeft;
+		int expBits = exp[expi++] << 24;
 
-        // preload more bits
-        if (expi < expLen) {
-            expBitsLeft = 16;
-            expBits |= (exp[expi++] & 0xff) << 16;
-        } else {
-            // exponent == ONE --> return bz
-            if (expBits == 1)
-                return z;
-            expBitsLeft = 8;
-        }
+		// preload more bits
+		if (expi < expLen) {
+			expBitsLeft = 16;
+			expBits |= (exp[expi++] & 0xff) << 16;
+		} else {
+			// exponent == ONE --> return bz
+			if (expBits == 1)
+				return z;
+			expBitsLeft = 8;
+		}
 
-        // shift highest bit into sign bit
-        while (expBits > 0) {
-            expBits <<= 1;
-            --expBitsLeft;
-        }
+		// shift highest bit into sign bit
+		while (expBits > 0) {
+			expBits <<= 1;
+			--expBitsLeft;
+		}
 
-        // eat the highest bit since we start with z
-        // and load the next bits on underflow
-        expBits <<= 1;
-        if (--expBitsLeft == 8 && expi < expLen) {
-            expBitsLeft = 16;
-            expBits |= (exp[expi++] & 0xff) << 16;
-        }
+		// eat the highest bit since we start with z
+		// and load the next bits on underflow
+		expBits <<= 1;
+		if (--expBitsLeft == 8 && expi < expLen) {
+			expBitsLeft = 16;
+			expBits |= (exp[expi++] & 0xff) << 16;
+		}
 
-        // expBits now contains 1 to 16 bits
+		// expBits now contains 1 to 16 bits
 
-        // ok - we have to calculate something
-        int modLen = mod.length;
-        int muLen = mod.length;
-        if (mod[modLen - 1] == 0)
-            --muLen;
-        int maxLen = modLen + modLen + 1;
+		// ok - we have to calculate something
+		int modLen = mod.length;
+		int muLen = mod.length;
+		if (mod[modLen - 1] == 0)
+			--muLen;
+		int maxLen = modLen + modLen + 1;
 
-        int[][] data = new int[16][];
-        int[] t1 = new int[maxLen];
+		int[][] data = new int[16][];
+		int[] t1 = new int[maxLen];
 
-        int n0 = modInverse32Odd(mod[0]);
-        // since the highest bit is ONE, we start with Z and just transform it
-        // t0 = z << (modLen * 32)
-        int[] t0 = new int[z.length + modLen + 1];
-        System.arraycopy(z, 0, t0, modLen, z.length);
-        mod(t0, mod, t1, t0, t0.length - 1, modLen);
+		int n0 = modInverse32Odd(mod[0]);
+		// since the highest bit is ONE, we start with Z and just transform it
+		// t0 = z << (modLen * 32)
+		int[] t0 = new int[z.length + modLen + 1];
+		System.arraycopy(z, 0, t0, modLen, z.length);
+		mod(t0, mod, t1, t0, t0.length - 1, modLen);
 
-        int[] t = new int[muLen];
-        System.arraycopy(t0, 0, t, 0, muLen);
-        data[1] = t;
-        /*
-         * Since the highest bit is 1 we start with n.
-         * 
-         * then we square while zeros occur
-         * 
-         * if we hit 1 we fill a nibble an determine when to multiply
-         * 
-         * 1000 : square mul*n - loop covers the squares -> n^2, n^3, n^6, n^12
-         * 1001 : square square square square mul*n^9 -> n^2, n^4, n^8
-         * 1010 : square square square mul*n^5 - lcts -> n^2, n^4, n^8
-         * 1011 : square square square square mul*n^11 -> n^2, n^4, n^8
-         * 1100 : square square mul*n^3 - lcts -> n^2, n^4, n^7
-         * 1101 ; square square square square mul*n^13 -> n^2, n^4, n^8
-         * 1110 ; square square square mul*n^7 - lcts -> n^2, n^4, n^8
-         * 1111 ; square square square square mul*n^15 -> n^2, n^4, n^8
-         * 
-         * thus the odd exponents are required since we might not need all of them, we do lazy evaluation using these
-         * rules
-         */
+		int[] t = new int[muLen];
+		System.arraycopy(t0, 0, t, 0, muLen);
+		data[1] = t;
+		/*
+		 * Since the highest bit is 1 we start with n.
+		 * 
+		 * then we square while zeros occur
+		 * 
+		 * if we hit 1 we fill a nibble an determine when to multiply
+		 * 
+		 * 1000 : square mul*n - loop covers the squares -> n^2, n^3, n^6, n^12 1001 :
+		 * square square square square mul*n^9 -> n^2, n^4, n^8 1010 : square square
+		 * square mul*n^5 - lcts -> n^2, n^4, n^8 1011 : square square square square
+		 * mul*n^11 -> n^2, n^4, n^8 1100 : square square mul*n^3 - lcts -> n^2, n^4,
+		 * n^7 1101 ; square square square square mul*n^13 -> n^2, n^4, n^8 1110 ;
+		 * square square square mul*n^7 - lcts -> n^2, n^4, n^8 1111 ; square square
+		 * square square mul*n^15 -> n^2, n^4, n^8
+		 * 
+		 * thus the odd exponents are required since we might not need all of them, we
+		 * do lazy evaluation using these rules
+		 */
 
-        t = new int[maxLen];
-        int index = 1;
-        while (expBitsLeft > 0) {
-            // just square
-            if (expBits > 0) {
-                square(t1, t0, muLen);
-                montgomery(t1, mod, modLen, n0);
-                t = t0;
-                t0 = t1;
-                t1 = t;
+		t = new int[maxLen];
+		int index = 1;
+		while (expBitsLeft > 0) {
+			// just square
+			if (expBits > 0) {
+				square(t1, t0, muLen);
+				montgomery(t1, mod, modLen, n0);
+				t = t0;
+				t0 = t1;
+				t1 = t;
 
-                if (index < 16) {
-                    index += index;
-                    if (index < 16) {
-                        t = new int[muLen];
-                        System.arraycopy(t0, 0, t, 0, muLen);
-                        data[index] = t;
-                    }
-                }
+				if (index < 16) {
+					index += index;
+					if (index < 16) {
+						t = new int[muLen];
+						System.arraycopy(t0, 0, t, 0, muLen);
+						data[index] = t;
+					}
+				}
 
-                // and load the next bits on underflow
-                expBits <<= 1;
-                if (--expBitsLeft == 8 && expi < expLen) {
-                    expBitsLeft = 16;
-                    expBits |= (exp[expi++] & 0xff) << 16;
-                }
-                continue;
-            }
+				// and load the next bits on underflow
+				expBits <<= 1;
+				if (--expBitsLeft == 8 && expi < expLen) {
+					expBitsLeft = 16;
+					expBits |= (exp[expi++] & 0xff) << 16;
+				}
+				continue;
+			}
 
-            // sign is set in expBits
+			// sign is set in expBits
 
-            // how many bits to handle?
-            int n = 4;
-            if (expBitsLeft < n)
-                n = expBitsLeft;
+			// how many bits to handle?
+			int n = 4;
+			if (expBitsLeft < n)
+				n = expBitsLeft;
 
-            // get the bits
-            int nibble = expBits >>> (32 - n);
-            while (nibble > 0 && (nibble & 1) == 0) {
-                nibble >>>= 1;
-                --n;
-            }
+			// get the bits
+			int nibble = expBits >>> (32 - n);
+			while (nibble > 0 && (nibble & 1) == 0) {
+				nibble >>>= 1;
+				--n;
+			}
 
-            // and load new bits
-            if (expi < expLen && expBitsLeft - n <= 8) {
-                expBits = (expBits << (expBitsLeft - 8)) | ((exp[expi++] & 0xff) << 16);
-                expBits <<= 8 + n - expBitsLeft;
-                expBitsLeft += 8;
-            } else {
-                expBits <<= n;
-            }
-            expBitsLeft -= n;
+			// and load new bits
+			if (expi < expLen && expBitsLeft - n <= 8) {
+				expBits = (expBits << (expBitsLeft - 8)) | ((exp[expi++] & 0xff) << 16);
+				expBits <<= 8 + n - expBitsLeft;
+				expBitsLeft += 8;
+			} else {
+				expBits <<= n;
+			}
+			expBitsLeft -= n;
 
-            // now square n times
-            while (n-- > 0) {
-                square(t1, t0, muLen);
-                montgomery(t1, mod, modLen, n0);
-                t = t0;
-                t0 = t1;
-                t1 = t;
-                if (index < 16) {
-                    index += index;
-                    if (index < 16) {
-                        t = new int[muLen];
-                        System.arraycopy(t0, 0, t, 0, muLen);
-                        data[index] = t;
-                    }
-                }
-            }
+			// now square n times
+			while (n-- > 0) {
+				square(t1, t0, muLen);
+				montgomery(t1, mod, modLen, n0);
+				t = t0;
+				t0 = t1;
+				t1 = t;
+				if (index < 16) {
+					index += index;
+					if (index < 16) {
+						t = new int[muLen];
+						System.arraycopy(t0, 0, t, 0, muLen);
+						data[index] = t;
+					}
+				}
+			}
 
-            if (nibble > 0) {
-                int x[] = data[nibble];
-                // load the z^x
-                if (x == null) {
-                    x = fill(nibble, data, muLen, mod, modLen, n0);
-                }
-                // and multiply
-                mul(t1, t0, x, muLen);
-                montgomery(t1, mod, modLen, n0);
-                t = t0;
-                t0 = t1;
-                t1 = t;
-            }
-            if (index < 16) {
-                index += nibble;
-                if (index < 16) {
-                    t = new int[muLen];
-                    System.arraycopy(t0, 0, t, 0, muLen);
-                    data[index] = t;
-                }
-            }
-        }
+			if (nibble > 0) {
+				int x[] = data[nibble];
+				// load the z^x
+				if (x == null) {
+					x = fill(nibble, data, muLen, mod, modLen, n0);
+				}
+				// and multiply
+				mul(t1, t0, x, muLen);
+				montgomery(t1, mod, modLen, n0);
+				t = t0;
+				t0 = t1;
+				t1 = t;
+			}
+			if (index < 16) {
+				index += nibble;
+				if (index < 16) {
+					t = new int[muLen];
+					System.arraycopy(t0, 0, t, 0, muLen);
+					data[index] = t;
+				}
+			}
+		}
 
-        // transform back
-        montgomery(t0, mod, modLen, n0);
+		// transform back
+		montgomery(t0, mod, modLen, n0);
 
-        // System.out.println("rsa " + expLen*8 + ": " +
-        // (System.currentTimeMillis() - start) + "ms");
+		// System.out.println("rsa " + expLen*8 + ": " +
+		// (System.currentTimeMillis() - start) + "ms");
 
-        return t0;
-    }
+		return t0;
+	}
 
-    private static int[] fill(int nibble, int[][] data, int muLen, int[] mod, int modLen, int n0) {
-        int[] x = new int[modLen + modLen + 1];
-        int a[], b[];
-        
-        // n^3: n * n^2
-        // n^5: n^2 * n^3 or n * n^4
-        // n^7: n * n^6 or n^4 * n^3 [requires n^3]
-        // n^9: n * n^8 or n^2 * n^7 or n^3 * n^6
-        // n^11: n^4 * n^7 or n^2 * n^9 [requires n^9]
-        // n^13: n * n^12 or n^4 * n^9 [requires n^9]
-        // n^15: n^3 * n^12 or n^2 * n^13 [requires n^13 --> n^9]
-        switch (nibble) {
-        case 3:
-            a = data[1];
-            b = data[2];
-            break;
-        case 4:
-            a = b = data[2];
-            break;
-        case 5:
-            if (data[4] != null) {
-                a = data[1];
-                b = data[4];
-                break;
-            }
-            if (data[3] == null)
-                fill(3, data, muLen, mod, modLen, n0);
+	private static int[] fill(int nibble, int[][] data, int muLen, int[] mod, int modLen, int n0) {
+		int[] x = new int[modLen + modLen + 1];
+		int a[], b[];
 
-            a = data[2];
-            b = data[3];
-            break;
-        case 7:
-            if (data[6] != null) {
-                a = data[6];
-                b = data[1];
-                break;
-            }
-            if (data[3] == null)
-                fill(3, data, muLen, mod, modLen, n0);
+		// n^3: n * n^2
+		// n^5: n^2 * n^3 or n * n^4
+		// n^7: n * n^6 or n^4 * n^3 [requires n^3]
+		// n^9: n * n^8 or n^2 * n^7 or n^3 * n^6
+		// n^11: n^4 * n^7 or n^2 * n^9 [requires n^9]
+		// n^13: n * n^12 or n^4 * n^9 [requires n^9]
+		// n^15: n^3 * n^12 or n^2 * n^13 [requires n^13 --> n^9]
+		switch (nibble) {
+		case 3:
+			a = data[1];
+			b = data[2];
+			break;
+		case 4:
+			a = b = data[2];
+			break;
+		case 5:
+			if (data[4] != null) {
+				a = data[1];
+				b = data[4];
+				break;
+			}
+			if (data[3] == null)
+				fill(3, data, muLen, mod, modLen, n0);
 
-            a = data[4];
-            b = data[3];
-            break;
-        // * n^9: n * n^8 or n^2 * n^7 or n^3 * n^6
-        case 9:
-            if (data[8] != null) {
-                a = data[8];
-                b = data[1];
-                break;
-            }
-            if (data[6] != null && data[3] != null) {
-                a = data[6];
-                b = data[3];
-            }
-            if (data[7] == null)
-                fill(7, data, muLen, mod, modLen, n0);
-            a = data[7];
-            b = data[2];
-            break;
-        // * n^11: n^4 * n^7 or n^2 * n^9 [requires n^9]
-        case 11:
-            if (data[7] != null && data[4] != null) {
-                a = data[7];
-                b = data[4];
-                break;
-            }
-            if (data[9] == null)
-                fill(9, data, muLen, mod, modLen, n0);
-            a = data[9];
-            b = data[2];
-            break;
-        // * n^13: n * n^12 or n^4 * n^9 [requires n^9]
-        case 13:
-            if (data[12] != null) {
-                a = data[12];
-                b = data[1];
-                break;
-            }
-            if (data[4] == null)
-                fill(4, data, muLen, mod, modLen, n0);
-            if (data[9] == null)
-                fill(9, data, muLen, mod, modLen, n0);
-            a = data[4];
-            b = data[9];
-            break;
-        // * n^15: n^3 * n^12 or n^2 * n^13 [requires n^13 --> n^9]
-        case 15:
-            if (data[3] != null && data[12] != null) {
-                a = data[3];
-                b = data[12];
-                break;
-            }
-            if (data[13] == null)
-                fill(13, data, muLen, mod, modLen, n0);
-            a = data[2];
-            b = data[13];
-            break;
-        default:
-            a = b = null;
-        }
+			a = data[2];
+			b = data[3];
+			break;
+		case 7:
+			if (data[6] != null) {
+				a = data[6];
+				b = data[1];
+				break;
+			}
+			if (data[3] == null)
+				fill(3, data, muLen, mod, modLen, n0);
 
-        mul(x, a, b, muLen);
-        montgomery(x, mod, modLen, n0);
-        data[nibble] = x;
-        return x;
-    }
+			a = data[4];
+			b = data[3];
+			break;
+		// * n^9: n * n^8 or n^2 * n^7 or n^3 * n^6
+		case 9:
+			if (data[8] != null) {
+				a = data[8];
+				b = data[1];
+				break;
+			}
+			if (data[6] != null && data[3] != null) {
+				a = data[6];
+				b = data[3];
+			}
+			if (data[7] == null)
+				fill(7, data, muLen, mod, modLen, n0);
+			a = data[7];
+			b = data[2];
+			break;
+		// * n^11: n^4 * n^7 or n^2 * n^9 [requires n^9]
+		case 11:
+			if (data[7] != null && data[4] != null) {
+				a = data[7];
+				b = data[4];
+				break;
+			}
+			if (data[9] == null)
+				fill(9, data, muLen, mod, modLen, n0);
+			a = data[9];
+			b = data[2];
+			break;
+		// * n^13: n * n^12 or n^4 * n^9 [requires n^9]
+		case 13:
+			if (data[12] != null) {
+				a = data[12];
+				b = data[1];
+				break;
+			}
+			if (data[4] == null)
+				fill(4, data, muLen, mod, modLen, n0);
+			if (data[9] == null)
+				fill(9, data, muLen, mod, modLen, n0);
+			a = data[4];
+			b = data[9];
+			break;
+		// * n^15: n^3 * n^12 or n^2 * n^13 [requires n^13 --> n^9]
+		case 15:
+			if (data[3] != null && data[12] != null) {
+				a = data[3];
+				b = data[12];
+				break;
+			}
+			if (data[13] == null)
+				fill(13, data, muLen, mod, modLen, n0);
+			a = data[2];
+			b = data[13];
+			break;
+		default:
+			a = b = null;
+		}
 
-    /**
-     * 
-     * @param src
-     * @param dst
-     */
-    static void int2Byte(int[] src, byte[] dst) {
-        for (int i = 0, j = dst.length - 1; i < src.length; ++i) {
-            int v = src[i];
-            if (j < 0)
-                break;
-            dst[j--] = (byte) v;
-            v >>>= 8;
-            if (j < 0)
-                break;
-            dst[j--] = (byte) v;
-            v >>>= 8;
-            if (j < 0)
-                break;
-            dst[j--] = (byte) v;
-            v >>>= 8;
-            if (j < 0)
-                break;
-            dst[j--] = (byte) v;
-        }
-    }
+		mul(x, a, b, muLen);
+		montgomery(x, mod, modLen, n0);
+		data[nibble] = x;
+		return x;
+	}
 
-    /**
-     * Convert the byte array into an int array, also convert the order: byte[0]
-     * = high byte ... byte[n] = low byte int[0] = low int ... int[k] = high int
-     * The highest int has always the highest bit zero. To ensure this an
-     * additional int is appended.
-     * 
-     * @param src
-     */
-    static int[] byte2Int(byte[] src, int minLen) {
-        int i = 0;
-        // skip zero bytes
-        while (i < src.length && src[i] == 0) {
-            ++i;
-        }
-        // fix len to keep highest bit int highest int zero
-        int len = src.length - i;
-        if ((len & 3) == 0 && src[i] < 0)
-            ++len;
-        len = (len + 3) / 4;
-        // ensure minimal length
-        if (len < minLen)
-            len = minLen;
-        int d[] = new int[len];
+	/**
+	 * 
+	 * @param src
+	 * @param dst
+	 */
+	static byte[] int2Byte(int[] src, byte[] dst) {
+		if (dst == null) {
+			int n = src.length;
+			while (n > 0 && src[n - 1] == 0)
+				--n;
+			dst = new byte[n * 4];
+		}
+		for (int i = 0, j = dst.length - 1; i < src.length; ++i) {
+			int v = src[i];
+			if (j < 0)
+				break;
+			dst[j--] = (byte) v;
+			v >>>= 8;
+			if (j < 0)
+				break;
+			dst[j--] = (byte) v;
+			v >>>= 8;
+			if (j < 0)
+				break;
+			dst[j--] = (byte) v;
+			v >>>= 8;
+			if (j < 0)
+				break;
+			dst[j--] = (byte) v;
+		}
+		return dst;
+	}
 
-        // copy the data
-        for (int k = 0, j = src.length - 1; k < len && j >= i; ++k) {
-            int v = (src[j--] & 0xff);
-            if (j >= 0)
-                v |= ((src[j--] & 0xff) << 8);
-            if (j >= 0)
-                v |= ((src[j--] & 0xff) << 16);
-            if (j >= 0)
-                v |= ((src[j--] & 0xff) << 24);
-            d[k] = v;
-        }
-        return d;
-    }
+	/**
+	 * Convert the byte array into an int array, also convert the order: byte[0] =
+	 * high byte ... byte[n] = low byte int[0] = low int ... int[k] = high int The
+	 * highest int has always the highest bit zero. To ensure this an additional int
+	 * is appended.
+	 * 
+	 * @param src
+	 */
+	static int[] byte2Int(byte[] src, int minLen) {
+		int i = 0;
+		// skip zero bytes
+		while (i < src.length && src[i] == 0) {
+			++i;
+		}
+		// fix len to keep highest bit int highest int zero
+		int len = src.length - i;
+		if ((len & 3) == 0 && src[i] < 0)
+			++len;
+		len = (len + 3) / 4;
+		// ensure minimal length
+		if (len < minLen)
+			len = minLen;
+		int d[] = new int[len];
 
-    /**
-     * sub WITHOUT handling underflows!!!!
-     * 
-     * @return true on underflow
-     * @param res
-     * @param a
-     * @param b
-     * @param bl
-     */
-    static boolean sub(int[] res, int[] a, int[] b, int bl) {
-        long carry = 0;
-        int i;
-        for (i = 0; i < bl; ++i) {
-            carry += (a[i] & 0xffffffffL) - (b[i] & 0xffffffffL);
-            res[i] = (int) carry;
-            carry >>= 32;
-        }
-        for (; carry != 0 && i < bl; ++i) {
-            carry += a[i] & 0xffffffffL;
-            res[i] = (int) carry;
-            carry >>= 32;
-        }
-        return (int) carry != 0;
-    }
+		// copy the data
+		for (int k = 0, j = src.length - 1; k < len && j >= i; ++k) {
+			int v = (src[j--] & 0xff);
+			if (j >= 0)
+				v |= ((src[j--] & 0xff) << 8);
+			if (j >= 0)
+				v |= ((src[j--] & 0xff) << 16);
+			if (j >= 0)
+				v |= ((src[j--] & 0xff) << 24);
+			d[k] = v;
+		}
+		return d;
+	}
 
-    static boolean add(int[] res, int[] a, int al, int[] b, int bl) {
-        long carry = 0;
-        int i;
-        for (i = 0; i < bl; ++i) {
-            carry += (a[i] & 0xffffffffL) + (b[i] & 0xffffffffL);
-            res[i] = (int) carry;
-            carry >>= 32;
-        }
-        for (; carry != 0 && i < al; ++i) {
-            carry += a[i] & 0xffffffffL;
-            res[i] = (int) carry;
-            carry >>= 32;
-        }
-        return (int) carry != 0;
-    }
+	/**
+	 * sub WITHOUT handling underflows!!!!
+	 * 
+	 * @return true on underflow
+	 * @param res
+	 * @param a
+	 * @param b
+	 * @param bl
+	 */
+	static boolean sub(int[] res, int[] a, int[] b, int bl) {
+		long carry = 0;
+		int i;
+		for (i = 0; i < bl; ++i) {
+			carry += (a[i] & 0xffffffffL) - (b[i] & 0xffffffffL);
+			res[i] = (int) carry;
+			carry >>= 32;
+		}
+		for (; carry != 0 && i < bl; ++i) {
+			carry += a[i] & 0xffffffffL;
+			res[i] = (int) carry;
+			carry >>= 32;
+		}
+		return (int) carry != 0;
+	}
 
-    /**
-     * aIn = aIn mod bIn
-     * 
-     * @param aIn
-     * @param bIn
-     * @param temp1
-     *            a temp buffer to shift align aIn
-     * @param temp2
-     *            a temp buffer to shift align bIn
-     * @param al
-     *            length of a
-     * @param bl
-     *            length of b
-     */
-    static void mod(int[] aIn, int[] bIn, int temp1[], int temp2[], int al, int bl) {
-        int a[] = aIn;
-        int b[] = bIn;
+	/**
+	 * Return true on owerflow.
+	 * 
+	 * @param res
+	 * @param a
+	 * @param al
+	 * @param b
+	 * @param bl
+	 * @return
+	 */
+	static boolean add(int[] res, int[] a, int al, int[] b, int bl) {
+		long carry = 0;
+		int i;
+		for (i = 0; i < bl; ++i) {
+			carry += (a[i] & 0xffffffffL) + (b[i] & 0xffffffffL);
+			res[i] = (int) carry;
+			carry >>= 32;
+		}
+		for (; carry != 0 && i < al; ++i) {
+			carry += a[i] & 0xffffffffL;
+			res[i] = (int) carry;
+			carry >>= 32;
+		}
+		return (int) carry != 0;
+	}
 
-        while (bl > 0) {
-            if (b[bl - 1] != 0)
-                break;
-            --bl;
-        }
+	/**
+	 * aIn = aIn mod bIn
+	 * 
+	 * @param aInOut
+	 * @param bIn
+	 * @param temp1  a temp buffer to shift align aIn
+	 * @param temp2  a temp buffer to shift align bIn
+	 * @param al     length of a
+	 * @param bl     length of b
+	 */
+	static void mod(int[] aInOut, int[] bIn, int temp1[], int temp2[], int al, int bl) {
+		int a[] = aInOut;
+		int mod[] = bIn;
 
-        int shift = 0;
-        {
-            int x = b[bl - 1];
-            if (x < 0)
-                shift = 31;
-            else {
-                while (x + x > 0) {
-                    x += x;
-                    ++shift;
-                }
-            }
+		while (bl > 0) {
+			if (mod[bl - 1] != 0)
+				break;
+			--bl;
+		}
 
-            if (shift > 0) {
-                shiftLeft(temp1, bIn, bl, shift);
-                b = temp1;
-                shiftLeft(temp2, aIn, al, shift);
-                a = temp2;
+		int shift = 0;
+		{
+			int x = mod[bl - 1];
+			if (x < 0)
+				shift = 31;
+			else {
+				while (x + x > 0) {
+					x += x;
+					++shift;
+				}
+			}
 
-                if (b[bl] != 0)
-                    ++bl;
-                if (a[al] != 0)
-                    ++al;
-            }
-        }
-        int divlen = bl - 1;
+			if (shift > 0) {
+				shiftLeft(temp1, bIn, bl, shift);
+				mod = temp1;
+				shiftLeft(temp2, aInOut, al, shift);
+				a = temp2;
 
-        // modMSW aligned that highest bit is zero and 2nd highest bit is set
-        long modMSW = b[divlen] & 0xffffffffL;
-        long modMSW32 = modMSW << 32;
-        long modLSW = divlen > 0 ? b[divlen - 1] & 0xffffffffL : 0;
-        for (int i = al - bl; i >= 0;) {
-            long a0 = al == a.length ? 0 : a[al] & 0xffffffffL;
-            long a01 = (a0 << 32) | (a[--al] & 0xffffffffL);
+				if (mod[bl] != 0)
+					++bl;
+				if (a[al] != 0)
+					++al;
+			}
+		}
+		int divlen = bl - 1;
 
-            // calculate: c0 = a0|a1 / b0
-            // long c0 = a0 == modMSW ? 0xffffffffL : (a01 / modMSW) &
-            // 0xffffffffL;
-            long c0;
-            if (a0 == modMSW) {
-                c0 = 0xffffffffL; // wirklich n???tig?
-            } else
-            // if (a01 >= 0)
-            {
-                c0 = (a01 / modMSW) & 0xffffffffL;
-                // } else {
-                // c0 = (((a01>>>1) / modMSW) << 1) + 1 ;
-            }
+		// modMSW aligned that highest bit is zero and 2nd highest bit is set
+		long modMSW = mod[divlen] & 0xffffffffL;
+		long modMSW32 = modMSW << 32;
+		long modLSW = divlen > 0 ? mod[divlen - 1] & 0xffffffffL : 0;
+		for (int i = al - bl; i >= 0;) {
+			int ai;
+			long carry;
+			long a0 = al == a.length ? 0 : a[al] & 0xffffffffL;
+			long a01 = (a0 << 32) | (a[--al] & 0xffffffffL);
+			if (a01 != 0) {
+				long c0;
+				// calculate: c0 = a0|a1 / b0
+				// long c0 = a0 == modMSW ? 0xffffffffL : (a01 / modMSW) &
+				// 0xffffffffL;
+				if (a0 == modMSW) {
+					c0 = 0xffffffffL; // necessary
+				} else // if (a01 >= 0) // always true since the highest int <= modMSW 
+				{
+					c0 = (a01 / modMSW) & 0xffffffffL;
+					
+					
+					if (al > 0 && modLSW != 0) {
+						// a0|a1 -= c0*b0 // a0 part always gets zero!
+						a01 -= c0 * modMSW;
 
-            if (c0 > 0) {
-                if (al > 0 && modLSW != 0) {
-                    // a0|a1 -= c0*b0 // a0 part always gets zero!
-                    a01 -= c0 * modMSW;
+						long c0b1 = c0 * modLSW;
+						// add a2 => a0|a1|a2 - c0*b0|0
+						a01 = (a01 << 32) | (a[al - 1] & 0xffffffffL);
+						while ((a01 >= 0 && (c0b1 < 0 || (c0b1 >= 0 && a01 < c0b1)))
+								|| (a01 < 0 && c0b1 < 0 && a01 < c0b1)) {
+							--c0;
+							long t = a01 + modMSW32;
+							c0b1 -= modLSW;
+							if (c0b1 < 0 && a01 < 0 && t >= 0)
+								break;
+							a01 = t;
+						}
+					}
+				}
 
-                    long c0b1 = c0 * modLSW;
-                    // add a2 => a0|a1|a2 - c0*b0|0
-                    a01 = (a01 << 32) | (a[al - 1] & 0xffffffffL);
-                    while ((a01 >= 0 && (c0b1 < 0 || (c0b1 >= 0 && a01 < c0b1))) || (a01 < 0 && c0b1 < 0 && a01 < c0b1)) {
-                        --c0;
-                        long t = a01 + modMSW32;
-                        c0b1 -= modLSW;
-                        if (c0b1 < 0 && a01 < 0 && t >= 0)
-                            break;
-                        a01 = t;
-                    }
-                }
+				carry = 0;
+				if (c0 > 0) {
+					// start of mulSub
+					ai = al - divlen;
+					for (int bi = 0; bi <= divlen; ++bi) {
+						carry += (mod[bi] & 0xffffffffL) * c0;
+						int t = a[ai];
+						a[ai++] = t - (int) carry;
+						carry = (carry >>> 32) + (((int) (carry & 0xffffffffL) + 0x80000000) > (t + 0x80000000) ? 1 : 0);
+					}
+					if (carry != 0) {
+						carry = a[ai] - carry;
+						a[ai] = (int) carry;
+					} 
+					carry = a[ai];
+				}
 
-                if (c0 > 0) {
-                    // start of mulSub
-                    int ai = al - divlen;
-                    long carry = 0;
-                    for (int bi = 0; bi <= divlen; ++bi) {
-                        carry += (b[bi] & 0xffffffffL) * c0;
-                        int t = a[ai];
-                        a[ai++] = t - (int) carry;
-                        carry = (carry >>> 32) + (((int) carry + 0x80000000) > (t + 0x80000000) ? 1 : 0);
-                    }
-                    if (carry != 0) {
-                        carry = a[ai] - carry;
-                        a[ai] = (int) carry;
-                    }
-                    if (carry < 0)
-                    // if (mulSub(al, divlen, c0, b, a)) // got negative result?
-                    {
-                        --c0;
+				// if sub created an underflow, add mod
+				if (carry < 0 ) {
+//						--c0;
 
-                        carry = 0;
-                        ai = al - divlen;
-                        for (int bi = 0; bi <= divlen; bi++) {
-                            carry += (b[bi] & 0xffffffffL);
-                            carry += (a[ai] & 0xffffffffL);
-                            a[ai++] = (int) carry;
-                            carry >>>= 32;
-                        }
-                        if (carry > 0)
-                            a[ai] = a[ai] + (int) carry;
-                    }
-                }
-            }
-            --i; // c[i--] += (int) c0;
-        }
+					carry = 0;
+					ai = al - divlen;
+					for (int bi = 0; bi <= divlen; bi++) {
+						carry += (mod[bi] & 0xffffffffL);
+						carry += (a[ai] & 0xffffffffL);
+						a[ai++] = (int) carry;
+						carry >>>= 32;
+					}
+					if (carry > 0)
+						a[ai] = a[ai] + (int) carry;
+				}
 
-        if (shift > 0) {
-            shiftRight(aIn, a, aIn.length, shift);
-        }
-    }
+				// do some subtractions until the result is smaller than mod
+				while (overflow( a, mod, al, divlen)) {
+//					 ++ c0;
 
-    /**
-     * @param dst
-     * @param src
-     * @param len
-     */
-    private static void square(int[] dst, int[] src, int len) {
-        // delay(75);
-        // calc the squares a1*a1, a2*a2, ... - also erases the buffer
-        int i = len - 1;
-        int j = i + len;
-        dst[j] = 0;
-        for (; i >= 0; --i) {
-            long p = src[i] & 0xffffffffL;
-            p *= p;
-            dst[j--] = (int) (p >>> 32);
-            dst[j--] = (int) p;
-        }
+					carry = 0;
+					ai = al - divlen;
+					for (int bi = 0; bi <= divlen; bi++) {
+						carry += (mod[bi] & 0xffffffffL);
+						int t = a[ai];
+						a[ai++] = t - (int) carry;
+						carry = (carry >>> 32) + (((int) (carry & 0xffffffffL) + 0x80000000) > (t + 0x80000000) ? 1 : 0);
+					}
+					if (carry != 0) {
+						carry = a[ai] - carry;
+						a[ai] = (int) carry;
+					} 
+				}
+			}
+			
+			
+			--i; // c[i--] += (int) c0;
+		}
 
-        // add the mixed terms
-        for (i = 0; i < len; ++i) {
-            long l = src[i] & 0xffffffffL;
-            long carry = 0;
-            for (j = i + 1; j < len; ++j) {
-                long m = l * (src[j] & 0xffffffffL);
-                carry += m + m + (dst[i + j] & 0xffffffffL);
-                dst[i + j] = (int) carry;
-                // if (carry + 0x8000000000000000L < m + 0x8000000000000000L)
-                if (m < 0) // overflow is only caused by m!
-                    carry = 0x100000000L | (carry >>> 32);
-                else
-                    carry = (carry >>> 32);
-            }
-            for (; carry != 0; ++j) {
-                carry += (dst[i + j] & 0xffffffffL);
-                dst[i + j] = (int) carry;
-                carry >>>= 32;
-            }
-        }
-    }
+		if (shift > 0) {
+			shiftRight(aInOut, a, aInOut.length, shift);
+		}
+	}
 
-    /**
-     * @param dst
-     * @param a
-     * @param b
-     * @param len
-     */
-    static void mul(int[] dst, int[] a, int[] b, int len) {
-        long carry = 0;
-        long temp = a[0] & 0xffffffffL;
-        int i = 0;
-        for (; i < len; ++i) {
-            carry += (b[i] & 0xffffffffL) * temp;
-            dst[i] = (int) carry;
-            carry >>>= 32;
-        }
-        dst[i] = (int) carry;
+	/**
+	 * Determine if a subtraction is needed.
+	 * @param a the number.
+	 * @param mod the modulo.
+	 * @param al the highest int.
+	 * @param divlen ints used in deivision. 
+	 * @return true if a > mod at the given position.
+	 */
+	private static boolean overflow(int[] a, int[] mod, int al, int divlen) {
+		if (al + 1 < a.length && a[al + 1] != 0)
+			return true;
+		for (; divlen >= 0; --divlen, --al) {
+			if (a[al] != mod[divlen])
+				break;
+		}
+		boolean r = divlen < 0 || a[al] + 0x80000000 > mod[divlen] + 0x80000000;
+		return r;
+	}
 
-        for (int q = 1; q < len; ++q) {
-            carry = 0;
-            temp = a[q] & 0xffffffffL;
-            i = q;
-            for (int bi = 0; bi < len; ++bi) {
-                carry += (b[bi] & 0xffffffffL) * temp;
-                carry += dst[i] & 0xffffffffL;
+	/**
+	 * @param dst
+	 * @param src
+	 * @param len
+	 */
+	static void square(int[] dst, int[] src, int len) {
+		// delay(75);
+		// calc the squares a1*a1, a2*a2, ... - also erases the buffer
+		int i = len - 1;
+		int j = i + len;
+		dst[j] = 0;
+		for (; i >= 0; --i) {
+			long p = src[i] & 0xffffffffL;
+			p *= p;
+			dst[j--] = (int) (p >>> 32);
+			dst[j--] = (int) p;
+		}
 
-                dst[i++] = (int) carry;
-                carry >>>= 32;
-            }
-            dst[i] = (int) carry;
-        }
-    }
+		// add the mixed terms
+		for (i = 0; i < len; ++i) {
+			long l = src[i] & 0xffffffffL;
+			long carry = 0;
+			for (j = i + 1; j < len; ++j) {
+				long m = l * (src[j] & 0xffffffffL);
+				carry += m + m + (dst[i + j] & 0xffffffffL);
+				dst[i + j] = (int) carry;
+				// if (carry + 0x8000000000000000L < m + 0x8000000000000000L)
+				if (m < 0) // overflow is only caused by m!
+					carry = 0x100000000L | (carry >>> 32);
+				else
+					carry = (carry >>> 32);
+			}
+			for (; carry != 0; ++j) {
+				carry += (dst[i + j] & 0xffffffffL);
+				dst[i + j] = (int) carry;
+				carry >>>= 32;
+			}
+		}
+	}
 
-    /**
-     * @param dst
-     * @param src
-     * @param len
-     * @param shift
-     */
-    static void shiftLeft(int[] dst, int[] src, int len, int shift) {
-        long carry = 0;
-        int j = shift >>> 5;
-        shift &= 31;
-        for (int i = 0; i < len; ++i) {
-            carry >>>= 32;
-            carry |= (src[i] & 0xffffffffL) << shift;
-            dst[j++] = (int) carry;
-        }
-        if ((carry >>= 32) != 0)
-            dst[j] = (int) carry;
-    }
+	/**
+	 * dst needs at least size of len+len
+	 * 
+	 * @param dst destination of result.
+	 * @param a   multiplicant a.
+	 * @param b   mulitplicant b.
+	 * @param len length used if a and b.
+	 */
+	static void mul(int[] dst, int[] a, int[] b, int len) {
+		long carry = 0;
+		long temp = a[0] & 0xffffffffL;
+		int i = 0;
+		for (; i < len; ++i) {
+			carry += (b[i] & 0xffffffffL) * temp;
+			dst[i] = (int) carry;
+			carry >>>= 32;
+		}
+		dst[i] = (int) carry;
 
-    static void shiftRight(int[] dst, int[] src, int len, int shift) {
-        long carry = 0;
-        int j = len - (shift >>> 5) - 1;
-        shift &= 31;
-        for (int i = len - 1; j >= 0; --i) {
-            carry <<= 32;
-            carry |= (src[i] & 0xffffffffL);
-            dst[j--] = (int) (carry >>> shift);
-        }
-    }
+		for (int q = 1; q < len; ++q) {
+			carry = 0;
+			temp = a[q] & 0xffffffffL;
+			i = q;
+			for (int bi = 0; bi < len; ++bi) {
+				carry += (b[bi] & 0xffffffffL) * temp;
+				carry += dst[i] & 0xffffffffL;
 
-    /**
-     * Internal function to calculate a modInverse for the lowest int.
-     * 
-     * @param _x
-     *            lowest int of n.
-     * @return A result where: x*result mod 2^16 = 1
-     */
-    private static int modInverse32Odd(int val) {
-        // Newton's iteration!
-        int t = val;
-        t *= 2 - val * t;
-        t *= 2 - val * t;
-        t *= 2 - val * t;
-        t *= 2 - val * t;
-        return -t;
-    }
+				dst[i++] = (int) carry;
+				carry >>>= 32;
+			}
+			dst[i] = (int) carry;
+		}
+	}
 
-    /**
-     * @param t
-     * @param mod
-     * @param ml
-     * @param n0
-     */
-    static void montgomery(int[] t, int[] mod, int ml, int n0) {
-        /**
-         * / short[] mods = new short[mod.length * 2]; short[] ts = new
-         * short[t.length * 2]; copyInt2Short(mods, mod); copyInt2Short(ts, t);
-         * montgomery(ts, mods, ml * 2, (short) n0); copyShort2Int(t, ts);
-         * 
-         * /
-         **/
-        // t = (t + (t*n' mod r) * n )
-        int ml2 = ml + ml;
-        long carry = 0;
-        for (int i = 0; i < ml; ++i) {
-            long m = (n0 * t[i]) & 0xffffffffL;
-            int k = i;
-            for (int j = 0; j < ml; ++j, ++k) {
-                carry += (t[k] & 0xffffffffL) + m * (mod[j] & 0xffffffffL);
-                t[k] = (int) carry;
-                carry >>>= 32;
-            }
-            for (; carry != 0 && k < ml2; ++k) {
-                carry += (t[k] & 0xffffffffL);
-                t[k] = (int) carry;
-                carry >>>= 32;
-            }
-        }
+	/**
+	 * @param dst
+	 * @param src
+	 * @param len
+	 * @param shift
+	 */
+	static void shiftLeft(int[] dst, int[] src, int len, int shift) {
+		long carry = 0;
+		int j = shift >>> 5;
+		shift &= 31;
+		for (int i = 0; i < len; ++i) {
+			carry >>>= 32;
+			carry |= (src[i] & 0xffffffffL) << shift;
+			dst[j++] = (int) carry;
+		}
+		if ((carry >>= 32) != 0)
+			dst[j] = (int) carry;
+	}
 
-        // t = t / r = shift right
-        {
-            int i = 0;
-            for (; i < ml; ++i)
-                t[i] = t[i + ml];
-            for (; i < ml2; ++i)
-                t[i] = 0;
-        }
+	static void shiftRight(int[] dst, int[] src, int len, int shift) {
+		long carry = 0;
+		int j = len - (shift >>> 5) - 1;
+		shift &= 31;
+		for (int i = len - 1; j >= 0; --i) {
+			carry <<= 32;
+			carry |= (src[i] & 0xffffffffL);
+			dst[j--] = (int) (carry >>> shift);
+		}
+	}
 
-        boolean sub = carry != 0;
-        if (!sub) {
-            sub = isGreater(mod, t, ml);
-        }
-        if (sub) {
-            sub(t, t, mod, ml);
-            sub = isGreater(mod, t, ml);
-        }
-        /**/
-    }
+	/**
+	 * Internal function to calculate a modInverse for the lowest int.
+	 * 
+	 * @param _x lowest int of n.
+	 * @return A result where: x*result mod 2^16 = 1
+	 */
+	private static int modInverse32Odd(int val) {
+		// Newton's iteration!
+		int t = val;
+		t *= 2 - val * t;
+		t *= 2 - val * t;
+		t *= 2 - val * t;
+		t *= 2 - val * t;
+		return -t;
+	}
 
-    private static boolean isGreater(int[] mod, int[] t, int ml) {
-        int i = ml - 1;
-        for (; i >= 0; --i) {
-            if (t[i] != mod[i])
-                break;
-        }
-        boolean r = i < 0 || t[i] + 0x80000000 > mod[i] + 0x80000000;
-        return r;
-    }
-/*
-    static void mulmont(int[] a, int x[], int y[], int[] m, int ms, int len) {
-        if (x == y)
-            square(a, x, len);
-        else
-            mul(a, x, y, len);
-        montgomery(a, m, len, ms);
-    }
+	/**
+	 * @param t
+	 * @param mod
+	 * @param ml
+	 * @param n0
+	 */
+	static void montgomery(int[] t, int[] mod, int ml, int n0) {
+		/**
+		 * / short[] mods = new short[mod.length * 2]; short[] ts = new short[t.length *
+		 * 2]; copyInt2Short(mods, mod); copyInt2Short(ts, t); montgomery(ts, mods, ml *
+		 * 2, (short) n0); copyShort2Int(t, ts);
+		 * 
+		 * /
+		 **/
+		// t = (t + (t*n' mod r) * n )
+		int ml2 = ml + ml;
+		long carry = 0;
+		for (int i = 0; i < ml; ++i) {
+			long m = (n0 * t[i]) & 0xffffffffL;
+			int k = i;
+			for (int j = 0; j < ml; ++j, ++k) {
+				carry += (t[k] & 0xffffffffL) + m * (mod[j] & 0xffffffffL);
+				t[k] = (int) carry;
+				carry >>>= 32;
+			}
+			for (; carry != 0 && k < ml2; ++k) {
+				carry += (t[k] & 0xffffffffL);
+				t[k] = (int) carry;
+				carry >>>= 32;
+			}
+		}
 
-    static void xmulmont(int[] a, int x[], int y[], int[] m, int ms, int len) {
+		// t = t / r = shift right
+		{
+			int i = 0;
+			for (; i < ml; ++i)
+				t[i] = t[i + ml];
+			for (; i < ml2; ++i)
+				t[i] = 0;
+		}
 
-        int y00 = y[0];
-        long y0 = y00 & 0xffffffffL;
-        int m00 = m[0];
-        long m0 = m00 & 0xffffffffL;
+		boolean sub = carry != 0;
+		if (!sub) {
+			sub = isGreater(mod, t, ml);
+		}
+		if (sub) {
+			sub(t, t, mod, ml);
+			sub = isGreater(mod, t, ml);
+		}
+		/**/
+	}
 
-        long carry;
-        // initial step initializes a[]
-        {
-            int x00 = x[0];
-            long x0 = x00 & 0xffffffffL;
-            long ui = (x00 * y00 * ms) & 0xffffffffL;
+	private static boolean isGreater(int[] mod, int[] t, int ml) {
+		int i = ml - 1;
+		for (; i >= 0; --i) {
+			if (t[i] != mod[i])
+				break;
+		}
+		boolean r = i < 0 || t[i] + 0x80000000 > mod[i] + 0x80000000;
+		return r;
+	}
 
-            long t = x0 * y0;
-            carry = t + ui * m0;
-            if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
-                carry = 0x100000000L + (carry >>> 32);
-            else
-                carry >>>= 32;
-            for (int j = 1; j <= len; ++j) {
-                // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) +
-                // ui * (m[j] & 0xffffffffL);
-                t = x0 * (y[j] & 0xffffffffL);
-                carry += t + ui * (m[j] & 0xffffffffL);
-                a[j - 1] = (int) carry;
-                if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
-                    carry = 0x100000000L + (carry >>> 32);
-                else
-                    carry >>>= 32;
-            }
-            a[len] = (int) carry;
-        }
+	public static byte[] reverse(byte[] bIn) {
+		byte[] b = bIn.clone();
+		for (int i = 0, j = b.length - 1; i < j; ++i, --j) {
+			byte t = b[i];
+			b[i] = b[j];
+			b[j] = t;
+		}
+		return b;
+	}
 
-        // now work additive
-        for (int i = 1; i < len; ++i) {
-            int a00 = a[0];
-            long a0 = a00 & 0xffffffffL;
-            int xi0 = x[i];
-            long xi = xi0 & 0xffffffffL;
-            long ui = ((a00 + xi0 * y00) * ms) & 0xffffffffL;
-            long t = a0 + xi * y0;
-            carry = t + ui * m0;
-            if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
-                carry = 0x100000000L + (carry >>> 32);
-            else
-                carry >>>= 32;
-            for (int j = 1; j <= len; ++j) {
-                // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) +
-                // ui * (m[j] & 0xffffffffL);
-                t = xi * (y[j] & 0xffffffffL) + (a[j] & 0xffffffffL);
-                carry += t + ui * (m[j] & 0xffffffffL);
-                a[j - 1] = (int) carry;
-                if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
-                    carry = 0x100000000L + (carry >>> 32);
-                else
-                    carry >>>= 32;
-            }
-            a[len] = (int) carry;
-            if (carry >>> 32 != 0) {
-                carry++;
-            }
-        }
+	static void mulmont(int[] a, int x[], int y[], int[] m, int ms, int len) {
+		if (x == y)
+			square(a, x, len);
+		else
+			mul(a, x, y, len);
+		montgomery(a, m, len, ms);
+	}
 
-        int i = len;
-        for (; i >= 0; --i) {
-            if (a[i] != m[i])
-                break;
-        }
-        if (i < 0 || a[i] + 0x80000000 > m[i] + 0x80000000) {
-            sub(a, a, m, len);
-        }
-    }
-*/
+	/*
+	 * static void xmulmont(int[] a, int x[], int y[], int[] m, int ms, int len) {
+	 * 
+	 * int y00 = y[0];
+	 * long y0 = y00 & 0xffffffffL;
+	 * int m00 = m[0];
+	 * long m0 = m00 & 0xffffffffL;
+	 * 
+	 * long carry;
+	 * // initial step initializes a[]
+	 * {
+	 * int x00 = x[0];
+	 * long x0 = x00 & 0xffffffffL;
+	 * long ui = (x00 * y00 * ms) & 0xffffffffL;
+	 * 
+	 * long t = x0 * y0;
+	 * carry = t + ui * m0;
+	 * if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
+	 * carry = 0x100000000L + (carry >>> 32);
+	 * else
+	 * carry >>>= 32;
+	 * for (int j = 1; j <= len; ++j) {
+	 * // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) +
+	 * // ui * (m[j] & 0xffffffffL);
+	 * t = x0 * (y[j] & 0xffffffffL);
+	 * carry += t + ui * (m[j] & 0xffffffffL);
+	 * a[j - 1] = (int) carry;
+	 * if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
+	 * carry = 0x100000000L + (carry >>> 32);
+	 * else
+	 * carry >>>= 32;
+	 * }
+	 * a[len] = (int) carry;
+	 * }
+	 * 
+	 * // now work additive
+	 * for (int i = 1; i < len; ++i) {
+	 * int a00 = a[0];
+	 * long a0 = a00 & 0xffffffffL;
+	 * int xi0 = x[i];
+	 * long xi = xi0 & 0xffffffffL;
+	 * long ui = ((a00 + xi0 * y00) * ms) & 0xffffffffL;
+	 * long t = a0 + xi * y0;
+	 * carry = t + ui * m0;
+	 * if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
+	 * carry = 0x100000000L + (carry >>> 32);
+	 * else
+	 * carry >>>= 32;
+	 * for (int j = 1; j <= len; ++j) {
+	 * // carry += (a[j] & 0xffffffffL) + xi * (y[j] & 0xffffffffL) +
+	 * // ui * (m[j] & 0xffffffffL);
+	 * t = xi * (y[j] & 0xffffffffL) + (a[j] & 0xffffffffL);
+	 * carry += t + ui * (m[j] & 0xffffffffL);
+	 * a[j - 1] = (int) carry;
+	 * if (t + 0x8000000000000000L > carry + 0x8000000000000000L)
+	 * carry = 0x100000000L + (carry >>> 32);
+	 * else
+	 * carry >>>= 32;
+	 * }
+	 * a[len] = (int) carry;
+	 * if (carry >>> 32 != 0) {
+	 * carry++;
+	 * }
+	 * }
+	 * 
+	 * int i = len;
+	 * for (; i >= 0; --i) {
+	 * if (a[i] != m[i])
+	 * break;
+	 * }
+	 * if (i < 0 || a[i] + 0x80000000 > m[i] + 0x80000000) {
+	 * sub(a, a, m, len);
+	 * }
+	 * }
+	 */
+	static int A[] = new int[] { 121665, 0, 0, 0, 0, 0, 0, 0, };
+	static int P[] = new int[] { 0xffffffed, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+			0x7fffffff, };
+	static byte _9[] = new byte[32];
+	static byte P_2[] = new byte[32];
+	static {
+		int2Byte(P, P_2);
+		P_2[31] -= 2;
+		_9[0] = 9;
+	}
+
+	public static byte[] x25519(byte scalar[], byte point[]) {
+		byte x[] = new byte[32];
+
+		// clear high bit
+		point[31] &= 0x7f;
+
+		// clamp the scalar
+		scalar[31] &= 0x7f;
+		scalar[31] |= 0x40;
+		scalar[0] &= 0xf8;
+
+		// the point is little endian, byte2int for bigendian => reverse it
+		int x1[] = byte2Int(reverse(point), 16);
+
+		int x2[] = new int[16];
+		x2[0] = 1;
+		int z2[] = new int[16];
+		int x3[] = x1.clone();
+		int z3[] = x2.clone();
+
+		int a_e[] = new int[16];
+		int b_m[] = new int[16];
+		int c_aa[] = new int[16];
+		int d_bb[] = new int[16];
+		int cb[] = new int[16];
+		int da[] = new int[16];
+
+		int t3[] = new int[16];
+		int t4[] = new int[16];
+
+		int swap = 0;
+		for (int index = 254; index >= 0; --index) {
+			int t[];
+			int bit = (1 & scalar[index >> 3] >> (index & 7));
+			if (swap != bit) {
+				t = x2;
+				x2 = x3;
+				x3 = t;
+
+				t = z2;
+				z2 = z3;
+				z3 = t;
+			}
+			swap = bit;
+
+			if (add(a_e, x2, 8, z2, 8) || a_e[7] < 0)
+				sub(a_e, a_e, P, 8);
+			if (sub(b_m, x2, z2, 8))
+				add(b_m, b_m, 8, P, 8);
+
+			if (add(c_aa, x3, 8, z3, 8) || c_aa[7] < 0)
+				sub(c_aa, c_aa, P, 8);
+			if (sub(d_bb, x3, z3, 8))
+				add(d_bb, d_bb, 8, P, 8);
+
+			mul(cb, c_aa, b_m, 8);
+			mod(cb, P, t3, t4, 16, 8);
+
+			mul(da, d_bb, a_e, 8);
+			mod(da, P, t3, t4, 16, 8);
+
+			square(c_aa, a_e, 8);
+			mod(c_aa, P, t3, t4, 16, 8);
+
+			square(d_bb, b_m, 8);
+			mod(d_bb, P, t3, t4, 16, 8);
+
+			if (sub(a_e, c_aa, d_bb, 8))
+				add(a_e, a_e, 8, P, 8);
+
+			mul(b_m, A, a_e, 8); // using 121665
+			mod(b_m, P, t3, t4, 16, 8);
+
+			if (add(b_m, c_aa, 8, b_m, 8))
+				sub(b_m, b_m, P, 8);
+
+			mul(x2, c_aa, d_bb, 8);
+			mod(x2, P, t3, t4, 16, 8);
+
+			mul(z2, a_e, b_m, 8);
+			mod(z2, P, t3, t4, 16, 8);
+
+			if (add(b_m, da, 8, cb, 8) || b_m[7] < 0)
+				sub(b_m, b_m, P, 8);
+
+			square(x3, b_m, 8);
+			mod(x3, P, t3, t4, 16, 8);
+
+			if (sub(b_m, da, cb, 8))
+				add(b_m, b_m, 8, P, 8);
+
+			square(a_e, b_m, 8);
+			mod(a_e, P, t3, t4, 16, 8);
+
+			mul(z3, x1, a_e, 8);
+			mod(z3, P, t3, t4, 16, 8);
+		}
+
+		z2 = invertP2(z2, x3, z3, t3, t4, P_2);
+		mul(a_e, z2, x2, 8);
+		mod(a_e, P, t3, t4, 16, 8);
+
+		byte[] result = new byte[32];
+		return reverse(int2Byte(a_e, result));
+	}
+
+	private static int[] invertP2(int z0[], int[] z1, int z2[], int[] t3, int[] t4, byte[] exp) {
+		System.arraycopy(z0, 0, z1, 0, 8);
+		for (int index = 2; index < 256; ++index) {
+			int t[];
+			mul(z2, z1, z1, 8);
+			mod(z2, P, t3, t4, 16, 8);
+			if (1 == (1 & exp[index >> 3] >> ((7 - index) & 7))) {
+				mul(z1, z2, z0, 8);
+				mod(z1, P, t3, t4, 16, 8);
+			} else {
+				t = z1;
+				z1 = z2;
+				z2 = t;
+			}
+		}
+		return z1;
+	}
+
+	public static byte[] x25519Pub(byte[] pk) {
+		return x25519(pk, _9);
+	}
+
 }

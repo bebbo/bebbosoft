@@ -126,7 +126,7 @@ public abstract class Ssl3 {
 	OutputStream os;
 
 	/** member to point to the ciphertype if >= 0. */
-	int cipherIndex;
+	int cipherIndex = -1;
 
 	/** for calculation in send / receive mode. */
 	MessageDigest md5 = new MD5();
@@ -136,7 +136,7 @@ public abstract class Ssl3 {
 	/**
 	 * SSL2: for the 2byte/3byte msg header. SSL3: for the 4byte msg header.
 	 */
-	byte head[];
+	byte head[] = new byte[4];
 
 	/** buffer to read a message or a single byte. */
 	byte readBuffer[] = NULLBYTES, onebyte[] = new byte[1];
@@ -186,7 +186,7 @@ public abstract class Ssl3 {
 	protected int blockSize;
 
 	/** read and write buffer for 5 bytes. */
-	protected byte r5[];
+	protected byte r5[] = new byte[5];
 
 	byte writeBuffer[] = NULLBYTES;
 
@@ -229,16 +229,6 @@ public abstract class Ssl3 {
 	 */
 	Ssl3(byte[][] ciphersuites) throws IOException {
 		this.ciphersuites = ciphersuites;
-		// init of vars
-		r5 = new byte[5];
-		head = new byte[4];
-
-		// no ciphertype
-		cipherIndex = -1;
-
-		// init randomArrays
-		clientRandom = new byte[32];
-		serverRandom = new byte[32];
 	}
 
 	/**
@@ -1527,6 +1517,24 @@ public abstract class Ssl3 {
 				r.add(c);
 		}
 		return r.toArray(new byte[r.size()][]);
+	}
+
+	public static void clear(byte[] b) {
+		for (int i = b.length - 1; i >= 0; --i)
+			b[i] = 0;
+	}
+
+	protected static byte[] random(int len) {
+		byte[] b = new byte[len];
+		secureRnd.nextBytes(b, 0, b.length); // init with random
+		
+        if (DEBUG.USE_TEST_DATA) {
+            for (int ii = 0; ii < b.length; ++ii) {
+                b[ii] = (byte) ii;
+            }
+        }
+		
+		return b;
 	}
 }
 

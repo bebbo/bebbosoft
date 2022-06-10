@@ -561,12 +561,10 @@ public class Ssl3Server extends Ssl3 {
 
         b[9] = 3;
         b[10] = this.versionMinor; // version
-        secureRnd.nextBytes(b, 11, 32);
-        if (DEBUG.USE_TEST_DATA)
-            for (int ii = 11; ii < 43; ++ii)
-                b[ii] = (byte) 0xcc;
-        System.arraycopy(b, 11, serverRandom, 0, 32);
-
+        
+        serverRandom = random(32);
+        System.arraycopy(serverRandom, 0, b, 11, 32);
+        
         int offset = sessionTicket ? 0 : 32;
         b[43] = (byte) offset; // a session ID with 32 bytes
 
@@ -616,12 +614,9 @@ public class Ssl3Server extends Ssl3 {
 
         // server hello [0 - 78]
         byte b[] = writeBuffer;
-        secureRnd.nextBytes(b, 11, 32);
-        if (DEBUG.USE_TEST_DATA)
-            for (int ii = 11; ii < 76; ++ii)
-                b[ii] = (byte) 0xAA;
-
-        System.arraycopy(b, 11, serverRandom, 0, 32);
+        
+        serverRandom = random(32);
+        System.arraycopy(serverRandom, 0, b, 11, 32);
 
         b[9] = 3;
         b[10] = versionMinor; // version
@@ -629,14 +624,8 @@ public class Ssl3Server extends Ssl3 {
         int offset = sessionTicket ? 0 : 32;
         b[43] = (byte) offset; // a session ID with 32 bytes
 
-        if (sessionId == null)
-            sessionId = new byte[32];
-
-        secureRnd.nextBytes(sessionId, 0, 32);
-        if (DEBUG.USE_TEST_DATA)
-            for (int ii = 0; ii < 32; ++ii)
-                sessionId[ii] = (byte) 0xcc;
-
+        sessionId = random(32);
+        
         if (!sessionTicket)
             System.arraycopy(sessionId, 0, b, 44, 32);
 
@@ -681,9 +670,8 @@ public class Ssl3Server extends Ssl3 {
         if (useDHE) {
             byte[] dhp = pkData[8];
             byte[] dhg = pkData[9];
-            preMasterSecret = new byte[dhp.length];
-            secureRnd.nextBytes(preMasterSecret);
-
+            
+            preMasterSecret = random(dhp.length);
             byte[] y = Pkcs6.doRSA(dhg, dhp, preMasterSecret);
 
             int dhStart = offset;
