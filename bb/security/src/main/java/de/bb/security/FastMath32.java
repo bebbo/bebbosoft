@@ -7,9 +7,6 @@
 
 package de.bb.security;
 
-
-import de.bb.util.Misc;
-
 /**
  * A small and fast implementation for BigInteger maths. Operates on int[]
  * arrays and all of the 32 bits are used.
@@ -985,7 +982,7 @@ public final class FastMath32 {
 			mod(z3, P, t3, t4, 16, 8);
 		}
 
-		z2 = invertP2(z2, x3, z3, t3, t4, P_2);
+		z2 = invertP2(z2, x3, z3, t3, t4, P_2, P);
 		mul(a_e, z2, x2, 8);
 		mod(a_e, P, t3, t4, 16, 8);
 
@@ -993,15 +990,23 @@ public final class FastMath32 {
 		return reverse(int2Byte(a_e, result));
 	}
 
-	private static int[] invertP2(int z0[], int[] z1, int z2[], int[] t3, int[] t4, byte[] exp) {
-		System.arraycopy(z0, 0, z1, 0, 8);
-		for (int index = 2; index < 256; ++index) {
+	static int[] invertP2(int z0[], int[] z1, int z2[], int[] t3, int[] t4, byte[] exp, int[] P) {
+		int len = z0.length & ~1;
+		int modLen = len >> 1;
+		System.arraycopy(z0, 0, z1, 0, modLen);
+		int index = 1;
+		int b0 = exp[0];
+		while (b0 > 0) {
+			++index;
+			b0 = (byte)(b0 + b0);
+		}
+		for (; index < 256; ++index) {
 			int t[];
-			mul(z2, z1, z1, 8);
-			mod(z2, P, t3, t4, 16, 8);
+			mul(z2, z1, z1, modLen);
+			mod(z2, P, t3, t4, len, modLen);
 			if (1 == (1 & exp[index >> 3] >> ((7 - index) & 7))) {
-				mul(z1, z2, z0, 8);
-				mod(z1, P, t3, t4, 16, 8);
+				mul(z1, z2, z0, modLen);
+				mod(z1, P, t3, t4, len, modLen);
 			} else {
 				t = z1;
 				z1 = z2;

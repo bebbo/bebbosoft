@@ -269,7 +269,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
 			dlen = 33;
 		} else {
 			byte clientPrivateKey[] = ECMath.genPrivateKey(curve);
-			byte[][] pt = ECMath.doEC(curve, this.dhg, this.dhgy, clientPrivateKey);
+			byte[][] pt = ECMath.mult(curve, this.dhg, this.dhgy, clientPrivateKey);
 			preMasterSecret = pt[0]; // x coordinate
 			int ylen = ECMath.byteLength(curve);
 			if (preMasterSecret.length < ylen) {
@@ -280,7 +280,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
 			}
 
 			// create the pubkey for the server
-			byte [][] pub = ECMath.genPublicKey(curve, clientPrivateKey);
+			byte [][] pub = ECMath.pub(curve, clientPrivateKey);
 			if (DEBUG.EC) {
 				Misc.dump("pubX", System.out, pub[0], 0, pub[0].length);
 			}
