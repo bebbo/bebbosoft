@@ -770,7 +770,7 @@ public final class FastMath32 {
 		/**/
 	}
 
-	private static boolean isGreater(int[] mod, int[] t, int ml) {
+	static boolean isGreater(int[] mod, int[] t, int ml) {
 		int i = ml - 1;
 		for (; i >= 0; --i) {
 			if (t[i] != mod[i])
@@ -873,122 +873,6 @@ public final class FastMath32 {
 	 * }
 	 * }
 	 */
-	static int A[] = new int[] { 121665, 0, 0, 0, 0, 0, 0, 0, };
-	static int P[] = new int[] { 0xffffffed, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-			0x7fffffff, };
-	static byte _9[] = new byte[32];
-	static byte P_2[] = new byte[32];
-	static {
-		int2Byte(P, P_2);
-		P_2[31] -= 2;
-		_9[0] = 9;
-	}
-
-	public static byte[] x25519(byte scalar[], byte point[]) {
-		byte x[] = new byte[32];
-
-		// clear high bit
-		point[31] &= 0x7f;
-
-		// clamp the scalar
-		scalar[31] &= 0x7f;
-		scalar[31] |= 0x40;
-		scalar[0] &= 0xf8;
-
-		// the point is little endian, byte2int for bigendian => reverse it
-		int x1[] = byte2Int(reverse(point), 16);
-
-		int x2[] = new int[16];
-		x2[0] = 1;
-		int z2[] = new int[16];
-		int x3[] = x1.clone();
-		int z3[] = x2.clone();
-
-		int a_e[] = new int[16];
-		int b_m[] = new int[16];
-		int c_aa[] = new int[16];
-		int d_bb[] = new int[16];
-		int cb[] = new int[16];
-		int da[] = new int[16];
-
-		int t3[] = new int[16];
-		int t4[] = new int[16];
-
-		int swap = 0;
-		for (int index = 254; index >= 0; --index) {
-			int t[];
-			int bit = (1 & scalar[index >> 3] >> (index & 7));
-			if (swap != bit) {
-				t = x2;
-				x2 = x3;
-				x3 = t;
-
-				t = z2;
-				z2 = z3;
-				z3 = t;
-			}
-			swap = bit;
-
-			if (add(a_e, x2, 8, z2, 8) || a_e[7] < 0)
-				sub(a_e, a_e, P, 8);
-			if (sub(b_m, x2, z2, 8))
-				add(b_m, b_m, 8, P, 8);
-
-			if (add(c_aa, x3, 8, z3, 8) || c_aa[7] < 0)
-				sub(c_aa, c_aa, P, 8);
-			if (sub(d_bb, x3, z3, 8))
-				add(d_bb, d_bb, 8, P, 8);
-
-			mul(cb, c_aa, b_m, 8);
-			mod(cb, P, t3, t4, 16, 8);
-
-			mul(da, d_bb, a_e, 8);
-			mod(da, P, t3, t4, 16, 8);
-
-			square(c_aa, a_e, 8);
-			mod(c_aa, P, t3, t4, 16, 8);
-
-			square(d_bb, b_m, 8);
-			mod(d_bb, P, t3, t4, 16, 8);
-
-			if (sub(a_e, c_aa, d_bb, 8))
-				add(a_e, a_e, 8, P, 8);
-
-			mul(b_m, A, a_e, 8); // using 121665
-			mod(b_m, P, t3, t4, 16, 8);
-
-			if (add(b_m, c_aa, 8, b_m, 8))
-				sub(b_m, b_m, P, 8);
-
-			mul(x2, c_aa, d_bb, 8);
-			mod(x2, P, t3, t4, 16, 8);
-
-			mul(z2, a_e, b_m, 8);
-			mod(z2, P, t3, t4, 16, 8);
-
-			if (add(b_m, da, 8, cb, 8) || b_m[7] < 0)
-				sub(b_m, b_m, P, 8);
-
-			square(x3, b_m, 8);
-			mod(x3, P, t3, t4, 16, 8);
-
-			if (sub(b_m, da, cb, 8))
-				add(b_m, b_m, 8, P, 8);
-
-			square(a_e, b_m, 8);
-			mod(a_e, P, t3, t4, 16, 8);
-
-			mul(z3, x1, a_e, 8);
-			mod(z3, P, t3, t4, 16, 8);
-		}
-
-		z2 = invertP2(z2, x3, z3, t3, t4, P_2, P);
-		mul(a_e, z2, x2, 8);
-		mod(a_e, P, t3, t4, 16, 8);
-
-		byte[] result = new byte[32];
-		return reverse(int2Byte(a_e, result));
-	}
 
 	static int[] invertP2(int z0[], int[] z1, int z2[], int[] t3, int[] t4, byte[] exp, int[] P) {
 		int len = z0.length & ~1;
@@ -1000,9 +884,9 @@ public final class FastMath32 {
 			++index;
 			b0 = (byte)(b0 + b0);
 		}
-		for (; index < 256; ++index) {
+		for (; index < exp.length * 8; ++index) {
 			int t[];
-			mul(z2, z1, z1, modLen);
+			square(z2, z1, modLen);
 			mod(z2, P, t3, t4, len, modLen);
 			if (1 == (1 & exp[index >> 3] >> ((7 - index) & 7))) {
 				mul(z1, z2, z0, modLen);
@@ -1014,10 +898,6 @@ public final class FastMath32 {
 			}
 		}
 		return z1;
-	}
-
-	public static byte[] x25519Pub(byte[] pk) {
-		return x25519(pk, _9);
 	}
 
 }

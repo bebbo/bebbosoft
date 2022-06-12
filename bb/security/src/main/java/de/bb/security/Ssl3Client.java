@@ -259,8 +259,8 @@ public class Ssl3Client extends Ssl3 // implements Connector
 		int dlen;
 		if (curve == 0x1d) { // X22519
 	        byte clientPrivateKey[] = random(32);
-	        preMasterSecret = FastMath32.x25519(clientPrivateKey, dhg);
-	        byte[] pub = FastMath32.x25519Pub(clientPrivateKey);
+	        preMasterSecret = ECMath.x25519(clientPrivateKey, dhg);
+	        byte[] pub = ECMath.x25519Pub(clientPrivateKey);
 	        
 	        b = writeBuffer;
 	        b[9] = (byte)32;

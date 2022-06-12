@@ -25,7 +25,7 @@ public class Ssl3Server extends Ssl3 {
 
     private Ssl3Config config;
 
-    private boolean useDHE;
+	private int bestCurve;
 
     /**
      * Create a SSL3Server with the default cipher suites.
@@ -82,11 +82,13 @@ public class Ssl3Server extends Ssl3 {
 
             cipherIndex = -1;
             for (int j = 0; j < ciphersuites.length; ++j) {
-                int val = ciphersuites[j][0] << 8 | (ciphersuites[j][1] & 0xff);
+                int val = (0xff & ciphersuites[j][0]) << 8 | (ciphersuites[j][1] & 0xff);
                 for (int i = 0; i < ct.length; ++i) {
                     if (ct[i] == val) {
-                        cipherIndex = j;
-                        break;
+                    	if (bestCurve != 0 || ciphersuites[j][5] != 7) { // 7=ECDHE_RSA needs a bestCurve
+	                        cipherIndex = j;
+	                        break;
+                    	}
                     }
                 }
                 if (cipherIndex >= 0)
@@ -203,11 +205,6 @@ public class Ssl3Server extends Ssl3 {
         setStreams(_is, _os);
         try {
 
-            // mark if DHE is used
-            if (ciphersuites[cipherIndex][5] == 1) {
-                useDHE = true;
-            }
-
             collect = true;
             // ======================================
             // send server hello + certificate + server done
@@ -224,11 +221,40 @@ public class Ssl3Server extends Ssl3 {
                 throw new SslException(clientSessionId, "no key exchange");
 
             // use RSA
-            if (useDHE) {
+            if (ciphersuites[cipherIndex][5] == 1) {
                 // DHE
                 byte x[] = new byte[b.length - 2];
                 System.arraycopy(b, 2, x, 0, x.length);
                 preMasterSecret = Pkcs6.doRSA(x, pkData[8], preMasterSecret);
+            } else if (ciphersuites[cipherIndex][5] == 7) {
+            	// curve
+            	if (bestCurve == 0x1d) {
+            		byte pt[] = new byte[32];
+            		System.arraycopy(b, 1, pt, 0, 32);
+            		byte t[] = ECMath.x25519(preMasterSecret, pt);
+            		clear(preMasterSecret);
+            		clear(pt);
+            		clear(b);
+            		preMasterSecret = t;
+            	} else {
+            		int byteLen = (0xff & b[0]) >> 1;
+                	if (4 != b[1] || byteLen != ECMath.byteLength(bestCurve))
+                		throw new SslException(clientSessionId, "invalid point");
+                
+                	byte ptx[] = new byte[byteLen];
+                	byte pty[] = new byte[byteLen];
+                	System.arraycopy(b, 2, ptx, 0, byteLen);
+                	System.arraycopy(b, 2 + byteLen, pty, 0, byteLen);
+                	
+					if (DEBUG.EC) Misc.dump("tpx", System.out, ptx);
+					if (DEBUG.EC) Misc.dump("priv", System.out, preMasterSecret);
+                	
+                	byte r[][] = ECMath.mult(bestCurve, ptx, pty, preMasterSecret);
+                	clear(preMasterSecret);
+                	preMasterSecret = r[0];
+					if (DEBUG.EC) Misc.dump("priv", System.out, preMasterSecret);
+
+            	}
             } else {
 
                 if (versionMinor != 0) {
@@ -401,6 +427,7 @@ public class Ssl3Server extends Ssl3 {
 
         css[2] = vl;
         // random
+        clientRandom = new byte[32];
         System.arraycopy(b, off, clientRandom, 0, 32);
         off += 32;
         int sidlen = 0xff & b[off++];
@@ -465,6 +492,9 @@ public class Ssl3Server extends Ssl3 {
                 case 5: // status request
                     readStatusRequest(b, off);
                     break;
+                case 10: // supported curves
+                	readSupportedCurves(b, off);
+                	break;
                 case 13: // signature_algorithms
                     readSignatureAlgorithms(b, off);
                     break;
@@ -481,7 +511,23 @@ public class Ssl3Server extends Ssl3 {
         return ct;
     }
 
-    private void readSignatureAlgorithms(byte[] b, int off) {
+    private void readSupportedCurves(byte[] b, int off) {
+        int len = ((b[off] & 0xff) << 8) | (b[off + 1] & 0xff);
+        for (int i = off + 2; i < off + len + 2; i += 2) {
+        	int curve = ((b[i] & 0xff) << 8) | (b[i + 1] & 0xff);
+        	switch (curve) {
+        	case 0x1D: bestCurve = 0x1d; break; // X25519
+        	case 0x17:
+        	case 0x18:
+        	case 0x19:
+        		if (bestCurve < curve)
+        			bestCurve = curve;
+        		break;
+        	}
+        }
+	}
+
+	private void readSignatureAlgorithms(byte[] b, int off) {
         int len = ((b[off] & 0xff) << 8) | (b[off + 1] & 0xff);
         off += 2;
         // TODO
@@ -599,12 +645,25 @@ public class Ssl3Server extends Ssl3 {
 
         int extLen = calcExtLen();
         int dheLen;
-        if (useDHE) {
+        if (ciphersuites[cipherIndex][5] == 1) {
             byte[] n = pkData[0];
-            dheLen = 5 + 4 + 2 + pkData[8].length + 2 + pkData[9].length + 2 + pkData[8].length + 2 + n.length
+            dheLen = 5 + 4 
+            		+ 2 + pkData[8].length + 2 + pkData[9].length + 2 + pkData[8].length // key exchange 
+            		+ 2 + n.length
                     - (n[0] == 0 ? 1 : 0);
             if (versionMinor >= 3)
                 dheLen += 2;
+        } else if (ciphersuites[cipherIndex][5] == 7) {
+        	byte[] n = pkData[0];
+            dheLen = 5 + 4 
+            		+ 2 + n.length - (n[0] == 0 ? 1 : 0);
+            if (versionMinor >= 3)
+                dheLen += 2;
+        	if (bestCurve == 0x1D) {
+        		dheLen += 3 + 33; // length + 32 bytes 
+        	} else {
+        		dheLen += 3 + 2 + ECMath.byteLength(bestCurve) * 2; // '3', <curve>, length, '4', 2 * data
+        	}
         } else {
             dheLen = 0;
         }
@@ -667,35 +726,67 @@ public class Ssl3Server extends Ssl3 {
         // if DH is used add the dh params
         // p, g, y, signature
 
-        if (useDHE) {
-            byte[] dhp = pkData[8];
-            byte[] dhg = pkData[9];
-            
-            preMasterSecret = random(dhp.length);
-            byte[] y = Pkcs6.doRSA(dhg, dhp, preMasterSecret);
-
+        if (ciphersuites[cipherIndex][5] == 1 || ciphersuites[cipherIndex][5] == 7) {
             int dhStart = offset;
             offset += 9;
-
-            // copy p
             final int dhParamOffset = offset;
-            b[offset++] = (byte) (dhp.length >> 8);
-            b[offset++] = (byte) dhp.length;
-            System.arraycopy(dhp, 0, b, offset, dhp.length);
-            offset += dhp.length;
-
-            // copy g
-            b[offset++] = (byte) (dhg.length >> 8);
-            b[offset++] = (byte) dhg.length;
-            System.arraycopy(dhg, 0, b, offset, dhg.length);
-            offset += dhg.length;
-
-            // copy y
-            b[offset++] = (byte) (y.length >> 8);
-            b[offset++] = (byte) (y.length);
-            System.arraycopy(y, 0, b, offset, y.length);
-            offset += y.length;
-
+            
+        	if (ciphersuites[cipherIndex][5] == 1) {
+	            byte[] dhp = pkData[8];
+	            byte[] dhg = pkData[9];
+	            
+	            preMasterSecret = random(dhp.length);
+	            byte[] y = Pkcs6.doRSA(dhg, dhp, preMasterSecret);
+	
+	
+	            // copy p
+	            b[offset++] = (byte) (dhp.length >> 8);
+	            b[offset++] = (byte) dhp.length;
+	            System.arraycopy(dhp, 0, b, offset, dhp.length);
+	            offset += dhp.length;
+	
+	            // copy g
+	            b[offset++] = (byte) (dhg.length >> 8);
+	            b[offset++] = (byte) dhg.length;
+	            System.arraycopy(dhg, 0, b, offset, dhg.length);
+	            offset += dhg.length;
+	
+	            // copy y
+	            b[offset++] = (byte) (y.length >> 8);
+	            b[offset++] = (byte) (y.length);
+	            System.arraycopy(y, 0, b, offset, y.length);
+	            offset += y.length;
+        	} else {
+        		b[offset++] = 3;
+        		b[offset++] = (byte)(bestCurve >> 8);
+        		b[offset++] = (byte)bestCurve;
+        		
+            	if (bestCurve == 0x1D) {
+            		preMasterSecret = random(32);
+            		byte[] pub = ECMath.x25519Pub(preMasterSecret);
+            		
+            		b[offset++] = 32;
+            		System.arraycopy(pub, 0, b, offset, 32);
+            		offset += 32;
+            	} else {
+            		int byteLength = ECMath.byteLength(bestCurve);
+					preMasterSecret = ECMath.genPrivateKey(bestCurve);
+					if (DEBUG.EC) Misc.dump("private key", System.out, preMasterSecret);
+					
+            		byte [][] pub = ECMath.pub(bestCurve, preMasterSecret);
+					if (DEBUG.EC) Misc.dump("pub key", System.out, pub[0]);
+            		
+            		b[offset++] = (byte)(1 + byteLength*2);
+            		b[offset++] = 4;
+            		
+            		System.arraycopy(pub[0], 0, b, offset, byteLength);
+            		offset += byteLength;
+            		System.arraycopy(pub[1], 0, b, offset, byteLength);
+            		offset += byteLength;
+            	}
+        	}
+        	
+            // append the signed random data
             final int dhParamLength = offset - dhParamOffset;
             byte[] dhData = new byte[clientRandom.length + serverRandom.length + dhParamLength];
             System.arraycopy(clientRandom, 0, dhData, 0, clientRandom.length);
