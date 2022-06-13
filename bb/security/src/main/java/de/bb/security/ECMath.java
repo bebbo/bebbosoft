@@ -164,7 +164,9 @@ public class ECMath {
 				FastMath32.sub(t4, t4, mod, modLen);
 
 			// add(aa.y, aa.y).modInverse(p)
-			int r[] = FastMath32.invertP2(t4, t1, t2, rx, ry, p_2, mod);	
+//			int r[] = FastMath32.invertP2(t4, t1, t2, rx, ry, p_2, mod);	
+			int r[] = FastMath32.modInverse(t4, mod);	
+			
 
 			// mult(t3a, add(aa.y, aa.y).modInverse(p));
 			FastMath32.mul(t0, t3, r, modLen);
@@ -180,7 +182,8 @@ public class ECMath {
 				FastMath32.add(t4, t4, modLen, mod, modLen);
 
 			// sub(aa.x, bb.x).modInverse(p)
-			int r[] = FastMath32.invertP2(t4, t1, t2, rx, ry, p_2, mod);
+			//int r[] = FastMath32.invertP2(t4, t1, t2, rx, ry, p_2, mod);
+			int r[] = FastMath32.modInverse(t4, mod);
 			
 			// mult(sub(aa.y, bb.y), sub(aa.x, bb.x).modInverse(p))
 			FastMath32.mul(t0, t3, r, modLen);
@@ -387,7 +390,8 @@ public class ECMath {
 			FastMath32.mod(z3, X25519_P, t3, t4, 16, 8);
 		}
 	
-		z2 = FastMath32.invertP2(z2, x3, z3, t3, t4, X25519_P_2, X25519_P);
+		//z2 = FastMath32.invertP2(z2, x3, z3, t3, t4, X25519_P_2, X25519_P);
+		z2 = FastMath32.modInverse(z2, X25519_P);
 		FastMath32.mul(a_e, z2, x2, 8);
 		FastMath32.mod(a_e, X25519_P, t3, t4, 16, 8);
 	

@@ -494,11 +494,10 @@ public final class FastMath32 {
 				// 0xffffffffL;
 				if (a0 == modMSW) {
 					c0 = 0xffffffffL; // necessary
-				} else // if (a01 >= 0) // always true since the highest int <= modMSW 
+				} else // if (a01 >= 0) // always true since the highest int <= modMSW
 				{
 					c0 = (a01 / modMSW) & 0xffffffffL;
-					
-					
+
 					if (al > 0 && modLSW != 0) {
 						// a0|a1 -= c0*b0 // a0 part always gets zero!
 						a01 -= c0 * modMSW;
@@ -526,17 +525,18 @@ public final class FastMath32 {
 						carry += (mod[bi] & 0xffffffffL) * c0;
 						int t = a[ai];
 						a[ai++] = t - (int) carry;
-						carry = (carry >>> 32) + (((int) (carry & 0xffffffffL) + 0x80000000) > (t + 0x80000000) ? 1 : 0);
+						carry = (carry >>> 32)
+								+ (((int) (carry & 0xffffffffL) + 0x80000000) > (t + 0x80000000) ? 1 : 0);
 					}
 					if (carry != 0) {
 						carry = a[ai] - carry;
 						a[ai] = (int) carry;
-					} 
+					}
 					carry = a[ai];
 				}
 
 				// if sub created an underflow, add mod
-				if (carry < 0 ) {
+				if (carry < 0) {
 //						--c0;
 
 					carry = 0;
@@ -552,7 +552,7 @@ public final class FastMath32 {
 				}
 
 				// do some subtractions until the result is smaller than mod
-				while (overflow( a, mod, al, divlen)) {
+				while (overflow(a, mod, al, divlen)) {
 //					 ++ c0;
 
 					carry = 0;
@@ -561,16 +561,16 @@ public final class FastMath32 {
 						carry += (mod[bi] & 0xffffffffL);
 						int t = a[ai];
 						a[ai++] = t - (int) carry;
-						carry = (carry >>> 32) + (((int) (carry & 0xffffffffL) + 0x80000000) > (t + 0x80000000) ? 1 : 0);
+						carry = (carry >>> 32)
+								+ (((int) (carry & 0xffffffffL) + 0x80000000) > (t + 0x80000000) ? 1 : 0);
 					}
 					if (carry != 0) {
 						carry = a[ai] - carry;
 						a[ai] = (int) carry;
-					} 
+					}
 				}
 			}
-			
-			
+
 			--i; // c[i--] += (int) c0;
 		}
 
@@ -581,10 +581,11 @@ public final class FastMath32 {
 
 	/**
 	 * Determine if a subtraction is needed.
-	 * @param a the number.
-	 * @param mod the modulo.
-	 * @param al the highest int.
-	 * @param divlen ints used in deivision. 
+	 * 
+	 * @param a      the number.
+	 * @param mod    the modulo.
+	 * @param al     the highest int.
+	 * @param divlen ints used in deivision.
 	 * @return true if a > mod at the given position.
 	 */
 	private static boolean overflow(int[] a, int[] mod, int al, int divlen) {
@@ -770,6 +771,12 @@ public final class FastMath32 {
 		/**/
 	}
 
+	/**
+	 * @param mod
+	 * @param t
+	 * @param ml
+	 * @return true if t > mod
+	 */
 	static boolean isGreater(int[] mod, int[] t, int ml) {
 		int i = ml - 1;
 		for (; i >= 0; --i) {
@@ -873,7 +880,7 @@ public final class FastMath32 {
 	 * }
 	 * }
 	 */
-
+/*
 	static int[] invertP2(int z0[], int[] z1, int z2[], int[] t3, int[] t4, byte[] exp, int[] P) {
 		int len = z0.length & ~1;
 		int modLen = len >> 1;
@@ -882,7 +889,7 @@ public final class FastMath32 {
 		int b0 = exp[0];
 		while (b0 > 0) {
 			++index;
-			b0 = (byte)(b0 + b0);
+			b0 = (byte) (b0 + b0);
 		}
 		for (; index < exp.length * 8; ++index) {
 			int t[];
@@ -899,5 +906,201 @@ public final class FastMath32 {
 		}
 		return z1;
 	}
+	*/
 
+	/**********************************************************************\
+	 * Modular Inverse Algorithms without Multiplications 
+	 * for Cryptographic Applications 
+	 * July 4, 2005 
+	 * Laszlo Hars, Seagate Research (Laszlo@Hars.US)
+	 * ModInvF - shift-Euclidean modular inverse with optimum shift[SE3]
+	 *  R: OUTPUT a^-1 mod m
+	 *  m: INPUT modulus
+	 *  a: INPUT
+	 *  u, v, r, s, t, w: temporary variables
+	 * @return the modInverse
+	 \***********************************************************************/
+/*
+if (a < m) 
+ {U ← m; V ← a; 
+ R ← 0; S ← 1;} 
+else 
+ {V ← m; U ← a; 
+ S ← 0; R ← 1;} 
+
+while (||V|| > 1) {
+ f ← ||U|| - ||V|| 
+ if(sgn(U)=sgn(V)) 
+ {U ← U–(V<<f); 
+ R ← R–(S<<f);} 
+ else 
+ {U ← U+(V<<f); 
+ R ← R+(S<<f);} 
+ if (||U|| < ||V||) 
+ {U ↔ V; R ↔ S;}
+} 
+if (V = 0) return 0; 
+if (V < 0) S ← -S; 
+if (S > m) return S - m; 
+if (S < 0) return S + m; 
+return S; // a-1 mod m
+ */
+	static int[] modInverse(int a[], int m[])
+	{
+		int lu, lv, sfts, hm, hp, lm, L0, lp, su, sv, sr, ss;
+		long mm, m0, mp, mu, mv;
+		
+		int modLen = m.length;
+		int l2 = modLen + modLen;
+		
+		// SET(U,M); ST0(R);
+		int u[] = new int[l2];
+		System.arraycopy(m, 0, u, 0, modLen);
+		int r[] = new int[l2];
+
+			
+		// SET(V,A); ST1(S); }
+		int v[] = new int[l2];
+		System.arraycopy(a, 0, v, 0, modLen);
+		
+		int s[] = new int[l2];
+		s[0] = 1;
+
+		int t[] = new int[l2];
+		int w[] = new int[l2];
+		int tt[];
+
+		// sign is handled separately
+		su = 1; sv = 1; sr = 1; ss = 1;
+		lu = bitlen(u);  lv = bitlen(v);
+		if (lv < 2)
+			return v;
+		for(;;) {
+	// check if sfts, sfts+1 or sfts-1 reduces U the most
+			sfts = lu-lv;
+			mu = msw(u,lu)>>3;
+			mv = msw(v,lv)>>3;
+			mm = Math.abs(mu-mv/2); lm = log2(mm-1); hm = log2(mm+1);
+			mp = Math.abs(mu-mv*2); lp = log2(mp-2); hp = log2(mp+2);
+			m0 = Math.abs(mu-mv);   L0 = log2(m0-1);
+			if ((hp < L0) && (hp < lm)) ++sfts; else 
+			if ((hm < L0) && (hm < lp) && (sfts > 0)) --sfts;
+
+			shiftLeft(t, v, modLen, sfts); 
+			shiftLeft(w, s, modLen, sfts);
+
+			if ((su == sv) == (sr == ss)) {
+				if (sub(r, r, w, modLen)) {
+					sr = -sr;
+					neg(r, modLen);
+				}				
+			} else {
+				add(r, r, modLen, w, modLen);	
+			}
+			if (sub(u, u, t, modLen)) {
+				su = -su;
+				neg(u, modLen);
+			}
+			
+			lu = bitlen(u);
+			if (lu < 2) 
+				break;
+			if (lu < lv) {
+				tt = u; u = v; v = tt;
+				tt = r; r = s; s = tt;
+				sfts = lu; lu = lv; lv = sfts;
+				sfts = su; su = sv; sv = sfts;
+				sfts = sr; sr = ss; ss = sfts;
+			}
+		}
+
+		if (su < 0)
+			sr = -sr; 
+		if (sr > 0) {
+			while (isGreater(m, r, modLen))
+				sub(r, r, m, modLen);
+		} else {
+			for (;;) {
+				if (sub(r, r, m, modLen)) {
+					neg(r, modLen);
+					break;
+				}
+			}
+		}
+		
+		return r;
+	}
+	
+	private static void neg(int[] u, int modLen) {
+		for (int i = 0; i < modLen; ++i)
+			u[i] = ~u[i];
+		
+		add(u, u, modLen, ONE, 1);
+	}
+
+	private static long msw(int[] u, int bits) {
+		int index = bits >> 5;
+		bits &= 31;
+		long msw = 0xffffffffL & u[index];
+		msw <<= 32 - bits;
+		
+		if (index > 0) {
+			long mswb = 0xffffffffL & u[index - 1];
+			mswb >>>= bits;
+			msw |= mswb;
+		} 
+			
+		return msw;
+	}
+
+	private static int log2(long lx) {
+		int r = 0;
+		int x = (int)lx;
+
+		if (0 != ( x & 0xffff0000 )) { x >>>=16;  r +=16; }
+		if (0 != ( x & 0x0000ff00 )) { x >>>= 8;  r += 8; }
+		if (0 != ( x & 0x000000f0 )) { x >>>= 4;  r += 4; }
+		if (0 != ( x & 0x0000000c )) { x >>>= 2;  r += 2; }
+		if (0 != ( x & 0x00000002 )) {           r += 1; }
+		return r;
+	}
+
+	/**
+	 * Calculate the bit length of m.
+	 * 
+	 * @param m the ints of the value.
+	 * @param l count of used ints.
+	 * @return the bit length.
+	 */
+	static int bitlen(int[] m) {
+		int l = m.length;
+		while (--l >= 0) {
+			int t = m[l];
+			if (t == 0)
+				continue;
+			int r = 32;
+			for (; r > 0; --r) {
+				if (t < 0)
+					break;
+				t <<= 1;
+			}
+			return l * 32 + r;
+		}
+		return 0;
+	}
+
+//	public static void main(String args[]) {
+//		int x[] = new int[]{ 2, 0};
+//		int m[] = new int[]{ 0xf31dca29, 0x2a};
+//		long l = (0xffffffffL & m[1]) << 32 | (0xffffffffL & m[0]);
+//		int i = 1;
+//		for (; i < 100000; ++i) 
+//		{
+//			x[0] = i;
+//			int[] r = modInverse(x, m);
+//			long z = (0xffffffffL & r[1]) << 32 | (0xffffffffL & r[0]);
+//			System.out.println(x[0] + " * " + z + " mod " + l + " = " + x[0] * z % l);
+//		}
+//	}
+	
 }
