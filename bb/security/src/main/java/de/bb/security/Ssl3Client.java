@@ -267,6 +267,17 @@ public class Ssl3Client extends Ssl3 // implements Connector
 	        b[10] = 0;
 	        System.arraycopy(pub, 0, b, 10 + 32 - pub.length, pub.length);
 			dlen = 33;
+		} else 
+		if (curve == 0x1e) { // X448
+	        byte clientPrivateKey[] = random(56);
+	        preMasterSecret = ECMath.x448(clientPrivateKey, dhg);
+	        byte[] pub = ECMath.x448Pub(clientPrivateKey);
+	        
+	        b = writeBuffer;
+	        b[9] = (byte)56;
+	        b[10] = 0;
+	        System.arraycopy(pub, 0, b, 10 + 56 - pub.length, pub.length);
+			dlen = 57;
 		} else {
 			byte clientPrivateKey[] = ECMath.genPrivateKey(curve);
 			byte[][] pt = ECMath.mult(curve, this.dhg, this.dhgy, clientPrivateKey);
@@ -324,8 +335,8 @@ public class Ssl3Client extends Ssl3 // implements Connector
 			System.arraycopy(b, 5 + len, dhgy, 0, len);
 			
 			checkRSASignature(b, 5 + len + len);			
-		} else if (curve == 0x1D) {
-			// Ed25519
+		} else if (curve == 0x1D || curve == 0x1E) {
+			// X25519 or X448 
 			dhg = new byte[len];
 			System.arraycopy(b, 4, dhg, 0, len);
 			checkRSASignature(b, 4 + len);			
@@ -684,7 +695,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
             extHashLen = 5 * 2 * 3 + 2 + 6;
 
         int extNameLen = serverName == null ? 0 : serverName.length() + 9;
-        int extLen = extHashLen + extNameLen + 14; // 14 for supported elliptic curves extension
+        int extLen = extHashLen + extNameLen + 16; // 16 for supported elliptic curves extension
 
         if (supportSessionTicket)
             extLen += 4;
@@ -692,11 +703,12 @@ public class Ssl3Client extends Ssl3 // implements Connector
         // total length including the 2 headers.
         int len = 48 + sessionIdlength + cipherCount + cipherCount + 2 // supportSecureNegotiation dummy cipher
                 + 2 + extLen // 2 length bytes + extension data
-                + 14 // ec extension:  00 0A 00 0A 00 10 00 19 00 18 00 17 00 1D
-                     // support secp521r1 (25) -> 00 19
-                	 // support secp384r1 (24) -> 00 18
-                	 // support secp256r1 (23) -> 00 17
-                     // x25519 (29)            -> 00 1D
+                + 16 // ec extension:  00 0A 00 0C 00 0A 00 1D 00 1E 00 19 00 18 00 17 
+                	// x25519 (29)            -> 00 1D
+                	// x448 (30)              -> 00 1E
+                    // support secp521r1 (25) -> 00 19
+                	// support secp384r1 (24) -> 00 18
+                	// support secp256r1 (23) -> 00 17
                 ;
 
         if (writeBuffer.length < len)
@@ -829,11 +841,13 @@ public class Ssl3Client extends Ssl3 // implements Connector
         b[i++] = 0x00; 
         b[i++] = 0x0A;
 		b[i++] = 0x00;
+		b[i++] = 0x0C;
+		b[i++] = 0x00;
 		b[i++] = 0x0A;
 		b[i++] = 0x00;
-		b[i++] = 0x08;
+		b[i++] = 0x1E; //		x25519 (29)
 		b[i++] = 0x00;
-		b[i++] = 0x1D; //		x25519 (29)
+		b[i++] = 0x1D; //		x448 (30)
 		b[i++] = 0x00;
 		b[i++] = 0x19;
 		b[i++] = 0x00;

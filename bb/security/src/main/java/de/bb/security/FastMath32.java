@@ -12,7 +12,10 @@ package de.bb.security;
  * arrays and all of the 32 bits are used.
  */
 public final class FastMath32 {
-	static int[] ONE = { 1 };
+	static int[] ONE = new int [16];
+	static {
+		ONE[0] = 1;
+	}
 
 	// static long start;
 

@@ -236,6 +236,14 @@ public class Ssl3Server extends Ssl3 {
             		clear(pt);
             		clear(b);
             		preMasterSecret = t;
+        	} else if (bestCurve == 0x1e) {
+            		byte pt[] = new byte[56];
+            		System.arraycopy(b, 1, pt, 0, 56);
+            		byte t[] = ECMath.x448(preMasterSecret, pt);
+            		clear(preMasterSecret);
+            		clear(pt);
+            		clear(b);
+            		preMasterSecret = t;
             	} else {
             		int byteLen = (0xff & b[0]) >> 1;
                 	if (4 != b[1] || byteLen != ECMath.byteLength(bestCurve))
@@ -516,7 +524,8 @@ public class Ssl3Server extends Ssl3 {
         for (int i = off + 2; i < off + len + 2; i += 2) {
         	int curve = ((b[i] & 0xff) << 8) | (b[i + 1] & 0xff);
         	switch (curve) {
-        	case 0x1D: bestCurve = 0x1d; break; // X25519
+        	case 0x1D: if (bestCurve == 0) bestCurve = 0x1d; break; // X25519
+        	case 0x1E: if(bestCurve == 0) bestCurve = 0x1e; break; // X448
         	case 0x17:
         	case 0x18:
         	case 0x19:
@@ -659,8 +668,10 @@ public class Ssl3Server extends Ssl3 {
             		+ 2 + n.length - (n[0] == 0 ? 1 : 0);
             if (versionMinor >= 3)
                 dheLen += 2;
-        	if (bestCurve == 0x1D) {
-        		dheLen += 3 + 33; // length + 32 bytes 
+        	if (bestCurve == 0x1D) { // X25519
+        		dheLen += 3 + 33; // length + 32 bytes
+        	} else if (bestCurve == 0x1E) { // X448
+        		dheLen += 3 + 57; // length + 56 bytes 
         	} else {
         		dheLen += 3 + 2 + ECMath.byteLength(bestCurve) * 2; // '3', <curve>, length, '4', 2 * data
         	}
@@ -768,6 +779,13 @@ public class Ssl3Server extends Ssl3 {
             		b[offset++] = 32;
             		System.arraycopy(pub, 0, b, offset, 32);
             		offset += 32;
+            	} else if (bestCurve == 0x1E) {
+            		preMasterSecret = random(56);
+            		byte[] pub = ECMath.x448Pub(preMasterSecret);
+            		
+            		b[offset++] = 56;
+            		System.arraycopy(pub, 0, b, offset, 56);
+            		offset += 56;
             	} else {
             		int byteLength = ECMath.byteLength(bestCurve);
 					preMasterSecret = ECMath.genPrivateKey(bestCurve);

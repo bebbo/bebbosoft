@@ -279,19 +279,45 @@ public class ECMath {
 	/**
 	 * X25519
 	 */
-	static int X25519_A[] = new int[] { 121665, 0, 0, 0, 0, 0, 0, 0, };
-	static int X25519_P[] = new int[] { 0xffffffed, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-			0x7fffffff, };
-	static byte X25519_9[] = new byte[32];
-	static byte X25519_P_2[] = new byte[32];
+	static int X25519_A[] = new int[8]; 
+	static int X25519_P[] = new int[8]; 
+	static byte X25519_G[] = new byte[32];
+	static int X448_A[] = new int[14]; 
+	static int X448_P[] = new int[15]; 
+	static byte X448_G[] = new byte[56];
+
 	static {
-		FastMath32.int2Byte(X25519_P, X25519_P_2);
-		X25519_P_2[31] -= 2;
-		X25519_9[0] = 9;
+		X25519_A[0] = 121665;
+		// 2^255 - 19
+		FastMath32.sub(X25519_P, X25519_P, FastMath32.ONE, 8);
+		X25519_P[0] -= 18;
+		X25519_P[7] >>>= 1;
+		X25519_G[0] = 9;
+		
+		X448_A[0] = 39081;
+		// 2^448 - 2^224 - 1
+		FastMath32.sub(X448_P, X448_P, FastMath32.ONE, 14);
+		X448_P[7] <<= 1;
+		X448_P[14] = 0;
+		X448_G[0] = 5;
+	}	
+
+	public static byte[] x448Pub(byte[] pk) {
+		return x448(pk, X448_G);
 	}
+
+	public static byte[] x448(byte scalar[], byte point[]) {
+		
+		// clamp the scalar
+		scalar[31] |= 0x80;
+		scalar[0] &= 0xfc;
+
+		return xmult(scalar, point, X448_P, X448_A, 448);
+	}
+
 	
 	public static byte[] x25519Pub(byte[] pk) {
-		return ECMath.x25519(pk, X25519_9);
+		return x25519(pk, X25519_G);
 	}
 
 	public static byte[] x25519(byte scalar[], byte point[]) {
@@ -302,100 +328,110 @@ public class ECMath {
 		scalar[31] &= 0x7f;
 		scalar[31] |= 0x40;
 		scalar[0] &= 0xf8;
+		
+		return xmult(scalar, point, X25519_P, X25519_A, 255);
+	}
+	
+	static byte[] xmult(byte scalar[], byte point[], int p[], int a24[], int bits) {
+		int modLen = p.length & ~1;
+		int len = modLen + modLen;
+
+		int t[];
 	
 		// the point is little endian, byte2int for bigendian => reverse it
-		int x1[] = FastMath32.byte2Int(FastMath32.reverse(point), 16);
+		int l2 = len + 2;
+		int x1[] = FastMath32.byte2Int(FastMath32.reverse(point), l2);
 	
-		int x2[] = new int[16];
+		int x2[] = new int[l2];
 		x2[0] = 1;
-		int z2[] = new int[16];
-		int x3[] = x1.clone();
-		int z3[] = x2.clone();
+		int z2[] = new int[l2];
+		int x3[] = new int[l2];
+		System.arraycopy(x1, 0, x3, 0, len);
+		int z3[] = new int[l2];
+		z3[0] = 1;
 	
-		int a_e[] = new int[16];
-		int b_m[] = new int[16];
-		int c_aa[] = new int[16];
-		int d_bb[] = new int[16];
-		int cb[] = new int[16];
-		int da[] = new int[16];
+		int a_e[] = new int[l2];
+		int b_m[] = new int[l2];
+		int c_aa[] = new int[l2];
+		int d_bb[] = new int[l2];
+		int cb[] = new int[l2];
+		int da[] = new int[l2];
 	
-		int t3[] = new int[16];
-		int t4[] = new int[16];
+		int t3[] = new int[l2];
+		int t4[] = new int[l2];
 	
 		int swap = 0;
-		for (int index = 254; index >= 0; --index) {
-			int t[];
+		for (int index = bits - 1; index >= 0; --index) {
 			int bit = (1 & scalar[index >> 3] >> (index & 7));
-			if (swap != bit) {
-				t = x2;
-				x2 = x3;
-				x3 = t;
-	
-				t = z2;
-				z2 = z3;
-				z3 = t;
+			swap ^= bit;
+			if (swap == 1) {
+				t = x2; x2 = x3; x3 = t;
+				t = z2; z2 = z3; z3 = t;
 			}
 			swap = bit;
 	
-			if (FastMath32.add(a_e, x2, 8, z2, 8) || a_e[7] < 0)
-				FastMath32.sub(a_e, a_e, X25519_P, 8);
-			if (FastMath32.sub(b_m, x2, z2, 8))
-				FastMath32.add(b_m, b_m, 8, X25519_P, 8);
+			if (FastMath32.add(a_e, x2, modLen, z2, modLen) || (modLen == 8 && a_e[7] < 0))
+				FastMath32.sub(a_e, a_e, p, modLen);
+			if (FastMath32.sub(b_m, x2, z2, modLen))
+				FastMath32.add(b_m, b_m, modLen, p, modLen);
 	
-			if (FastMath32.add(c_aa, x3, 8, z3, 8) || c_aa[7] < 0)
-				FastMath32.sub(c_aa, c_aa, X25519_P, 8);
-			if (FastMath32.sub(d_bb, x3, z3, 8))
-				FastMath32.add(d_bb, d_bb, 8, X25519_P, 8);
+			if (FastMath32.add(c_aa, x3, modLen, z3, modLen) || (modLen == 8 && c_aa[7] < 0))
+				FastMath32.sub(c_aa, c_aa, p, modLen);
+			if (FastMath32.sub(d_bb, x3, z3, modLen))
+				FastMath32.add(d_bb, d_bb, modLen, p, modLen);
 	
-			FastMath32.mul(cb, c_aa, b_m, 8);
-			FastMath32.mod(cb, X25519_P, t3, t4, 16, 8);
+			FastMath32.mul(cb, c_aa, b_m, modLen);
+			FastMath32.mod(cb, p, t3, t4, len, modLen);
 	
-			FastMath32.mul(da, d_bb, a_e, 8);
-			FastMath32.mod(da, X25519_P, t3, t4, 16, 8);
+			FastMath32.mul(da, d_bb, a_e, modLen);
+			FastMath32.mod(da, p, t3, t4, len, modLen);
 	
-			FastMath32.square(c_aa, a_e, 8);
-			FastMath32.mod(c_aa, X25519_P, t3, t4, 16, 8);
+			FastMath32.square(c_aa, a_e, modLen);
+			FastMath32.mod(c_aa, p, t3, t4, len, modLen);
 	
-			FastMath32.square(d_bb, b_m, 8);
-			FastMath32.mod(d_bb, X25519_P, t3, t4, 16, 8);
+			FastMath32.square(d_bb, b_m, modLen);
+			FastMath32.mod(d_bb, p, t3, t4, len, modLen);
 	
-			if (FastMath32.sub(a_e, c_aa, d_bb, 8))
-				FastMath32.add(a_e, a_e, 8, X25519_P, 8);
+			if (FastMath32.sub(a_e, c_aa, d_bb, modLen))
+				FastMath32.add(a_e, a_e, modLen, p, modLen);
 	
-			FastMath32.mul(b_m, X25519_A, a_e, 8); // using 121665
-			FastMath32.mod(b_m, X25519_P, t3, t4, 16, 8);
+			FastMath32.mul(b_m, a24, a_e, modLen); // using 121665
+			FastMath32.mod(b_m, p, t3, t4, len, modLen);
 	
-			if (FastMath32.add(b_m, c_aa, 8, b_m, 8))
-				FastMath32.sub(b_m, b_m, X25519_P, 8);
+			if (FastMath32.add(b_m, c_aa, modLen, b_m, modLen))
+				FastMath32.sub(b_m, b_m, p, modLen);
 	
-			FastMath32.mul(x2, c_aa, d_bb, 8);
-			FastMath32.mod(x2, X25519_P, t3, t4, 16, 8);
+			FastMath32.mul(x2, c_aa, d_bb, modLen);
+			FastMath32.mod(x2, p, t3, t4, len, modLen);
 	
-			FastMath32.mul(z2, a_e, b_m, 8);
-			FastMath32.mod(z2, X25519_P, t3, t4, 16, 8);
+			FastMath32.mul(z2, a_e, b_m, modLen);
+			FastMath32.mod(z2, p, t3, t4, len, modLen);
 	
-			if (FastMath32.add(b_m, da, 8, cb, 8) || b_m[7] < 0)
-				FastMath32.sub(b_m, b_m, X25519_P, 8);
+			if (FastMath32.add(b_m, da, modLen, cb, modLen) || (modLen == 8 && b_m[7] < 0))
+				FastMath32.sub(b_m, b_m, p, modLen);
 	
-			FastMath32.square(x3, b_m, 8);
-			FastMath32.mod(x3, X25519_P, t3, t4, 16, 8);
+			FastMath32.square(x3, b_m, modLen);
+			FastMath32.mod(x3, p, t3, t4, len, modLen);
 	
-			if (FastMath32.sub(b_m, da, cb, 8))
-				FastMath32.add(b_m, b_m, 8, X25519_P, 8);
+			if (FastMath32.sub(b_m, da, cb, modLen))
+				FastMath32.add(b_m, b_m, modLen, p, modLen);
 	
-			FastMath32.square(a_e, b_m, 8);
-			FastMath32.mod(a_e, X25519_P, t3, t4, 16, 8);
+			FastMath32.square(a_e, b_m, modLen);
+			FastMath32.mod(a_e, p, t3, t4, len, modLen);
 	
-			FastMath32.mul(z3, x1, a_e, 8);
-			FastMath32.mod(z3, X25519_P, t3, t4, 16, 8);
+			FastMath32.mul(z3, x1, a_e, modLen);
+			FastMath32.mod(z3, p, t3, t4, len, modLen);
+		}
+		if (swap == 1) {
+			t = x2; x2 = x3; x3 = t;
+			t = z2; z2 = z3; z3 = t;
 		}
 	
-		//z2 = FastMath32.invertP2(z2, x3, z3, t3, t4, X25519_P_2, X25519_P);
-		z2 = FastMath32.modInverse(z2, X25519_P);
-		FastMath32.mul(a_e, z2, x2, 8);
-		FastMath32.mod(a_e, X25519_P, t3, t4, 16, 8);
+		z2 = FastMath32.modInverse(z2, p);
+		FastMath32.mul(a_e, z2, x2, modLen);
+		FastMath32.mod(a_e, p, t3, t4, len, modLen);
 	
-		byte[] result = new byte[32];
+		byte[] result = new byte[len + len];
 		return FastMath32.reverse(FastMath32.int2Byte(a_e, result));
 	}
 
