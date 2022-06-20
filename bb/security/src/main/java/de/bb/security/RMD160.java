@@ -66,7 +66,7 @@ public final class RMD160 extends MessageDigest
    * clone implementation
    * @return a copy of the current object
    */
-  public Object clone() {
+  public RMD160 clone() {
     RMD160 s = new RMD160();
     System.arraycopy(digestBits, 0, s.digestBits, 0, digestBits.length);
     System.arraycopy(context, 0, s.context, 0, context.length);

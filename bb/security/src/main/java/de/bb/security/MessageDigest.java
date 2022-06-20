@@ -15,6 +15,8 @@
 
 package de.bb.security;
 
+import de.bb.util.Misc;
+
 /**
  * This class was partially created from Sun's source for java.security.MessageDigest because it was not shipped with
  * Netscape's JVM. Meanwhile there are many changes, so blame me for errors.
@@ -104,7 +106,7 @@ public abstract class MessageDigest {
         addBitCount(bitCount);
         transform();
 
-        byte digestBits[] = getDigest();
+        byte digestBits[] = __getDigest();
         reset();
 
         return digestBits;
@@ -113,7 +115,7 @@ public abstract class MessageDigest {
     protected void addBitCount(long bitCount) {
     }
 
-    protected byte[] getDigest() {
+    protected byte[] __getDigest() {
         return null;
     }
 
@@ -197,15 +199,11 @@ public abstract class MessageDigest {
      * 
      * @param k
      *            key-parameter(see formula)
-     * @param t1
-     *            ..t5 text parameters(see formula)
-     * @param t2
-     * @param t3
-     * @param t4
-     * @param t5
+     * @param tt
+     *            ..text parameters(see formula)
      * @return a new allocated byte array containing the hash bytes
      */
-    public final byte[] hmac(byte k[], byte t1[], byte t2[], byte t3[], byte t4[], byte t5[]) {
+    public final byte[] hmac(byte k[], byte[]...tt) {
         reset();
         if (k.length > data.length) {
             update(k);
@@ -217,18 +215,13 @@ public abstract class MessageDigest {
             update((byte) (k[i] ^ 0x36));
         for (; i < data.length; ++i)
             update((byte) 0x36);
-        if (t1 != null)
-            update(t1);
-        if (t2 != null)
-            update(t2);
-        if (t3 != null)
-            update(t3);
-        if (t4 != null)
-            update(t4);
-        if (t5 != null)
-            update(t5);
+
+        for (byte[]t : tt) {
+            update(t);
+        }
+        
         byte text[] = digest();
-        //Misc.dump("hmac final", System.out, text);
+//        Misc.dump("hmac final", System.out, text);
         for (i = 0; i < k.length; ++i)
             update((byte) (k[i] ^ 0x5c));
         for (; i < data.length; ++i)
@@ -242,7 +235,7 @@ public abstract class MessageDigest {
      * 
      * @see java.lang.Object#clone()
      */
-    abstract public Object clone();
+    abstract public MessageDigest clone();
 
     public static MessageDigest get(final String algo) {
         if (algo.equals("SHA256"))
@@ -255,32 +248,141 @@ public abstract class MessageDigest {
             return new RMD160();
         return null;
     }
-}
 
-/*
- * $Log: MessageDigest.java,v $
- * Revision 1.8  2014/06/23 15:51:15  bebbo
- * @N added helper function for easy password encoding and checking using PBKDF2
- *
- * Revision 1.7  2012/08/11 19:57:00  bebbo
- * @I working stage
- *
- * Revision 1.6  2009/02/05 20:06:28  bebbo
- * @N added support for TLS 1.0
- *
- * Revision 1.5  2007/04/01 15:53:31  bebbo
- * @I cleanup
- *
- * Revision 1.4  2003/10/01 12:25:21  bebbo
- * @C enhanced comments
- *
- * Revision 1.3  2003/01/07 18:32:13  bebbo
- * @W removed some deprecated warnings
- *
- * Revision 1.2  2001/03/05 17:46:49  bebbo
- * @B fixed getInstance()
- *
- * Revision 1.1  2000/09/25 12:20:58  bebbo
- * @N repackaged
- *
- */
+    /**
+	 * See TLS1.3.
+     * @param salt
+     * @param sid
+     * @param data
+     * @param len
+     * @return
+     */
+	public byte[] expandLabel(byte[] salt, String sid, byte[] data, int len) {
+		byte[] id = sid.getBytes();
+		byte[] all = new byte[4 + id.length + data.length];
+		
+		all[0] = (byte)(len >> 8);
+		all[1] = (byte)len;
+		all[2] = (byte)id.length;
+		System.arraycopy(id, 0, all, 3, id.length);
+		all[id.length + 3] = (byte)data.length;
+		System.arraycopy(data, 0, all, 4 + id.length, data.length);
+		
+		return expand(salt, all, len);
+	}
+
+	/**
+	 * See TLS1.3.
+	 * @param salt
+	 * @param data
+	 * @param len
+	 * @return
+	 */
+	public byte[] expand(byte[] salt, byte[] data, int len) {
+		byte[] r = new byte[len];
+		byte[] d = new byte[0];
+		byte[] c = new byte[1];
+		for (int off = 0; off < len; off += d.length) {
+			++c[0];
+			d = hmac(salt, d, data, c);
+			int toCopy = len - off;
+			if (toCopy > d.length)
+				toCopy = d.length;
+			System.arraycopy(d, 0, r, off, toCopy);
+		}
+		return r;
+	}
+	
+	public byte[] mgf1(byte[] seed, int len) {
+		byte r[] = new byte[len];
+		byte c[] = new byte[4];
+		for (int off = 0;;) {
+			update(seed);
+			byte d[] = digest(c);
+			if (off + d.length > len) {
+				System.arraycopy(d, 0, r, off, len - off);
+			} else {
+				System.arraycopy(d, 0, r, off, d.length);
+			}
+			off += d.length;
+			if (off >= len)
+				return r;
+			
+			for (int i = 3; i >= 0; --i)
+				if (++c[i] != 0)
+					break;
+		}
+	}
+	
+	static byte Z8[] = new byte[8];
+	
+	public byte[] emsaPssEncode(byte m[], int emBits, int saltLen) {
+		int emLen = (emBits + 7) / 8;
+		byte[] mHash = digest(m);
+//		mHash = Misc.hex2Bytes("FF5F7DC1  09539769  5520B514  5F471B2D"
+//					+ "9FC63197  00EE1A22  83AD24A3  81B1899E");
+		
+		if (saltLen == -1)
+			saltLen = mHash.length;
+		
+		byte[] salt = new byte[saltLen];
+		SecureRandom.getInstance().nextBytes(salt);
+//		salt = Misc.hex2Bytes("98F3ACD5  DF7257FF  1B3CC464  6BEF6345"
+//				+ "E8437EB2  9021F524  BF9F71ED  75598049");
+		
+		// 5.
+		update(Z8);
+		update(mHash);
+		
+		// 6.
+		byte[] h = digest(salt);
+		
+		// 7. + 8.
+		// 9.
+		byte[] dbMask = mgf1(h, emLen - mHash.length - 1);
+		
+		// 10.
+		int j = dbMask.length - saltLen - 1;
+		dbMask[j++] ^= 1;
+		for (int i = 0; i < saltLen; ++i, ++j)
+			dbMask[j] ^= salt[i];
+		
+		// 11. clear the bits to match m
+		if (emBits != 0)
+			dbMask[0] &= (1 << (emBits & 7)) - 1;
+		
+		// 12.
+		byte[] r = new byte[emLen];
+		System.arraycopy(dbMask, 0, r, 0, dbMask.length);
+		System.arraycopy(h, 0, r, dbMask.length, h.length);
+		r[r.length - 1] = (byte)0xbc;
+
+		return r;
+	}
+	
+	public boolean emsPssVerify(byte m[], int emBits, int saltLen, byte data[]) {
+		int emLen = (emBits + 7) / 8;
+		byte[] mHash = digest(m);
+		if (saltLen == -1)
+			saltLen = mHash.length;
+		
+		byte[] h = new byte[mHash.length];
+		System.arraycopy(data, data.length - 1 - mHash.length, h, 0, mHash.length);
+
+		byte[] dbMask = mgf1(h, emLen - mHash.length - 1);
+		for (int i = 0; i < dbMask.length; ++i)
+			data[i] ^= dbMask[i];
+
+		int j = dbMask.length - saltLen - 1;
+		if (data[j++] != 1)
+			return false;
+		
+		update(Z8);
+		update(mHash);
+		update(data, j, saltLen);
+		byte[] h2 = digest();
+		byte[] h3 = digest(mHash); 
+		
+		return Misc.equals(h, h2);
+	}
+}

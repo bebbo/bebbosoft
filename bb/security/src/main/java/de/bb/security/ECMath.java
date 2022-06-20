@@ -370,12 +370,12 @@ public class ECMath {
 			}
 			swap = bit;
 	
-			if (FastMath32.add(a_e, x2, modLen, z2, modLen) || (modLen == 8 && a_e[7] < 0))
+			if (FastMath32.add(a_e, x2, modLen, z2, modLen) || FastMath32.isGreater(p, a_e, modLen))
 				FastMath32.sub(a_e, a_e, p, modLen);
 			if (FastMath32.sub(b_m, x2, z2, modLen))
 				FastMath32.add(b_m, b_m, modLen, p, modLen);
 	
-			if (FastMath32.add(c_aa, x3, modLen, z3, modLen) || (modLen == 8 && c_aa[7] < 0))
+			if (FastMath32.add(c_aa, x3, modLen, z3, modLen) || FastMath32.isGreater(p, c_aa, modLen))
 				FastMath32.sub(c_aa, c_aa, p, modLen);
 			if (FastMath32.sub(d_bb, x3, z3, modLen))
 				FastMath32.add(d_bb, d_bb, modLen, p, modLen);
@@ -398,7 +398,7 @@ public class ECMath {
 			FastMath32.mul(b_m, a24, a_e, modLen); // using 121665
 			FastMath32.mod(b_m, p, t3, t4, len, modLen);
 	
-			if (FastMath32.add(b_m, c_aa, modLen, b_m, modLen))
+			if (FastMath32.add(b_m, c_aa, modLen, b_m, modLen) || FastMath32.isGreater(p, b_m, modLen))
 				FastMath32.sub(b_m, b_m, p, modLen);
 	
 			FastMath32.mul(x2, c_aa, d_bb, modLen);
@@ -407,7 +407,7 @@ public class ECMath {
 			FastMath32.mul(z2, a_e, b_m, modLen);
 			FastMath32.mod(z2, p, t3, t4, len, modLen);
 	
-			if (FastMath32.add(b_m, da, modLen, cb, modLen) || (modLen == 8 && b_m[7] < 0))
+			if (FastMath32.add(b_m, da, modLen, cb, modLen) || FastMath32.isGreater(p, b_m, modLen))
 				FastMath32.sub(b_m, b_m, p, modLen);
 	
 			FastMath32.square(x3, b_m, modLen);

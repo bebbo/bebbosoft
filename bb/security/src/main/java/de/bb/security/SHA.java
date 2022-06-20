@@ -44,7 +44,7 @@ public final class SHA extends MessageDigest
    * clone implementation
    * @return a copy of the current object
    */
-  public Object clone() //throws CloneNotSupportedException
+  public SHA clone() //throws CloneNotSupportedException
   {
     /**/
     SHA m = new SHA();
@@ -231,7 +231,7 @@ public final class SHA extends MessageDigest
     }
   }
 
-  protected byte[] getDigest()
+  protected byte[] __getDigest()
   {
     return new byte[] { (byte) (state0 >> 24), (byte) (state0 >> 16),
         (byte) (state0 >> 8), (byte) (state0), (byte) (state1 >> 24),

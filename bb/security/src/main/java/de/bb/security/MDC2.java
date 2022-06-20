@@ -35,7 +35,7 @@ public class MDC2 extends MessageDigest
    * clone implementation.
    * @return a copy of the current object
    */
-  public Object clone()
+  public MDC2 clone()
   {
     MDC2 s = new MDC2();
     System.arraycopy(s1, 0, s.s1, 0, s1.length);

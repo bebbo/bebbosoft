@@ -30,6 +30,10 @@ public abstract class Ssl3 {
 	// 3: crypter: 0=RC4, 1=AES, 2=DES3, 3=DES, 4=AES with GCM;
 	// 4: hash: 1=MD5, 2=SHA, 4=SHA256, 5=SHA384;
 	// 5: key exchange: 0=DHE_DSS, 1=DHE_RSA, 2=DH_ANON 4=RSA, 5=DH_DSS, 6=DH_RSA, 7=ECDHE_RSA
+	
+	public final static byte[] TLS_AES_256_GCM_SHA384       = {0x13, 0x02, 32, 4, 5, 7};
+	public final static byte[] TLS_AES_128_GCM_SHA256       = {0x13, 0x01, 16, 4, 4, 7};
+//	public final static byte[] TLS_CHACHA20_POLY1305_SHA256 = {0x13, 0x03};
 
 	public final static byte[] TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 = {(byte)0xc0, (byte)0x30, 32, 4, 5, 7};
 
@@ -63,17 +67,19 @@ public abstract class Ssl3 {
 
 	public final static byte[] TLS_RSA_WITH_AES_128_CBC_SHA = { 0, 0x2f, 16, 1, 2, 4};
 
-	public final static byte[] TLS_RSA_WITH_3DES_EDE_CBC_SHA = { 0, 0x0a, 24, 2, 2, 4};
+//	public final static byte[] TLS_RSA_WITH_3DES_EDE_CBC_SHA = { 0, 0x0a, 24, 2, 2, 4};
+//
+//	public final static byte[] TLS_RSA_WITH_DES_CBC_SHA = { 0, 0x09, 8, 3, 2, 4};
+//
+//	public final static byte[] TLS_RSA_WITH_RC4_128_SHA = { 0, 0x05, 16, 0, 2, 4};
+//
+//	public final static byte[] TLS_RSA_WITH_RC4_128_MD5 = { 0, 0x04, 16, 0, 1, 4};
+//
+//	public final static byte[] TLS_RSA_EXPORT_WITH_RC4_40_MD5 = { 0, 0x03, 5, 0, 1, 4};
 
-	public final static byte[] TLS_RSA_WITH_DES_CBC_SHA = { 0, 0x09, 8, 3, 2, 4};
-
-	public final static byte[] TLS_RSA_WITH_RC4_128_SHA = { 0, 0x05, 16, 0, 2, 4};
-
-	public final static byte[] TLS_RSA_WITH_RC4_128_MD5 = { 0, 0x04, 16, 0, 1, 4};
-
-	public final static byte[] TLS_RSA_EXPORT_WITH_RC4_40_MD5 = { 0, 0x03, 5, 0, 1, 4};
-
+	
 	public final static byte[] CIPHERSUITES[] = { 
+			TLS_AES_256_GCM_SHA384, TLS_AES_128_GCM_SHA256,       
 			TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
 			TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
 			TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
@@ -89,6 +95,7 @@ public abstract class Ssl3 {
 	};
 	 
 	public final static String CIPHERSUITENAMES[] = { 
+			"TLS_AES_256_GCM_SHA384", "TLS_AES_128_GCM_SHA256",
 			"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
 			"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
 			"TLS_DHE_RSA_WITH_AES_256_CBC_SHA256", "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
@@ -108,6 +115,8 @@ public abstract class Ssl3 {
 	/** an array with length 0. */
 	static final byte NULLBYTES[] = {};
 
+	static final byte SPACE32[] = "                                ".getBytes();
+	
 	private static final HashMap<String, byte[]> CIPHERLOOKUP = new HashMap<String, byte[]>();
 
 	private static final byte[] ALERTCLOSE = { 1, 0 };
@@ -216,7 +225,7 @@ public abstract class Ssl3 {
 
 	protected SID clientSessionId;
 
-	protected byte maxVersion = 3;
+	protected byte maxVersion = 4;
 
 	protected byte minVersion = 3;
 
@@ -227,8 +236,12 @@ public abstract class Ssl3 {
 	byte[] writeNonce;
 	byte[] readNonce;
 	byte[] t16 = new byte[16];
+	protected byte[] eekPriv;
 
 	final static byte ALERT86[] = { 21, 3, 3, 0, 2, 2, 86 };
+	protected byte[] serverSecret;
+	protected byte[] clientSecret;
+	private byte[] handshakeSecret;
 
 
 	/**
@@ -387,6 +400,8 @@ public abstract class Ssl3 {
 
 				if (cryptRead instanceof GCM) {
 					readBufferLength = gcmDecrypt(r5[0], len);
+					if (eekPriv != null)
+						r5[0] = readBuffer[--readBufferLength]; // patch type
 				} else {
 					if (versionMinor > 1) {
 						rpos = readIV.length;
@@ -494,15 +509,27 @@ public abstract class Ssl3 {
 						}
 						throw new SslException(clientSessionId, "alert: " + readBuffer[0] + ":" + readBuffer[1]);
 					}
-					throw new SslException(clientSessionId, "wrong packet type: " + r5[0]);
+					if (r5[0] == 22) { // some handshake message!?
+						int len = r5[3] & 0xff;
+						len = (len << 8) | (r5[4] & 0xff);
+						updateHandshakeHashes(readBuffer, rpos, len);
+						handleHandshakeMessage(readBuffer, rpos, len);
+						rpos += len;
+					} else
+						throw new SslException(clientSessionId, "wrong packet type: " + r5[0]);
 				}
 			}
 		}
-		if (collect && typ == 22) {
+		// test r5[0] since TLS1.3 will patch this
+		if (collect && r5[0] == 22) {
 			// cumulate handshake messages
 			updateHandshakeHashes(b, 0, blen);
 		}
 		return blen;
+	}
+
+	// override me
+	protected void handleHandshakeMessage(byte[] buffer, int offset, int len) {
 	}
 
 	/**
@@ -669,35 +696,51 @@ public abstract class Ssl3 {
 		if (DEBUG.ON)
 			Misc.dump("GCM packet in: ", System.out, r, 0, len);
 		
-		readNonce[4] = r[0];
-		readNonce[5] = r[1];
-		readNonce[6] = r[2];
-		readNonce[7] = r[3];
-		readNonce[8] = r[4];
-		readNonce[9] = r[5];
-		readNonce[10] = r[6];
-		readNonce[11] = r[7];
-		
-		gcm.init(readNonce);
-		if (DEBUG.ON)
-			Misc.dump("read nonce: ", System.out, readNonce, 0, 12);
+		int off;
+		if (eekPriv != null) {
+			long rn = readnum > 0 ? readnum - 1 : 0;
+			rn ^= readnum++;
+			for (int i = 0; rn != 0 && i < readIV.length; ++i) {
+				readIV[readIV.length - i - 1] ^= (byte)rn;
+				rn >>>= 8;
+			}
+			gcm.init(readIV);
+			gcm.updateHash(r5, 0, r5.length);
+			off = 0;
+			len -= 16;
+		} else {
+			readNonce[4] = r[0];
+			readNonce[5] = r[1];
+			readNonce[6] = r[2];
+			readNonce[7] = r[3];
+			readNonce[8] = r[4];
+			readNonce[9] = r[5];
+			readNonce[10] = r[6];
+			readNonce[11] = r[7];
+			
+			gcm.init(readNonce);
+			if (DEBUG.ON)
+				Misc.dump("read nonce: ", System.out, readNonce, 0, 12);
+	
+			
+			len -= 24;
+			off = 8;
+			
+			readAad[8] = (byte)typ;
+			readAad[11] = (byte)(len >> 8);
+			readAad[12] = (byte)len;
+			gcm.updateHash(readAad, 0, readAad.length);
 
-		len -= 24;
-		
-		readAad[8] = (byte)typ;
-		readAad[11] = (byte)(len >> 8);
-		readAad[12] = (byte)len;
-		gcm.updateHash(readAad, 0, readAad.length);
+			if (DEBUG.ON)
+				Misc.dump("read aad: ", System.out, readAad, 0, 13);
 
-		if (DEBUG.ON)
-			Misc.dump("read aad: ", System.out, readAad, 0, 13);
+			// inc counter
+			for (int i = 7; i >= 0; --i)
+				if (++readAad[i] != 0)
+					break;
+		}
 
-		// inc counter
-		for (int i = 7; i >= 0; --i)
-			if (++readAad[i] != 0)
-				break;
-
-		gcm.decrypt(r, 8, r, 0, len);
+		gcm.decrypt(r, off, r, 0, len);
 
 		if (DEBUG.ON)
 			Misc.dump("decoded GCM packet: ", System.out, r, 0, len);
@@ -707,7 +750,7 @@ public abstract class Ssl3 {
 		if (DEBUG.ON)
 			Misc.dump("GCM hash: ", System.out, t16, 0, 16);
 		
-		if (!Misc.equals(t16, 0, r, len + 8, 16))
+		if (!Misc.equals(t16, 0, r, len + off, 16))
 			throw new IOException("GCM MAC error");
 		
 		return len;
@@ -715,63 +758,102 @@ public abstract class Ssl3 {
 	
 	protected int gcmEncrypt(byte[] b, int typ, int len) {
 		GCM gcm = (GCM) cryptWrite;
-
-		int elen = len + 8 + 16; // iv + hash
-		int outLen = elen + 5; // header 
+		int inOff;
+		if (eekPriv != null) {
+			if (writeBuffer.length < b.length + 32)
+				writeBuffer = new byte[b.length + 32];
+			System.arraycopy(b, 0, writeBuffer, 31, b.length);
+			writeBuffer[31 + b.length] = (byte) typ;
+			inOff = 31;
+			b = writeBuffer;
+			++len;
+		} else
+			inOff = 0;
 		
+		int elen;
+		if (eekPriv != null)
+			elen = len + 16; // + hash + typ is part of b!
+		else
+			elen = len + 8 + 16; // iv + hash
+			
+		
+		int outLen = elen + 5; // header
+
 		if (writeBuffer.length < outLen)
 			writeBuffer = new byte[outLen];
 		
 		byte w[] = writeBuffer;
-		w[0] = (byte) typ;
 		w[1] = (byte) 3; // version
-		w[2] = versionMinor;
 		w[3] = (byte) (elen >>> 8);
 		w[4] = (byte) (elen);
+
+
+		int off;
+		if (eekPriv != null) {
+			w[0] = 0x17;
+			w[2] = 3;
+			
+			long wn = writenum > 0 ? writenum - 1 : 0;
+			wn ^= writenum++;
+			for (int i = 0; wn != 0 && i < writeIV.length; ++i) {
+				writeIV[writeIV.length - i - 1] ^= (byte)wn;
+				wn >>>= 8;
+			}
+			gcm.init(writeIV);
+			gcm.updateHash(w, 0, 5);
+			
+			off = 5;
+		} else {
+			w[0] = (byte) typ;
+			w[2] = versionMinor;
 		
-		w[5] = writeNonce[4];
-		w[6] = writeNonce[5];
-		w[7] = writeNonce[6];
-		w[8] = writeNonce[7];
-		w[9] = writeNonce[8];
-		w[10] = writeNonce[9];
-		w[11] = writeNonce[10];
-		w[12] = writeNonce[11];
 
-		gcm.init(writeNonce);
+			w[5] = writeNonce[4];
+			w[6] = writeNonce[5];
+			w[7] = writeNonce[6];
+			w[8] = writeNonce[7];
+			w[9] = writeNonce[8];
+			w[10] = writeNonce[9];
+			w[11] = writeNonce[10];
+			w[12] = writeNonce[11];
 
-		if (DEBUG.ON)
-			Misc.dump("write nonce: ", System.out, writeNonce, 0, 12);
+			gcm.init(writeNonce);
 
+			if (DEBUG.ON)
+				Misc.dump("write nonce: ", System.out, writeNonce, 0, 12);
+
+			
+			for (int i = 11; i >= 4; --i)
+				if (++writeNonce[i] != 0)
+					break;
+
+//				laufende nummer 8 bytes
+//				type   22 (packet type)
+//				major
+//				minor
+//				hi(len)   des Pakets - ohne expl iv
+//				lo(len)
+
+			writeAad[8] = (byte)typ;
+			writeAad[11] = (byte)(len >> 8);
+			writeAad[12] = (byte)len;
+			gcm.updateHash(writeAad, 0, writeAad.length);
+
+			if (DEBUG.ON)
+				Misc.dump("write aad: ", System.out, writeAad, 0, 13);
+
+			// inc counter
+			for (int i = 7; i >= 0; --i)
+				if (++writeAad[i] != 0)
+					break;
+
+			off = 13;
+		}
 		
-		for (int i = 11; i >= 4; --i)
-			if (++writeNonce[i] != 0)
-				break;
-
-//			laufende nummer 8 bytes
-//			type   22 (packet type)
-//			major
-//			minor
-//			hi(len)   des Pakets - ohne expl iv
-//			lo(len)
-
-		writeAad[8] = (byte)typ;
-		writeAad[11] = (byte)(len >> 8);
-		writeAad[12] = (byte)len;
-		gcm.updateHash(writeAad, 0, writeAad.length);
-
-		if (DEBUG.ON)
-			Misc.dump("write aad: ", System.out, writeAad, 0, 13);
-
-		// inc counter
-		for (int i = 7; i >= 0; --i)
-			if (++writeAad[i] != 0)
-				break;
-		
-		gcm.encrypt(b, 0, w, 13, len);
+		gcm.encrypt(b, inOff, w, off, len);
 		
 		// append hash
-		gcm.calcHash(w, 13 + len);
+		gcm.calcHash(w, len + off);
 		
 		if (DEBUG.ON)
 			Misc.dump("GCM packet: ", System.out, writeBuffer, 0, outLen);
@@ -849,7 +931,7 @@ public abstract class Ssl3 {
 			b13[12] = (byte) (blength);
 			byte t[] = new byte[blength];
 			System.arraycopy(b, boffset, t, 0, blength);
-			return md.hmac(secret, b13, t, null, null, null);
+			return md.hmac(secret, b13, t);
 		}
 
 		// SSL 3.0
@@ -892,22 +974,22 @@ public abstract class Ssl3 {
 			for (int j = 0; j <= i; ++j)
 				sha.update((byte) (0x41 + i));
 			if (DEBUG.HANDSHAKEHASH)
-				Misc.dump("mhb1: ", System.out, ((MessageDigest) sha.clone()).digest());
+				Misc.dump("mhb1: ", System.out, sha.clone().digest());
 			sha.update(x);
 			if (DEBUG.HANDSHAKEHASH)
-				Misc.dump("mhb2: ", System.out, ((MessageDigest) sha.clone()).digest());
+				Misc.dump("mhb2: ", System.out, sha.clone().digest());
 			sha.update(ra);
 			if (DEBUG.HANDSHAKEHASH)
-				Misc.dump("mhb3: ", System.out, ((MessageDigest) sha.clone()).digest());
+				Misc.dump("mhb3: ", System.out, sha.clone().digest());
 			sha.update(input);
 			if (DEBUG.HANDSHAKEHASH)
-				Misc.dump("mhb4: ", System.out, ((MessageDigest) sha.clone()).digest());
+				Misc.dump("mhb4: ", System.out, sha.clone().digest());
 			md5.update(x);
 			if (DEBUG.HANDSHAKEHASH)
-				Misc.dump("mhb5: ", System.out, ((MessageDigest) md5.clone()).digest());
+				Misc.dump("mhb5: ", System.out, md5.clone().digest());
 			md5.update(sha.digest());
 			if (DEBUG.HANDSHAKEHASH)
-				Misc.dump("mhb6: ", System.out, ((MessageDigest) md5.clone()).digest());
+				Misc.dump("mhb6: ", System.out, md5.clone().digest());
 			System.arraycopy(md5.digest(), 0, r, i * 16, 16);
 		}
 		byte z[] = new byte[n];
@@ -1073,6 +1155,120 @@ public abstract class Ssl3 {
 		}
 	}
 
+	/**
+	 * create the early key and secret material in TLS1.3
+	 * 
+	 * @param isServer
+	 *            indicates whether they are generated for a server or a client
+	 * @param hlen
+	 *            length for the new hash
+	 */
+	void createTls13EarlyKeys(boolean isServer) {
+		this.cryptRead = new GCM(new AES());
+		this.cryptWrite = new GCM(new AES());
+
+		byte[] cs = ciphersuites[cipherIndex];
+		switch (cs[4]) {
+		case 4:
+			this.readHash = new SHA256();
+			this.writeHash = new SHA256();
+			this.hashLen = 32;
+			break;
+		case 5:
+			this.readHash = new SHA384();
+			this.writeHash = new SHA384();
+			this.hashLen = 48;
+			break;
+		}
+		int keyLen = cs[2];
+
+    	byte[] helloHash = hsSha.clone().digest();
+		byte[] earlySecret = readHash.hmac(new byte[1], new byte[hashLen]);
+		byte[] emptyHash = readHash.digest();
+		byte[] derivedSecret = readHash.expandLabel(earlySecret, "tls13 derived", emptyHash, hashLen);
+		handshakeSecret = readHash.hmac(derivedSecret, masterSecret);
+		clientSecret = readHash.expandLabel(handshakeSecret, "tls13 c hs traffic", helloHash, hashLen);
+    	serverSecret = readHash.expandLabel(handshakeSecret, "tls13 s hs traffic", helloHash, hashLen);
+    	byte[] clientKey = readHash.expandLabel(clientSecret, "tls13 key", NULLBYTES, keyLen);
+    	byte[] serverKey = readHash.expandLabel(serverSecret, "tls13 key", NULLBYTES, keyLen);
+
+    	byte[] clientIv = readHash.expandLabel(clientSecret, "tls13 iv", NULLBYTES, 12);
+    	byte[] serverIv = readHash.expandLabel(serverSecret, "tls13 iv", NULLBYTES, 12);
+		
+    	Misc.dump("helloHash", System.out, helloHash);
+    	Misc.dump("derivedSecret", System.out, derivedSecret);
+    	Misc.dump("handshakeSecret", System.out, handshakeSecret);
+    	Misc.dump("clientSecret", System.out, clientSecret);
+    	Misc.dump("serverSecret", System.out, serverSecret);
+    	Misc.dump("clientKey", System.out, clientKey);
+    	Misc.dump("serverKey", System.out, serverKey);
+    	Misc.dump("clientIv", System.out, clientIv);
+    	Misc.dump("serverIv", System.out, serverIv);
+    	
+		// set cryptkeys
+		if (isServer) {
+			cryptRead.setKey(clientKey);
+			cryptWrite.setKey(serverKey);
+			readIV = clientIv;
+			writeIV = serverIv;
+		} else {
+			cryptRead.setKey(serverKey);
+			cryptWrite.setKey(clientKey);
+			readIV = serverIv;
+			writeIV = clientIv;
+		}
+	}
+
+	protected void createTls13Keys(boolean isServer, MessageDigest lastHsHash) {
+		this.cryptRead = new GCM(new AES());
+		this.cryptWrite = new GCM(new AES());
+
+		byte[] cs = ciphersuites[cipherIndex];
+		switch (cs[4]) {
+		case 4:
+			this.readHash = new SHA256();
+			this.writeHash = new SHA256();
+			this.hashLen = 32;
+			break;
+		case 5:
+			this.readHash = new SHA384();
+			this.writeHash = new SHA384();
+			this.hashLen = 48;
+			break;
+		}
+		int keyLen = cs[2];
+
+    	byte[] handshakeHash = lastHsHash.digest();
+		byte[] emptyHash = readHash.digest();
+		byte[] derivedSecret = readHash.expandLabel(handshakeSecret, "tls13 derived", emptyHash, hashLen);
+		masterSecret = readHash.hmac(derivedSecret, new byte[hashLen]);
+    	
+    	Misc.dump("masterSecret", System.out, masterSecret);
+		
+		clientSecret = readHash.expandLabel(masterSecret, "tls13 c ap traffic", handshakeHash, hashLen);
+    	serverSecret = readHash.expandLabel(masterSecret, "tls13 s ap traffic", handshakeHash, hashLen);
+    	byte[] clientKey = readHash.expandLabel(clientSecret, "tls13 key", NULLBYTES, keyLen);
+    	byte[] serverKey = readHash.expandLabel(serverSecret, "tls13 key", NULLBYTES, keyLen);
+
+    	byte[] clientIv = readHash.expandLabel(clientSecret, "tls13 iv", NULLBYTES, 12);
+    	byte[] serverIv = readHash.expandLabel(serverSecret, "tls13 iv", NULLBYTES, 12);
+		
+		// set cryptkeys
+		if (isServer) {
+			cryptRead.setKey(clientKey);
+			cryptWrite.setKey(serverKey);
+			readIV = clientIv;
+			writeIV = serverIv;
+		} else {
+			cryptRead.setKey(serverKey);
+			cryptWrite.setKey(clientKey);
+			readIV = serverIv;
+			writeIV = clientIv;
+		}
+		readnum = writenum = 0;
+	}
+
+	
 	/**
 	 * sends a closure notification, prior to close the streams.
 	 * 
@@ -1324,7 +1520,7 @@ public abstract class Ssl3 {
 				hsMd5.update(b, offset, length);
 			hsSha.update(b, offset, length);
 			if (DEBUG.HANDSHAKEHASH)
-				Misc.dump("hsSha", System.out, hsSha.getDigest());
+				Misc.dump("hsSha", System.out, hsSha.clone().digest());
 		} else {
 			byte t[] = new byte[length + pendingHandshake.length];
 			System.arraycopy(pendingHandshake, 0, t, 0, pendingHandshake.length);
@@ -1402,15 +1598,15 @@ public abstract class Ssl3 {
 		if (versionMinor != 0) {
 			// TLS
 			byte b[] = new byte[16];
-			byte[] hsNowMd5 = hsMd5 != null ? ((MessageDigest) hsMd5.clone()).digest() : NULLBYTES;
-			byte[] hsNowSha = ((MessageDigest) hsSha.clone()).digest();
+			byte[] hsNowMd5 = hsMd5 != null ? hsMd5.clone().digest() : NULLBYTES;
+			byte[] hsNowSha = hsSha.clone().digest();
 			byte h[] = PRF(12, masterSecret, cs, hsNowMd5, hsNowSha);
 			System.arraycopy(h, 0, b, 4, 12);
 			return b;
 		}
 		// SSL 3.0
-		byte cmd5hash[] = calc_hs_hash((MessageDigest) hsMd5.clone(), 48, csData);
-		byte cshahash[] = calc_hs_hash((MessageDigest) hsSha.clone(), 40, csData);
+		byte cmd5hash[] = calc_hs_hash(hsMd5.clone(), 48, csData);
+		byte cshahash[] = calc_hs_hash(hsSha.clone(), 40, csData);
 		byte h[] = new byte[40];
 		System.arraycopy(cmd5hash, 0, h, 4, 16);
 		System.arraycopy(cshahash, 0, h, 20, 20);
@@ -1445,6 +1641,13 @@ public abstract class Ssl3 {
 		}
 	}
 
+	protected byte[] createTls13HandshakeFinished(MessageDigest md, byte[] secret) {
+		byte[] finishedHash = md.digest();
+		byte[] finishedKey = md.expandLabel(secret, "tls13 finished", NULLBYTES, finishedHash.length);  
+		byte[] verifyData = md.hmac(finishedKey, finishedHash);
+		return verifyData;
+	}
+
 	static byte[] pHash(int length, MessageDigest md, byte[] secret, byte[] seed) {
 
 		byte[] ai = seed;
@@ -1457,9 +1660,9 @@ public abstract class Ssl3 {
 
 		int pos = 0;
 		while (pos < length) {
-			ai = md.hmac(secret, ai, null, null, null, null);
+			ai = md.hmac(secret, ai);
 			// Misc.dump("a1", System.out, ai);
-			byte d[] = md.hmac(secret, ai, seed, null, null, null);
+			byte d[] = md.hmac(secret, ai, seed);
 			int copyLen = d.length;
 			if (pos + copyLen > length)
 				copyLen = length - pos;
@@ -1548,104 +1751,3 @@ public abstract class Ssl3 {
 		return b;
 	}
 }
-
-/**
- * $Log: Ssl3.java,v $ Revision 1.23 2014/09/22 09:16:24 bebbo
- * 
- * @N added a config class Ssl3Config to support key/certificate selection based
- *    on host name
- *
- *    Revision 1.22 2014/09/18 13:49:19 bebbo
- * @N added support for TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 and
- *    TLS_DHE_RSA_WITH_AES_256_CBC_SHA
- *
- *    Revision 1.21 2014/04/13 20:18:07 bebbo
- * @B use correct minor version during write
- * @I renumbered values for hashes to match the TLS signature hash extension
- *    Revision 1.20 2013/11/28 12:26:15 bebbo
- * 
- * @N aded String getCipherSuite() to get a verbose name for the used cipher
- *    suite
- * @N prepared support for session ticket
- * @I client adds current time to client random Revision 1.19 2013/05/17
- *    10:54:38 bebbo
- * 
- * @D more DEBUG infos
- * @B errors yield a SslException which are 100ms tick aligned to avoid timing
- *    attacks Revision 1.18 2012/08/19 15:26:40 bebbo
- * 
- * @N added SHA256
- * @R added support for TLS1.2 Revision 1.17 2012/08/16 19:35:25 bebbo
- * 
- * @R added support for TLS1.1 Revision 1.16 2012/08/11 19:57:02 bebbo
- * 
- * @I working stage Revision 1.15 2011/01/06 11:00:18 bebbo
- * 
- * @N added client support for TLS 1.0
- * @V 1.0.2 Revision 1.14 2010/12/17 23:25:03 bebbo /FIXED: ssl config now
- *    supports multiple certificates Revision 1.13 2009/02/05 20:06:28 bebbo
- * 
- * @N added support for TLS 1.0
- * 
- *    Revision 1.12 2008/03/13 20:50:32 bebbo
- * @I working towards TLS
- * 
- *    Revision 1.11 2007/05/03 19:37:22 bebbo
- * @I more stability
- * 
- *    Revision 1.10 2007/04/21 11:33:56 bebbo
- * @N added AES and DES to SSLv3
- * 
- *    Revision 1.8 2007/04/20 18:53:15 bebbo
- * @B fixed outLen with real block ciphers
- * 
- *    Revision 1.7 2007/04/20 18:40:42 bebbo
- * @I optimized writes
- * 
- *    Revision 1.6 2007/04/20 14:55:42 bebbo
- * @I cleanups
- * 
- *    Revision 1.5 2007/04/20 14:26:22 bebbo
- * @I more plain writes. further enhancements are otw
- * 
- *    Revision 1.4 2007/04/20 08:09:50 bebbo
- * @R throwing IOException during handshake failures
- * 
- *    Revision 1.3 2007/04/20 05:12:01 bebbo
- * @R removed SSLv2
- * @R enabled resumed handshakes
- * 
- *    Revision 1.2 2007/04/19 16:56:56 bebbo
- * @R modified to use SSLv3 directly
- * @R removed SSLv2
- * @N added AES 128,192,256
- * 
- *    Revision 1.1 2007/04/18 13:07:10 bebbo
- * @N first checkin
- * 
- *    Revision 1.8 2003/03/06 15:25:00 bebbo
- * @C completed documentation
- * 
- *    Revision 1.7 2003/01/04 12:10:37 bebbo
- * @I cleaned up imports and formatted source code
- * 
- *    Revision 1.6 2003/01/04 12:07:15 bebbo
- * @R cleanup
- * 
- *    Revision 1.5 2001/09/15 08:53:07 bebbo
- * @R removed protected attribute
- * 
- *    Revision 1.4 2001/02/19 06:42:36 bebbo
- * @R added method connect(InputStream is, OutputStream os)
- * 
- *    Revision 1.3 2000/11/15 09:02:59 bebbo
- * @I changed close_notify alert handling: no longer raises as an exception is
- *    now always sent on close()
- * 
- *    Revision 1.2 2000/11/13 22:16:31 bebbo
- * @B member head was removed, since it must only exist in base class
- * 
- *    Revision 1.1 2000/09/25 12:21:10 bebbo
- * @N repackaged
- * 
- */

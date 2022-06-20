@@ -168,7 +168,7 @@ public final class SHA384 extends MessageDigest {
         }
     }
 
-    protected byte[] getDigest() {
+    protected byte[] __getDigest() {
         return new byte[]{
         		(byte) (state0 >> 56), (byte) (state0 >> 48), (byte) (state0 >> 40), (byte) (state0 >> 32), 
         		(byte) (state0 >> 24), (byte) (state0 >> 16), (byte) (state0 >> 8), (byte) (state0),

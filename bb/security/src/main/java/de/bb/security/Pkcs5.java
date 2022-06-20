@@ -183,12 +183,12 @@ public class Pkcs5 {
             for (int j = 0; j < 4; ++j)
                 n[j] = (byte) (i >>> (3 - j) * 8);
 
-            byte u[] = md.hmac(pwd, salt, n, null, null, null);
+            byte u[] = md.hmac(pwd, salt, n);
             int off = i * hLen - hLen;
             System.arraycopy(u, 0, res, off, hLen);
 
             for (int j = 1; j < count; ++j) {
-                u = md.hmac(pwd, u, null, null, null, null);
+                u = md.hmac(pwd, u);
                 for (int k = 0; k < hLen; ++k)
                     res[off + k] ^= u[k];
             }

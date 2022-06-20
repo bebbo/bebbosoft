@@ -147,7 +147,7 @@ public final class SHA256 extends MessageDigest {
         }
     }
 
-    protected byte[] getDigest() {
+    protected byte[] __getDigest() {
         return new byte[]{(byte) (state0 >> 24), (byte) (state0 >> 16), (byte) (state0 >> 8), (byte) (state0),
                 (byte) (state1 >> 24), (byte) (state1 >> 16), (byte) (state1 >> 8), (byte) (state1),
                 (byte) (state2 >> 24), (byte) (state2 >> 16), (byte) (state2 >> 8), (byte) (state2),

@@ -41,7 +41,7 @@ public class MD5 extends MessageDigest
    * clone implementation
    * @return a copy of the current object
    */
-  public Object clone() //throws CloneNotSupportedException
+  public MD5 clone() //throws CloneNotSupportedException
   {
     /** /
     MD5 m = (MD5)super.clone();
@@ -82,7 +82,7 @@ public class MD5 extends MessageDigest
     }
   }
 
-  protected byte[] getDigest()
+  protected byte[] __getDigest()
   {
     return new byte[]{
         (byte)(state0),

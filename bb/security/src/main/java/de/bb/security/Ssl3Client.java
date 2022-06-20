@@ -38,6 +38,10 @@ public class Ssl3Client extends Ssl3 // implements Connector
     /** ASN.1 path to the public exponent inside the public key. */
     private final static int EXPONENT_PATH[] = { 0x90, 0x02, 0x82 };
 
+    private final static byte SERVER_VFY[] = "TLS 1.3, server CertificateVerify\u0000".getBytes();
+
+	private static final byte[] CLIENT_CHANGE_CIPHER_SPEC = {0x14, 0x03, 0x03, 00, 0x01, 0x01};
+    
     /** a random value received from server, used to create the master secret. */
     private byte preMasterSecret[];
 
@@ -47,7 +51,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
     private byte[] dhg;
     private byte[] dhgy;
 
-    /**
+	/**
      * Creates a new Ssl3Client object. You need to use the connect method to connect this object to a socket.
      * 
      * @throws java.io.IOException
@@ -89,7 +93,17 @@ public class Ssl3Client extends Ssl3 // implements Connector
 
             collect = true;
 
-            int len = newClientHello(serverName);
+            int len;
+            if (DEBUG.USE_TEST_DATA) {
+            	writeBuffer = Misc.hex2Bytes("16 03 01 00 f8 01 00 00 f4 03 03 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 fa fb fc fd fe ff 00 08 13 02 13 03 13 01 00 ff 01 00 00 a3 00 00 00 18 00 16 00 00 13 65 78 61 6d 70 6c 65 2e 75 6c 66 68 65 69 6d 2e 6e 65 74 00 0b 00 04 03 00 01 02 00 0a 00 16 00 14 00 1d 00 17 00 1e 00 19 00 18 01 00 01 01 01 02 01 03 01 04 00 23 00 00 00 16 00 00 00 17 00 00 00 0d 00 1e 00 1c 04 03 05 03 06 03 08 07 08 08 08 09 08 0a 08 0b 08 04 08 05 08 06 04 01 05 01 06 01 00 2b 00 03 02 03 04 00 2d 00 02 01 01 00 33 00 26 00 24 00 1d 00 20 35 80 72 d6 36 58 80 d1 ae ea 32 9a df 91 21 38 38 51 ed 21 a2 8e 3b 75 e9 65 d0 d2 cd 16 62 54 ");
+            	updateHandshakeHashes(writeBuffer, 5, writeBuffer.length - 5);
+            	len = writeBuffer.length;
+            	clientRandom = Misc.hex2Bytes("00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f ");
+            	sessionId = Misc.hex2Bytes("e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 fa fb fc fd fe ff");
+            	eekPriv = Misc.hex2Bytes("202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f");
+            } else {
+            	len = newClientHello(serverName);
+            }
             os.write(writeBuffer, 0, len);
             os.flush();
 
@@ -109,114 +123,11 @@ public class Ssl3Client extends Ssl3 // implements Connector
             if (DEBUG.ON)
                 System.out.println("using cipher: " + getCipherSuite());
 
-            boolean exchange = sessionId.length == 0 || !equals(oldSessionId, 0, sessionId, 0, sessionId.length);
+            if (eekPriv != null) {
+                tls13Handshake(oldSessionId);
 
-            if (DEBUG.ON) {
-                System.out.println("exchanging a new key: " + exchange);
-            }
-
-            if (exchange) {
-                // receive the certificate
-                b = hs_read(11);
-                if (DEBUG.ON)
-                    Misc.dump("serverCerts", System.out, b);
-                certs = parseCertificate3(b);
-                // writeln("got " + certs.size() + " certificates");
-
-                // receive server done
-
-                int rlen = rawread(head, head.length, 22);
-                if (head.length != rlen)
-                    throw new IOException("handshake");
-
-                // DHE_RSA
-                int useDHE = ciphersuites[cipherIndex][5];
-                int curve = 0;
-                if (useDHE == 1 || useDHE == 7) {
-                    if (head[0] != 12)
-                        throw new IOException("handshake");
-
-                    b = innerRead();
-                    
-                    if (DEBUG.ON)
-                    	Misc.dump("ServerKeyExchange", System.out, b);
-                    
-                    if (useDHE == 1)
-                    	readDheServerKey(b);
-                    else
-                    	curve = readDhECServerKey(b);
-
-                    rlen = rawread(head, head.length, 22);
-                    if (head.length != rlen)
-                        throw new IOException("handshake");
-                }
-
-                // check for additional client certificate request
-                boolean sendCerts = false;
-                if (head[0] == 13) {
-                    b = innerRead();
-
-                    sendCerts = true;
-
-                    rlen = rawread(head, head.length, 22);
-                    if (head.length != rlen)
-                        throw new IOException("corrupt header received");
-                }
-
-                if (head[0] != 14)
-                    throw new IOException("expected server done");
-
-                b = innerRead();
-                // writeln("got server done");
-
-                if (sendCerts) {
-                    // send a zero client certificate list
-                    len = newEmptyClientCerts();
-                    os.write(writeBuffer, 0, len);
-                }
-
-                // now use the certificates
-                if (useDHE == 1) {
-                    len = newClientKeyExchange3DhE();
-                } else if (useDHE == 7) {
-                    len = newClientKeyExchange3DHeC(curve);
-                } else {
-                    len = newClientKeyExchange3RSA(certs);
-                }
-                os.write(writeBuffer, 0, len);
-                // writeln("key exchange sent");
-
-                if (DEBUG.HANDSHAKEHASH) {
-                    Misc.dump("SHA256", System.out, ((MessageDigest) hsSha.clone()).digest());
-                }
-
-                // calulate the master secret
-                if (DEBUG.ON) {
-                    Misc.dump("preMasterSecret", System.out, preMasterSecret);
-                    Misc.dump("clientRandom", System.out, clientRandom);
-                    Misc.dump("serverRandom", System.out, serverRandom);
-                }
-                                
-                if (versionMinor != 0)
-                    masterSecret = PRF(48, preMasterSecret, "master secret", clientRandom, serverRandom);
-                else
-                    masterSecret = makeHashBytes(preMasterSecret, 48, clientRandom, serverRandom);
-            }
-            if (DEBUG.ON) {
-                Misc.dump("masterSecret", System.out, masterSecret);
-            }
-
-            // calculate the keys for client(=>false)
-            createKeys(false);
-
-            os.flush();
-
-            if (exchange) {
-                clientFinished();
-                serverFinished();
             } else {
-                serverFinished();
-                clientFinished();
+	            ssl3Handshake(oldSessionId);
             }
 
             collect = false; // disable handshake logging
@@ -227,6 +138,237 @@ public class Ssl3Client extends Ssl3 // implements Connector
             throw new IOException("client handshake", e);
         }
     }
+
+	private void tls13Handshake(byte[] oldSessionId) throws IOException, Exception {
+		byte[] b;
+		rawread(onebyte, 1, 20);
+		if (onebyte[0] != 1)
+		    throw new IOException("ChangeCipherSpec");
+
+		createTls13EarlyKeys(false);
+		enableEncryption();
+		
+		// read as application data
+		Outer:
+		for(;;) {
+			// need the hash without current message since the server used that to construct this message
+			MessageDigest lastHsHash = hsSha.clone();
+			rawread(head, head.length, 22);
+			b = innerRead();
+			
+			switch (head[0]) {
+			case 0x8: // server extensions
+				break;
+			case 0xb:
+				certs = parseCertificate3(b, 1);
+				break;
+			case 0xf:
+				parseTls13CertificateVerify(b, 0, lastHsHash);
+				break;
+			case 0x14:
+		        parseTls13ServerHandshakeFinished(b, lastHsHash);
+				break Outer;
+			}
+		}
+		MessageDigest lastHsHash = hsSha.clone();
+		os.write(CLIENT_CHANGE_CIPHER_SPEC);
+		sendTls13ClientFinished();
+		createTls13Keys(false, lastHsHash);
+	}
+
+    private void sendTls13ClientFinished() throws IOException {
+
+        // calculate the hashes for the finished msg
+        byte verify[] = createTls13HandshakeFinished(hsSha.clone(), clientSecret);
+        byte b[] = new byte[verify.length + 4];
+        b[0] = 20;
+        b[1] = 0;
+        b[2] = 0;
+        b[3] = (byte) (verify.length);
+        System.arraycopy(verify, 0, b, 4, verify.length);
+
+        updateHandshakeHashes(b, 0, b.length);
+        rawwrite(b, 22);
+    }
+
+	
+	private void ssl3Handshake(byte[] oldSessionId) throws IOException, Exception {
+		int len;
+		byte[] b;
+		boolean exchange = sessionId.length == 0 || !equals(oldSessionId, 0, sessionId, 0, sessionId.length);
+
+		if (DEBUG.ON) {
+		    System.out.println("exchanging a new key: " + exchange);
+		}
+
+		if (exchange) {
+		    // receive the certificate
+		    b = hs_read(11);
+		    if (DEBUG.ON)
+		        Misc.dump("serverCerts", System.out, b);
+		    certs = parseCertificate3(b, 0);
+		    // writeln("got " + certs.size() + " certificates");
+
+		    MessageDigest lastHsHash = hsSha.clone();
+		    
+		    // receive server done
+		    int rlen = rawread(head, head.length, 22);
+		    if (head.length != rlen)
+		        throw new IOException("handshake");
+
+		    // DHE_RSA
+		    int useDHE = ciphersuites[cipherIndex][5];
+		    int curve = 0;
+		    if (useDHE == 1 || useDHE == 7) {
+		        if (head[0] != 12)
+		            throw new IOException("handshake");
+
+		        b = innerRead();
+		        
+		        if (DEBUG.ON)
+		        	Misc.dump("ServerKeyExchange", System.out, b);
+		        
+		        if (useDHE == 1)
+		        	readDheServerKey(b, lastHsHash);
+		        else
+		        	curve = readDhECServerKey(b, lastHsHash);
+
+		        rlen = rawread(head, head.length, 22);
+		        if (head.length != rlen)
+		            throw new IOException("handshake");
+		    }
+
+		    // check for additional client certificate request
+		    boolean sendCerts = false;
+		    if (head[0] == 13) {
+		        b = innerRead();
+
+		        sendCerts = true;
+
+		        rlen = rawread(head, head.length, 22);
+		        if (head.length != rlen)
+		            throw new IOException("corrupt header received");
+		    }
+
+		    if (head[0] != 14)
+		        throw new IOException("expected server done");
+
+		    b = innerRead();
+		    // writeln("got server done");
+
+		    if (sendCerts) {
+		        // send a zero client certificate list
+		        len = newEmptyClientCerts();
+		        os.write(writeBuffer, 0, len);
+		    }
+
+		    // now use the certificates
+		    if (useDHE == 1) {
+		        len = newClientKeyExchange3DhE();
+		    } else if (useDHE == 7) {
+		        len = newClientKeyExchange3DHeC(curve);
+		    } else {
+		        len = newClientKeyExchange3RSA(certs);
+		    }
+		    os.write(writeBuffer, 0, len);
+		    // writeln("key exchange sent");
+
+			calcMasterSecret();
+		}
+		if (DEBUG.ON) {
+		    Misc.dump("masterSecret", System.out, masterSecret);
+		}
+
+		// calculate the keys for client(=>false)
+		createKeys(false);
+		
+		os.flush();
+
+		if (exchange) {
+		    sendSslClientFinished();
+		    serverFinished();
+		} else {
+		    serverFinished();
+		    sendSslClientFinished();
+		}
+	}
+
+	private void parseTls13ServerHandshakeFinished(byte[] b, MessageDigest md) throws IOException {
+		byte[] verifyData = createTls13HandshakeFinished(md, serverSecret);
+		if (!Misc.equals(verifyData, b))
+			throw new IOException("server handshake finished");
+	}
+
+	private void parseTls13CertificateVerify(byte[] b, int off, MessageDigest hsHash) throws IOException {
+		MessageDigest md = null;
+		if (b[off++] == 8) {
+			if (b[off] == 4)
+				md = new SHA256();
+			else if (b[off] == 5)
+				md = new SHA384();
+		}
+		if (md == null)
+			throw new IOException("not supported: " + b[0] + ", " + b[1]);
+
+		Misc.dump("rsa sig",  System.out, b, off, b.length - off);
+
+		
+		byte[] hshash = hsHash.digest();
+		
+		// length of signature
+		int len = (b[++off] & 0xff);
+		len = (len << 8) | (b[++off] & 0xff);
+        byte[] signed = new byte[len];
+        System.arraycopy(b, ++off, signed, 0, len);
+
+		
+		// the data use to sign
+		byte sigdata[] = new byte[64 + SERVER_VFY.length + hshash.length];
+		for (int i = 0; i < 64; ++i)
+			sigdata[i] = ' ';
+		System.arraycopy(SERVER_VFY, 0, sigdata, 64, SERVER_VFY.length);
+		System.arraycopy(hshash, 0, sigdata, 64 + SERVER_VFY.length, hshash.length);
+		
+        byte[] cert = certs.get(0);
+        byte[] e = Pkcs6.getX509Exponent(cert);
+        byte[] n = Pkcs6.getX509Modulo(cert);
+
+        int emBits = n.length * 8 - 1;
+        byte hi;
+        if (n[0] == 0) {
+        	emBits -= 8;
+        	hi = n[1];
+        } else 
+        	hi = n[0];
+        
+        while (hi > 0) {
+        	--emBits;
+        	hi <<= 1;
+        }
+        
+        byte[] signedContent = Pkcs6.doRSA(signed, n, e);
+        boolean ok = md.emsPssVerify(sigdata, emBits, -1, signedContent);
+        if (!ok)
+        	throw new IOException("certificate verify");
+	}
+
+	private void calcMasterSecret() {
+		if (DEBUG.HANDSHAKEHASH) {
+		    Misc.dump("SHA256", System.out, hsSha.clone().digest());
+		}
+
+		// calulate the master secret
+		if (DEBUG.ON) {
+		    Misc.dump("preMasterSecret", System.out, preMasterSecret);
+		    Misc.dump("clientRandom", System.out, clientRandom);
+		    Misc.dump("serverRandom", System.out, serverRandom);
+		}
+		                
+		if (versionMinor != 0)
+		    masterSecret = PRF(48, preMasterSecret, "master secret", clientRandom, serverRandom);
+		else
+		    masterSecret = makeHashBytes(preMasterSecret, 48, clientRandom, serverRandom);
+	}
 
 	private int newClientKeyExchange3DhE() {
         byte y[] = random(dhp.length);
@@ -320,7 +462,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
     }
 
 	
-	private int readDhECServerKey(byte[] b) throws IOException {
+	private int readDhECServerKey(byte[] b, MessageDigest lastHsHash) throws IOException {
 		if (b[0] != 3) throw new IOException("expected named curve");
 		int curve = ((b[1] & 0xff) << 8) | (b[2] & 0xff);
 		int len = b[3] & 0xff;
@@ -334,19 +476,19 @@ public class Ssl3Client extends Ssl3 // implements Connector
 			System.arraycopy(b, 5, dhg, 0, len);
 			System.arraycopy(b, 5 + len, dhgy, 0, len);
 			
-			checkRSASignature(b, 5 + len + len);			
+			checkRSASignature(b, 5 + len + len, lastHsHash);			
 		} else if (curve == 0x1D || curve == 0x1E) {
 			// X25519 or X448 
 			dhg = new byte[len];
 			System.arraycopy(b, 4, dhg, 0, len);
-			checkRSASignature(b, 4 + len);			
+			checkRSASignature(b, 4 + len, lastHsHash);			
 		} else
 			throw new IOException("unsupported curve");
 		return curve;
 	}
 
 	
-    private void readDheServerKey(byte[] b) throws IOException {
+    private void readDheServerKey(byte[] b, MessageDigest lastHsHash) throws IOException {
         int len = ((b[0] & 0xff) << 8) | (b[1] & 0xff);
         dhp = new byte[len];
         System.arraycopy(b, 2, dhp, 0, len);
@@ -365,17 +507,25 @@ public class Ssl3Client extends Ssl3 // implements Connector
 
         offset += len + 2;
 
-        checkRSASignature(b, offset);
+        checkRSASignature(b, offset, lastHsHash);
     }
 
-	private void checkRSASignature(byte[] b, int offset) throws IOException {
+	private void checkRSASignature(byte[] b, int offset, MessageDigest lastHsHash) throws IOException {
 		int len;
 		int hash = 2;
 
+		Misc.dump("rsa sig",  System.out, b, offset, b.length - offset);
+		
         if (versionMinor >= 3) {
-            hash = b[offset++];
+            hash = b[offset];
+            if (hash == 8) {
+            	parseTls13CertificateVerify(b, offset, lastHsHash);
+            	return;
+            }
             if (hash != 2 && hash != 4)
                 throw new IOException("expected SHA or SHA256");
+            
+            ++offset;
 
             if (b[offset++] != 1)
                 throw new IOException("expected RSA signature");
@@ -431,7 +581,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
         return 12;
     }
 
-    private void clientFinished() throws IOException {
+    private void sendSslClientFinished() throws IOException {
         os.write(css);
 
         // calculate the hashes for the finished msg
@@ -457,9 +607,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
         if (onebyte[0] != 1)
             throw new IOException("ChangeCipherSpec");
 
-        // enable read encryption
-        readnum = 0;
-        rhashBuffer = new byte[hashLen];
+        enableEncryption();
         // writeln("got change cipher spec");
 
         int hsLen = versionMinor != 0 ? 16 : 40;
@@ -471,6 +619,12 @@ public class Ssl3Client extends Ssl3 // implements Connector
         if (!equals(f, 4, b, 4, b.length - 4))
             throw new IOException("finished: MAC error");
     }
+
+	private void enableEncryption() {
+		// enable read encryption
+        readnum = 0;
+        rhashBuffer = new byte[hashLen];
+	}
 
     /**
      * parse a server hello -> get the cipher type.
@@ -505,7 +659,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
         byte ct0 = b[off++];
         byte ct1 = b[off++];
         // we require NO compression
-        if (b[off] != 0)
+        if (b[off++] != 0)
             throw new IOException("unsupported compression: " + b[off]);
         
         // search the ciphertype
@@ -517,10 +671,44 @@ public class Ssl3Client extends Ssl3 // implements Connector
         if (selected == ciphersuites.length)
         	return -1;
 
+        // check for extensions as in TLS1.3
+        if (off < b.length) {
+        	int totalExtLen = 0xff & b[off++];
+        	totalExtLen = totalExtLen << 8 | 0xff & b[off++];
+        	int end = off + totalExtLen;
+        	while (off < end) {
+            	int type = 0xff & b[off++];
+            	type = type << 8 | 0xff & b[off++];
+            	int extLen = 0xff & b[off++];
+            	extLen = extLen << 8 | 0xff & b[off++];
+            	switch (type) {
+            	case 0x2b: // version extension
+            		++off;
+            		versionMinor = b[off++];
+            		break;
+            	case 0x33: // early shared key
+                	int ciph = 0xff & b[off++];
+                	ciph = ciph << 8 | 0xff & b[off++];
+                	int clen = 0xff & b[off++];
+                	clen = clen << 8 | 0xff & b[off++];
+                	if (ciph != 0x1D || clen != 32)
+                		throw new IOException("unsupported shared key type: " + ciph);
+                	byte pub[] = new byte[clen];
+                	System.arraycopy(b, off, pub, 0, clen);
+                	off += clen;
+                	masterSecret = ECMath.x25519(eekPriv, pub);
+            		break;
+            	default:
+            		off += extLen;
+            	}
+        	}
+        }
+
         if (DEBUG.HANDSHAKEHASH) {
             Misc.dump("DigestUpdate", System.out, pendingHandshake, 0, pendingHandshake.length);
         }
-        if (versionMinor == 3) {
+        
+        if (versionMinor >= 3) {
             switch(ciphersuites[selected][4]) {
     		case 5:
     			prfMd = new SHA384();
@@ -540,7 +728,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
             hsSha.update(pendingHandshake, 0, pendingHandshake.length);
         }
         pendingHandshake = NULLBYTES;
-        
+                
         return selected;
     }
 
@@ -554,11 +742,10 @@ public class Ssl3Client extends Ssl3 // implements Connector
      *             if message is corrupt
      */
     // ===========================================================================
-    private static final Vector<byte[]> parseCertificate3(byte b[]) throws Exception {
+    private static final Vector<byte[]> parseCertificate3(byte b[], int off) throws Exception {
         // certlistlen
-        int off = 0;
         int cllen = ((b[off] & 0xff) << 16) | ((b[off + 1] & 0xff) << 8) | (b[off + 2] & 0xff);
-        cllen += 3;
+        cllen += 3 - off;
         off += 3;
         Vector<byte[]> v = new Vector<byte[]>();
         while (off < cllen) {
@@ -684,33 +871,50 @@ public class Ssl3Client extends Ssl3 // implements Connector
         //        for (int i = 0; i < max; ++i) {
         //            hashes.add(-ciphersuites[i][4]);
         //        }
-        int extHashLen = 3 * 2 + 6 
-        		+ 6; /* add
-           ecdsa_secp256r1_sha256(0x0403),
-           ecdsa_secp384r1_sha384(0x0503),
-           ecdsa_secp521r1_sha512(0x0603),
+        int extHashLen = 3 * 2 + 6;
+        if (maxVersion == 4)
+        	extHashLen += 4;
+        	/* add
+        		rsa_pkcs1_sha1 (0x201), rsa_pkcs1_sha256 (0x301), rsa_pkcs1_sha384 (0x401)
+	           ecdsa_secp256r1_sha256(0x0403),
+	           ecdsa_secp384r1_sha384(0x0503),
+	        //   ecdsa_secp521r1_sha512(0x0603),
+
+	           // TODO:
+
+          /* RSASSA-PSS algorithms with public key OID rsaEncryption 
+          rsa_pss_rsae_sha256(0x0804),
+          rsa_pss_rsae_sha384(0x0805),
+          rsa_pss_rsae_sha512(0x0806),
+
+          /* EdDSA algorithms 
+          ed25519(0x0807),
+          ed448(0x0808),
           */ 
         
         if (DEBUG.ALL_HASH_EXTENSIONS)
             extHashLen = 5 * 2 * 3 + 2 + 6;
 
         int extNameLen = serverName == null ? 0 : serverName.length() + 9;
-        int extLen = extHashLen + extNameLen + 16; // 16 for supported elliptic curves extension
+        int extLen = extHashLen + extNameLen 
+	        + 16 // ec extension:  00 0A 00 0C 00 0A 00 1D 00 1E 00 19 00 18 00 17 
+	    	// x25519 (29)            -> 00 1D
+	    	// x448 (30)              -> 00 1E
+	        // support secp521r1 (25) -> 00 19
+	    	// support secp384r1 (24) -> 00 18
+	    	// support secp256r1 (23) -> 00 17
+	    ;
 
         if (supportSessionTicket)
             extLen += 4;
 
+        if (maxVersion == 4)
+        	extLen += 7 + 42; // supported version extension early encryption
+
         // total length including the 2 headers.
         int len = 48 + sessionIdlength + cipherCount + cipherCount + 2 // supportSecureNegotiation dummy cipher
-                + 2 + extLen // 2 length bytes + extension data
-                + 16 // ec extension:  00 0A 00 0C 00 0A 00 1D 00 1E 00 19 00 18 00 17 
-                	// x25519 (29)            -> 00 1D
-                	// x448 (30)              -> 00 1E
-                    // support secp521r1 (25) -> 00 19
-                	// support secp384r1 (24) -> 00 18
-                	// support secp256r1 (23) -> 00 17
-                ;
-
+                + 2 + extLen; // 2 length bytes + extension data
+        
         if (writeBuffer.length < len)
             writeBuffer = new byte[len];
 
@@ -720,7 +924,7 @@ public class Ssl3Client extends Ssl3 // implements Connector
         int i = 9;
 
         b[i++] = 3; // version = 3, get also an SSL 3 reply!!
-        b[i++] = maxVersion; // 1 = TLS1, 2 = TLS1.1, 3 = TLS1.2
+        b[i++] = maxVersion == 4 ? 3 : maxVersion; // 1 = TLS1, 2 = TLS1.1, 3 = TLS1.2, TLS1.3: send 3 instead of 4!?
 
         clientRandom = random(32);
 
@@ -821,12 +1025,13 @@ public class Ssl3Client extends Ssl3 // implements Connector
             b[i++] = 5;
             b[i++] = 1; // RSA
             
-            b[i++] = 4;
-            b[i++] = 3; // ecdsa_secp256r1_sha256(0x0403),
-            b[i++] = 5;
-            b[i++] = 3; // ecdsa_secp384r1_sha384(0x0503),
-            b[i++] = 6;
-            b[i++] = 3; // ecdsa_secp521r1_sha512(0x0603)
+if (maxVersion == 4) 
+{            
+            b[i++] = 8;
+            b[i++] = 4; // 0x0804 rsa_pss_rsae_sha256
+            b[i++] = 8;
+            b[i++] = 5; // rsa_pss_rsae_sha384
+}
         }
 
         if (supportSessionTicket) {
@@ -855,6 +1060,34 @@ public class Ssl3Client extends Ssl3 // implements Connector
 		b[i++] = 0x00;
 		b[i++] = 0x17; 
 
+		if (maxVersion == 4) {
+			// add supported version extension
+			b[i++] = 0;
+			b[i++] = 0x2b;
+			b[i++] = 0;
+			b[i++] = 3;
+			b[i++] = 2;
+			b[i++] = 3;	//hi version
+			b[i++] = 4; //lo version -> TLS1.3
+			
+			eekPriv = random(32);
+			byte[] eekPub = ECMath.x25519Pub(eekPriv);
+			b[i++] = 0;
+			b[i++] = 0x33;
+			b[i++] = 0;
+			b[i++] = 0x26;
+			b[i++] = 0;
+			b[i++] = 0x24;
+			b[i++] = 0;
+			b[i++] = 0x1d; // x25519
+			b[i++] = 0;
+			b[i++] = 0x20;
+			System.arraycopy(eekPub, 0, b, i, 32);
+			i += 32;
+			
+			versionMinor = 1;
+		}
+		
         addHandshakeHeader(1, b, 5, i - 9);
         addMessageHeader(22, b, 0, i - 5);
 
@@ -866,164 +1099,11 @@ public class Ssl3Client extends Ssl3 // implements Connector
     public String getVersion() {
         return "3." + versionMinor;
     }
-
-    /**
-     * create a client hello - support only 5 ciphertypes.
-     * 
-     * @return a new allocated byte array containing a client hello message / private final byte[] newClientHello2() {
-     * 
-     *         int sl = 0; if (sessionId != null) { sl = sessionId.length; }
-     * 
-     *         byte b[] = new byte[2 + 1 + 8 + 5 * 3 + 16 + sl];
-     * 
-     *         int i = 0;
-     * 
-     *         b[i++] = (byte) (0x80); b[i++] = (byte) (1 + 8 + 5 * 3 + 16 + sl); // length of rest
-     * 
-     *         b[i++] = (byte) 1; // client hello
-     * 
-     *         b[i++] = 3; // version = 3, get also an SSL 3 reply!! b[i++] = 0;
-     * 
-     *         b[i++] = 0; b[i++] = 3 * 5; // 5 ciphers
-     * 
-     *         b[i++] = 0; b[i++] = (byte) sl; // session id length
-     * 
-     *         b[i++] = 0; b[i++] = 16; // challenge length
-     * 
-     *         if (sl != 0) { System.arraycopy(sessionId, 0, b, i, sl); i += sl; }
-     * 
-     *         b[i++] = 0; b[i++] = 0; b[i++] = (byte) (0x05); // SSL3_RSA_WITH_RC4_SHA
-     * 
-     *         b[i++] = 0; b[i++] = 0; b[i++] = (byte) (0x04); // SSL3_RSA_WITH_RC4_MD5
-     * 
-     *         b[i++] = 1; b[i++] = 0; b[i++] = (byte) (0x80); // SSL2_RSA_WITH_RC4_128_MD5
-     * 
-     *         b[i++] = 0; b[i++] = 0; b[i++] = (byte) (0x03); // SSL3_RSA_WITH_RC4_40_MD5_EXPORT
-     * 
-     *         b[i++] = 2; b[i++] = 0; b[i++] = (byte) (0x80); // SSL2_RSA_WITH_RC4_40_MD5_EXPORT
-     * 
-     *         SslBase.secureRnd.nextBytes(clientRandom); // init with random System.arraycopy(clientRandom, 0, b, i,
-     *         16); // challenge for (i = 0; i < 16; ++i) clientRandom[i] = 0; return b; } /
-     **/
+    
+    protected void handleHandshakeMessage(byte[] buffer, int offset, int len) {
+    	switch (buffer[offset]) {
+    	case 0x04: // session ticket - todo
+    		break;
+    	}
+    }
 }
-/*
- * $Log: Ssl3Client.java,v $
- * Revision 1.15  2014/09/22 09:16:24  bebbo
- * @N added a config class Ssl3Config to support key/certificate selection based on host name
- *
- * Revision 1.14  2014/09/18 13:49:19  bebbo
- * @N added support for TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 and TLS_DHE_RSA_WITH_AES_256_CBC_SHA
- *
- * Revision 1.13  2014/04/13 20:17:23  bebbo
- * @N send also TLS extension with server name
- * @N send also TLS extension with signature hashes
- * @N signal secure renegotiation but don't support it
- *
- * Revision 1.12  2013/11/28 12:26:15  bebbo
- * @N aded String getCipherSuite() to get a verbose name for the used cipher suite
- * @N prepared support for session ticket
- * @I client adds current time to client random
- *
- * Revision 1.11  2013/05/17 10:54:43  bebbo
- * @D more DEBUG infos
- * @B errors yield a SslException which are 100ms tick aligned to avoid timing attacks
- *
- * Revision 1.10  2012/08/21 19:34:53  bebbo
- * @I handshake hash instances are now nulled if the client is used again. Session resuming is working now
- *
- * Revision 1.9  2012/08/21 06:36:57  bebbo
- * @N added a method to limit the protocol version, e.g. to SSL3
- *
- * Revision 1.8  2012/08/19 20:10:22  bebbo
- * @N added support for the secure renegotiation extension - even if we don't support renegotiation.
- *
- * Revision 1.7  2012/08/19 15:26:38  bebbo
- * @N added SHA256
- * @R added support for TLS1.2
- *
- * Revision 1.6  2012/08/16 19:35:22  bebbo
- * @R added support for TLS1.1
- *
- * Revision 1.5  2011/01/06 11:00:19  bebbo
- * @N added client support for TLS 1.0
- * @V 1.0.2
- * Revision 1.4 2009/02/05 20:06:28 bebbo
- * 
- * @N added support for TLS 1.0
- * 
- * Revision 1.3 2008/03/13 20:50:32 bebbo
- * 
- * @I working towards TLS
- * 
- * Revision 1.2 2007/05/03 19:37:22 bebbo
- * 
- * @I more stability
- * 
- * Revision 1.1 2007/04/21 11:33:56 bebbo
- * 
- * @N added AES and DES to SSLv3
- * 
- * Revision 1.5 2007/04/20 14:55:42 bebbo
- * 
- * @I cleanups
- * 
- * Revision 1.4 2007/04/20 14:26:22 bebbo
- * 
- * @I more plain writes. further enhancements are otw
- * 
- * Revision 1.3 2007/04/20 05:12:01 bebbo
- * 
- * @R removed SSLv2
- * 
- * @R enabled resumed handshakes
- * 
- * Revision 1.2 2007/04/19 16:56:56 bebbo
- * 
- * @R modified to use SSLv3 directly
- * 
- * @R removed SSLv2
- * 
- * @N added AES 128,192,256
- * 
- * Revision 1.1 2007/04/18 13:07:10 bebbo
- * 
- * @N first checkin
- * 
- * Revision 1.9 2003/03/06 15:25:00 bebbo
- * 
- * @C completed documentation
- * 
- * Revision 1.8 2003/01/04 12:22:35 bebbo
- * 
- * @R removed DEBUG messages
- * 
- * Revision 1.7 2003/01/04 12:10:37 bebbo
- * 
- * @I cleaned up imports and formatted source code
- * 
- * Revision 1.6 2003/01/04 12:07:15 bebbo
- * 
- * @R cleanup
- * 
- * Revision 1.5 2001/09/15 08:53:07 bebbo
- * 
- * @R removed protected attribute
- * 
- * Revision 1.4 2001/02/19 06:42:36 bebbo
- * 
- * @R added method connect(InputStream is, OutputStream os)
- * 
- * Revision 1.3 2000/09/25 13:03:28 bebbo
- * 
- * @R getCertificates now public available
- * 
- * @R format of certificate is now (byte [])
- * 
- * Revision 1.2 2000/09/25 12:49:19 bebbo
- * 
- * @C fixed comments
- * 
- * Revision 1.1 2000/09/25 12:21:10 bebbo
- * 
- * @N repackaged
- */
