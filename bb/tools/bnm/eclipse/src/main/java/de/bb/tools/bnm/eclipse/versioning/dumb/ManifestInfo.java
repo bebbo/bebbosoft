@@ -36,6 +36,7 @@ public class ManifestInfo {
     private transient String importVersion;
     private DumbManifestSearcher dumbManifestSearcher;
     private String fullSymbolicName;
+	private boolean isFragment;
 
     public ManifestInfo(File maniFile) throws IOException {
         init(new DumbManifestSearcher(maniFile));
@@ -70,31 +71,7 @@ public class ManifestInfo {
         content = dumbMani.getContent(p);
         importMap = new HashMap<String, NameVersion>();
         if (content != null) {
-            int offset = -1;
-            for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st.hasMoreTokens();) {
-                // the element
-                String e = st.nextToken();
-                offset = content.indexOf(e, offset + 1);
-                Pos ePos = new Pos(p.getOffset() + offset, e.length());
-                Pos vPos = null;
-                String ver = null;
-                int version = content.indexOf("version=\"", offset);
-                if (version > 0 && version - offset < e.length()) {
-                    version += 9;
-                    int end = content.indexOf('"', version);
-                    if (end > 0) {
-                        vPos = new Pos(p.getOffset() + version, end - version);
-                        ver = dumbMani.getContent(vPos);
-                    }
-                }
-                semi = e.indexOf(';');
-                if (semi > 0)
-                    e = e.substring(0, semi);
-
-                NameVersion imp = new NameVersion(e, ePos, ver, vPos);
-                importMap.put(e, imp);
-                // System.out.println("Import-Package: " + e + " - " + ePos + " - " + ver + " - " + vPos);
-            }
+        	extract(dumbMani, p, content, importMap);
         }
 
         p = dumbMani.search("Export-Package");
@@ -102,13 +79,26 @@ public class ManifestInfo {
         exportMap = new HashMap<String, Pos>();
         if (content != null) {
             int offset = -1;
-            for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st.hasMoreTokens();) {
+            for (StringTokenizer st = new StringTokenizer(content, ","); st.hasMoreTokens();) {
                 String e = st.nextToken();
                 semi = e.indexOf(';');
+                offset = content.indexOf(e, offset + 1);
+                
+    		    // count quotes
+    		    for (;;) {
+    		        int nq = 0;
+    		        for (int i = e.indexOf('"'); i > 0; i = e.indexOf('"', i + 1))
+    		        	++nq;
+    		        if (nq % 2 == 0)
+    		        	break;
+    		    	e = e + " " + st.nextToken();
+    		    }
+
                 if (semi > 0)
                     e = e.substring(0, semi);
-                offset = content.indexOf(e, offset + 1);
+                
                 Pos ePos = new Pos(p.getOffset() + offset, e.length());
+                e = e.replace(" ", "").replace("\n", "").replace("\r", "");
                 exportMap.put(e, ePos);
                 // System.out.println("Export-Package: " + e);
             }
@@ -117,32 +107,53 @@ public class ManifestInfo {
         p = dumbMani.search("Require-Bundle");
         content = dumbMani.getContent(p);
         if (content != null) {
-            int offset = -1;
-            for (StringTokenizer st = new StringTokenizer(content, " \t\r\n,"); st.hasMoreTokens();) {
-                String e = st.nextToken();
-                offset = content.indexOf(e, offset + 1);
-                Pos ePos = new Pos(p.getOffset() + offset, e.length());
-                Pos vPos = null;
-                String ver = null;
-                int version = content.indexOf("bundle-version=\"", offset);
-                if (version > 0 && version - offset < e.length()) {
-                    version += 16;
-                    int end = content.indexOf('"', version);
-                    if (end > 0) {
-                        vPos = new Pos(p.getOffset() + version, end - version);
-                        ver = dumbMani.getContent(vPos);
-                    }
-                }
-                semi = e.indexOf(';');
-                if (semi > 0)
-                    e = e.substring(0, semi);
-
-                NameVersion imp = new NameVersion(e, ePos, ver, vPos);
-                bundleMap.put(e, imp);
-                // System.out.println("Require-Bundle: " + e + " - " + ePos + " - " + ver + " - " + vPos);
-            }
+            extract(dumbMani, p, content, bundleMap);
         }
+        
+        isFragment = dumbMani.search("Fragment-Host") != null;
     }
+
+	private void extract(DumbManifestSearcher dumbMani, Pos p, String content, HashMap<String, NameVersion> toMap) {
+		int semi;
+		int offset = -1;
+		for (StringTokenizer st = new StringTokenizer(content, ","); st.hasMoreTokens();) {
+		    String e = st.nextToken();
+
+		    offset = content.indexOf(e, offset + 1);
+
+		    // count quotes
+		    for (;;) {
+		        int nq = 0;
+		        for (int i = e.indexOf('"'); i > 0; i = e.indexOf('"', i + 1))
+		        	++nq;
+		        if (nq % 2 == 0)
+		        	break;
+		    	e = e + " " + st.nextToken();
+		    }
+		    
+		    
+		    Pos ePos = new Pos(p.getOffset() + offset, e.length());
+		    Pos vPos = null;
+		    String ver = null;
+		    int version = content.indexOf("bundle-version=\"", offset);
+		    if (version > 0 && version - offset < e.length()) {
+		        version += 16;
+		        int end = content.indexOf('"', version);
+		        if (end > 0) {
+		            vPos = new Pos(p.getOffset() + version, end - version);
+		            ver = dumbMani.getContent(vPos);
+		        }
+		    }
+		    semi = e.indexOf(';');
+		    if (semi > 0)
+		        e = e.substring(0, semi);
+		    
+		    NameVersion imp = new NameVersion(e, ePos, ver, vPos);
+		    e = e.replace(" ", "").replace("\n", "").replace("\r", "");		    
+		    toMap.put(e, imp);
+		    // System.out.println("Require-Bundle: " + e + " - " + ePos + " - " + ver + " - " + vPos);
+		}
+	}
 
     public String getVersion() {
         return version;
@@ -216,4 +227,16 @@ public class ManifestInfo {
     public HashMap<String, NameVersion> getBundleMap() {
         return bundleMap;
     }
+
+	public HashMap<String, NameVersion> getImportMap() {
+		return importMap;
+	}
+
+	public HashMap<String, Pos> getExportMap() {
+		return exportMap;
+	}
+	
+	public boolean isFragment() {
+		return isFragment;
+	}
 }

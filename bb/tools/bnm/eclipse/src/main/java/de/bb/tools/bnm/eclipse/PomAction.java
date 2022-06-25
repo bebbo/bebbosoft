@@ -85,7 +85,7 @@ public abstract class PomAction implements IObjectActionDelegate {
                         ok = true;
                         break;
                     }
-                    if (slaveOnly && BeforeJavaBuilder.ID.equals(cmd.getBuilderName())) {
+                    if (slaveOnly && BeforeJavaBuilder.BUILDER_ID.equals(cmd.getBuilderName())) {
                         ok = true;
                         break;
                     }

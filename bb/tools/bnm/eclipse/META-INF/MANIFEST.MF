@@ -2,7 +2,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: BNM eclipse integration
 Automatic-Module-Name: bnm.eclipse
 Bundle-SymbolicName: de.bb.tools.bnm.eclipse;singleton:=true
-Bundle-Version: 0.2.9
+Bundle-Version: 0.2.10
 Bundle-Activator: de.bb.tools.bnm.eclipse.Plugin
 Bundle-Vendor: BebboSoft GbR
 Require-Bundle: org.eclipse.ui.ide;bundle-version="3.6.0",

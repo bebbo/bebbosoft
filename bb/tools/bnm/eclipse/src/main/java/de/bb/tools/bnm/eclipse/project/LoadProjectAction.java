@@ -57,6 +57,7 @@ import de.bb.tools.bnm.eclipse.Plugin;
 import de.bb.tools.bnm.eclipse.PomAction;
 import de.bb.tools.bnm.eclipse.builder.AfterJavaBuilder;
 import de.bb.tools.bnm.eclipse.builder.BeforeJavaBuilder;
+import de.bb.tools.bnm.eclipse.builder.BnmBuilder;
 import de.bb.tools.bnm.eclipse.builder.BnmNature;
 import de.bb.tools.bnm.eclipse.builder.CcpContainer;
 import de.bb.tools.bnm.eclipse.builder.Tracker;
@@ -89,8 +90,6 @@ public class LoadProjectAction extends PomAction {
           IProject theProject = pomFile.getProject();
           IPath loc = pomFile.getLocation().removeLastSegments(1);
           File path = loc.toFile();
-          // new File(path, ".project").delete();
-          new File(path, ".classpath").delete();
 
           File bp = new File(path, "build.properties");
           if (!bp.exists()) {
@@ -108,7 +107,7 @@ public class LoadProjectAction extends PomAction {
             new File(path, ".project").delete();
             new File(path, ".classpath").delete();
             try {
-              theProject.refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, 42));
+              theProject.refreshLocal(IResource.DEPTH_ONE, new SubProgressMonitor(monitor, 42));
             } catch (Exception e0) {
 
             }
@@ -132,7 +131,7 @@ public class LoadProjectAction extends PomAction {
             HashMap<String, String> args = new HashMap<String, String>();
             args.put("master", theProject.getName());
 
-            ICommand[] buildSpec = new ICommand[hasManifest ? 4 : 3];
+            ICommand[] buildSpec = new ICommand[hasManifest ? 5 : 4];
             i = 0;
             ICommand c = description.newCommand();
             if (hasManifest) {
@@ -141,14 +140,19 @@ public class LoadProjectAction extends PomAction {
               c = description.newCommand();
             }
             c.setArguments(args);
-            c.setBuilderName(BeforeJavaBuilder.ID);
+            c.setBuilderName(BeforeJavaBuilder.BUILDER_ID);
             buildSpec[i++] = c;
             c = description.newCommand();
+            c.setArguments(args);
+            c.setBuilderName(BnmBuilder.BUILDER_ID);
+            buildSpec[i++] = c;
+            c = description.newCommand();
+
             c.setBuilderName(JavaCore.BUILDER_ID);
             buildSpec[i++] = c;
             c = description.newCommand();
             c.setArguments(args);
-            c.setBuilderName(AfterJavaBuilder.ID);
+            c.setBuilderName(AfterJavaBuilder.BUILDER_ID);
             buildSpec[i++] = c;
             description.setBuildSpec(buildSpec);
 
@@ -193,8 +197,16 @@ public class LoadProjectAction extends PomAction {
               addFilter(se, r);
             }
 
-            IPath testcl = target.append("test-classes");
 
+            String testOutputDirectory = proj.build.testOutputDirectory;
+            if (testOutputDirectory == null)
+            	testOutputDirectory = "test-classes";
+			IPath testcl = target.append(testOutputDirectory);
+            IPath stjava = ppath.append(proj.build.testSourceDirectory);
+            SE set = new SE();
+            set.output = testcl;
+            resMap.put(stjava, set);
+            
             for (Resource r : proj.build.testResources) {
               IPath p = new Path(r.directory);
               if (p.isAbsolute()) {

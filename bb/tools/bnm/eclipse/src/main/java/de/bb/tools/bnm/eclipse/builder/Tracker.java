@@ -18,13 +18,10 @@
  */
 package de.bb.tools.bnm.eclipse.builder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -55,7 +52,11 @@ public class Tracker implements IResourceChangeListener {
     private static final HashMap<String, BnmProject> PROJECTS = new HashMap<String, BnmProject>();
 
     public Tracker() {
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        scanProjects();
+    }
+
+	private static void scanProjects() {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IProject[] projects = workspace.getRoot().getProjects();
         for (IProject p : projects) {
             // init open projects only
@@ -63,9 +64,9 @@ public class Tracker implements IResourceChangeListener {
                 continue;
             addProject(p);
         }
-    }
+	}
 
-    private boolean addProject(IProject p) {
+    private static boolean addProject(IProject p) {
         // only BNM nature
         try {
             if (p.getNature(BnmNature.NATURE_ID) == null)
@@ -77,7 +78,7 @@ public class Tracker implements IResourceChangeListener {
                     addBnmProject(p);
                     break;
                 }
-                if (BeforeJavaBuilder.ID.equals(c.getBuilderName())) {
+                if (BeforeJavaBuilder.BUILDER_ID.equals(c.getBuilderName())) {
                     return addSlaveProject(p);
                 }
             }
@@ -87,7 +88,7 @@ public class Tracker implements IResourceChangeListener {
         return false;
     }
 
-    public boolean addBnmProject(IProject p) throws Exception {
+    public static boolean addBnmProject(IProject p) throws Exception {
         String name = p.getName();
         BnmProject bp = PROJECTS.get(name);
         if (bp != null)
@@ -98,7 +99,7 @@ public class Tracker implements IResourceChangeListener {
         return true;
     }
 
-    private boolean addSlaveProject(IProject p) throws CoreException {
+    private static boolean addSlaveProject(IProject p) throws CoreException {
         IProjectDescription d = p.getDescription();
         ICommand[] bs = d.getBuildSpec();
         for (ICommand c : bs) {
@@ -116,7 +117,15 @@ public class Tracker implements IResourceChangeListener {
         return false;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static BnmProject getProject(String name) {
+		BnmProject bp = PROJECTS.get(name);
+		if (bp != null)
+			return bp;
+		scanProjects();
+		return PROJECTS.get(name);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
     private static Map<String, String> uncheckedCast(Map map) {
         return map;
     }
@@ -235,7 +244,7 @@ public class Tracker implements IResourceChangeListener {
     }
 
     public static void invalidate(IProject project) {
-        BnmProject bp = PROJECTS.get(project.getName());
+        BnmProject bp = getProject(project.getName());
         if (bp != null)
             bp.invalidate();
     }
@@ -270,7 +279,7 @@ public class Tracker implements IResourceChangeListener {
      * @param master
      */
     public void buildUntil(IProject project, String master) {
-        BnmProject bp = PROJECTS.get(master);
+        BnmProject bp =getProject(master);
         if (bp == null)
             return;
         bp.buildUntil(project);
@@ -282,21 +291,21 @@ public class Tracker implements IResourceChangeListener {
      * @param project
      */
     public void buildAfter(IProject project, String master) {
-        BnmProject bp = PROJECTS.get(master);
+        BnmProject bp =getProject(master);
         if (bp == null)
             return;
         bp.buildAfter(project);
     }
 
 	public void clean(IProject project) {
-        BnmProject bp = PROJECTS.get(project.getName());
+        BnmProject bp =getProject(project.getName());
         if (bp == null)
             return;
         bp.clean();
     }
 
     public void cleanSlave(IProject project, String master) {
-        BnmProject bp = PROJECTS.get(master);
+        BnmProject bp =getProject(master);
         if (bp == null)
             return;
         bp.cleanSlave(project);
@@ -330,7 +339,7 @@ public class Tracker implements IResourceChangeListener {
         try {
             ICommand[] cmds = p.getDescription().getBuildSpec();
             for (ICommand cmd : cmds) {
-                if (cmd.getBuilderName().equals(BeforeJavaBuilder.ID)) {
+                if (cmd.getBuilderName().equals(BeforeJavaBuilder.BUILDER_ID)) {
                     return true;
                 }
             }
@@ -338,4 +347,11 @@ public class Tracker implements IResourceChangeListener {
         }
         return false;
     }
+
+	public void buildCurrent(IProject project, String master) {
+        BnmProject bp =getProject(master);
+        if (bp == null)
+            return;
+        bp.preBuild(project);
+	}
 }

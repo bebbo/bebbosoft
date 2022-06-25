@@ -35,14 +35,16 @@ import de.bb.tools.bnm.eclipse.Plugin;
  */
 public class BeforeJavaBuilder extends IncrementalProjectBuilder {
 
-  public static final String ID = "de.bb.tools.bnm.eclipse.BeforeJavaBuilder";
+  public static final String BUILDER_ID = "de.bb.tools.bnm.eclipse.BeforeJavaBuilder";
 
   
   protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
     System.out.println("before " + getProject() + " " + kind);
     Tracker tracker = Plugin.getTracker();
     IProject project = this.getProject();
-	tracker.buildUntil(project, (String)args.get("master"));
+	String master = (String)args.get("master");
+	tracker.buildUntil(project, master);
+	tracker.buildCurrent(project, master);
 	project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
     return null;
   }

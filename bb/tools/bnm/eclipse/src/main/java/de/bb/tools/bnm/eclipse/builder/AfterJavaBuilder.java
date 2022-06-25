@@ -34,7 +34,7 @@ import de.bb.tools.bnm.eclipse.Plugin;
  * 
  */
 public class AfterJavaBuilder extends IncrementalProjectBuilder {
-    public static final String ID = "de.bb.tools.bnm.eclipse.AfterJavaBuilder";
+    public static final String BUILDER_ID = "de.bb.tools.bnm.eclipse.AfterJavaBuilder";
 
     
     protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)

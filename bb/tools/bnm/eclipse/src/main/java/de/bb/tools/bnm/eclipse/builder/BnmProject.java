@@ -20,11 +20,15 @@ package de.bb.tools.bnm.eclipse.builder;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.internal.core.JavaModelManager;
 
 import de.bb.tools.bnm.Bnm;
 import de.bb.tools.bnm.Loader;
@@ -35,6 +39,7 @@ import de.bb.tools.bnm.eclipse.Plugin;
 public class BnmProject {
 
     private final static String INSTALL[] = { "install" };
+    private final static String COMPILE[] = { "compile" };
     private final static String CLEAN[] = { "clean" };
 
     private HashMap<String, IProject> slaves = new HashMap<String, IProject>();
@@ -163,6 +168,7 @@ public class BnmProject {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+                
         Log.getLog().info("passing to Eclipse for: " + slave);
         Log.getLog().close();
     }
@@ -241,5 +247,33 @@ public class BnmProject {
         if (pom != null)
             pom.markModified();
     }
+
+	public void preBuild(IProject current) {
+        // check if all artifacts are present
+        IJavaProject jp = JavaModelManager.getJavaModelManager().getJavaModel().getJavaProject(current);
+        try {
+            String name = project.getName();
+            Pom pom = bnm.getPomByGA(name);
+			for (IClasspathEntry ice : jp.getRawClasspath()) {
+				if (ice.getPath().toString().equals(CcpContainer.ID)) {
+					CcpContainer ccp = new CcpContainer(jp);
+					for (IClasspathEntry artifact : ccp.getClasspathEntries()) {
+						if (!artifact.getPath().toFile().exists()) {
+							Stack<ArrayList<Pom>> dis = new Stack<>();
+							ArrayList<Pom> al = new ArrayList<>();
+							al.add(pom);
+							dis.add(al);
+							bnm.process(COMPILE, dis, new HashSet<>());							
+							break;
+						}
+					}
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

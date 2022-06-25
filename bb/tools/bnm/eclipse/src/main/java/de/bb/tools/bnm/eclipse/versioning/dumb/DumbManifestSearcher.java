@@ -51,7 +51,7 @@ public class DumbManifestSearcher extends DumbSearcher {
 			for (;;) {
 			  int r1 = content.indexOf('\r', end + 1);
 			  int r2 = content.indexOf('\n', end + 1);
-				end = r1 < 0 ? r2 : r2 < 0 ? r1 : r1 < r2 ? r1 : r2;
+				end = r1 < 0 ? r2 : r2 < 0 ? r1 : r1 < r2 ? r2 : r1;
 				if (end < 0)
 					return null;
 				end += 1;
