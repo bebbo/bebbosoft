@@ -98,6 +98,7 @@ public class SureFirePlugin extends AbstractPlugin {
                     file = file.replace('/', '.');
                     file = file.substring(0, file.length() - 6);
                     files.add(file);
+                    getLog().debug("add file: " + file);
                 } catch (RuntimeException re) {
                     throw new RuntimeException("\"" + path + "\" : \"" + file + "\"", re);
                 }

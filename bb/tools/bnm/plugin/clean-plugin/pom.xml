@@ -8,13 +8,13 @@
 	<groupId>de.bb.tools.bnm.plugin</groupId>
 	<artifactId>clean-plugin</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.9</version>
+	<version>0.2.10-SNAPSHOT</version>
 	<description>BNM clean plugin</description>
 	<dependencies>
 	 <dependency>
 	   <groupId>de.bb.tools.bnm</groupId>
 	   <artifactId>core</artifactId>
-	   <version>0.2.9</version>
+	   <version>0.2.10-SNAPSHOT</version>
 	 </dependency>
 	 <dependency>
     <groupId>de.bb</groupId>
