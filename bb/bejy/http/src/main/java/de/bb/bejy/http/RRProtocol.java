@@ -81,6 +81,8 @@ class RRProtocol extends Protocol {
 
     private final static ByteRef XML = new ByteRef("<?xml");
     private final static ByteRef STREAM = new ByteRef("<stream:");
+	private static final ByteRef HSTS = new ByteRef("Strict-Transport-Security");
+	private static final ByteRef HSTSVAL = new ByteRef("max-age=31536000; includeSubDomains; preload");
 
     private boolean DEBUG;
 
@@ -252,6 +254,8 @@ class RRProtocol extends Protocol {
                         + forwardUrl);
 
                 final MultiMap<ByteRef, ByteRef> responseHeaders = readResponseHeaders(responseBuffer, is2Forward, os);
+                if (server.usesSsl())
+                	responseHeaders.put(HSTS, HSTSVAL);
 
                 if (contentType == null) {
                     final ByteRef accept = requestHeaders.get(ACCEPT);
@@ -485,7 +489,14 @@ class RRProtocol extends Protocol {
         if (server.usesSsl()) {
             os2Forward.write("B-SECURE: true".getBytes());
             os2Forward.write(CRLF);
+            os2Forward.write("X-Forwarded-Proto: https".getBytes());
+            os2Forward.write(CRLF);
         }
+        os2Forward.write(CRLF);
+        os2Forward.write(("X-Forwarded-Host: " + remoteAddress).getBytes());
+        os2Forward.write(CRLF);
+        os2Forward.write(("X-Forwarded-Port: " + server.getPort()).getBytes());
+        os2Forward.write(CRLF);
 
         writeHeaders(os2Forward, requestHeader);
 
