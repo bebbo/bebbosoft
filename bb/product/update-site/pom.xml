@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>de.bb</groupId>
 		<artifactId>product</artifactId>
-		<version>0.0.1</version>
+		<version>1.0.0</version>
 	</parent>
 	<groupId>de.bb.product</groupId>
 	<artifactId>update-site</artifactId>
-	<version>0.2.9</version>
+	<version>0.2.10</version>
 	<packaging>jar</packaging>
 	<organization>
 		<name>
@@ -22,7 +22,7 @@
 			<plugin>
 				<groupId>de.bb.tools.bnm.plugin</groupId>
 				<artifactId>eclipse-plugin</artifactId>
-				<version>0.2.9</version>
+				<version>0.2.10</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>de.bb.tools.bnm</groupId>
 			<artifactId>feature</artifactId>
-			<version>0.2.9</version>
+			<version>0.2.10</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>

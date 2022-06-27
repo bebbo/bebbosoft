@@ -13,7 +13,7 @@
 		<dependency>
 			<artifactId>ldap</artifactId>
 			<groupId>de.bb.bejy</groupId>
-			<version>0.9.2</version>
+			<version>0.9.3</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -48,12 +48,12 @@
 					<dependency>
 						<groupId>de.bb.tools</groupId>
 						<artifactId>uses</artifactId>
-						<version>1.5.8</version>
+						<version>1.5.6</version>
 					</dependency>
 					<dependency>
 						<groupId>de.bb.tools</groupId>
 						<artifactId>mug</artifactId>
-						<version>1.7.9</version>
+						<version>1.7.8</version>
 					</dependency>
 				</dependencies>
 				<executions>

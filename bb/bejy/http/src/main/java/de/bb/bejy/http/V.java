@@ -1,1 +1,1 @@
-package de.bb.bejy.http; public interface V { public static final String V="1.6.14"; public static final String Y="2021";}
+package de.bb.bejy.http; public interface V { public static final String V="1.6.15"; public static final String Y="2022";}

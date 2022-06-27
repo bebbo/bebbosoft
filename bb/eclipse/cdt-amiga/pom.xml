@@ -11,86 +11,29 @@
   <version>1.0.0</version>
   <packaging>jar</packaging>
   <dependencies>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.core.runtime</artifactId>
-			<version>3.13.0</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>*</artifactId>
-					<groupId>*</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-  
-  <!-- 
     <dependency>
-      <groupId>org.eclipse.core</groupId>
-      <artifactId>runtime</artifactId>
-      <version>3.14.0</version>
+	  <groupId>org.eclipse.platform</groupId>
+	  <artifactId>org.eclipse.cdt.core</artifactId>
+	  <version>6.11.0.202003081657</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.equinox</groupId>
-      <artifactId>common</artifactId>
-      <version>3.10.0</version>
+	  <groupId>org.eclipse.platform</groupId>
+	  <artifactId>org.eclipse.cdt.dsf.gdb</artifactId>
+	  <version>5.8.100.202003021149</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.core</groupId>
-      <artifactId>resources</artifactId>
-      <version>3.13.0</version>
+	  <groupId>org.eclipse.platform</groupId>
+	  <artifactId>org.eclipse.cdt.launch.remote</artifactId>
+	  <version>2.5.100.202001092011</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.cdt</groupId>
-      <artifactId>core</artifactId>
-      <version>6.5.0</version>
+	  <groupId>org.eclipse.platform</groupId>
+	  <artifactId>org.eclipse.remote.telnet.core</artifactId>
+	  <version>1.0.0.201909031456</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.cdt.core</groupId>
-      <artifactId>native</artifactId>
-      <version>5.10.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.cdt</groupId>
-      <artifactId>launch</artifactId>
-      <version>9.2.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.cdt.launch</groupId>
-      <artifactId>remote</artifactId>
-      <version>2.5.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.remote</groupId>
-      <artifactId>core</artifactId>
-      <version>4.0.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.remote.telnet</groupId>
-      <artifactId>core</artifactId>
-      <version>1.0.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.debug</groupId>
-      <artifactId>core</artifactId>
-      <version>3.12.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.cdt.dsf</groupId>
-      <artifactId>gdb</artifactId>
-      <version>5.5.0</version>
-      <scope>provided</scope>
-    </dependency>
- -->
-   </dependencies>
+  </dependencies>
 </project>

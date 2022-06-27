@@ -171,7 +171,6 @@
     <module>product</module>
     <module>security_tools</module>
     <module>jcc</module>
-    <module>swing</module>
     <module>eclipse</module>
     <module>ws</module>
     <module>web</module>
