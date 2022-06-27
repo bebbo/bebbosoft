@@ -101,29 +101,7 @@ public class Ssl3Server extends Ssl3 {
             if (DEBUG.ON)
                 System.out.println("using: " + getCipherSuite());
 
-            if (DEBUG.ON)
-                Misc.dump("hashing handshake messages", System.out, pendingHandshake);
-
-            if (versionMinor == 3) {
-                switch(ciphersuites[cipherIndex][4]) {
-        		case 5:
-        			prfMd = new SHA384();
-                    hsSha = new SHA384();
-        			break;
-    			default:
-        			prfMd = new SHA256();
-                    hsSha = new SHA256();
-        			break;
-                }
-            	
-                hsSha.update(pendingHandshake, 0, pendingHandshake.length);
-            } else {
-                hsMd5 = new MD5();
-                hsSha = new SHA();
-                hsMd5.update(pendingHandshake, 0, pendingHandshake.length);
-                hsSha.update(pendingHandshake, 0, pendingHandshake.length);
-            }
-            pendingHandshake = NULLBYTES;
+            startHandshakeHashes(cipherIndex);
 
         } catch (IOException e) {
             throw e;
@@ -134,7 +112,7 @@ public class Ssl3Server extends Ssl3 {
         }
     }
 
-    /**
+	/**
      * Method Performs a shortened handshake, coz it is reused.
      * 
      * @param is

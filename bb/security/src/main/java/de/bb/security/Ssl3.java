@@ -1648,6 +1648,30 @@ public abstract class Ssl3 {
 		return verifyData;
 	}
 
+	protected void startHandshakeHashes(int selectedChiperSuite) {
+		if (DEBUG.ON)
+		    Misc.dump("hashing handshake messages", System.out, pendingHandshake);
+	
+		if (versionMinor >= 3) {
+		    switch(ciphersuites[selectedChiperSuite][4]) {
+			case 5:
+				prfMd = new SHA384();
+		        hsSha = new SHA384();
+				break;
+			default:
+				prfMd = new SHA256();
+		        hsSha = new SHA256();
+				break;
+		    }
+		} else {
+		    hsMd5 = new MD5();
+		    hsSha = new SHA();
+		    hsMd5.update(pendingHandshake, 0, pendingHandshake.length);
+		}
+	    hsSha.update(pendingHandshake, 0, pendingHandshake.length);
+		pendingHandshake = NULLBYTES;
+	}
+
 	static byte[] pHash(int length, MessageDigest md, byte[] secret, byte[] seed) {
 
 		byte[] ai = seed;

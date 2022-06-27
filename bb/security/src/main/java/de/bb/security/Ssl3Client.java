@@ -125,7 +125,6 @@ public class Ssl3Client extends Ssl3 // implements Connector
 
             if (eekPriv != null) {
                 tls13Handshake(oldSessionId);
-
             } else {
 	            ssl3Handshake(oldSessionId);
             }
@@ -703,31 +702,10 @@ public class Ssl3Client extends Ssl3 // implements Connector
             	}
         	}
         }
+        if (masterSecret == null)
+        	eekPriv = null;
 
-        if (DEBUG.HANDSHAKEHASH) {
-            Misc.dump("DigestUpdate", System.out, pendingHandshake, 0, pendingHandshake.length);
-        }
-        
-        if (versionMinor >= 3) {
-            switch(ciphersuites[selected][4]) {
-    		case 5:
-    			prfMd = new SHA384();
-                hsSha = new SHA384();
-    			break;
-			default:
-    			prfMd = new SHA256();
-                hsSha = new SHA256();
-    			break;
-            }
-
-            hsSha.update(pendingHandshake, 0, pendingHandshake.length);
-        } else {
-            hsMd5 = new MD5();
-            hsSha = new SHA();
-            hsMd5.update(pendingHandshake, 0, pendingHandshake.length);
-            hsSha.update(pendingHandshake, 0, pendingHandshake.length);
-        }
-        pendingHandshake = NULLBYTES;
+        startHandshakeHashes(selected);
                 
         return selected;
     }
