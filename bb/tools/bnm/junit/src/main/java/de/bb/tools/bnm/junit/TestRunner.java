@@ -21,23 +21,8 @@ package de.bb.tools.bnm.junit;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.junit.internal.RealSystem;
-import org.junit.runner.JUnitCore;
+public interface TestRunner {
 
-public class TestRunner4 implements TestRunner {
-	private static final String EMPTY[] = {};
-	private JUnitCore junitCore;
-	private RealSystem sys;
+    boolean runTests(ClassLoader cl, File dir, ArrayList<String> files) throws Exception;
 
-	public TestRunner4() throws Exception {
-		junitCore = new JUnitCore();
-		sys = new RealSystem();
-	}
-
-	public boolean runTests(ClassLoader cl, File dir, ArrayList<String> files) throws Exception {
-		RunListener listener = new RunListener(dir);
-		junitCore.addListener(listener);
-		junitCore.runMain(sys, files.toArray(EMPTY));
-		return listener.errorCount == 0 && listener.failureCount == 0;
-	}
 }

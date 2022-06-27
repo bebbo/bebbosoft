@@ -2,6 +2,7 @@ package de.bb.tools.bnm.eclipse.builder;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -59,6 +60,7 @@ public class CcpContainer implements IClasspathContainer {
         } catch (Exception exx) {
             exx.printStackTrace();
         }
+        Collections.sort(entries, (a, b) -> a.getPath().lastSegment().toString().compareTo(b.getPath().lastSegment().toString()));
         IClasspathEntry[] entriesA = entries.toArray(new IClasspathEntry[entries.size()]);
         try {
             IClasspathEntry[] entriesB = Tracker.updateClasspath(entriesA);

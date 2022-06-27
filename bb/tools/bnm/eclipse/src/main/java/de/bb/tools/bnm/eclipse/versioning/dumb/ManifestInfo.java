@@ -51,21 +51,32 @@ public class ManifestInfo {
         this.dumbManifestSearcher = dumbMani;
         Pos p = dumbMani.search("Bundle-SymbolicName");
         String content = dumbMani.getContent(p);
-        symbolicName = content.trim();
-        fullSymbolicName = symbolicName;
-        int semi = symbolicName.indexOf(';');
-        if (semi >= 0)
-            symbolicName = symbolicName.substring(0, semi);
-        symbolicNamePos = new Pos(p.getOffset() + content.indexOf(symbolicName), symbolicName.length());
-        // System.out.println("Bundle-SymbolicName: " + symbolicName);
+        if (content == null) {
+        	fullSymbolicName = symbolicName = "";
+        	symbolicNamePos = new Pos(0, 0);
+        } else {
+	        symbolicName = content.trim();
+	        fullSymbolicName = symbolicName;
+	        int semi = symbolicName.indexOf(';');
+	        if (semi >= 0)
+	            symbolicName = symbolicName.substring(0, semi);
+	        symbolicNamePos = new Pos(p.getOffset() + content.indexOf(symbolicName), symbolicName.length());
+	        // System.out.println("Bundle-SymbolicName: " + symbolicName);
+        }
 
         p = dumbMani.search("Bundle-Version");
         content = dumbMani.getContent(p);
-        version = content.trim();
-        versionPos = new Pos(p.getOffset() + content.indexOf(version), version.length());
-        // System.out.println("Bundle-Version: " + version);
+        if (content == null) {
+        	version = "0.0.1-SNAPSHOT";
+        	versionPos = new Pos(0,0);
+        } else {
+	        version = content.trim();
+	        versionPos = new Pos(p.getOffset() + content.indexOf(version), version.length());
+	        // System.out.println("Bundle-Version: " + version);
+        }
 
-        bundleMap.put(symbolicName, new NameVersion(symbolicName, symbolicNamePos, version, versionPos));
+        if (symbolicName.length() > 0)
+        	bundleMap.put(symbolicName, new NameVersion(symbolicName, symbolicNamePos, version, versionPos));
 
         p = dumbMani.search("Import-Package");
         content = dumbMani.getContent(p);
@@ -81,7 +92,7 @@ public class ManifestInfo {
             int offset = -1;
             for (StringTokenizer st = new StringTokenizer(content, ","); st.hasMoreTokens();) {
                 String e = st.nextToken();
-                semi = e.indexOf(';');
+                int semi = e.indexOf(';');
                 offset = content.indexOf(e, offset + 1);
                 
     		    // count quotes

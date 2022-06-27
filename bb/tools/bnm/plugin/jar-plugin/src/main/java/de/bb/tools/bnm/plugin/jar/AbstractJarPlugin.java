@@ -147,6 +147,7 @@ public abstract class AbstractJarPlugin extends AbstractPlugin {
 
         } else {
             getLog().info("file is up to date: " + jarFile.getAbsolutePath());
+            project.attachFile(jarFile, classifier);
         }
     }
 

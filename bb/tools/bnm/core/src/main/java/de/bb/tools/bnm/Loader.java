@@ -159,8 +159,8 @@ public class Loader {
 
 		if (mustExist) {
 			synchronized (localPoms) {
-				if (!repoFile.exists() || (downloadSnapshots && id.version != null && id.version.endsWith("SNAPSHOT")
-						&& !localPoms.contains(id.getGA()))) {
+				if ((!repoFile.exists() || (downloadSnapshots && id.version != null && id.version.endsWith("SNAPSHOT")))
+						&& !localPoms.contains(id.getGA())) {
 					updateFile(file, repoFile);
 				}
 			}

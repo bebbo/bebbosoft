@@ -16,7 +16,7 @@
  *   
  *   (c) by Stefan "Bebbo" Franke 2009
  */
-package de.bb.tools.bnm.plugin.surefire;
+package de.bb.tools.bnm.junit;
 
 import java.io.DataOutputStream;
 import java.io.File;

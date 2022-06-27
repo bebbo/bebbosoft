@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.bb.tools.bnm</groupId>
+    <artifactId>bnm</artifactId>
+    <version>0.1.3</version>
+  </parent>
+  <groupId>de.bb.tools.bnm</groupId>
+  <artifactId>junit4</artifactId>
+  <version>0.2.10</version>
+  <packaging>jar</packaging>
+  <description>BNM surefire plugin junit4 runner</description>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.5</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>de.bb.tools.bnm</groupId>
+      <version>0.2.10</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

@@ -46,6 +46,7 @@ public class BnmBuilder extends IncrementalProjectBuilder {
   protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
     IProject project = getProject();
     System.out.println("bnm: build" + project);
+    Tracker.scanProjects();
     return null;
   }
 

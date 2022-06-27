@@ -16,7 +16,7 @@
  *   
  *   (c) by Stefan "Bebbo" Franke 2009
  */
-package de.bb.tools.bnm.plugin.surefire;
+package de.bb.tools.bnm.junit;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,25 +24,23 @@ import java.util.ArrayList;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
-public class TR3x implements TR {
+public class TestRunner3 implements TestRunner {
 
-    public boolean runTests(Class<?> clazz, File dir, ArrayList<String> files) throws Exception {
-        RunListener3 listener = new RunListener3(dir);
+	public boolean runTests(ClassLoader cl, File dir, ArrayList<String> files) throws Exception {
+		RunListener3 listener = new RunListener3(dir);
 
-        TestSuite ts;
-        if (TestSuite.class.isAssignableFrom(clazz)) {
-            ts = (TestSuite) clazz.newInstance();
-        } else {
-            ts = new TestSuite(clazz);
-        }
+		for (String file : files) {
+			String classname = file.replace(".class", "").replace('/', '.').replace('\\', '.');
+			TestResult tr = new TestResult();
+			tr.addListener(listener);
+			listener.testRunStarted(classname);
+			TestSuite ts = new TestSuite(classname);
+			ts.run(tr);
+		}
 
-        TestResult tr = new TestResult();
-        tr.addListener(listener);
-        listener.testRunStarted(clazz.getName());
-        ts.run(tr);
-        listener.testRunFinished();
+		listener.testRunFinished();
 
-        return listener.errorCount == 0 && listener.failureCount == 0;
-    }
+		return listener.errorCount == 0 && listener.failureCount == 0;
+	}
 
 }

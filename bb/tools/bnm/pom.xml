@@ -16,6 +16,10 @@
 		<module>eclipse</module>
 		<module>plugin</module>
 		<module>launcher</module>
+		<module>junit</module>
+		<module>junit3</module>
+		<module>junit4</module>
+		<module>junit5</module>
 		<!-- <module>feature</module> -->
 	</modules>
 </project>

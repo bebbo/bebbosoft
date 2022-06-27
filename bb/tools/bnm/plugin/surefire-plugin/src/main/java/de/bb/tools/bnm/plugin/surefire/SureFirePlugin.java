@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -33,8 +32,8 @@ import de.bb.tools.bnm.AbstractPlugin;
 import de.bb.tools.bnm.CpHelper;
 import de.bb.tools.bnm.Log;
 import de.bb.tools.bnm.annotiation.Property;
+import de.bb.tools.bnm.junit.TestRunner;
 import de.bb.util.FileBrowser;
-import de.bb.util.ZipClassLoader;
 
 public class SureFirePlugin extends AbstractPlugin {
 
@@ -118,52 +117,36 @@ public class SureFirePlugin extends AbstractPlugin {
 
         List<String> classpath = cpHelper.getClasspathElements(project,
                 testOutputDirectory, classesOutputDirectory, true);
-        URL urls[] = new URL[classpath.size() + 2];
-        urls[0] = new URL("file:///" + testOutputDirectory + "/");
-        int index = 1;
+        ArrayList<URL> lurls = new ArrayList<URL>();
+        lurls.add(new URL("file:///" + testOutputDirectory.getAbsolutePath() + "/"));
         for (String cp : classpath) {
             if (new File(cp).isDirectory())
                 cp += "/";
             URL url = new URL("file:///" + cp);
-            urls[index++] = url;
+            lurls.add(url);
         }
-        URL url = getClass().getClassLoader().getResource(
-                "de/bb/tools/bnm/plugin/surefire/TR.class");
-        String surl = url.toString();
-        int exsl = surl.lastIndexOf("!/");
-        if (exsl > 0) {
-            surl = surl.substring(4, exsl);
-        } else {
-            exsl = surl.indexOf("/de/bb");
-            surl = surl.substring(0, exsl);
-        }
-        urls[index] = new URL(surl);
         
-        ZipClassLoader zcl = new ZipClassLoader();
-        for (URL u : urls) {
-            zcl.addURL(u);
-        }
-        log.info("using class path: " + zcl.getClassPath());
-
+//        for (URL u : lurls)
+//        	System.out.println(u);
         
-        ClassLoader cl = new URLClassLoader(urls);
-        // determine which JUNIT is used
-
-        Object tr4 = null;
+        ClassLoader cl = new URLClassLoader(lurls.toArray(new URL[] {}), getClass().getClassLoader());
+        TestRunner testRunner;
         try {
-            tr4 = cl.loadClass("de.bb.tools.bnm.plugin.surefire.TR4")
-                    .newInstance();
-        } catch (Throwable ex) {
+        	testRunner = (TestRunner) cl.loadClass("de.bb.tools.bnm.junit.TestRunner5").getConstructor().newInstance();
+        } catch (Exception ex) {
+        	System.err.println(ex);
+        	ex.printStackTrace();
+            try {
+            	testRunner = (TestRunner) cl.loadClass("de.bb.tools.bnm.junit.TestRunner4").getConstructor().newInstance();
+            } catch (Exception ex2) {
+                try {
+                	testRunner = (TestRunner) cl.loadClass("de.bb.tools.bnm.junit.TestRunner3").getConstructor().newInstance();
+                } catch (Exception ex3) {
+                	getLog().error("no matching TestRunner found");
+                	throw new Exception("no matching TestRunner found");
+                }        	
+            }        	
         }
-        Method m4 = null;
-        if (tr4 != null)
-            m4 = tr4.getClass().getMethod("runTests", Class.class, File.class,
-                    files.getClass());
-
-        Object tr3 = cl.loadClass("de.bb.tools.bnm.plugin.surefire.TR3x")
-                .newInstance();
-        Method m3 = tr3.getClass().getMethod("runTests", Class.class,
-                File.class, files.getClass());
 
         Thread thread = Thread.currentThread();
         ClassLoader ocl = thread.getContextClassLoader();
@@ -171,23 +154,12 @@ public class SureFirePlugin extends AbstractPlugin {
         PrintStream old = System.out;
         synchronized (LOCK) {
             System.setOut(wrap(getLog()));
+            System.out.println("-------------------------------------------------------\r\n"
+            		+ " T E S T S\r\n"
+            		+ "-------------------------------------------------------");
             try {
                 thread.setContextClassLoader(cl);
-                boolean ok = true;
-                if (m4 != null && tr4 != null) {
-                    ok &= (Boolean) m4.invoke(tr4, null, directory, files);
-                } else {
-                    for (String tc : files) {
-                        Class<?> clazz = cl.loadClass(tc);
-                        try {
-                            ok &= (Boolean) m3.invoke(tr3, clazz, directory,
-                                    files);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            throw (Exception) e.getCause();
-                        }
-                    }
-                }
+                boolean ok = testRunner.runTests(cl, classesOutputDirectory, files);
                 if (!ok) {
                     throw new Exception("at least one test failed!");
                 }

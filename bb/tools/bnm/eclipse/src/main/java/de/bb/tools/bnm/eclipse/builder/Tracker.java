@@ -55,7 +55,8 @@ public class Tracker implements IResourceChangeListener {
         scanProjects();
     }
 
-	private static void scanProjects() {
+	static void scanProjects() {
+		PROJECTS.clear();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IProject[] projects = workspace.getRoot().getProjects();
         for (IProject p : projects) {
@@ -181,7 +182,7 @@ public class Tracker implements IResourceChangeListener {
 
                 protected IStatus run(IProgressMonitor monitor) {
                     try {
-                        updateAllClassPaths(monitor);
+                        //updateAllClassPaths(monitor);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return Status.CANCEL_STATUS;
@@ -298,6 +299,7 @@ public class Tracker implements IResourceChangeListener {
     }
 
 	public void clean(IProject project) {
+		scanProjects();
         BnmProject bp =getProject(project.getName());
         if (bp == null)
             return;
