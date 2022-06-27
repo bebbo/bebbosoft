@@ -19,8 +19,8 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.debug.core,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
- de.bb.util,
- de.bb.tools.bnm.core
+ de.bb.util;bundle-version="1.0.24",
+ de.bb.tools.bnm.core;bundle-version="0.2.10"
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
 Export-Package: de.bb.tools.bnm.eclipse,

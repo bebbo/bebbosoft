@@ -7,19 +7,19 @@
   </parent>
   <groupId>de.bb.bejy</groupId>
   <artifactId>j2ee</artifactId>
-  <version>0.0.11</version>
+  <version>0.0.12-SNAPSHOT</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <artifactId>server</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.15</version>
+      <version>1.6.16-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>http</artifactId>
       <groupId>de.bb.bejy</groupId>
-      <version>1.6.15</version>
+      <version>1.6.16-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 <!--     <dependency>
@@ -38,7 +38,7 @@
     <dependency>
       <artifactId>ws</artifactId>
       <groupId>de.bb</groupId>
-      <version>0.2.11</version>
+      <version>0.2.12-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
