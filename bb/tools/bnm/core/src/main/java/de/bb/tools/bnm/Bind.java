@@ -666,21 +666,9 @@ public class Bind {
         }
         // either id oder ga present
         ArrayList<Object> order = new ArrayList<Object>();
-        MultiMap<Object, Object> toValues = new MultiMap<Object, Object>();
-        for (Object to : toList) {
-            Object key;
-            if (id != null)
-                key = id.get(to);
-            else
-                key = ((Id) to).getGA();
-
-            if (key != null) {
-                order.add(key);
-                toValues.put(key, to);
-            }
-        }
-        // rest is id==null
         ArrayList<Object> rest = new ArrayList<Object>();
+        
+        // rest is id==null
         MultiMap<Object, Object> fromValues = new MultiMap<Object, Object>();
         for (Object from : fromList) {
             Object key;
@@ -692,7 +680,22 @@ public class Bind {
                 order.add(key);
                 fromValues.put(key, from);
             } else {
-                rest.add(from);
+//                rest.add(from);
+            }
+        }
+        MultiMap<Object, Object> toValues = new MultiMap<Object, Object>();
+        for (Object to : toList) {
+            Object key;
+            if (id != null)
+                key = id.get(to);
+            else
+                key = ((Id) to).getGA();
+
+            if (key != null) {
+                order.add(key);
+                toValues.put(key, to);
+            } else {
+                rest.add(to);
             }
         }
 
@@ -702,8 +705,8 @@ public class Bind {
             Object from = fromValues.remove(key);
             Object to = toValues.remove(key);
             if (from == null) {
-                if (to == null)
-                    continue;
+            	if (to == null)
+            		continue;
                 merged.add(to);
                 continue;
             }
