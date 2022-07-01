@@ -94,7 +94,12 @@ public abstract class AbstractJarPlugin extends AbstractPlugin {
             getLog().warn(
                     "JAR will be empty - no content was marked for inclusion!");
         }
+        
+        forceCreation |=  new File(project.getPath(), "pom.xml").lastModified() > jarFile.lastModified();
+        
         if (forceCreation || maxDate > jarFile.lastModified()) {
+        	project.markModified();
+        	
             byte buffer[] = new byte[0x10000];
             Log log = getLog();
             log.debug("JAR: creating JAR file: " + jarFile.getAbsolutePath());
