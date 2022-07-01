@@ -1,6 +1,6 @@
 package de.bb.ws;
 
-import javax.xml.ws.WebServiceException;
+import jakarta.xml.ws.WebServiceException;
 
 import de.bb.util.XmlFile;
 

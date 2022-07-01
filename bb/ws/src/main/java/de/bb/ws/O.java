@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.jws.WebParam;
-import javax.jws.WebParam.Mode;
-import javax.jws.WebResult;
-import javax.xml.ws.WebFault;
+import jakarta.jws.WebParam;
+import jakarta.jws.WebParam.Mode;
+import jakarta.jws.WebResult;
+import jakarta.xml.ws.WebFault;
 
 import de.bb.util.XmlFile;
 

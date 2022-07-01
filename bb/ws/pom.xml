@@ -21,16 +21,29 @@
 		<dependency>
 			<groupId>jakarta.xml.ws</groupId>
 			<artifactId>jakarta.xml.ws-api</artifactId>
-			<version>2.3.2</version>
+			<version>4.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.jws</groupId>
 			<artifactId>jakarta.jws-api</artifactId>
-			<version>2.1.0</version>
+			<version>3.0.0</version>
+		</dependency>
+<!--  -->		
+<!-- https://mvnrepository.com/artifact/jakarta.xml.soap/jakarta.xml.soap-api -->
+<dependency>
+    <groupId>jakarta.xml.soap</groupId>
+    <artifactId>jakarta.xml.soap-api</artifactId>
+    <version>3.0.0</version>
+</dependency>
+
+		<dependency>
+			<groupId>jakarta.xml.rpc</groupId>
+			<artifactId>jakarta.xml.rpc-api</artifactId>
+			<version>1.1.4</version>
 		</dependency>
 	</dependencies>
 	<groupId>de.bb</groupId>
 	<artifactId>ws</artifactId>
-	<version>0.2.12-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 </project>
