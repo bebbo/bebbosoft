@@ -3,7 +3,7 @@
 	<groupId>&lt;root&gt;</groupId>
 	<artifactId>&lt;pom&gt;</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.14</version>
+	<version>0.1.15-SNAPSHOT</version>
 	<properties>
 		<directory>${project.build.directory}</directory>
 		<finalName>${artifactId}-${version}</finalName>
@@ -179,7 +179,7 @@
                 <plugin>
                     <groupId>de.bb.tools.bnm.plugin</groupId>
                     <artifactId>eclipse-plugin</artifactId>
-                    <version>0.2.10</version>
+                    <version>0.2.11-SNAPSHOT</version>
                     <replaces>
                         <replace>org.apache.maven.plugins:maven-eclipse-plugin</replace>
                     </replaces>

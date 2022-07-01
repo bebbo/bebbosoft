@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 import de.bb.tools.bnm.annotiation.Config;
 import de.bb.tools.bnm.annotiation.Default;
@@ -698,7 +698,6 @@ public class Pom {
 
 		if (bnm.hasSkipUnchanged()) {
 			lastBuild = System.currentTimeMillis();
-			modified = false;
 		} else {
 			modified = true;
 			lastBuild = 0;
@@ -872,33 +871,45 @@ public class Pom {
 
 	private ArrayList<Object> getDependencyTree(HashSet<String> done, Scope targetScope, boolean compileOnly,
 			List<Exclusion> exclusions) throws Exception {
-		final ArrayList<Object> result = new ArrayList<Object>();
-		dependencyTreeLoop(done, targetScope, compileOnly, exclusions, (dep, ga) -> {
-			result.add(dep);
-			return null;
+		final ArrayList<Dependency> deps = new ArrayList<>();
+		dependencyTreeLoop(effectivePom.dependencies, done, targetScope, compileOnly, exclusions, (dep, ga) -> {
+			if (!done.contains(ga)) {
+				done.add(ga);
+				deps.add(dep);
+			}
 		});
-		dependencyTreeLoop(done, targetScope, compileOnly, exclusions, (dep, ga) -> {
-			done.add(ga);
+		ArrayList<Object> result = new ArrayList<Object>(deps);
+		dependencyTreeLoop(deps, done, targetScope, compileOnly, exclusions, (dep, ga) -> {
 			try {
 				Pom transPom = bnm.loadPom(loader, null, dep);
-				ArrayList<Object> list = transPom.getDependencyTree(done, Scope.COMPILE, true, dep.exclusions);
+				List<Exclusion> combined = new ArrayList<>(exclusions);
+				combined.addAll(dep.exclusions);
+				ArrayList<Object> list = transPom.getDependencyTree(done, Scope.COMPILE, true, combined);
 				result.add(result.indexOf(dep) + 1, list);
 				
 			} catch (Exception e) {
 				Log.getLog().error("unresolved: " + dep);
 			}
-			return null;
 		});
 		return result;
 	}
 
-	private void dependencyTreeLoop(HashSet<String> done, Scope targetScope, boolean compileOnly,
-			List<Exclusion> exclusions, BiFunction<Dependency, String, Void> bif) {
-		for (Dependency dep : effectivePom.dependencies) {
+	private void dependencyTreeLoop(List<Dependency> deps, HashSet<String> done, Scope targetScope, boolean compileOnly,
+			List<Exclusion> exclusions, BiConsumer<Dependency, String> bif) {
+		for (Dependency dep : deps) {
 			String ga = dep.getGA() + ":" + dep.classifier;
-			if (done.contains(ga))
+			
+			if (isExclude(exclusions, dep))
 				continue;
 
+			if (!isUsableArtifact(dep))
+				continue;
+			
+			if (dep.optional)
+				continue;
+			
+			if (dep.scope == null)
+				dep.scope = "compile";
 			Scope depScope = Scope.valueOf(dep.scope.toUpperCase());
 
 			if (compileOnly && Scope.COMPILE != depScope)
@@ -919,22 +930,23 @@ public class Pom {
 				break;
 			}
 
-			if (isExclude(exclusions, dep))
-				continue;
-
 			if (dep.version == null) {
 				Log.getLog().warn("no version for " + ga + " using own version " + effectivePom.version);
 				dep.version = effectivePom.version;
 			}
 
-			bif.apply(dep, ga);
+			bif.accept(dep, ga);
 		}
+	}
+
+	private boolean isUsableArtifact(Dependency dep) {		
+		return dep.type == null || "jar".equals(dep.type) || "pom".equals(dep.type);
 	}
 
 	private boolean isExclude(List<Exclusion> exs, Id id) {
 		for (Exclusion ex : exs) {
 			if (("*".equals(ex.artifactId) || id.artifactId.equals(ex.artifactId)) &&
-					("*".equals(ex.groupId) || id.artifactId.equals(ex.groupId))) {
+					("*".equals(ex.groupId) || id.groupId.equals(ex.groupId))) {
 				return true;
 			}
 		}
