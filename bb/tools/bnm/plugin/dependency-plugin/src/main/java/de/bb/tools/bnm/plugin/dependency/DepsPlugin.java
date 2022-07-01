@@ -21,7 +21,7 @@ abstract class AbstractDepsPlugin extends AbstractPlugin {
     FileOutputStream fos;
 
     @Config("includeScope")
-    String includeScope;
+    String includeScope = "test";
     
     
 	@Override

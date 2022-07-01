@@ -2,7 +2,6 @@ package de.bb.tools.bnm.plugin.dependency;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -22,22 +21,12 @@ public class TreePlugin extends AbstractDepsPlugin {
 		try {
 			super.execute();
 
-			List<Object> r = new ArrayList<>();
-			String usedScopes[] = SCOPES;
-			if (includeScope != null) {
-				usedScopes = new String[] { includeScope };
-			}
-			for (String scope : usedScopes) {
-				List<Object> dependencyTree = project.getDependencyTree(scope);
-				r.add(dependencyTree);
-			}
+			List<Object> dependencyTree = project.getDependencyTree(includeScope.toUpperCase());
 
-			normalize(r, new HashSet<String>());
-
-			((List)r.get(0)).remove(0); // remove self
+			dependencyTree.remove(0); // remove self
 
 			write(project.getId());
-			recurse(r, new ArrayList<>());
+			recurse(dependencyTree, new ArrayList<>());
 
 		} finally {
 			if (fos != null) {
@@ -65,8 +54,7 @@ public class TreePlugin extends AbstractDepsPlugin {
 
 	}
 
-	private void recurse(final List<Object> deps, final List<Boolean> level)
-			throws IOException {
+	private void recurse(final List<Object> deps, final List<Boolean> level) throws IOException {
 		if (deps.isEmpty())
 			return;
 		Object last = deps.get(deps.size() - 1);
@@ -81,7 +69,7 @@ public class TreePlugin extends AbstractDepsPlugin {
 
 				StringBuilder msg = new StringBuilder();
 				for (Boolean x : level) {
-					msg.append(x ? "| " : "   ");
+					msg.append(x ? "|  " : "   ");
 				}
 				msg.append(last != o ? "+- " : "\\- ");
 				msg.append(dep.getId()).append(":").append(scope);
