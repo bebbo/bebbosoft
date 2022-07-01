@@ -51,8 +51,10 @@ import de.bb.tools.bnm.plugin.Mojo;
 import de.bb.tools.bnm.plugin.PluginInfo;
 import de.bb.tools.bnm.setting.Settings;
 import de.bb.util.MultiMap;
+import de.bb.util.Pair;
 import de.bb.util.Process;
 import de.bb.util.T2;
+import de.bb.util.T3;
 import de.bb.util.XmlFile;
 
 /**
@@ -863,40 +865,61 @@ public class Pom {
 	public ArrayList<Object> getDependencyTree(String sscope) throws Exception {
 		Scope targetScope = Scope.valueOf(sscope.toUpperCase());
 
+		T3<Dependency, List<Exclusion>, List<Object>> start = new T3<>();
+		start.a = new Dependency(effectivePom.getId());
+		start.b = Collections.emptyList();
+		start.c = new ArrayList<Object>();
+		ArrayList<Object> result = getDependencyTree(start, targetScope);
+		return result;
+	}
+
+	private ArrayList<Object> getDependencyTree(T3<Dependency, List<Exclusion>, List<Object>> start, Scope targetScope) throws Exception {
+		boolean compileOnly = false;
 		HashSet<String> done = new HashSet<String>();
-		ArrayList<Object> result = getDependencyTree(done, targetScope, false, Collections.emptyList());
-		result.add(0, new Dependency(effectivePom.getId()));
-		return result;
+
+		LinkedList<T3<Dependency, List<Exclusion>, List<Object>>> todo = new LinkedList<>();
+		todo.add(start);
+		
+		// nested twice to switch to compile only after first pass
+		while (!todo.isEmpty()) {
+			LinkedList<T3<Dependency, List<Exclusion>, List<Object>>> nextTodo = new LinkedList<>();
+			while (!todo.isEmpty()) {
+				T3<Dependency, List<Exclusion>, List<Object>> next = todo.removeFirst();
+				List<T3<Dependency, List<Exclusion>, List<Object>>> deps = dependencyTreeLoop(next, done, targetScope, compileOnly);
+				for (T3<Dependency, List<Exclusion>, List<Object>> dep : deps) {
+					nextTodo.add(dep);
+					next.c.add(dep);
+				}
+			}
+			
+			todo = nextTodo;
+			compileOnly = true;
+		}
+		
+		// convert it back
+		return t32flat(start, new ArrayList<>());
 	}
 
-	private ArrayList<Object> getDependencyTree(HashSet<String> done, Scope targetScope, boolean compileOnly,
-			List<Exclusion> exclusions) throws Exception {
-		final ArrayList<Dependency> deps = new ArrayList<>();
-		dependencyTreeLoop(effectivePom.dependencies, done, targetScope, compileOnly, exclusions, (dep, ga) -> {
-			if (!done.contains(ga)) {
-				done.add(ga);
-				deps.add(dep);
-			}
-		});
-		ArrayList<Object> result = new ArrayList<Object>(deps);
-		dependencyTreeLoop(deps, done, targetScope, compileOnly, exclusions, (dep, ga) -> {
-			try {
-				Pom transPom = bnm.loadPom(loader, null, dep);
-				List<Exclusion> combined = new ArrayList<>(exclusions);
-				combined.addAll(dep.exclusions);
-				ArrayList<Object> list = transPom.getDependencyTree(done, Scope.COMPILE, true, combined);
-				result.add(result.indexOf(dep) + 1, list);
-				
-			} catch (Exception e) {
-				Log.getLog().error("unresolved: " + dep);
-			}
-		});
-		return result;
+	private ArrayList<Object> t32flat(T3<Dependency, List<Exclusion>, List<Object>> t, ArrayList<Object> to) {
+		to.add(t.a);
+		ArrayList<Object> children = new ArrayList<>();
+		for (Object o : t.c) {
+			T3<Dependency, List<Exclusion>, List<Object>> t3 = (T3<Dependency, List<Exclusion>, List<Object>>) o;
+			t32flat(t3, children);
+		}
+		if (!children.isEmpty())
+			to.add(children);
+		return to;
 	}
 
-	private void dependencyTreeLoop(List<Dependency> deps, HashSet<String> done, Scope targetScope, boolean compileOnly,
-			List<Exclusion> exclusions, BiConsumer<Dependency, String> bif) {
-		for (Dependency dep : deps) {
+	private List<T3<Dependency, List<Exclusion>, List<Object>>> dependencyTreeLoop(
+			T3<Dependency, List<Exclusion>, List<Object>> next, HashSet<String> done, Scope targetScope,
+			boolean compileOnly) throws Exception {
+		Pom transPom = bnm.loadPom(loader, null, next.a);
+		List<Exclusion> exclusions = next.b;
+		
+		List<T3<Dependency, List<Exclusion>, List<Object>>> result = new ArrayList<>();
+		for (Dependency dep : transPom.effectivePom.dependencies) {
 			String ga = dep.getGA() + ":" + dep.classifier;
 			
 			if (isExclude(exclusions, dep))
@@ -935,8 +958,19 @@ public class Pom {
 				dep.version = effectivePom.version;
 			}
 
-			bif.accept(dep, ga);
+			if (!done.contains(ga)) {
+				done.add(ga);
+				if (next.a.scope != null && !"compile".equals(next.a.scope))
+					dep.scope = next.a.scope; // update child scope
+				T3<Dependency, List<Exclusion>, List<Object>> t3 = new T3<>();
+				t3.a = dep;
+				t3.b = new ArrayList<Exclusion>(exclusions);
+				t3.b.addAll(dep.exclusions);
+				t3.c = new ArrayList<Object>();
+				result.add(t3);
+			}
 		}
+		return result;
 	}
 
 	private boolean isUsableArtifact(Dependency dep) {		

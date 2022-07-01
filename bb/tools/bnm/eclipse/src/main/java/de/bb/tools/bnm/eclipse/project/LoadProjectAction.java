@@ -37,7 +37,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -66,248 +66,251 @@ import de.bb.tools.bnm.model.Resource;
 
 public class LoadProjectAction extends PomAction {
 
-  protected static final IClasspathEntry[] NOENTRIES = {};
-  protected static final IPath[] NOPATH = {};
+	protected static final IClasspathEntry[] NOENTRIES = {};
+	protected static final IPath[] NOPATH = {};
 
-  protected Exception exe;
+	protected Exception exe;
 
-  /**
-   * @see IActionDelegate#run(IAction)
-   */
-  public void run(IAction action) {
-    if (currentFile == null)
-      return;
+	/**
+	 * @see IActionDelegate#run(IAction)
+	 */
+	public void run(IAction action) {
+		if (currentFile == null)
+			return;
 
-    final IFile pomFile = currentFile;
-    WorkspaceModifyOperation wmo = new WorkspaceModifyOperation() {
-      
-      protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException,
-          InterruptedException {
-        try {
+		final IFile pomFile = currentFile;
+		WorkspaceModifyOperation wmo = new WorkspaceModifyOperation() {
 
-          Tracker.validateAll();
+			protected void execute(IProgressMonitor monitor)
+					throws CoreException, InvocationTargetException, InterruptedException {
+				try {
 
-          IProject theProject = pomFile.getProject();
-          IPath loc = pomFile.getLocation().removeLastSegments(1);
-          File path = loc.toFile();
+					SubMonitor subM = SubMonitor.convert(monitor,
+							"updating project for " + pomFile.getParent().getName(), 6);
 
-          File bp = new File(path, "build.properties");
-          if (!bp.exists()) {
-            FileOutputStream fos = new FileOutputStream(bp);
-            fos.write("custom=true\r\n".getBytes());
-            fos.close();
-          }
+					Tracker.validateAll();
 
-          Bnm bnm = new Bnm(Plugin.getLoader());
-          bnm.loadFirst(path);
-        	  
-          ArrayList<Pom> poms = bnm.getProjectsInOrder();
-          if (poms.size() == 1) {
+					IProject theProject = pomFile.getProject();
+					IPath loc = pomFile.getLocation().removeLastSegments(1);
+					File path = loc.toFile();
 
-//            new File(path, ".project").delete();
+					File bp = new File(path, "build.properties");
+					if (!bp.exists()) {
+						FileOutputStream fos = new FileOutputStream(bp);
+						fos.write("custom=true\r\n".getBytes());
+						fos.close();
+					}
+
+					Bnm bnm = new Bnm(Plugin.getLoader());
+					bnm.loadFirst(path);
+
+					ArrayList<Pom> poms = bnm.getProjectsInOrder();
+					if (poms.size() == 1) {
+
 //            new File(path, ".classpath").delete();
-//            try {
-//              theProject.refreshLocal(IResource.DEPTH_ONE, new SubProgressMonitor(monitor, 42));
-//            } catch (Exception e0) {
-//
-//            }
+//            new File(path, ".project").delete();
+						try {
+							theProject.refreshLocal(IResource.DEPTH_ONE, subM.newChild(1));
+						} catch (Exception e0) {
+						}
 
-            Pom pom = poms.get(0);
-            Project proj = pom.getEffectivePom();
-            String name = proj.groupId + "." + proj.artifactId;
-            IWorkspace workspace = ResourcesPlugin.getWorkspace();
+						Pom pom = poms.get(0);
+						Project proj = pom.getEffectivePom();
+						String name = proj.groupId + "." + proj.artifactId;
+						IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-            final IProjectDescription description = workspace.newProjectDescription(name);
-            description.setLocation(loc);
-            boolean hasManifest = new File(path, "META-INF/MANIFEST.MF").exists();
-            String[] natures = new String[hasManifest ? 3 : 2];
-            int i = 0;
-            if (hasManifest)
-              natures[i++] = PDE.PLUGIN_NATURE;
-            natures[i++] = JavaCore.NATURE_ID;
-            natures[i] = BnmNature.NATURE_ID;
-            description.setNatureIds(natures);
+						final IProjectDescription description = workspace.newProjectDescription(name);
+						description.setLocation(loc);
+						boolean hasManifest = new File(path, "META-INF/MANIFEST.MF").exists();
+						String[] natures = new String[hasManifest ? 3 : 2];
+						int i = 0;
+						if (hasManifest)
+							natures[i++] = PDE.PLUGIN_NATURE;
+						natures[i++] = JavaCore.NATURE_ID;
+						natures[i] = BnmNature.NATURE_ID;
+						description.setNatureIds(natures);
 
-            HashMap<String, String> args = new HashMap<String, String>();
-            args.put("master", theProject.getName());
+						HashMap<String, String> args = new HashMap<String, String>();
+						args.put("master", Tracker.getMaster(theProject).getName());
 
-            ICommand[] buildSpec = new ICommand[hasManifest ? 5 : 4];
-            i = 0;
-            ICommand c = description.newCommand();
-            if (hasManifest) {
-              c.setBuilderName(PDE.MANIFEST_BUILDER_ID);
-              buildSpec[i++] = c;
-              c = description.newCommand();
-            }
-            c.setArguments(args);
-            c.setBuilderName(BeforeJavaBuilder.BUILDER_ID);
-            buildSpec[i++] = c;
-            c = description.newCommand();
-            c.setArguments(args);
-            c.setBuilderName(BnmBuilder.BUILDER_ID);
-            buildSpec[i++] = c;
-            c = description.newCommand();
+						ICommand[] buildSpec = new ICommand[hasManifest ? 5 : 4];
+						i = 0;
+						ICommand c = description.newCommand();
+						if (hasManifest) {
+							c.setBuilderName(PDE.MANIFEST_BUILDER_ID);
+							buildSpec[i++] = c;
+							c = description.newCommand();
+						}
+						c.setArguments(args);
+						c.setBuilderName(BeforeJavaBuilder.BUILDER_ID);
+						buildSpec[i++] = c;
+						c = description.newCommand();
+						c.setArguments(args);
+						c.setBuilderName(BnmBuilder.BUILDER_ID);
+						buildSpec[i++] = c;
+						c = description.newCommand();
 
-            c.setBuilderName(JavaCore.BUILDER_ID);
-            buildSpec[i++] = c;
-            c = description.newCommand();
-            c.setArguments(args);
-            c.setBuilderName(AfterJavaBuilder.BUILDER_ID);
-            buildSpec[i++] = c;
-            description.setBuildSpec(buildSpec);
+						c.setBuilderName(JavaCore.BUILDER_ID);
+						buildSpec[i++] = c;
+						c = description.newCommand();
+						c.setArguments(args);
+						c.setBuilderName(AfterJavaBuilder.BUILDER_ID);
+						buildSpec[i++] = c;
+						description.setBuildSpec(buildSpec);
 
-            IResource pd = new ProjectDescription(description).createResource(new SubProgressMonitor(monitor, 1));
-            {
-              IProject p = (IProject) pd;
-              if (!p.isOpen())
-                p.open(new SubProgressMonitor(monitor, 1));
-            }
+						IResource pd = new ProjectDescription(description).createResource(subM.newChild(1));
+						{
+							IProject p = (IProject) pd;
+							if (!p.isOpen())
+								p.open(subM.newChild(1));
+						}
 
-            IJavaProject jp = JavaModelManager.getJavaModelManager().getJavaModel().getJavaProject(pd);
+						IJavaProject jp = JavaModelManager.getJavaModelManager().getJavaModel().getJavaProject(pd);
 
+						ArrayList<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
 
-            ArrayList<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
+						IPath ppath = jp.getPath();
+						IPath target = ppath.append("target");
+						IPath output = target.append("classes");
 
-            IPath ppath = jp.getPath();
-            IPath target = ppath.append("target");
-            IPath output = target.append("classes");
+						HashMap<IPath, SE> resMap = new HashMap<IPath, SE>();
+						IPath smjava = ppath.append(proj.build.sourceDirectory);
+						SE se = new SE();
+						se.excl.add(new Path(".svn/**"));
+						se.excl.add(new Path("CVS/**"));
+						resMap.put(smjava, new SE());
 
-            HashMap<IPath, SE> resMap = new HashMap<IPath, SE>();
-            IPath smjava = ppath.append(proj.build.sourceDirectory);
-            SE se = new SE();
-            se.excl.add(new Path(".svn/**"));
-            se.excl.add(new Path("CVS/**"));
-            resMap.put(smjava, new SE());
+						for (Resource r : proj.build.resources) {
+							IPath p = new Path(r.directory);
+							if (p.isAbsolute()) {
+								p = ppath.append(p.removeFirstSegments(loc.segmentCount()));
+							} else {
+								p = ppath.append(r.directory);
+							}
+							se = resMap.get(p);
+							if (se == null) {
+								se = new SE();
+								resMap.put(p, se);
+							}
 
-            for (Resource r : proj.build.resources) {
-              IPath p = new Path(r.directory);
-              if (p.isAbsolute()) {
-                p = ppath.append(p.removeFirstSegments(loc.segmentCount()));
-              } else {
-                p = ppath.append(r.directory);
-              }
-              se = resMap.get(p);
-              if (se == null) {
-                se = new SE();
-                resMap.put(p, se);
-              }
+							se.output = output;
 
-              se.output = output;
+							addFilter(se, r);
+						}
 
-              addFilter(se, r);
-            }
+						String testOutputDirectory = proj.build.testOutputDirectory;
+						if (testOutputDirectory == null)
+							testOutputDirectory = "test-classes";
+						IPath testcl = target.append(testOutputDirectory);
+						IPath stjava = ppath.append(proj.build.testSourceDirectory);
+						SE set = new SE();
+						set.output = testcl;
+						resMap.put(stjava, set);
 
+						for (Resource r : proj.build.testResources) {
+							IPath p = new Path(r.directory);
+							if (p.isAbsolute()) {
+								p = ppath.append(p.removeFirstSegments(loc.segmentCount()));
+							} else {
+								p = ppath.append(r.directory);
+							}
+							se = resMap.get(p);
+							if (se == null) {
+								se = new SE();
+								resMap.put(p, se);
+							}
 
-            String testOutputDirectory = proj.build.testOutputDirectory;
-            if (testOutputDirectory == null)
-            	testOutputDirectory = "test-classes";
-			IPath testcl = target.append(testOutputDirectory);
-            IPath stjava = ppath.append(proj.build.testSourceDirectory);
-            SE set = new SE();
-            set.output = testcl;
-            resMap.put(stjava, set);
-            
-            for (Resource r : proj.build.testResources) {
-              IPath p = new Path(r.directory);
-              if (p.isAbsolute()) {
-                p = ppath.append(p.removeFirstSegments(loc.segmentCount()));
-              } else {
-                p = ppath.append(r.directory);
-              }
-              se = resMap.get(p);
-              if (se == null) {
-                se = new SE();
-                resMap.put(p, se);
-              }
+							se.output = testcl;
 
-              se.output = testcl;
+							addFilter(se, r);
+						}
 
-              addFilter(se, r);
-            }
+						IClasspathEntry ce;
+						for (Entry<IPath, SE> e : resMap.entrySet()) {
+							IPath p = e.getKey();
+							se = e.getValue();
+							ce = JavaCore.newSourceEntry(p, se.incl.toArray(NOPATH), se.excl.toArray(NOPATH),
+									se.output);
+							File d = new File(path, p.removeFirstSegments(1).toString());
+							if (!d.exists())
+								d.mkdirs();
+							entries.add(ce);
+						}
 
-            IClasspathEntry ce;
-            for (Entry<IPath, SE> e : resMap.entrySet()) {
-              IPath p = e.getKey();
-              se = e.getValue();
-              ce = JavaCore.newSourceEntry(p, se.incl.toArray(NOPATH), se.excl.toArray(NOPATH), se.output);
-              File d = new File(path, p.removeFirstSegments(1).toString());
-              if (!d.exists())
-                d.mkdirs();
-              entries.add(ce);
-            }
+						pd.refreshLocal(IResource.DEPTH_INFINITE, subM.newChild(1));
 
-            pd.refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, 42));
+						ce = JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER"));
+						entries.add(ce);
 
-            ce = JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER"));
-            entries.add(ce);
-
-            ce = JavaCore.newContainerEntry(new Path(CcpContainer.ID));
-            entries.add(ce);
+						ce = JavaCore.newContainerEntry(new Path(CcpContainer.ID));
+						entries.add(ce);
 
 //            ce = JavaCore.newContainerEntry(new Path("de.bb.tools.bnm.eclipse.testClassPath"));
 //            entries.add(ce);
-            
-            IClasspathEntry[] entriesA = entries.toArray(NOENTRIES);
+
+						IClasspathEntry[] entriesA = entries.toArray(NOENTRIES);
 //            IClasspathEntry[] entriesB = Tracker.updateClasspath(entriesA);
 //            if (entriesB != null)
 //              entriesA = entriesB;
-            jp.setRawClasspath(entriesA, output, monitor);
-          }
-        } catch (Exception e) {
-          exe = e;
-        }
-      }
+						jp.setRawClasspath(entriesA, output, monitor);
+						jp.save(subM.newChild(1), true);
+						theProject.setDescription(description, subM.newChild(1));
+					}
+				} catch (Exception e) {
+					exe = e;
+				}
+			}
 
-    private void addFilter(SE se, Resource r) {
-        for (String inc : r.includes) {
-            se.incl.add(new Path(inc));
-            if (inc.startsWith("*")) {
-                while (inc.startsWith("*")) {
-                    inc = inc.substring(1);
-                }
-                se.incl.add(new Path(inc));
-            }
-          }
+			private void addFilter(SE se, Resource r) {
+				for (String inc : r.includes) {
+					se.incl.add(new Path(inc));
+					if (inc.startsWith("*")) {
+						while (inc.startsWith("*")) {
+							inc = inc.substring(1);
+						}
+						se.incl.add(new Path(inc));
+					}
+				}
 
-          for (String exc : r.getExcludes()) {
-            se.excl.add(new Path(exc));
-            if (exc.startsWith("*")) {
-                while (exc.startsWith("*")) {
-                    exc = exc.substring(1);
-                }
-                se.excl.add(new Path(exc));
-            }
-          }
-    }
+				for (String exc : r.getExcludes()) {
+					se.excl.add(new Path(exc));
+					if (exc.startsWith("*")) {
+						while (exc.startsWith("*")) {
+							exc = exc.substring(1);
+						}
+						se.excl.add(new Path(exc));
+					}
+				}
+			}
 
-    };
+		};
 
-    try {
-      exe = null;
-      PlatformUI.getWorkbench().getActiveWorkbenchWindow().run(true, true, wmo);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+		try {
+			exe = null;
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().run(true, true, wmo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    if (exe != null) {
-      MessageBox mb = new MessageBox(shell.getShell(), SWT.OK | SWT.ICON_ERROR);
-      mb.setText("BNM Import Failed");
-      mb.setMessage(exe.toString() + ":" + exe.getMessage());
-      mb.open();
-    }
-    /*
-    
-    String[] newNatures = new String[1];
-    newNatures[0] = BnmNature.NATURE_ID;
-    IProjectDescription description2 = project.getDescription();
-    description2.setNatureIds(newNatures);
-    project.setDescription(description2, null);
-    */
-  }
+		if (exe != null) {
+			MessageBox mb = new MessageBox(shell.getShell(), SWT.OK | SWT.ICON_ERROR);
+			mb.setText("BNM Import Failed");
+			mb.setMessage(exe.toString() + ":" + exe.getMessage());
+			mb.open();
+		}
+		/*
+		 * 
+		 * String[] newNatures = new String[1];
+		 * newNatures[0] = BnmNature.NATURE_ID;
+		 * IProjectDescription description2 = project.getDescription();
+		 * description2.setNatureIds(newNatures);
+		 * project.setDescription(description2, null);
+		 */
+	}
 
-  static class SE {
-    protected IPath output;
-    protected HashSet<IPath> incl = new HashSet<IPath>();
-    protected HashSet<IPath> excl = new HashSet<IPath>();
-  }
+	static class SE {
+		protected IPath output;
+		protected HashSet<IPath> incl = new HashSet<IPath>();
+		protected HashSet<IPath> excl = new HashSet<IPath>();
+	}
 }

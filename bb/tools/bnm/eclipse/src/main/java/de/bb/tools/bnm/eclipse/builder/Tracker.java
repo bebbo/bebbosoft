@@ -99,6 +99,17 @@ public class Tracker implements IResourceChangeListener {
         PROJECTS.put(name, bp);
         return true;
     }
+    
+    public static IProject getMaster(IProject p) {
+    	for (BnmProject bp : PROJECTS.values()) {
+    		if (bp.containsSlave(p))
+    			return bp.getProject();
+    	}
+    	if (!PROJECTS.isEmpty())
+    		return PROJECTS.values().iterator().next().getProject();
+    	return null;
+    }
+    
 
     private static boolean addSlaveProject(IProject p) throws CoreException {
         IProjectDescription d = p.getDescription();
@@ -113,6 +124,7 @@ public class Tracker implements IResourceChangeListener {
                 if (bp != null) {
                     return bp.addSlave(p);
                 }
+                return PROJECTS.values().iterator().next().addSlave(p);
             }
         }
         return false;

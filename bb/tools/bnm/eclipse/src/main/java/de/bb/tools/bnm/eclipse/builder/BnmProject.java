@@ -277,4 +277,12 @@ public class BnmProject {
 		}
 	}
 
+	public boolean containsSlave(IProject p) {
+		return slaves.values().contains(p);
+	}
+
+	public IProject getProject() {
+		return project;
+	}
+
 }

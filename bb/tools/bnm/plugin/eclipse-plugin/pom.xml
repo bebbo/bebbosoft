@@ -25,13 +25,13 @@
     <dependency>
       <artifactId>core</artifactId>
       <groupId>de.bb.tools.bnm</groupId>
-      <version>0.2.10</version>
+      <version>0.3.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <artifactId>eclipse</artifactId>
       <groupId>de.bb.tools.bnm</groupId>
-      <version>0.2.11-SNAPSHOT</version>
+      <version>0.3.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

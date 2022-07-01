@@ -3,11 +3,13 @@ package de.bb.tools.bnm.junit;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.engine.JupiterTestEngine;
 import org.junit.jupiter.engine.config.DefaultJupiterConfiguration;
@@ -23,6 +25,7 @@ import org.junit.platform.engine.TestEngine;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestExecutionResult.Status;
 import org.junit.platform.engine.UniqueId;
+import org.junit.platform.engine.UniqueId.Segment;
 
 public class TestRunner5 implements TestRunner {
 
@@ -30,6 +33,7 @@ public class TestRunner5 implements TestRunner {
 	boolean ok = true;
 	int count;
 	int successful;
+	int skipped;
 	int failed;
 	int aborted;
 
@@ -75,15 +79,25 @@ public class TestRunner5 implements TestRunner {
 		JupiterConfiguration jc = new DefaultJupiterConfiguration(cp);
 		JupiterEngineDescriptor jed = new JupiterEngineDescriptor(uid, jc);
 
+		Map<String, Integer> map = new HashMap<>();
 		for (String file : files) {
-			String classname = file.replace(".class", "").replace('/', '.').replace('\\', '.');
-			Class<?> clz = cl.loadClass(classname);
-			UniqueId cuid = uid.append("class", clz.getName());
+			String classname0 = file.replace(".class", "").replace('/', '.').replace('\\', '.');
+			Class<?> clz = cl.loadClass(classname0);
+			String classname = clz.getName();
+			UniqueId cuid = uid.append("class", classname);
 			ClassTestDescriptor ctd = new ClassTestDescriptor(cuid, clz, jc);
 			jed.addChild(ctd);
 
 			for (Method m : clz.getDeclaredMethods()) {
 				if (m.getAnnotation(Test.class) != null) {
+					++count;
+
+					if (m.getAnnotation(Disabled.class) != null) {
+						map.put(classname, map.getOrDefault(classname, 0) + 1);
+						++skipped;
+						continue;
+					}
+
 					UniqueId muid = cuid.append("method", m.getName());
 					TestMethodTestDescriptor tmtd = new TestMethodTestDescriptor(muid, clz, m, jc);
 					ctd.addChild(tmtd);
@@ -121,10 +135,15 @@ public class TestRunner5 implements TestRunner {
 					break;
 				case CONTAINER:
 					UniqueId uniqueId = testDescriptor.getUniqueId();
-					if (uniqueId.getSegments().get(0) != uniqueId.getLastSegment()) {
+					Segment lastSegment = uniqueId.getLastSegment();
+					if (uniqueId.getSegments().get(0) != lastSegment) {
 						t = timeToString(System.currentTimeMillis() - localStart);
-						System.out.println("Tests run: " + localCount + ", Failures: " + localFailed + ", Aborted: "
+						System.out.println("--------------------------------------------------------------------------------");
+						String testName = lastSegment.getValue();
+						System.out.println(testName + ":");
+						System.out.println("Tests run: " + localCount + ", Skipped: " + map.getOrDefault(testName, 0) + ", Failures: " + localFailed + ", Aborted: "
 								+ localAborted + ", Time elapsed: " + t + " sec");
+						System.out.println("--------------------------------------------------------------------------------");
 					}
 				default:
 				}
@@ -135,7 +154,6 @@ public class TestRunner5 implements TestRunner {
 			public void executionStarted(TestDescriptor testDescriptor) {
 				switch (testDescriptor.getType()) {
 				case TEST:
-					++count;
 					++localCount;
 					testStart = System.currentTimeMillis();
 					break;
@@ -160,11 +178,9 @@ public class TestRunner5 implements TestRunner {
 		te.execute(er);
 
 		String t = timeToString(System.currentTimeMillis() - start);
-		System.out.println("========================================================================");
-		System.out.println("Total run: " + count + ", Failures: " + failed + ", Aborted: " + aborted
-				+ ", Time elapsed: " + t + " sec");
 
 		if (!errors.isEmpty()) {
+			System.out.println("================================================================================");
 			System.out.println("Failed tests:");
 			for (Entry<TestExecutionResult, UniqueId> e : errors.entrySet()) {
 				Optional<Throwable> optThrowable = e.getKey().getThrowable();
@@ -176,17 +192,19 @@ public class TestRunner5 implements TestRunner {
 					StackTraceElement[] sts = throwable.getStackTrace();
 					for (StackTraceElement st : sts) {
 						System.out.println("\t\t" + st);
-						if (mname.equals(st.getClassName() + "." + st.getMethodName() + "()" ))
+						if (mname.equals(st.getClassName() + "." + st.getMethodName() + "()"))
 							break;
 					}
 				}
 			}
-
 		}
+		
+		System.out.println("================================================================================");
+		System.out.println("Total run: " + count + ", Skipped: " + skipped + ", Failures: " + failed + ", Aborted: " + aborted
+				+ ", Time elapsed: " + t + " sec");
+		System.out.println("================================================================================");
 
-		System.out.println("========================================================================");
-
-		return count == successful;
+		return count == successful + skipped;
 	}
 
 	static String timeToString(long took) {

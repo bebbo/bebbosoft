@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: bnm
 Automatic-Module-Name: bnm
 Bundle-SymbolicName: de.bb.tools.bnm.core
-Bundle-Version: 0.2.10
+Bundle-Version: 0.3.0
 Export-Package: de.bb.tools.bnm,
  de.bb.tools.bnm.annotiation,
  de.bb.tools.bnm.component,
