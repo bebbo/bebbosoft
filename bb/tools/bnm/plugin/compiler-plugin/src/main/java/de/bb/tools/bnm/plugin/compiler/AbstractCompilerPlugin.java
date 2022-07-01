@@ -197,24 +197,29 @@ public abstract class AbstractCompilerPlugin extends AbstractPlugin {
 		// com.sun.tools.javac.main.Main m = new Main("javac", pw);
 		Class<?> clazz = getJavacClass();
 		if (clazz == null) {
-			log.error("can't locate com.sun.tools.javac.main.Main!");
+			log.error("can't locate com.sun.tools.javac.Main or com.sun.tools.javac.main.Main, or the compile method was not found!");
 			log.error("ensure that your java is a JDK and contains lib/tool.jar!");
 			throw new Exception("no javac found");
 		}
-		Constructor<?> ct = clazz.getConstructor(String.class, PrintWriter.class);
-		Object m = ct.newInstance("javac", pw);
-
-		log.info("compiling " + files.size() + " files");
-		log.debug("javac " + args);
-		// int r = m.compile(arg);
+		// use constructor
 		int r;
-		Object rr = cc.invoke(m, (Object) arg);
-		if (rr instanceof Integer) {
-			r = (Integer) rr;
+		if (cc.getParameterCount() == 1) {
+			Constructor<?> ct = clazz.getConstructor(String.class, PrintWriter.class);
+			Object m = ct.newInstance("javac", pw);
+	
+			log.info("compiling " + files.size() + " files");
+			log.debug("javac " + args);
+			// int r = m.compile(arg);
+			Object rr = cc.invoke(m, (Object) arg);
+			if (rr instanceof Integer) {
+				r = (Integer) rr;
+			} else {
+				Field ec = rr.getClass().getField("exitCode");
+				ec.setAccessible(true);
+				r = ec.getInt(rr);
+			}
 		} else {
-			Field ec = rr.getClass().getField("exitCode");
-			ec.setAccessible(true);
-			r = ec.getInt(rr);
+			r = (Integer)cc.invoke(null, arg, pw);
 		}
 		pw.flush();
 		String msg = bos.toString().trim();
@@ -222,7 +227,7 @@ public abstract class AbstractCompilerPlugin extends AbstractPlugin {
 			log.info(msg);
 
 		if (failOnError && r != 0) {
-			log.info("classpath=" + cp);
+			log.info("arguments = " + args);
 			log.flush();
 			throw new Exception("javac returned : " + r + "\r\n" + msg + "\r\n in " + project.getId());
 		}
@@ -264,21 +269,43 @@ public abstract class AbstractCompilerPlugin extends AbstractPlugin {
 				}
 
 				try {
-					if (check.exists()) {
-						ClassLoader uClassLoader = new ZipClassLoader(check.getAbsolutePath(),
-								getClass().getClassLoader());
-						javacClass = uClassLoader.loadClass("com.sun.tools.javac.main.Main");
-					} else {
-						javacClass = getClass().getClassLoader().loadClass("com.sun.tools.javac.main.Main");
+					try {
+						if (check.exists()) {
+							ClassLoader uClassLoader = new ZipClassLoader(check.getAbsolutePath(),
+									getClass().getClassLoader());
+							javacClass = uClassLoader.loadClass("com.sun.tools.javac.Main");
+						} else {
+							javacClass = getClass().getClassLoader().loadClass("com.sun.tools.javac.Main");
+						}
+					} catch (Exception ex) {
+						if (check.exists()) {
+							ClassLoader uClassLoader = new ZipClassLoader(check.getAbsolutePath(),
+									getClass().getClassLoader());
+							javacClass = uClassLoader.loadClass("com.sun.tools.javac.main.Main");
+						} else {
+							javacClass = getClass().getClassLoader().loadClass("com.sun.tools.javac.main.Main");
+						}
 					}
 
 					for (Method m : javacClass.getMethods()) {
 						if (!"compile".equals(m.getName()))
 							continue;
 						Class<?>[] types = m.getParameterTypes();
-						if (types.length == 1 && types[0].equals(X.getClass())) {
+						if (types.length == 2 && types[0].equals(X.getClass()) && types[1].equals(PrintWriter.class)) {
 							cc = m;
-							break;							
+							break;
+						}
+					}
+
+					if (cc == null) {
+						for (Method m : javacClass.getMethods()) {
+							if (!"compile".equals(m.getName()))
+								continue;
+							Class<?>[] types = m.getParameterTypes();
+							if (types.length == 1 && types[0].equals(X.getClass())) {
+								cc = m;
+								break;
+							}
 						}
 					}
 				} catch (Exception e) {
@@ -286,9 +313,10 @@ public abstract class AbstractCompilerPlugin extends AbstractPlugin {
 				}
 			}
 		}
+		if (cc == null)
+			return null;
 		return javacClass;
 	}
-
 
 	protected ArrayList<String> scanFiles(File out) throws IOException {
 		final ArrayList<String> files = new ArrayList<String>();
@@ -334,8 +362,8 @@ public abstract class AbstractCompilerPlugin extends AbstractPlugin {
 			long modi = out.lastModified() + 1000;
 			if (modi < Pom.getLoadTime() && modi > maxDate) {
 				DateFormat df = new DateFormat("yyyyMMddHHmmssSSS");
-				getLog().debug("clearing all existing older files:: loaded: " + df.format(Pom.getLoadTime()) + ", modified: "
-						+ df.format(modi));
+				getLog().debug("clearing all existing older files:: loaded: " + df.format(Pom.getLoadTime())
+						+ ", modified: " + df.format(modi));
 				for (Iterator<String> i = files.iterator(); i.hasNext();) {
 					String s = i.next();
 					File src = new File(s);
