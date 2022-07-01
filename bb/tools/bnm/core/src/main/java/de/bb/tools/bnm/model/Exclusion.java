@@ -37,4 +37,11 @@ public class Exclusion {
   public String getGA() {
     return groupId + ":" + artifactId;
   }
+
+@Override
+public String toString() {
+	return super.toString() + ": " + getGA();
+}
+  
+  
 }
