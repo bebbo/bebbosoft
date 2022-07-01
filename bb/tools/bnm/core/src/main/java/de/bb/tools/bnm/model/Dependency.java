@@ -54,7 +54,7 @@ public class Dependency extends Id {
 	 * "http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html">
 	 * the dependency mechanism</a>.
 	 */
-	public String scope = "compile";
+	public String scope;
 	/**
 	 * FOR SYSTEM SCOPE ONLY. Note that use of this property is
 	 * <b>discouraged</b> and may be replaced in later versions. This specifies
