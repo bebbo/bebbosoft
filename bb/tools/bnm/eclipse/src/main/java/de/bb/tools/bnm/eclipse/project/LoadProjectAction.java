@@ -104,13 +104,13 @@ public class LoadProjectAction extends PomAction {
           ArrayList<Pom> poms = bnm.getProjectsInOrder();
           if (poms.size() == 1) {
 
-            new File(path, ".project").delete();
-            new File(path, ".classpath").delete();
-            try {
-              theProject.refreshLocal(IResource.DEPTH_ONE, new SubProgressMonitor(monitor, 42));
-            } catch (Exception e0) {
-
-            }
+//            new File(path, ".project").delete();
+//            new File(path, ".classpath").delete();
+//            try {
+//              theProject.refreshLocal(IResource.DEPTH_ONE, new SubProgressMonitor(monitor, 42));
+//            } catch (Exception e0) {
+//
+//            }
 
             Pom pom = poms.get(0);
             Project proj = pom.getEffectivePom();
