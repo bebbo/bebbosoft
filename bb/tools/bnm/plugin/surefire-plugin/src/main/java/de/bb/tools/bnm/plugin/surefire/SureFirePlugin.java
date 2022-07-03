@@ -133,7 +133,7 @@ public class SureFirePlugin extends AbstractPlugin {
         TestRunner testRunner;
         try {
         	testRunner = (TestRunner) cl.loadClass("de.bb.tools.bnm.junit.TestRunner5").getConstructor().newInstance();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
         	System.err.println(ex);
         	ex.printStackTrace();
             try {

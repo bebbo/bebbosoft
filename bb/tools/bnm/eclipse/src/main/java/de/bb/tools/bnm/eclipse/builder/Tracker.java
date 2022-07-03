@@ -124,7 +124,8 @@ public class Tracker implements IResourceChangeListener {
                 if (bp != null) {
                     return bp.addSlave(p);
                 }
-                return PROJECTS.values().iterator().next().addSlave(p);
+                if (!PROJECTS.isEmpty())
+                	return PROJECTS.values().iterator().next().addSlave(p);
             }
         }
         return false;

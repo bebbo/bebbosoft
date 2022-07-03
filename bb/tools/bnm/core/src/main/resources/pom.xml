@@ -179,7 +179,7 @@
                 <plugin>
                     <groupId>de.bb.tools.bnm.plugin</groupId>
                     <artifactId>eclipse-plugin</artifactId>
-                    <version>0.2.11-SNAPSHOT</version>
+                    <version>0.3.0</version>
                     <replaces>
                         <replace>org.apache.maven.plugins:maven-eclipse-plugin</replace>
                     </replaces>

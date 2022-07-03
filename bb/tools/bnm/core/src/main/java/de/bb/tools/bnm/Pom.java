@@ -278,8 +278,8 @@ public class Pom {
 		}
 		if (parent != null && pom.parent != null && !parent.pom.getId().equals(pom.parent.getId())
 				&& !(parent instanceof RootPom))
-			throw new Exception("parent artifact does not match for: " + pom.getId() + "\r\n" + "pom.parent = " + pom.parent.getId() + "\r\n"
-					+ "parent = " + parent.pom.getId());
+			throw new Exception("parent artifact does not match for: " + pom.getId() + "\r\n" + "pom.parent = "
+					+ pom.parent.getId() + "\r\n" + "parent = " + parent.pom.getId());
 
 		// build a list of this pom and all parent poms
 		LinkedList<Project> pomsInOrder = new LinkedList<Project>();
@@ -813,6 +813,9 @@ public class Pom {
 			Log.getLog().error("no BNM plugin replacement for " + ga + " and invoking mvn failed for " + ga + msg);
 			return;
 		} catch (Throwable e) {
+			// ignore - it's the noop
+			if ("de.bb.tools.bnm.plugin:noop-plugin".equals(id))
+				return;
 			log.error("can't configure " + ga + ": " + e.getMessage());
 			e.printStackTrace();
 			throw new Exception("can't configure " + ga + ": " + e.getMessage());
@@ -873,29 +876,31 @@ public class Pom {
 		return result;
 	}
 
-	private ArrayList<Object> getDependencyTree(T3<Dependency, List<Exclusion>, List<Object>> start, Scope targetScope) throws Exception {
+	private ArrayList<Object> getDependencyTree(T3<Dependency, List<Exclusion>, List<Object>> start, Scope targetScope)
+			throws Exception {
 		boolean compileOnly = false;
 		HashSet<String> done = new HashSet<String>();
 
 		LinkedList<T3<Dependency, List<Exclusion>, List<Object>>> todo = new LinkedList<>();
 		todo.add(start);
-		
+
 		// nested twice to switch to compile only after first pass
 		while (!todo.isEmpty()) {
 			LinkedList<T3<Dependency, List<Exclusion>, List<Object>>> nextTodo = new LinkedList<>();
 			while (!todo.isEmpty()) {
 				T3<Dependency, List<Exclusion>, List<Object>> next = todo.removeFirst();
-				List<T3<Dependency, List<Exclusion>, List<Object>>> deps = dependencyTreeLoop(next, done, targetScope, compileOnly);
+				List<T3<Dependency, List<Exclusion>, List<Object>>> deps = dependencyTreeLoop(next, done, targetScope,
+						compileOnly);
 				for (T3<Dependency, List<Exclusion>, List<Object>> dep : deps) {
 					nextTodo.add(dep);
 					next.c.add(dep);
 				}
 			}
-			
+
 			todo = nextTodo;
 			compileOnly = true;
 		}
-		
+
 		// convert it back
 		return t32flat(start, new ArrayList<>());
 	}
@@ -914,73 +919,77 @@ public class Pom {
 
 	private List<T3<Dependency, List<Exclusion>, List<Object>>> dependencyTreeLoop(
 			T3<Dependency, List<Exclusion>, List<Object>> next, HashSet<String> done, Scope targetScope,
-			boolean compileOnly) throws Exception {
-		Pom transPom = bnm.loadPom(loader, null, next.a);
-		List<Exclusion> exclusions = next.b;
-		
+			boolean compileOnly) {
 		List<T3<Dependency, List<Exclusion>, List<Object>>> result = new ArrayList<>();
-		for (Dependency dep : transPom.effectivePom.dependencies) {
-			String ga = dep.getGA() + ":" + dep.classifier;
-			
-			if (isExclude(exclusions, dep))
-				continue;
+		try {
+			Pom transPom = bnm.loadPom(loader, null, next.a);
+			List<Exclusion> exclusions = next.b;
 
-			if (!isUsableArtifact(dep))
-				continue;
-			
-			if (dep.optional)
-				continue;
-			
-			if (dep.scope == null)
-				dep.scope = "compile";
-			Scope depScope = Scope.valueOf(dep.scope.toUpperCase());
+			for (Dependency dep : transPom.effectivePom.dependencies) {
+				String ga = dep.getGA() + ":" + dep.classifier;
 
-			if (compileOnly && Scope.COMPILE != depScope)
-				continue;
-
-			switch (depScope) {
-			case TEST:
-				if (targetScope != Scope.TEST)
+				if (isExclude(exclusions, dep))
 					continue;
-				break;
-			case IMPORT:
-				continue;
-			case SYSTEM:
-			case PROVIDED:
-			case RUNTIME:
-			case COMPILE:
-				// ok
-				break;
-			}
 
-			if (dep.version == null) {
-				Log.getLog().warn("no version for " + ga + " using own version " + effectivePom.version);
-				dep.version = effectivePom.version;
-			}
+				if (!isUsableArtifact(dep))
+					continue;
 
-			if (!done.contains(ga)) {
-				done.add(ga);
-				if (next.a.scope != null && !"compile".equals(next.a.scope))
-					dep.scope = next.a.scope; // update child scope
-				T3<Dependency, List<Exclusion>, List<Object>> t3 = new T3<>();
-				t3.a = dep;
-				t3.b = new ArrayList<Exclusion>(exclusions);
-				t3.b.addAll(dep.exclusions);
-				t3.c = new ArrayList<Object>();
-				result.add(t3);
+				if (dep.optional)
+					continue;
+
+				if (dep.scope == null)
+					dep.scope = "compile";
+				Scope depScope = Scope.valueOf(dep.scope.toUpperCase());
+
+				if (compileOnly && Scope.COMPILE != depScope)
+					continue;
+
+				switch (depScope) {
+				case TEST:
+					if (targetScope != Scope.TEST)
+						continue;
+					break;
+				case IMPORT:
+					continue;
+				case SYSTEM:
+				case PROVIDED:
+				case RUNTIME:
+				case COMPILE:
+					// ok
+					break;
+				}
+
+				if (dep.version == null) {
+					Log.getLog().warn("no version for " + ga + " using own version " + effectivePom.version);
+					dep.version = effectivePom.version;
+				}
+
+				if (!done.contains(ga)) {
+					done.add(ga);
+					if (next.a.scope != null && !"compile".equals(next.a.scope))
+						dep.scope = next.a.scope; // update child scope
+					T3<Dependency, List<Exclusion>, List<Object>> t3 = new T3<>();
+					t3.a = dep;
+					t3.b = new ArrayList<Exclusion>(exclusions);
+					t3.b.addAll(dep.exclusions);
+					t3.c = new ArrayList<Object>();
+					result.add(t3);
+				}
 			}
+		} catch (Exception ex) {
+			Log.getLog().warn(ex.getMessage());
 		}
 		return result;
 	}
 
-	private boolean isUsableArtifact(Dependency dep) {		
+	private boolean isUsableArtifact(Dependency dep) {
 		return dep.type == null || "jar".equals(dep.type) || "pom".equals(dep.type);
 	}
 
 	private boolean isExclude(List<Exclusion> exs, Id id) {
 		for (Exclusion ex : exs) {
-			if (("*".equals(ex.artifactId) || id.artifactId.equals(ex.artifactId)) &&
-					("*".equals(ex.groupId) || id.groupId.equals(ex.groupId))) {
+			if (("*".equals(ex.artifactId) || id.artifactId.equals(ex.artifactId))
+					&& ("*".equals(ex.groupId) || id.groupId.equals(ex.groupId))) {
 				return true;
 			}
 		}
@@ -1090,5 +1099,5 @@ public class Pom {
 	public Pom getParent() {
 		return parent;
 	}
-	
+
 }

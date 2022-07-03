@@ -4,10 +4,12 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -79,6 +81,7 @@ public class TestRunner5 implements TestRunner {
 		JupiterConfiguration jc = new DefaultJupiterConfiguration(cp);
 		JupiterEngineDescriptor jed = new JupiterEngineDescriptor(uid, jc);
 
+		Set<String> errorTests = new HashSet<>();
 		Map<String, Integer> map = new HashMap<>();
 		for (String file : files) {
 			String classname0 = file.replace(".class", "").replace('/', '.').replace('\\', '.');
@@ -144,6 +147,8 @@ public class TestRunner5 implements TestRunner {
 						System.out.println("Tests run: " + localCount + ", Skipped: " + map.getOrDefault(testName, 0) + ", Failures: " + localFailed + ", Aborted: "
 								+ localAborted + ", Time elapsed: " + t + " sec");
 						System.out.println("--------------------------------------------------------------------------------");
+						if (localAborted + localFailed != 0)
+							errorTests.add(testName);
 					}
 				default:
 				}
@@ -197,6 +202,10 @@ public class TestRunner5 implements TestRunner {
 					}
 				}
 			}
+			System.out.println("================================================================================");
+			System.out.println("Tests in error:");
+			for (String errTest : errorTests)
+				System.out.println(errTest);
 		}
 		
 		System.out.println("================================================================================");
@@ -204,7 +213,7 @@ public class TestRunner5 implements TestRunner {
 				+ ", Time elapsed: " + t + " sec");
 		System.out.println("================================================================================");
 
-		return count == successful + skipped;
+		return aborted == 0 && failed == 0;
 	}
 
 	static String timeToString(long took) {
