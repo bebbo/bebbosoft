@@ -20,6 +20,6 @@
 		<module>junit3</module>
 		<module>junit4</module>
 		<module>junit5</module>
-		<!-- <module>feature</module> -->
+		<module>feature</module>
 	</modules>
 </project>
