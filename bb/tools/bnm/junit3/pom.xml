@@ -17,6 +17,7 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.5</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<artifactId>junit</artifactId>
