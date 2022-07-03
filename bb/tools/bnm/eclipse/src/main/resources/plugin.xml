@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+    <extension point="org.eclipse.ui.popupMenus">
+        <objectContribution
+              adaptable="true"
+              id="de.bb.tools.bnm.eclipse.contribution.pom"
+              nameFilter="*"
+              objectClass="org.eclipse.core.resources.IResource">
+            <menu label="BNM" path="additions" id="de.bb.tools.bnm.eclipse.menu1">
+            </menu>
+            <action class="de.bb.tools.bnm.eclipse.project.LoadProjectAction"
+                 id="de.bb.tools.bnm.eclipse.project.loadProjectAction"
+                definitionId="de.bb.tools.bnm.eclipse.commands.loadProjectAction"
+                enablesFor="1" 
+                    label="&amp;Load Pom as Project"
+                menubarPath="de.bb.tools.bnm.eclipse.menu1/group1"
+                >
+            </action>
+           <action
+                 class="de.bb.tools.bnm.eclipse.project.NewModuleAction"
+                 id="de.bb.tools.bnm.eclipse.project.addModuleAction"
+                 definitionId="de.bb.tools.bnm.eclipse.commands.addModuleAction"
+                 label="&amp;Add Module"
+                 enablesFor="1"
+                 menubarPath="de.bb.tools.bnm.eclipse.menu1/group1">
+           </action>
+           <action
+                 class="de.bb.tools.bnm.eclipse.versioning.SnapshotVersionAction"
+                 id="de.bb.tools.bnm.eclipse.versioning.snapshotAction"
+                 label="&amp;SNAPSHOT Version"
+                 enablesFor="1"
+                 menubarPath="de.bb.tools.bnm.eclipse.menu1/group1">
+           </action>
+           <action
+                 class="de.bb.tools.bnm.eclipse.versioning.ReleaseVersionAction"
+                 id="de.bb.tools.bnm.eclipse.versioning.releaseVersionAction"
+                 label="&amp;Release Version"
+                 enablesFor="1"
+                 menubarPath="de.bb.tools.bnm.eclipse.menu1/group1">
+           </action>
+           <action
+                 class="de.bb.tools.bnm.eclipse.versioning.PromoteVersionAction"
+                 id="de.bb.tools.bnm.eclipse.versioning.promoteVersionAction"
+                 label="&amp;Promote Versions"
+                 enablesFor="1"
+                 menubarPath="de.bb.tools.bnm.eclipse.menu1/group1">
+           </action>
+           <action
+                 class="de.bb.tools.bnm.eclipse.versioning.ManageVersionAction"
+                 id="de.bb.tools.bnm.eclipse.versioning.manageVersionAction"
+                 label="&amp;Manage Versions"
+                 enablesFor="1"
+                 menubarPath="de.bb.tools.bnm.eclipse.menu1/group1">
+           </action>
+           <action
+                 class="de.bb.tools.bnm.eclipse.project.ConvertCp2DepAction"
+                 id="de.bb.tools.bnm.eclipse.project.convertCp2DepAction"
+                 label="&amp;Convert classpath to dependencies"
+                 enablesFor="1"
+                 menubarPath="de.bb.tools.bnm.eclipse.menu1/group1">
+           </action>
+           <action
+                 class="de.bb.tools.bnm.eclipse.project.ToggleNatureAction"
+                 enablesFor="+"
+                 id="de.bb.tools.bnm.eclipse.project.toggleNatureAction"
+                 label="Add/Remove BNM &amp;Nature"
+                 menubarPath="de.bb.tools.bnm.eclipse.menu1/group1">
+           </action>
+        </objectContribution>
+    </extension>
+    <extension point="org.eclipse.ui.bindings">
+        <key
+              commandId="de.bb.tools.bnm.eclipse.commands.loadProjectAction"
+              contextId="org.eclipse.ui.contexts.window"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+M3+INSERT"/>
+        <key
+              commandId="de.bb.tools.bnm.eclipse.commands.addModuleAction"
+              contextId="org.eclipse.ui.contexts.window"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+M3++"/>
+    </extension>
+
+    <extension point="org.eclipse.ui.commands">
+        <command
+              categoryId="de.bb.tools.bnm.eclipse.commands"
+              defaultHandler="de.bb.tools.bnm.eclipse.OpaHandler"
+              id="de.bb.tools.bnm.eclipse.commands.loadProjectAction"
+              name="load module as project"/>
+        <category
+              id="de.bb.tools.bnm.eclipse.commands"
+              name="BNM commands">
+        </category>
+        <command
+              categoryId="de.bb.tools.bnm.eclipse.commands"
+              defaultHandler="de.bb.tools.bnm.eclipse.OpaHandler"
+              id="de.bb.tools.bnm.eclipse.commands.addModuleAction"
+              name="add a new module"/>
+    </extension>
+    
+    <extension
+          id="bnmBuilder"
+          name="BNM Project Builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             hasNature="true">
+          <run
+                class="de.bb.tools.bnm.eclipse.builder.BnmBuilder">
+          </run>
+       </builder>
+    </extension>
+    <extension
+          id="BeforeJavaBuilder"
+          name="BNM before Java builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             hasNature="true">
+          <run
+                class="de.bb.tools.bnm.eclipse.builder.BeforeJavaBuilder">
+          </run>
+       </builder>
+    </extension>
+    <extension
+          id="AfterJavaBuilder"
+          name="BNM after Java builder"
+          point="org.eclipse.core.resources.builders">
+       <builder
+             hasNature="true">
+          <run
+                class="de.bb.tools.bnm.eclipse.builder.AfterJavaBuilder">
+          </run>
+       </builder>
+    </extension>
+    <extension
+          id="bnmNature"
+          name="BNM Project Nature"
+          point="org.eclipse.core.resources.natures">
+       <runtime>
+          <run
+                class="de.bb.tools.bnm.eclipse.builder.BnmNature">
+          </run>
+       </runtime>
+       <builder
+             id="de.bb.tools.bnm.eclipse.BeforeJavaBuilder">
+       </builder>
+       <builder
+             id="de.bb.tools.bnm.eclipse.AfterJavaBuilder">
+       </builder>
+       <builder
+             id="de.bb.tools.bnm.eclipse.bnmBuilder">
+       </builder>
+    </extension>
+    <extension
+          id="de.bb.tools.bnm.eclipse.buildFailed"
+          name="bnm build failed"
+          point="org.eclipse.core.resources.markers">
+		 <super
+            type="org.eclipse.core.resources.problemmarker">
+      	</super>
+      	<persistent
+            value="true">
+      </persistent>          
+    </extension>
+    <extension
+          point="org.eclipse.ui.importWizards">
+       <category
+             id="de.bb.tools.bnm.eclipse.wizards"
+             name="BNM is Not Maven">
+       </category>
+       <wizard
+             category="de.bb.tools.bnm.eclipse.wizards"
+             class="de.bb.tools.bnm.eclipse.project.ImportWizard"
+             icon="icons/bnm.gif"
+             id="de.bb.tools.bnm.eclipse.project.ImportWizard"
+             name="Import a Pom Tree">
+          <description>
+             Import a file from the local file system into the workspace.
+          </description>
+          <selection
+                class="org.eclipse.core.resources.IResource">
+          </selection>
+       </wizard>
+    </extension>
+    <extension
+          point="org.eclipse.jdt.core.classpathContainerInitializer">
+       <classpathContainerInitializer
+             class="de.bb.tools.bnm.eclipse.builder.CcpInitializer"
+             id="de.bb.tools.bnm.eclipse.compileClassPath">
+       </classpathContainerInitializer>
+    </extension>
+    <!--
+    <extension
+          point="org.eclipse.jdt.launching.runtimeClasspathEntryResolvers">
+       <runtimeClasspathEntryResolver
+             class="de.bb.tools.bnm.eclipse.builder.CompileClasspathEntryResolver"
+             container="de.bb.tools.bnm.eclipse.compileClassPath"
+             id="de.bb.tools.bnm.eclipse.compileClasspathEntryResolver"
+             runtimeClasspathEntryId="de.bb.tools.bnm.eclipse.compileClassPath">
+       </runtimeClasspathEntryResolver>
+    </extension>
+    -->
+</plugin>

@@ -44,6 +44,9 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaModelManager;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.internal.UIPlugin;
 
 import de.bb.tools.bnm.eclipse.Plugin;
 
@@ -57,14 +60,23 @@ public class Tracker implements IResourceChangeListener {
 
 	static void scanProjects() {
 		PROJECTS.clear();
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IProject[] projects = workspace.getRoot().getProjects();
-        for (IProject p : projects) {
-            // init open projects only
-            if (!p.isOpen())
-                continue;
-            addProject(p);
-        }
+		if (!PlatformUI.isWorkbenchRunning())
+			return;
+		
+		Plugin.getConsole();
+		
+		try {
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+	        IProject[] projects = workspace.getRoot().getProjects();
+	        for (IProject p : projects) {
+	            // init open projects only
+	            if (!p.isOpen())
+	                continue;
+	            addProject(p);
+	        }
+		} catch (Exception ex) {
+			System.err.println(ex);
+		}
 	}
 
     private static boolean addProject(IProject p) {

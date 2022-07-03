@@ -22,7 +22,6 @@ import java.io.PrintStream;
 
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
@@ -30,6 +29,7 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 import de.bb.tools.bnm.Loader;
 import de.bb.tools.bnm.Log;
@@ -59,12 +59,7 @@ public class Plugin extends AbstractUIPlugin {
    * The constructor
    */
   public Plugin() {
-    System.err.println("start plugin");
-    Log.setPrintStream(new PrintStream(getConsole().newOutputStream()));
-
-    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    IResourceChangeListener listener = tracker;
-    workspace.addResourceChangeListener(listener);
+    System.err.println("start plugin");    
   }
 
   /*
@@ -76,6 +71,14 @@ public class Plugin extends AbstractUIPlugin {
    */
   public void start(BundleContext context) throws Exception {
     super.start(context);
+    
+    ServiceTracker<IWorkspace, IWorkspace> workspaceTracker = new ServiceTracker<IWorkspace, IWorkspace>(context, IWorkspace.class.getName(), null);
+    workspaceTracker.open();
+    
+    IWorkspace workspace = workspaceTracker.getService();
+    IResourceChangeListener listener = tracker;
+    workspace.addResourceChangeListener(listener);
+    
     plugin = this;
   }
 
@@ -136,6 +139,7 @@ public class Plugin extends AbstractUIPlugin {
       if (console != null)
         return console;
       console = findConsole("BNM Console");
+      Log.setPrintStream(new PrintStream(console.newOutputStream()));      
       return console;
     }
   }
